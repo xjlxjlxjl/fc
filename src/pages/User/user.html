@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title> 工厂云,工厂云APP,工业计算器,工业自动化智能选型平台</title>
+  </head>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      font-size: 62.5%;
+      font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    }
+    ::-webkit-scrollbar{
+      width: 5px;
+      height: 10px;
+      background-color: transparent;
+    }
+    /*定义滚动条轨道 内阴影+圆角*/
+    ::-webkit-scrollbar-track{
+      /* -webkit-box-shadow: inset 0 0 6px #666; */
+      border-radius: 10px;
+      background-color: transparent;
+    }
+    /*定义滑块 内阴影+圆角*/
+    ::-webkit-scrollbar-thumb{
+      border-radius: 100px;
+      -webkit-box-shadow: inset 0 0 6px #666;
+      background-color: #555;
+    }
+    span,
+    div,
+    p,a{
+      font-size: 1.2rem;
+    }
+    html,
+    body,
+    #app,
+    #app > section{
+      height: 100%;
+      -webkit-overflow-scrolling: touch
+    }
+    .text-center{
+      text-align: center;
+    }
+    .el-header,
+    .el-main,
+    .el-footer{
+      height: auto !important;
+    }
+    .el-message-box{
+      width: auto;
+    }
+    @media screen and (max-width: 400px){
+      .el-message-box{
+        max-width: 320px;
+      }
+    }
+    @media screen and (min-width: 400px){
+      .el-message-box{
+        max-width: 480px;
+      }
+    }
+    .dearUserName{
+      width: 150px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  </style>
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_654164_bwxiibrhfhm.css">
+  <script>
+    var baseUrl = 'http://api.skyliu.cn/';
+    // var baseUrl = 'https://api.factoryun.com/';
+    if(!localStorage.getItem('user'))
+      location.href.go(-1);
+  </script>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
