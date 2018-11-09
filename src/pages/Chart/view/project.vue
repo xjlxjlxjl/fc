@@ -47,12 +47,12 @@
         <el-table-column label="产品" width="400">
           <template slot-scope="{ row,$index }">
             <div>
-              <img :src="row.product_image || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
+              <img :src="row.product.image || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
             </div>
             <div>
               <p>型号：{{ row.model }}</p>
-              <p>名称：{{ row.product_name }}</p>
-              <p>创建人：{{ row.member_name }} 创建时间：{{ row.create_time }}</p>
+              <p>名称：{{ row.product.name }}</p>
+              <p>创建人：{{ row.member }} 创建时间：{{ row.create_at }}</p>
             </div>
           </template>
         </el-table-column>
@@ -251,7 +251,7 @@ export default {
       }).catch( error => loading.close());
     },
     cartsItem(key,str_id,slug){
-      let url = null,that = this;
+      let url = null,that = this,loading = this.$loading({ lock: true });
       switch(key){
         case 0:
           url = 'carts/items/price-company/' + that.projectList.list[that.index].slug + '/' + str_id + '/' + slug
@@ -263,7 +263,14 @@ export default {
           url = 'carts/items/price-payment/' + that.projectList.list[that.index].slug + '/' + str_id + '/' + slug
           break;
       }
-      that.$post(url);
+      that.$post(url)
+      .then( response => {
+        loading.close()
+        if(response.status != 200)
+          return false;
+        that.projectDetail = response.data;
+      })
+      .catch( error => loading.close());
     },
     // 询价
     inquiry(){
@@ -292,9 +299,23 @@ export default {
           this.$notify.error({ title: '', message: '选择商品中有尚未报价的商品' });
           hasNaN = true;
         }
+        // if(!e.supplier.id){
+        //   this.$notify.error({ title: '', message: '选择商品中有尚未选择供应商的商品' });
+        //   hasNaN = true;
+        // }
+        // if(!e.invoice_type){
+        //   this.$notify.error({ title: '', message: '选择商品中有尚未选择发票类型的商品' });
+        //   hasNaN = true;
+        // }
+        // if(!e.payment_type){
+        //   this.$notify.error({ title: '', message: '选择商品中有尚未选择支付方式商品' });
+        //   hasNaN = true;
+        // }
+
         arr.push(e.product.id)
       });
-      if(isNaN)
+      
+      if(hasNaN)
         return false;
 
       const loading = this.$loading({ lock: true }),that = this;

@@ -7,6 +7,7 @@ import sign from '@/pages/Login/view/sign';
 // index
 import indexMain from '@/pages/Index/view/indexMain';
 import product from '@/pages/Index/view/product';
+import Presentation from '@/pages/Index/view/Presentation';
 // user
 import order from '@/pages/User/view/components/order';
 import contract from '@/pages/User/view/components/contract';
@@ -42,6 +43,10 @@ export default new Router({
         path: '/product/:slug/:model/:code',
         name: 'product',
         component: product
+      },{
+        path: '/Presentation',
+        name: 'Presentation',
+        component: Presentation
       },{
         path: '/order',
         name: 'order',

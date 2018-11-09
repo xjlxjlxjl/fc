@@ -51,7 +51,6 @@
         </div>
       </div>
     </transition>
-
     <el-container>
       <el-aside class="homeMainAside" width="200px">
         <el-menu default-active="0">
@@ -413,8 +412,8 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
                       </div>
                     </div>
                   </template>
@@ -426,11 +425,11 @@
                     <div class="drawing">
                       <div>
                         <i class="font_family icon-d2twig"></i>
-                        <a :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
                       <div>
                         <i class="font_family icon-d3twig"></i>
-                        <a :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
                     </div>
                   </template>
@@ -658,8 +657,8 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
                       </div>
                     </div>
                   </template>
@@ -671,11 +670,11 @@
                     <div class="drawing">
                       <div>
                         <i class="font_family icon-d2twig"></i>
-                        <a :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
                       <div>
                         <i class="font_family icon-d3twig"></i>
-                        <a :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
                     </div>
                   </template>
@@ -935,8 +934,8 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
                       </div>
                     </div>
                   </template>
@@ -948,11 +947,11 @@
                     <div class="drawing">
                       <div>
                         <i class="font_family icon-d2twig"></i>
-                        <a :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
                       <div>
                         <i class="font_family icon-d3twig"></i>
-                        <a :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
                     </div>
                   </template>
@@ -968,18 +967,499 @@
           </el-main>
           <!-- 升降平台 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 4">
+            <div class="main">
+              <ul>
+              </ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <el-button type="primary" size="mini" 
+                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
           <!-- 动定子 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 5">
+            <div class="main">
+              <ul>
+                <li>
+                  <div>运动方式</div>
+                  <div>
+                    <el-radio v-model="params.exercise_mode" label="dot_to_dot">点到点</el-radio>
+                    <el-radio v-model="params.exercise_mode" label="scanning">扫描线</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>动子数</div>
+                  <div>
+                    <el-radio v-model="params.number_of_mover" label="1">1</el-radio>
+                    <el-radio v-model="params.number_of_mover" label="2">2</el-radio>
+                    <el-input class="labelInput" v-model="params.number_of_mover" placeholder="其他"></el-input>
+                    <span>个</span>
+                  </div>
+                </li>
+                <li>
+                  <div>
+                    <el-radio v-model="params.readswit" label="0">已知速度加速度</el-radio>
+                    <el-radio v-model="params.readswit" label="1">三角曲线</el-radio>
+                    <el-radio v-model="params.readswit" label="2">已知 V-T 曲线</el-radio>
+                  </div>
+                  <div class="chartOption">
+                    <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
+                    <div class="pull-left" v-if="params.readswit == 0">
+                      <p>
+                        <span>移动距离: </span>
+                        <el-input v-model="params.distance" placeholder="1000"></el-input>
+                        <span>mm</span>
+                      </p>
+                      <p>
+                        <span>速度: </span>
+                        <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
+                        <el-radio v-model="params.speed" label="1">1</el-radio>
+                        <el-input class="labelInput" v-model="params.speed" placeholder="5">0.5</el-input>
+                        <span>m/s</span>
+                      </p>
+                      <p>
+                        <span>加速度: </span>
+                        <el-radio v-model="params.acceleration" label="0.5">0.5</el-radio>
+                        <el-radio v-model="params.acceleration" label="1">1</el-radio>
+                        <el-input class="labelInput" v-model="params.acceleration" placeholder="5"></el-input>
+                        <span>m/s²</span>
+                      </p>
+                      <p>
+                        <span>停留时间: </span>
+                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
+                        <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
+                        <span>s</span>
+                      </p>
+                    </div>
+                    <div class="pull-left" v-else-if="params.readswit == 1">
+                      <p>
+                        <span>移动距离: </span>
+                        <el-input v-model="params.distance" placeholder="1000"></el-input>
+                        <span>mm</span>
+                      </p>
+                      <p>
+                        <span>用时: </span>
+                        <el-radio v-model="params.time" label="1">1</el-radio>
+                        <el-radio v-model="params.time" label="2">2</el-radio>
+                        <el-input v-model="params.time" placeholder="其他"></el-input>
+                        <span>s</span>
+                      </p>
+                      <p>
+                        <span>停留时间: </span>
+                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
+                        <el-input v-model="params.stay_time" placeholder="其他"></el-input>
+                        <span>s</span>
+                      </p>
+                    </div>
+                    <div class="pull-left" v-else>
+                      <p>
+                        <span>移动距离: </span>
+                        <el-input v-model="params.distance" placeholder="1000"></el-input>
+                        <span>mm</span>
+                      </p>
+                      <p>
+                        <span>加速时间 t1: </span>
+                        <el-radio v-model="params.accelerationTime" label="0.5">0.5</el-radio>
+                        <el-input v-model="params.accelerationTime" placeholder="其他"></el-input>
+                        <span>m/s</span>
+                      </p>
+                      <p>
+                        <span>匀速时间 t2: </span>
+                        <el-radio v-model="params.uniformTime" label="0.5">0.5</el-radio>
+                        <el-input v-model="params.uniformTime" placeholder="其他"></el-input>
+                        <span>m/s</span>
+                      </p>
+                      <p>
+                        <span>减速时间 t3: </span>
+                        <el-radio v-model="params.slowTime" label="0.5">0.5</el-radio>
+                        <el-input v-model="params.slowTime" placeholder="其他"></el-input>
+                        <span>m/s</span>
+                      </p>
+                      <p>
+                        <span>停留时间: </span>
+                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
+                        <el-input v-model="params.stay_time" placeholder="其他"></el-input>
+                        <span>s</span>
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <el-button type="primary" size="mini" 
+                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
-          <!-- FPC 3平台 -->
+          <!-- FPC 跳水台 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 6">
+            <div class="main">
+              <ul>
+              </ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <el-button type="primary" size="mini" 
+                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
-          <!-- KA XY标准机 -->
+          <!-- FPC 飞行光路 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 7">
+            <div class="main">
+              <ul>
+              </ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <el-button type="primary" size="mini" 
+                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- FPC 桥架 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 8">
+            <div class="main">
+              <ul>
+              </ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <el-button type="primary" size="mini" 
+                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- 丝杆 XY 标准 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 9">
+            <div class="main">
+              <ul>
+                <li>
+                  <div>负载重量</div>
+                  <div>
+                    <el-radio v-model="params.load_weight" label="3">3</el-radio>
+                    <el-radio v-model="params.load_weight" label="5">5</el-radio>
+                    <el-radio v-model="params.load_weight" label="10">10</el-radio>
+                    <el-input class="labelInput" v-model="params.load_weight" placeholder="其他"></el-input>
+                    <span>kg</span>
+                  </div>
+                </li>
+                <li>
+                  <div>X轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>Y轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>X轴 速度</div>
+                  <div>
+                    <el-input v-model="params.speed" placeholder="输入"></el-input>
+                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                  </div>
+                </li>
+                <li>
+                  <div>Y轴 速度</div>
+                  <div>
+                    <el-input v-model="params.speed" placeholder="输入"></el-input>
+                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                  </div>
+                </li>
+                <li>
+                  <div>联轴器</div>
+                  <div>
+                    <el-radio v-model="params.couplings" label="0">不配</el-radio>
+                    <el-radio v-model="params.couplings" label="l">配</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>模组是否配电机</div>
+                  <div>
+                    <el-radio v-model="params.module_motor" label="n">不配</el-radio>
+                    <el-radio v-model="params.module_motor" label="y">配</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>自选电机品牌</div>
+                  <div>
+                    <el-select v-model="params.motor_brand">
+                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
+                                :key="index" 
+                                :label="item.name"
+                                :value="item.value"></el-option>
+                    </el-select>
+                  </div>
+                </li>
+                <li>
+                  <div>电机线</div>
+                  <div>
+                    <el-radio v-model="params.cable_length" label="0">无</el-radio>
+                    <el-radio v-model="params.cable_length" label="3">3m</el-radio>
+                    <el-radio v-model="params.cable_length" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>电机安装方式</div>
+                  <div>
+                    <el-radio v-model="params.mountingmotor" label="fl">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="fr">右接</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>光电开关</div>
+                  <div>
+                    <el-radio v-model="params.oswitch" label="0">无</el-radio>
+                    <el-radio v-model="params.oswitch" label="X">内置（NPN）</el-radio>
+                    <el-radio v-model="params.oswitch" label="W">外置（PNP）</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>开关线</div>
+                  <div>
+                    <el-radio v-model="params.switchline" label="0">无</el-radio>
+                    <el-radio v-model="params.switchline" label="2">2m</el-radio>
+                    <el-radio v-model="params.switchline" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>横组安装方式</div>
+                  <div>
+                    <el-radio v-model="params.switchline" label="0">水平</el-radio>
+                  </div>
+                </li>
+              </ul>
+              <img src="../../../assets/img/screw_xy_platform.png" class="diagram" style="">
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <el-button type="primary" size="mini" 
+                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
           <!-- LK XY标准机 -->
-          <el-main class="homeGoodDetail" v-else-if="showDetailState == 8">
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 10">
           </el-main>
         </el-container>
         <index-chart></index-chart>
@@ -988,7 +1468,6 @@
   </div>
 </template>
 <script>
-  import axios from 'axios';
   import indexChart from '@/pages/Index/common/indexChart';
   import echarts from 'echarts';
   import '@/assets/css/modal.css';
@@ -1102,14 +1581,20 @@
             case 'moving_stator':
               this.showDetailState = 5;
               break;
-            case 'FPC':
+            case 'fpc_diving_platform':
               this.showDetailState = 6;
               break;
-            case 'KA XY':
+            case 'fpc_flying_light_path':
               this.showDetailState = 7;
               break;
-            case 'LK XY':
+            case 'fpc_bridge':
               this.showDetailState = 8;
+              break;
+            case 'screw_xy_platform':
+              this.showDetailState = 9;
+              break;
+            case 'LK XY':
+              this.showDetailState = 10;
               break;
             default:
               break;
@@ -1179,14 +1664,27 @@
             url = 'products/selected/screw_module';
             break;
           case 4:
+            url = 'products/selected/precision_lifting_platform';
             break;
           case 5:
+            url = 'products/selected/moving_stator';
             break;
           case 6:
+            url = '';
             break;
           case 7:
+            url = '';
             break;
           case 8:
+            url = '';
+            break;
+          case 9:
+            url = '';
+            break;
+          case 10:
+            url = '';
+            break;
+          default:
             break;
         }
         that.$post(url ,that.params).then( response => {
@@ -1278,7 +1776,7 @@
         handler(val, oldVal){
           this.changeSpeedChart();
         },
-        deep:true
+        deep: true
       }
     },
     created() {
@@ -1373,6 +1871,7 @@
           .main{
             width: 92%;
             box-sizing: border-box;
+            position: relative;
             ul{
               width: 100%;
               list-style: none;
@@ -1503,6 +2002,15 @@
                   }
                 }
               }
+            }
+            .diagram{
+              position: absolute;
+              top: 0;
+              right: 0;
+              border: @border;
+              background-color: #ffffff;
+              height: 195px;
+              box-sizing: border-box;
             }
           }
         }
@@ -1671,6 +2179,12 @@
                 }
               }
             }
+          }
+          .diagram{
+            width: 100%;
+            border-left: @border;
+            border-right: @border;
+            border-bottom: @border;
           }
         }
       }

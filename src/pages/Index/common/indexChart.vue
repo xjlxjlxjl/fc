@@ -14,7 +14,7 @@
     data() {
       return {
         chartParts: [
-          { name: '项目', icon: 'font_family icon-xiangmu', url: '/chart.html#/project' },
+          { name: '购物车', icon: 'font_family icon-xiangmu', url: '/chart.html#/project' },
           { name: '对比', icon: 'font_family icon-duibi', url: '/chart.html#/contrast' },
           { name: '询价', icon: 'font_family icon-xunjia1', url: '/chart.html#/inquiry' },
           { name: '消息', icon: 'font_family icon-xiaoxi', url: '/chart.html#/message' },

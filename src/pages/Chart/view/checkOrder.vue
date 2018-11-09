@@ -81,12 +81,12 @@
       <el-table-column label="产品" width="500">
         <template slot-scope="{ row,$index }">
           <div>
-            <img :src="row.product_image">
+            <img :src="row.product.image">
           </div>
           <div>
             <p>型号：{{ row.model }}</p>
-            <p>名称：{{ row.product_name }}</p>
-            <p>创建人：{{ row.member_name }} 创建时间：{{ row.create_time }}</p>
+            <p>名称：{{ row.product.name }}</p>
+            <p>创建人：{{ row.member }} 创建时间：{{ row.create_at }}</p>
           </div>
         </template>
       </el-table-column>
@@ -303,7 +303,26 @@ export default {
           url = 'carts/items/price-payment/' + that.projectSlug + '/' + str_id + '/' + slug
           break;
       }
-      that.$post(url);
+      const loading = this.$loading({ lock: true });
+      that.$post(url)
+      .then( response => {
+        loading.close()
+        if(response.status != 200)
+          return false;
+        let arr = [],obj = {};
+        response.data.list.forEach( e => {
+          if(e.str_id == str_id)
+            obj = e;
+        });
+        that.projectDetail.forEach((e, k) => {
+          if(e.str_id == str_id)
+            arr.push(obj);
+          else
+            arr.push(e);
+        })
+        that.projectDetail = arr;
+      })
+      .catch( error => loading.close());
     },
     checkout(){
       let that = this,loading = this.$loading({ lock: true }),arr = [],activeAddress = {};
@@ -384,11 +403,8 @@ export default {
       font-size: 2rem;
     }
     .addressList{
-      display: -webkit-box;
-      display: -moz-box;
-      display: -ms-flexbox;
-      display: -o-box;
-      display: box;
+      display: flex;
+      flex-wrap: wrap;
       padding-top: 2rem;
       padding-bottom: 1rem;
       max-width: 100%;
@@ -396,6 +412,7 @@ export default {
       .addressDetail{
         box-sizing: border-box;
         margin-right: .5rem;
+        margin-bottom: .5rem;
         width: 30rem;
         .el-card__body{
           height: 13rem;

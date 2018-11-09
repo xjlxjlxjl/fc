@@ -67,76 +67,11 @@
         </div>
         <div class="params">
           <ul>
-            <li>
-              <p>运动方式</p>
-              <el-radio v-model="goodsParams.exercise_mode" :label="goodsParams.exercise_mode">点到点</el-radio>
-            </li>
-            <li>
-              <p>动子数</p>
+            <li v-for="(item,index) in assigned.attribute" :key="index">
+              <p>{{ item.name }}</p>
               <div>
-                <el-input v-model="goodsParams.number_of_mover"></el-input>
-                <span>个</span>
+                  <el-input :value="item.value"></el-input>
               </div>
-            </li>
-            <li>
-              <p>负载重量</p>
-              <div>
-                <el-input v-model="goodsParams.load_weight"></el-input>
-                <span>kg</span>
-              </div>
-            </li>
-            <li>
-              <p>有效行程</p>
-              <div>
-                <el-input v-model="goodsParams.distance"></el-input>
-                <span>mm</span>
-              </div>
-            </li>
-            <li>
-              <p>三角曲线</p>
-              <div>
-                <span>移动距离</span>
-                <el-input v-model="goodsParams.distance">mm</el-input>
-              </div>
-              <div>
-                <span>用时</span>
-                <el-input v-model="goodsParams.time">s</el-input>
-              </div>
-              <div>
-                <span>停留时间</span>
-                <el-input v-model="goodsParams.stay_time">s</el-input>
-              </div>
-            </li>
-            <li>
-              <p>重现定位</p>
-              <div>
-                <span>重现精度：±</span>
-                <el-input v-model="goodsParams.reproduce_the_accuracy">um</el-input>
-              </div>
-              <div>
-                <span>定位精度：±</span>
-                <el-input v-model="goodsParams.positioning_accuracy">um</el-input>
-              </div>
-            </li>
-            <li>
-              <p>密封方式</p>
-              <el-radio v-model="goodsParams.seal" :label="goodsParams.seal">半封闭</el-radio>
-            </li>
-            <li>
-              <p>安装方式</p>
-              <el-radio v-model="goodsParams.mountingmotor" :label="goodsParams.mountingmotor">水平</el-radio>
-            </li>
-            <li>
-              <p>防尘装置</p>
-              <el-radio v-model="goodsParams.dustproof_device" :label="goodsParams.dustproof_device">无</el-radio>
-            </li>
-            <li>
-              <p>缆线长度</p>
-              <el-radio v-model="goodsParams.cable_length" :label="goodsParams.cable_length">2m</el-radio>
-            </li>
-            <li>
-              <p>输入电压</p>
-              <el-radio v-model="goodsParams.power_voltage" :label="goodsParams.power_voltage">110V</el-radio>
             </li>
           </ul>
         </div>
@@ -340,6 +275,7 @@ export default {
 @background: #f2f2f2;
 @boldBorder: solid 1rem @background;
 @border: solid 1px @background;
+@gery: #666666;
 .org{
   color: @org;
 }
@@ -347,154 +283,275 @@ export default {
   color: @blue;
 }
 #product{
-  max-width: 1280px;
-  margin: 0 auto;
-  height: 83%;
-  padding-top: 1.5rem;
-  .main{
-    height: 100%;
-    width: 100%;
-    background-color: @white;
-    display: flex;
-    color: #666666;
-    .el-aside{
-      border-right: @boldBorder;
-      box-sizing: border-box;
+  @media screen and (min-width: 880px){
+    max-width: 1280px;
+    margin: 0 auto;
+    height: 83%;
+    padding-top: 1.5rem;
+    .main{
       height: 100%;
-      .typeSelector{
-        width: 100%;
-        header{
-          background-color: @blue;
-          padding: 1rem;
-          color: @white;
+      width: 100%;
+      background-color: @white;
+      display: flex;
+      color: #666666;
+      .el-aside{
+        border-right: @boldBorder;
+        box-sizing: border-box;
+        height: 100%;
+        .typeSelector{
+          width: 100%;
+          header{
+            background-color: @blue;
+            padding: 1rem;
+            color: @white;
+          }
+          .body{
+            display: flex;
+            padding: 1rem;
+            border-bottom: @border;
+            .goodsImg,
+            .qrCode{
+              width: 200px;
+              box-sizing: border-box;
+              padding: .5rem;
+              img{
+                width: 100%;
+              } 
+            }
+          }
         }
-        .body{
-          display: flex;
-          padding: 1rem;
-          border-bottom: @border;
-          .goodsImg,
-          .qrCode{
-            width: 200px;
-            box-sizing: border-box;
-            padding: .5rem;
-            img{
-              width: 100%;
-            } 
+        .params{
+          height: 69%;
+          overflow-y: auto;
+          ul{
+            li{
+              padding: 1rem;
+              border-bottom: @border;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              &:last-child{
+                border: none;
+              }
+              p{
+                line-height: 40px;
+              }
+              >div{
+                .el-input{
+                  width: auto;
+                  height: 30px;
+                  margin: .5rem 0;
+                  input{
+                    width: 10rem;
+                    height: 30px;
+                  }
+                }
+                span{
+                  display: inline-block;
+                  width: 7rem;
+                }
+              }
+            }
           }
         }
       }
-      .params{
-        height: 69%;
-        overflow-y: auto;
-        ul{
-          li{
-            padding: 1rem;
-            border-bottom: @border;
-            &:last-child{
-              border: none;
-            }
+      .el-main{
+        box-sizing: border-box;
+        width: 300px !important;
+        position: relative;
+        .goods{
+          width: 92%;
+          height: 100%;
+          .header{
             p{
-              line-height: 40px;
+              font-size: 1.8rem;
+              height: 3rem;
+              line-height: 3rem;
             }
-            div{
-              height: 40px;
-              .el-input{
-                width: auto;
-                height: 30px;
-                input{
-                  width: 10rem;
-                  height: 30px;
+            .detail{
+              min-width: 50%;
+              max-width: 60%;
+              display: flex;
+              justify-content: space-between;
+              padding: .5rem 0rem;
+            }
+            .operation{
+              padding: .5rem 0;
+              >span{
+                margin-right: 5rem;
+              }
+            }
+          }
+          .card{
+            margin-top: 1rem;
+            height: 82%;
+            .el-tabs{
+              height: 100%;
+            }
+            .el-tabs__content{
+              height: 90%;
+              overflow: auto;
+              >div{
+                height: 100%;
+              }
+              .modelUl{
+                list-style: none;
+                li{
+                  width: 50%;
+                  box-sizing: border-box;
+                  float: left;
+                  min-height: 40px;
+                  div{
+                    box-sizing: border-box;
+                    padding: 1rem;
+                    width: 50%;
+                    float: left;
+                    &:first-child{
+                      background-color: @background;
+                      border-bottom: solid 1px @white;
+                    }
+                    &:last-child{
+                      border-bottom: @border;
+                    }
+                  }
                 }
               }
-              span{
-                display: inline-block;
-                width: 7rem;
+              .model3D{
+                width: 100%;
+                height: 100%;
+                iframe{
+                  width: 100%;
+                  height: 99%;
+                }
+              }
+              .model2D{
+                width: 100%;
+                height: 100%;
+                embed{
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+              // 规格表
+              .Specification{
+                img{
+                  width: 100%;
+                }
               }
             }
           }
         }
       }
     }
-    .el-main{
-      box-sizing: border-box;
-      width: 300px !important;
-      position: relative;
-      .goods{
-        width: 92%;
-        height: 100%;
-        .header{
-          p{
-            font-size: 1.8rem;
-            height: 3rem;
-            line-height: 3rem;
+  }
+  @media screen and (max-width: 880px){
+    color: @gery;
+    .main{
+      width: 100%;
+      .el-aside{
+        width: 100% !important;
+        height: auto;
+        .typeSelector{
+          header{
+            font-size: 1.6rem;
+            padding: .5rem;
           }
-          .detail{
-            min-width: 50%;
-            max-width: 60%;
+          .body{
+            width: 100%;
             display: flex;
-            justify-content: space-between;
-            padding: .5rem 0rem;
-          }
-          .operation{
-            padding: .5rem 0;
-            >span{
-              margin-right: 5rem;
+            .goodsImg,
+            .qrCode{
+              width: 1%;
+              flex-grow: 1;
+              box-sizing: border-box;
+              border: @border;  
+              img{
+                width: 100%;
+              }
             }
           }
         }
-        .card{
-          margin-top: 1rem;
-          height: 82%;
-          .el-tabs{
-            height: 100%;
-          }
-          .el-tabs__content{
-            height: 90%;
-            overflow: auto;
-            >div{
-              height: 100%;
-            }
-            .modelUl{
-              list-style: none;
-              li{
+        .params{
+          box-sizing: border-box;
+          padding: 1rem;
+          background-color: @white;
+          ul{
+            list-style: none;
+            li{
+              display: flex;
+              white-space: nowrap;
+              justify-content: space-between;
+              align-items: center;
+              min-height: 30px;
+              padding: .5rem .2rem;
+              p,div,label{
                 width: 50%;
-                box-sizing: border-box;
-                float: left;
-                min-height: 40px;
-                div{
-                  box-sizing: border-box;
-                  padding: 1rem;
-                  width: 50%;
-                  float: left;
-                  &:first-child{
-                    background-color: @background;
-                    border-bottom: solid 1px @white;
+                >div{
+                  width: 100%;
+                  margin: .2rem 0;
+                  span{
+                    width: 50%;
+
                   }
-                  &:last-child{
-                    border-bottom: @border;
+                }
+                .el-input{
+                  width: auto;
+                  height: 30px;
+                  input{
+                    width: 60px;
+                    height: 30px;
+                    line-height: 30px;
                   }
                 }
               }
             }
-            .model3D{
+          }
+        }
+      }
+      .el-main{
+        background-color: @white;
+        padding: 0 1rem 1rem 1rem;
+        .goods{
+          .header{
+            >p{
+              font-size: 1.4rem;
+              margin-bottom: .5rem;
+            }
+            .detail{
               width: 100%;
-              height: 100%;
-              iframe{
-                width: 100%;
-                height: 99%;
+              display: flex;
+              justify-content: space-between;
+              white-space: nowrap;
+              margin-bottom: .5rem;
+            }
+            .operation{
+              margin-bottom: .5rem;
+              >span{
+                display: block;
+                margin-bottom: .5rem;
               }
             }
-            .model2D{
-              width: 100%;
-              height: 100%;
-              embed{
-                width: 100%;
-                height: 100%;
+          }
+        }
+        .card{
+          .modelUl{
+            li{
+              display: flex;
+              margin: .5rem 0;
+              padding: .5rem;
+              div{
+                width: 1%;
+                flex-grow: 1;
+              }
+              &:nth-child(2n){
+                background-color: @background;
               }
             }
-            // 规格表
-            .Specification{
-
+          }
+          // 规格表
+          .Specification{
+            img{
+              width: 100%;
             }
           }
         }

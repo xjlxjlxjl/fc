@@ -19,11 +19,13 @@
                   <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-zhifubaozhifu"></use>
                   </svg>
+                  <span>每日限额为五万元</span>
                 </el-radio>
                 <el-radio label="unionpay">
                   <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-yinlianzhifu"></use>
                   </svg>
+                  <span>（公账，企业转账）</span>
                 </el-radio>
               </el-radio-group>
               <div align='center'>
@@ -209,23 +211,52 @@
           loading.close();
         });
       },
-      signContract(slug) {
-
-      },
+      signContract(slug) {},
       payment() {
-        let that = this;
-        window.location = 'https://factoryun.com/orders/order_pay?pay_method=' + that.paymentMethods + '&orderId=' + that.orderIdActive;
-      },
-      getLogistics(slug) {
+        let that = this,loading = this.$loading({ lock: true });
+        that.$post('orders/order_pay',{
+          orderId: that.orderIdActive,
+          pay_method: that.paymentMethods
+        }).then( response => {
+          loading.close()
+          if(response.status != 200)
+            return false
+          // 创建表单
+          let turnForm = document.createElement('form')
+              // turnForm.innerHTML = response.pay_html;
+              turnForm.method = 'post';
+              turnForm.action = response.data.action;
+              turnForm.target = '_blank';
+              document.body.appendChild(turnForm);
+          
+              // 表单内容
+          let element = null,
+              keys = Object.keys(response.data),
+              values = Object.values(response.data);
 
-      }
+              keys.forEach((e, k) => {
+                if(e == 'action')
+                  return false;
+                element = document.createElement("input");
+                element.setAttribute("name", e);
+                element.setAttribute("type", "hidden");
+                element.setAttribute("value", values[k]);
+                turnForm.appendChild(element);
+              })
+              // 表单提交
+              turnForm.submit();
+              document.body.removeChild(turnForm);
+              that.modalShow = false;
+        }).catch( error => loading.close())
+      },
+      getLogistics(slug) {}
     },
     created() {
       this.getOrderStatusData(0,'');
     }
   }
 </script> 
-<style lang="less" scoped>
+<style lang="less">
 @white: #ffffff;
 @bule: #0064db;
 @sky: #2288ff;
@@ -358,16 +389,22 @@
       }
     }
     #payment{
+      width: 100%;
       .el-radio{
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         margin-left: 0;
         margin-bottom: 1rem;
+      }
+      .el-radio__label{
+        width: 70%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         svg{
           height: 5rem;
           width: 10rem;
-          margin-left: 10rem;
         }
       }
     }

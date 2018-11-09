@@ -32,7 +32,7 @@
     <el-footer>
       <div>
         <el-button type="text" @click="isCodeLogin = !isCodeLogin">{{ isCodeLogin ? '使用密码登陆' : '使用短信验证登陆'  }}</el-button>
-        <el-button type="text">扫码登陆</el-button>
+        <!-- <el-button type="text">扫码登陆</el-button> -->
       </div>
       <div><router-link to="/sign"><el-button type="text">没有账号，注册</el-button></router-link></div>
       <div><el-button type="primary" @click="login">登陆</el-button></div>

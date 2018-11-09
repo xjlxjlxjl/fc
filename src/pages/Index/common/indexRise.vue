@@ -84,7 +84,8 @@
             <router-link :to="val.url">{{ val.name }}</router-link>
             <div class="processExtend">
               <nav v-for="(item,index) in val.child" :key="index">
-                <router-link :to="item.url">{{ item.name }}</router-link>
+                <router-link to="#">{{ item.name }}</router-link>
+                <!-- <router-link :to="item.url">{{ item.name }}</router-link> -->
               </nav>
             </div>
           </div>
@@ -328,8 +329,8 @@
               right: 0;
               z-index: 2;
               // 幕布定位
-              margin-top: 130px;
-              -webkit-margin-before: 65px;
+              margin-top: 99px;
+              -webkit-margin-before: 49px;
               width: 100%;
               opacity: .8;
               display: none;

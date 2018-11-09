@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>3D</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <!-- <script src="../../assets/stl/three.min.js"></script>
     <script src="../../assets/stl/STLLoader.js"></script>
     <script src="../../assets/stl/OrbitControls.js"></script>
@@ -45805,15 +45805,16 @@
 	<script>
 	var camera, cameraTarget, scene, renderer,controlls,loader,material,mesh;
 	var file = decodeURI(location.href.split('=')[1]);
-	// var file = location.href.split('=')[1];
+	
 	function init() {
 		// camera
-		camera = new THREE.PerspectiveCamera( 100, 860 / 470, 1, -10000 );
-		// camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 1, 10000 );
+		camera = new THREE.PerspectiveCamera( 35, 860 / 470, 1, -10000 );
+		// camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, -10000 );
 		camera.position.set( 500, 500, 500 );
+		camera.lookAt( camera.position )
 
-		cameraTarget = new THREE.Vector3( 0, 0, 0 );
-		camera.lookAt( cameraTarget );
+		// cameraTarget = new THREE.Vector3( 0, 0, 0 );
+		// camera.lookAt( cameraTarget );
 		
 		// scene
 		scene = new THREE.Scene();
@@ -45829,14 +45830,15 @@
 		// renderer.setSize( window.innerWidth, window.innerHeight );
 		
 		// 红色
-		// cube = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50),
-		// 	new THREE.MeshBasicMaterial({
-		// 		color: 0xff0000 //red
-		// 	})
-		// );
-		// cube.position.set(50,0,0);
-		// scene.add(cube);
-
+		/*
+		cube = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50),
+			new THREE.MeshBasicMaterial({
+				color: 0xff0000 //red
+			})
+		);
+		cube.position.set( 0, 0, -110 );
+		scene.add(cube);
+		*/
 		// ASCII file
 		// 导入
 		loader = new THREE.STLLoader();
@@ -45844,8 +45846,8 @@
 			material = new THREE.MeshPhongMaterial( { color: 0x666666, specular: 0x111111, shininess: 200 } );
 			mesh = new THREE.Mesh( geometry, material );
 
-			mesh.position.set( 500, -2000, 400 );
-			mesh.rotation.set( -Math.PI/2,  0, 1.25 );
+			mesh.position.set( 0, -2400, 0 );
+			mesh.rotation.set( -Math.PI/2,  0, -200 );
 			//Math.PI
 			mesh.scale.set( 1, 1, 1 );
 
@@ -45864,7 +45866,7 @@
 		controls = new THREE.OrbitControls( camera ,renderer.domElement );
 		controls.addEventListener( 'change', render );
 	}
-
+	
 	function addShadowedLight( x, y, z, color, intensity ) {
 
 		var directionalLight = new THREE.DirectionalLight( color, intensity );
@@ -45888,13 +45890,16 @@
 		directionalLight.shadow.bias = -0.005;
 
 	}
-
+	
 	function render() {
 		renderer.render( scene, camera );
 	}
 	</script>
 </head>
 <body onload="if(file != 'undefined') init()">
+	<!--[if lte IE 9]>
+      <script>window.location.href='http://support.dmeng.net/upgrade-your-browser.html?referrer='+encodeURIComponent(window.location.href);</script>
+      <![endif]-->
     <div>
         <canvas id="mainCanvas" style="width: 800px;height: 600px;"></canvas>
     </div>
