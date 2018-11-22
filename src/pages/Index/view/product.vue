@@ -82,7 +82,7 @@
             <p class="blue">{{ assigned.name }}</p>
             <div class="detail">
               <span>{{ assigned.type }}</span>
-              <span>价格：{{ assigned.dealer_price }}</span>
+              <span>价格：{{ assigned.sales_price }}</span>
               <span>交期：{{ assigned.delivery_period }}天</span>
               <span>共有<span class="org">{{ assigned.dealer_quantity }}</span>家供应商</span>
             </div>
@@ -92,7 +92,8 @@
                 <el-input-number size="mini" v-model="assigned.quantitative"></el-input-number>
                 <span>件</span>
               </span>
-              <el-button type="primary" size="mini" @click="joinCollect">收藏</el-button>
+              <el-button type="primary" size="mini" v-if="!assigned.is_collect" @click="joinCollect">收藏</el-button>
+              <el-button type="primary" size="mini" v-else @click="delCollect(assigned.id)">取消收藏</el-button>
               <el-button type="primary" size="mini" @click="joinContrast">加入对比</el-button>
               <el-button type="primary" size="mini" @click="getProject">加入项目</el-button>
             </div>
@@ -105,11 +106,15 @@
                     <div>{{ item.name }}</div>
                     <div>{{ item.value }}</div>
                   </li>
+                  <li v-for="(item,index) in assigned.attribute" :key="index">
+                    <div>{{ item.name }}</div>
+                    <div>{{ item.value }}</div>
+                  </li>
                 </ul>
               </el-tab-pane>
               <el-tab-pane label="3D预览">
                 <div class="model3D">
-                  <iframe :src="'./3D.html?url=' + assigned.drawing_3d" frameborder="0"></iframe>  
+                  <iframe :src="'https://factoryun.com/store/3d?strid=' + assigned.str_id" frameborder="0"></iframe>  
                 </div>
               </el-tab-pane>
               <el-tab-pane label="2D图纸">
@@ -141,32 +146,34 @@
         <index-chart></index-chart>
       </el-main>
     </div>
+    <login-modal></login-modal>
   </div>
 </template>
 <script>
-import indexChart from '@/pages/Index/common/indexChart';
+import indexChart from "@/pages/Index/common/indexChart";
+import loginModal from "@/pages/Index/common/loginModal";
 
 export default {
-  name: 'product',
+  name: "product",
   data() {
     return {
       modalShow: false,
       params: {},
       goodsParams: {
-        exercise_mode: '1',
-        number_of_mover: '1',
-        load_weight: '1',
-        distance: '1',
-        distance: '1',
-        time: '1',
-        stay_time: '1',
-        reproduce_the_accuracy: '1',
-        positioning_accuracy: '1',
-        seal: '1',
-        mountingmotor: '1',
-        dustproof_device: '1',
-        cable_length: '1',
-        power_voltage: '1'
+        exercise_mode: "1",
+        number_of_mover: "1",
+        load_weight: "1",
+        distance: "1",
+        distance: "1",
+        time: "1",
+        stay_time: "1",
+        reproduce_the_accuracy: "1",
+        positioning_accuracy: "1",
+        seal: "1",
+        mountingmotor: "1",
+        dustproof_device: "1",
+        cable_length: "1",
+        power_voltage: "1"
       },
       assigned: {
         images: []
@@ -174,99 +181,154 @@ export default {
       joinProject: {
         id: this.$route.params.model,
         projectList: [],
-        projectSlug: '',
+        projectSlug: "",
         history: this.$route.params.code,
         status: 0,
-        newProjectName: '',
+        newProjectName: "",
         member: [],
         memberId: [],
-        description: ''
-      },
-    }
+        description: ""
+      }
+    };
   },
   components: {
-    'index-chart': indexChart
+    "index-chart": indexChart,
+    "login-modal": loginModal
   },
   methods: {
     joinCollect() {
-      if(!localStorage.getItem('user')){
-        this.$notify({ title: '警告', message: '请登陆后再作操作', type: 'warning' });
+      if (!localStorage.getItem("user")) {
+        this.$notify({
+          title: "警告",
+          message: "请登陆后再作操作",
+          type: "warning"
+        });
         return false;
       }
       let that = this;
-      this.$post('members/collects/create',{ products: that.params.model });
+      this.$post("members/collects/create", { products: that.params.model })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.assigned.is_collect = 1;
+        })
+        .catch(err => conosle.error(err));
+    },
+    delCollect(id) {
+      let that = this;
+      that
+        .$post("members/collects/delete", { products: id })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.assigned.is_collect = 0;
+        })
+        .catch(err => console.error(err));
     },
     joinContrast() {
-      if(!localStorage.getItem('user')){
-        this.$notify({ title: '警告', message: '请登陆后再作操作', type: 'warning' });
+      if (!localStorage.getItem("user")) {
+        this.$notify({
+          title: "警告",
+          message: "请登陆后再作操作",
+          type: "warning"
+        });
         return false;
       }
     },
-    getBranch(){
+    getBranch() {
       let that = this;
-      that.$get('members/company/branch').then( response => {
-        if(response.status != 200)
-          return false;
-        that.joinProject.member = response.data.list;
-      }).catch( error => {});
+      that
+        .$get("members/company/branch")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.joinProject.member = response.data.list;
+        })
+        .catch(error => {});
     },
     getProject() {
-      if(!localStorage.getItem('user')){
-        this.$notify({ title: '警告', message: '请登陆后再作操作', type: 'warning' });
+      if (!localStorage.getItem("user")) {
+        this.$store.commit("change");
+        this.$notify({
+          title: "警告",
+          message: "请登陆后再作操作",
+          type: "warning"
+        });
         return false;
       }
-      const loading = this.$loading({ lock: true }),that = this;
-      that.$get('carts').then( response => {
-        loading.close();
-        if(response.status != 200)
-          return false;
-        that.modalShow = true;
-        that.joinProject.projectList = response.data.list;
-        if(JSON.parse(localStorage.getItem('user')).slug)
-          that.getBranch();
-      }).catch( error => loading.close());
+      const loading = this.$loading({ lock: true }),
+        that = this;
+      that
+        .$get("carts")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.modalShow = true;
+          that.joinProject.projectList = response.data.list;
+          if (JSON.parse(localStorage.getItem("user")).slug) that.getBranch();
+        })
+        .catch(error => loading.close());
     },
     addProject() {
-      let that = this,loading = this.$loading({ lock: true });;
-      that.$post('carts/create',{
-        name: that.joinProject.newProjectName,
-        members_ids: that.joinProject.member.join(','),
-        description: that.joinProject.description
-      }).then( response => {
-        loading.close()
-        if(response.status != 200)
-          return false;
-        that.joinProject.status = 0;
-        that.modalShow = false;
-        that.getProject();
-      }).catch( error => loading.close())
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("carts/create", {
+          name: that.joinProject.newProjectName,
+          members_ids: that.joinProject.member.join(","),
+          description: that.joinProject.description
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.joinProject.status = 0;
+          that.modalShow = false;
+
+          that.joinProject.projectSlug = response.data.slug;
+          that.joinProjectCart();
+          // that.getProject();
+        })
+        .catch(error => loading.close());
     },
     joinProjectCart() {
-      let that = this,loading = this.$loading({ lock: true });
-      that.$post('carts/items/create/' + that.joinProject.projectSlug,{
-        product: that.joinProject.id,
-        quantity: 1,
-        selling_price_slug: that.joinProject.history
-      }).then( response => {
-        loading.close();
-        if(response.status != 200)
-          return false;
-        that.modalShow = false;
-        that.$message({ message: '添加成功', type: 'success' });
-      }).catch( error => loading.close());
-    },
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        url = "";
+      if (that.joinProject.projectSlug)
+        url = "carts/items/create/" + that.joinProject.projectSlug;
+      // else if(that.joinProject.projectList.length)
+      //   url = 'carts/items/create/' + that.joinProject.projectList[0].slug;
+      else url = "carts/items/create/cart_item";
+
+      that
+        .$post(url, {
+          product: that.joinProject.id,
+          quantity: that.assigned.quantitative,
+          selling_price_slug: that.joinProject.history
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.modalShow = false;
+          that.$message({ message: "添加成功", type: "success" });
+        })
+        .catch(error => loading.close());
+    }
   },
   created() {
-    const that = this, loading = this.$loading({ lock: true });
+    const that = this,
+      loading = this.$loading({ lock: true });
     that.params = that.$route.params;
-    that.$post('products/product-details/' + that.$route.params.slug).then( response => {
-      loading.close()
-      if(response.status != 200)
-        return false;
-      that.assigned = response.data;
-    }).catch( error => loading.close());
+    console.log(that.params);
+    that
+      .$post("products/product-details/" + that.params.slug, {
+        selling_price_slug: that.params.code
+      })
+      .then(response => {
+        loading.close();
+        if (response.status != 200) return false;
+        that.assigned = response.data;
+      })
+      .catch(error => loading.close());
   }
-}
+};
 </script>
 <style lang="less">
 @white: #ffffff;
@@ -276,77 +338,77 @@ export default {
 @boldBorder: solid 1rem @background;
 @border: solid 1px @background;
 @gery: #666666;
-.org{
+.org {
   color: @org;
 }
-.blue{
+.blue {
   color: @blue;
 }
-#product{
-  @media screen and (min-width: 880px){
+#product {
+  @media screen and (min-width: 880px) {
     max-width: 1280px;
     margin: 0 auto;
     height: 83%;
     padding-top: 1.5rem;
-    .main{
+    .main {
       height: 100%;
       width: 100%;
       background-color: @white;
       display: flex;
       color: #666666;
-      .el-aside{
+      .el-aside {
         border-right: @boldBorder;
         box-sizing: border-box;
         height: 100%;
-        .typeSelector{
+        .typeSelector {
           width: 100%;
-          header{
+          header {
             background-color: @blue;
             padding: 1rem;
             color: @white;
           }
-          .body{
+          .body {
             display: flex;
             padding: 1rem;
             border-bottom: @border;
             .goodsImg,
-            .qrCode{
+            .qrCode {
               width: 200px;
               box-sizing: border-box;
-              padding: .5rem;
-              img{
+              padding: 0.5rem;
+              img {
                 width: 100%;
-              } 
+              }
             }
           }
         }
-        .params{
+        .params {
           height: 69%;
           overflow-y: auto;
-          ul{
-            li{
+          ul {
+            li {
               padding: 1rem;
               border-bottom: @border;
               display: flex;
               justify-content: space-between;
               align-items: center;
-              &:last-child{
+              &:last-child {
                 border: none;
               }
-              p{
+              p {
                 line-height: 40px;
               }
-              >div{
-                .el-input{
+              > div {
+                .el-input {
                   width: auto;
                   height: 30px;
-                  margin: .5rem 0;
-                  input{
+                  margin: 0.5rem 0;
+                  input {
                     width: 10rem;
                     height: 30px;
                   }
                 }
-                span{
+                span {
                   display: inline-block;
                   width: 7rem;
                 }
@@ -355,86 +417,86 @@ export default {
           }
         }
       }
-      .el-main{
+      .el-main {
         box-sizing: border-box;
         width: 300px !important;
         position: relative;
-        .goods{
+        .goods {
           width: 92%;
           height: 100%;
-          .header{
-            p{
+          .header {
+            p {
               font-size: 1.8rem;
               height: 3rem;
               line-height: 3rem;
             }
-            .detail{
+            .detail {
               min-width: 50%;
               max-width: 60%;
               display: flex;
               justify-content: space-between;
-              padding: .5rem 0rem;
+              padding: 0.5rem 0rem;
             }
-            .operation{
-              padding: .5rem 0;
-              >span{
+            .operation {
+              padding: 0.5rem 0;
+              > span {
                 margin-right: 5rem;
               }
             }
           }
-          .card{
+          .card {
             margin-top: 1rem;
             height: 82%;
-            .el-tabs{
+            .el-tabs {
               height: 100%;
             }
-            .el-tabs__content{
+            .el-tabs__content {
               height: 90%;
               overflow: auto;
-              >div{
+              > div {
                 height: 100%;
               }
-              .modelUl{
+              .modelUl {
                 list-style: none;
-                li{
+                li {
                   width: 50%;
                   box-sizing: border-box;
                   float: left;
                   min-height: 40px;
-                  div{
+                  div {
                     box-sizing: border-box;
                     padding: 1rem;
                     width: 50%;
                     float: left;
-                    &:first-child{
+                    &:first-child {
                       background-color: @background;
                       border-bottom: solid 1px @white;
                     }
-                    &:last-child{
+                    &:last-child {
                       border-bottom: @border;
                     }
                   }
                 }
               }
-              .model3D{
+              .model3D {
                 width: 100%;
                 height: 100%;
-                iframe{
+                iframe {
                   width: 100%;
                   height: 99%;
                 }
               }
-              .model2D{
+              .model2D {
                 width: 100%;
                 height: 100%;
-                embed{
+                embed {
                   width: 100%;
                   height: 100%;
                 }
               }
               // 规格表
-              .Specification{
-                img{
+              .Specification {
+                img {
                   width: 100%;
                 }
               }
@@ -444,60 +506,61 @@ export default {
       }
     }
   }
-  @media screen and (max-width: 880px){
+  @media screen and (max-width: 880px) {
     color: @gery;
-    .main{
+    .main {
       width: 100%;
-      .el-aside{
+      .el-aside {
         width: 100% !important;
         height: auto;
-        .typeSelector{
-          header{
+        .typeSelector {
+          header {
             font-size: 1.6rem;
-            padding: .5rem;
+            padding: 0.5rem;
           }
-          .body{
+          .body {
             width: 100%;
             display: flex;
             .goodsImg,
-            .qrCode{
+            .qrCode {
               width: 1%;
               flex-grow: 1;
               box-sizing: border-box;
-              border: @border;  
-              img{
+              border: @border;
+              img {
                 width: 100%;
               }
             }
           }
         }
-        .params{
+        .params {
           box-sizing: border-box;
           padding: 1rem;
           background-color: @white;
-          ul{
+          ul {
             list-style: none;
-            li{
+            li {
               display: flex;
               white-space: nowrap;
               justify-content: space-between;
               align-items: center;
               min-height: 30px;
-              padding: .5rem .2rem;
-              p,div,label{
+              padding: 0.5rem 0.2rem;
+              p,
+              div,
+              label {
                 width: 50%;
-                >div{
+                > div {
                   width: 100%;
-                  margin: .2rem 0;
-                  span{
+                  margin: 0.2rem 0;
+                  span {
                     width: 50%;
-
                   }
                 }
-                .el-input{
+                .el-input {
                   width: auto;
                   height: 30px;
-                  input{
+                  input {
                     width: 60px;
                     height: 30px;
                     line-height: 30px;
@@ -508,49 +571,49 @@ export default {
           }
         }
       }
-      .el-main{
+      .el-main {
         background-color: @white;
         padding: 0 1rem 1rem 1rem;
-        .goods{
-          .header{
-            >p{
+        .goods {
+          .header {
+            > p {
               font-size: 1.4rem;
-              margin-bottom: .5rem;
+              margin-bottom: 0.5rem;
             }
-            .detail{
+            .detail {
               width: 100%;
               display: flex;
               justify-content: space-between;
               white-space: nowrap;
-              margin-bottom: .5rem;
+              margin-bottom: 0.5rem;
             }
-            .operation{
-              margin-bottom: .5rem;
-              >span{
+            .operation {
+              margin-bottom: 0.5rem;
+              > span {
                 display: block;
-                margin-bottom: .5rem;
+                margin-bottom: 0.5rem;
               }
             }
           }
         }
-        .card{
-          .modelUl{
-            li{
+        .card {
+          .modelUl {
+            li {
               display: flex;
-              margin: .5rem 0;
-              padding: .5rem;
-              div{
+              margin: 0.5rem 0;
+              padding: 0.5rem;
+              div {
                 width: 1%;
                 flex-grow: 1;
               }
-              &:nth-child(2n){
+              &:nth-child(2n) {
                 background-color: @background;
               }
             }
           }
           // 规格表
-          .Specification{
-            img{
+          .Specification {
+            img {
               width: 100%;
             }
           }
@@ -558,29 +621,29 @@ export default {
       }
     }
   }
-  .modalBoxMain{
+  .modalBoxMain {
     width: 330px;
-    @media screen and (min-width: 500px){
+    @media screen and (min-width: 500px) {
       margin-top: 180px;
     }
-    #joinProject{
-      p{
+    #joinProject {
+      p {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
       }
-      .goBack{
+      .goBack {
         float: right;
         padding-top: 0;
       }
-      >div{
+      > div {
         text-align: center;
         margin-bottom: 1rem;
-        .el-select{
+        .el-select {
           width: 100%;
         }
-        &:last-child{
+        &:last-child {
           margin-top: 2rem;
           margin-bottom: 0;
         }

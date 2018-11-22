@@ -1,20 +1,17 @@
 <template>
   <div id="inquiry">
-    ccccccccccccccccccccccc1
+    
   </div>
 </template>
 <script>
 export default {
-  name: 'inquiry',
+  name: "inquiry",
   data() {
-    return {
-
-    }
+    return {};
   }
-}
+};
 </script>
 <style lang="less">
-  #inquiry{
-    
-  }
+#inquiry {
+}
 </style>

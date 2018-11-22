@@ -121,9 +121,10 @@
         that.$post('members/user/send-old',{
           password: that.changeMobile.password
         }).then(response => {
-          if(response.status != 200)
-            that.isClick = false;return false;
-
+          if(response.status != 200){
+            that.isClick = false;
+            return false;
+          }
             // 开始倒计时
             that.lastTime();
         }).catch(error => loading.close());
@@ -136,23 +137,25 @@
         const that = this,loading = this.$loading({ lock: true });
         that.$post('members/user/new-send', { mobile: that.changeMobile.newMobile }).then( response => {
           loading.close();
-          if(response.status != 200)
-            that.isClick = false;return false;
-
+          if(response.status != 200){
+            that.isClick = false;
+            return false;
+          }
             that.lastTime();
         }).catch(error => loading.close());
       },
       lastTime() {
+        console.log(123)
         let that = this;
         that.codeCacheTime = 60;
-        that.setTimeOut = setInterval(function(){
-            if(that.codeCacheTime > 1){
-                that.codeCacheTime--;
-            }else{
-                clearInterval(that.setTimeOut);
-                that.codeCacheTime = '重新发送'
-                that.isClick = false;
-            }
+        that.setTimeOut = setInterval(() => {
+          if(that.codeCacheTime > 1){
+              that.codeCacheTime--;
+          }else{
+              clearInterval(that.setTimeOut);
+              that.codeCacheTime = '重新发送'
+              that.isClick = false;
+          }
         },1000);
       },
       checkCode() {

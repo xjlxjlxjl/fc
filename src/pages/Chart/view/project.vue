@@ -1,12 +1,17 @@
 <template>
   <el-container id="project">
     <el-aside width="200px">
-      <el-menu default-active="0">
-        <el-menu-item index="-1">
+      <el-menu default-active="0" v-if="projectList.list.length > 0">
+        <el-menu-item v-for="(item,index) in projectList.list" 
+                       v-if="item.is_default"
+                      :key="index" :index="index.toString()"
+                      @click="showProjectChange(index)"
+                      class="shoppingCar">
           <i class="font_family icon-xianmu"></i>
           <span>　购物车</span>
         </el-menu-item>
         <el-menu-item v-for="(item,index) in projectList.list" 
+                      v-if="!item.is_default"
                      :key="index" :index="index.toString()"
                      @click="showProjectChange(index)">
           <i class="el-icon-location"></i>
@@ -71,6 +76,9 @@
             </div>
             <div v-else>
               <span>{{ row.price }}</span>
+              <div v-if="!row.is_close">
+                <el-button type="primary" size="mini" @click="company.id = row.id;company.list = row.all_supplier;modalShow = true">询价</el-button>
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -82,7 +90,7 @@
         <el-table-column label="操作" width="120">
           <template slot-scope="{ row,$index }">
             <div class="operation">
-              <el-select @change="cartsItem(0,row.str_id,row.supplier)" v-model="row.supplier" placeholder="选择供应商">
+              <el-select @change="cartsItem(0,row.str_id,row.supplier.slug)" v-model="row.supplier.slug" placeholder="选择供应商">
                 <el-option
                   v-for="item in row.all_supplier"
                   :key="item.slug"
@@ -90,7 +98,7 @@
                   :value="item.slug">
                 </el-option>
               </el-select>
-              <el-select @change="cartsItem(1,row.str_id,row.invoice_type)" v-model="row.invoice_type" placeholder="发票类型">
+              <el-select @change="cartsItem(1,row.str_id,row.invoice_type.slug)" v-model="row.invoice_type.slug" placeholder="发票类型">
                 <el-option
                   v-for="item in row.all_invoice_type"
                   :key="item.slug"
@@ -98,7 +106,7 @@
                   :value="item.slug">
                 </el-option>
               </el-select>
-              <el-select @change="cartsItem(2,row.str_id,row.payment_type)" v-model="row.payment_type" placeholder="付款方式">
+              <el-select @change="cartsItem(2,row.str_id,row.payment_type.slug)" v-model="row.payment_type.slug" placeholder="付款方式">
                 <el-option
                   v-for="item in row.all_payment_type"
                   :key="item.slug"
@@ -113,6 +121,8 @@
       <div class="controller">
         <div></div>
         <div>
+          <el-button type="warning" size="mini" @click="moveItem = true" 
+                     v-if="projectList.list[index].is_default">移入项目</el-button>
           <el-button type="primary" size="mini" @click="delGoods">删除</el-button>
           <el-button type="success" size="mini" @click="checkOrder">结算</el-button>
         </div>
@@ -146,16 +156,45 @@
         </div>
       </div>
     </transition>
+    <transition name="el-fade-in-linear">
+      <div v-show="moveItem">
+        <div class="Curtain"></div>
+        <div class="modalBox">
+          <div class="modalBoxMain">
+            <div class="modalBoxMainHeader">
+              <div class="modalBoxMainHeaderTitle">
+                移入项目
+              </div>
+              <div class="modalBoxMainHeaderBtn" @click="moveItem = false;">
+                <i class="el-message-box__close el-icon-close"></i>
+              </div>
+            </div>
+            <div class="modalBoxMainContent">
+              <div id="moveItem">
+                <el-select v-model="moveSlug" placeholder="请选择移入项目">
+                  <el-option v-for="(item,index) in projectList.list" :key="index"
+                             v-if="!item.is_default" :label="item.name" :value="item.slug"></el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="modalBoxMainBtn">
+              <el-button size="mini" type="primary" @click="moveProject">确定</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </el-container>
 </template>
 <script>
-import  "@/assets/css/modal.css";
+import "@/assets/css/modal.css";
 export default {
-  name: 'project',
+  name: "project",
   data() {
     return {
-      user: JSON.parse(localStorage.getItem('user')),
-      projectList: {},
+      user: JSON.parse(localStorage.getItem("user")),
+      index: "0",
+      projectList: { list: [{ is_default: 1 }] },
       projectDetail: {},
       shoppingCar: {},
       options: [],
@@ -163,27 +202,43 @@ export default {
       displayArr: [],
       company: {
         list: [],
-        id: '',
+        id: "",
         company_ids: []
       },
-      modalShow: false
-    }
+      modalShow: false,
+      moveItem: false,
+      moveSlug: ""
+    };
   },
   methods: {
     showProjectChange(index) {
-      const loading = this.$loading({ lock: true }),that = this;
+      const loading = this.$loading({ lock: true }),
+        that = this;
       let self = that.projectList.list[index];
       this.multipleSelection = [];
 
-      that.$get('carts/items/' + self.slug ).then( response => {
+      if (self.slug == undefined) {
         loading.close();
-        if(response.status != 200)
-          return false;
-        that.projectDetail = response.data;
-        that.members = self.members;
-        that.displayArr = [];
-        that.index = index;
-      }).catch( error => loading.close());
+        return false;
+      }
+
+      that
+        .$get("carts/items/" + self.slug)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          // 重定义
+          response.data.list.forEach(e => {
+            if (!e.supplier) e.supplier = { slug: null };
+            if (!e.payment_type) e.payment_type = { slug: null };
+            if (!e.invoice_type) e.invoice_type = { slug: null };
+          });
+          that.projectDetail = response.data;
+          that.members = self.members;
+          that.displayArr = [];
+          that.index = index;
+        })
+        .catch(error => loading.close());
     },
     toggleSelection(rows) {
       if (rows) {
@@ -197,106 +252,208 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    getBranch(){
+    getProject() {
+      const loading = this.$loading({ lock: true }),
+        that = this;
+      that
+        .$get("carts")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+
+          if (response.data.list.length > 0) {
+            that.projectList = response.data;
+            that.showProjectChange(0);
+          }
+          if (that.user.slug) that.getBranch();
+        })
+        .catch(error => loading.close());
+    },
+    getBranch() {
       let that = this;
-      that.$get('members/company/branch').then( response => {
-        if(response.status != 200)
-          return false;
-        that.options = response.data.list;
-        that.setMembersCard();
-      }).catch( error => {});
+      that
+        .$get("members/company/branch")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.options = response.data.list;
+          that.setMembersCard();
+        })
+        .catch(error => {});
     },
     // 设置成员卡片
     setMembersCard() {
-      let  that = this,displayArr = [],inArray = false;
+      let that = this,
+        displayArr = [],
+        inArray = false;
       that.options.forEach(value => {
         value.member.forEach(item => {
           that.members.forEach(e => {
-            if(item.id == e){
-              displayArr.push(item)
+            if (item.id == e) {
+              displayArr.push(item);
             }
-          })
-        })
+          });
+        });
       });
       that.displayArr = displayArr.repeatDepth();
     },
     editCart() {
-      let that = this,loading = that.$loading({ lock: true }),self = that.projectList.list[that.index];
-      that.$post('carts/edit/' + self.slug,{
-        name: self.name,
-        members_ids: that.members.join(',')
-      }).then( response => {
-        loading.close();
-        if(response.status != 200)
-          return false;
-      }).catch( error => loading.close());
+      let that = this,
+        loading = that.$loading({ lock: true }),
+        self = that.projectList.list[that.index];
+      that
+        .$post("carts/edit/" + self.slug, {
+          name: self.name,
+          members_ids: that.members.join(",")
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+        })
+        .catch(error => loading.close());
+    },
+    moveProject() {
+      if (!this.multipleSelection.length) {
+        this.$message.error("你没有选择商品");
+        return false;
+      }
+      if (this.moveSlug == "") {
+        this.$message.error("没有选择加入项目");
+        return false;
+      }
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        ids = [];
+      // this.multipleSelection.forEach( e => ids.push(e.str_id));
+      this.multipleSelection.forEach(e => {
+        that
+          .$post("carts/move-item", {
+            // str_id: ids.join(','),
+            str_id: e.str_id,
+            slug: that.moveSlug
+          })
+          .then(response => {
+            loading.close();
+            if (response.status != 200) return false;
+            that.moveItem = false;
+            that.showProjectChange(that.index);
+          })
+          .catch(error => loading.close());
+      });
     },
     editGoods(quantity, str_id) {
       let that = this;
-      that.$post('carts/items/edit/'+ that.projectList.list[that.index].slug +'/' + str_id, { quantity: quantity}).then( response => {
-        if(response.status != 200)
-          return false;
-      }).catch( error => console.log(error))
+      that
+        .$post(
+          "carts/items/edit/" +
+            that.projectList.list[that.index].slug +
+            "/" +
+            str_id,
+          { quantity: quantity }
+        )
+        .then(response => {
+          if (response.status != 200) return false;
+        })
+        .catch(error => console.log(error));
     },
-    delGoods(){
-      let that = this,loading = this.$loading({ lock: true }),arr = [];
-      this.multipleSelection.forEach( e => {
-        arr.push(e.id)
-      })
-      that.$post('carts/items/delete/' + that.projectList.list[that.index].slug, { ids: arr.join(',') }).then( response => {
-        loading.close()
-        if(response.status != 200)
-          return false;
-        that.showProjectChange(that.index);
-      }).catch( error => loading.close());
+    delGoods() {
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        arr = [];
+      this.multipleSelection.forEach(e => {
+        arr.push(e.id);
+      });
+      that
+        .$post("carts/items/delete/" + that.projectList.list[that.index].slug, {
+          ids: arr.join(",")
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.showProjectChange(that.index);
+        })
+        .catch(error => loading.close());
     },
-    cartsItem(key,str_id,slug){
-      let url = null,that = this,loading = this.$loading({ lock: true });
-      switch(key){
+    cartsItem(key, str_id, slug) {
+      let url = null,
+        that = this,
+        loading = this.$loading({ lock: true });
+      switch (key) {
         case 0:
-          url = 'carts/items/price-company/' + that.projectList.list[that.index].slug + '/' + str_id + '/' + slug
+          url =
+            "carts/items/price-company/" +
+            that.projectList.list[that.index].slug +
+            "/" +
+            str_id +
+            "/" +
+            slug;
           break;
         case 1:
-          url = 'carts/items/price-invoice/' + that.projectList.list[that.index].slug + '/' + str_id + '/' + slug
+          url =
+            "carts/items/price-invoice/" +
+            that.projectList.list[that.index].slug +
+            "/" +
+            str_id +
+            "/" +
+            slug;
           break;
         case 2:
-          url = 'carts/items/price-payment/' + that.projectList.list[that.index].slug + '/' + str_id + '/' + slug
+          url =
+            "carts/items/price-payment/" +
+            that.projectList.list[that.index].slug +
+            "/" +
+            str_id +
+            "/" +
+            slug;
           break;
       }
-      that.$post(url)
-      .then( response => {
-        loading.close()
-        if(response.status != 200)
-          return false;
-        that.projectDetail = response.data;
-      })
-      .catch( error => loading.close());
+      that
+        .$post(url)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          response.data.list.forEach(e => {
+            if (!e.supplier) e.supplier = { slug: null };
+            if (!e.payment_type) e.payment_type = { slug: null };
+            if (!e.invoice_type) e.invoice_type = { slug: null };
+          });
+          that.projectDetail = response.data;
+        })
+        .catch(error => loading.close());
     },
     // 询价
-    inquiry(){
-      let loading = this.$loading({ lock: true }),that = this;
-      this.$post('carts/items/price-inquiry/' + that.projectList.list[that.index].slug,{
-        ids: that.company.id,
-        company_ids: that.company.company_ids.join(','),
-      }).then( response => {
-        loading.close();
-        if(response.status != 200)
-          return false;
-        
-        this.$notify({ title: '', message: '请求报价成功', type: 'success' });
-        that.modalShow = false;
-      }).catch(error => loading.close());
+    inquiry() {
+      let loading = this.$loading({ lock: true }),
+        that = this;
+      this.$post(
+        "carts/items/price-inquiry/" + that.projectList.list[that.index].slug,
+        {
+          ids: that.company.id,
+          company_ids: that.company.company_ids.join(",")
+        }
+      )
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+
+          this.$notify({ title: "", message: "请求报价成功", type: "success" });
+          that.modalShow = false;
+        })
+        .catch(error => loading.close());
     },
     checkOrder() {
-      let arr = [],hasNaN = false;
-      if(!this.multipleSelection.length){
-        this.$notify.error({ title: '', message: '没有选中购买商品' });
+      let arr = [],
+        hasNaN = false;
+      if (!this.multipleSelection.length) {
+        this.$notify.error({ title: "", message: "没有选中购买商品" });
         return false;
       }
 
-      this.multipleSelection.forEach((e,k) => {
-        if(isNaN(e.price)){
-          this.$notify.error({ title: '', message: '选择商品中有尚未报价的商品' });
+      this.multipleSelection.forEach((e, k) => {
+        if (isNaN(e.price)) {
+          this.$notify.error({
+            title: "",
+            message: "选择商品中有尚未报价的商品"
+          });
           hasNaN = true;
         }
         // if(!e.supplier.id){
@@ -312,38 +469,40 @@ export default {
         //   hasNaN = true;
         // }
 
-        arr.push(e.product.id)
+        arr.push(e.id);
       });
-      
-      if(hasNaN)
-        return false;
 
-      const loading = this.$loading({ lock: true }),that = this;
+      if (hasNaN) return false;
 
-      that.$post('orders/confirm_order',{
-        item_ids: arr.join(',')
-      }).then( response => {
-        loading.close();
-        if(response.status != 200)
-          return false;
-        that.projectDetail.projectSlug = that.projectList.list[that.index].slug;
-        that.projectDetail.list = that.multipleSelection;
-        localStorage.setItem('order',JSON.stringify(that.projectDetail));
-        window.location.href = '/chart.html#/checkOrder';
-      }).catch( error => loading.close());
+      const loading = this.$loading({ lock: true }),
+        that = this;
+
+      that
+        .$post("orders/confirm_order", {
+          ids: arr.join(",")
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.projectDetail.projectSlug =
+            that.projectList.list[that.index].slug;
+          that.projectDetail.list = that.multipleSelection;
+          localStorage.setItem("order", JSON.stringify(that.projectDetail));
+          window.location.href = "/chart.html#/checkOrder";
+        })
+        .catch(error => loading.close());
     }
   },
-  watch:{
+  watch: {
     members(newValue, oldValue) {
-      if(newValue.length == oldValue.length)
-        return false;
+      if (newValue.length == oldValue.length) return false;
 
-      let  that = this,arr = [],displayArr = [];
+      let that = this,
+        arr = [],
+        displayArr = [];
       newValue.forEach(e => {
-        if(e.id)
-          arr.push(e.id);
-        else
-          arr.push(e);
+        if (e.id) arr.push(e.id);
+        else arr.push(e);
       });
 
       that.members = arr;
@@ -351,21 +510,9 @@ export default {
     }
   },
   created() {
-    const loading = this.$loading({ lock: true }),that = this;
-    that.$get('carts').then( response => {
-      loading.close();
-      if(response.status != 200)
-        return false;
-      
-      if(response.data.list.length > 0)
-        that.projectList = response.data;
-        that.showProjectChange(0);
-
-        if(that.user.slug)
-          that.getBranch();
-    }).catch( error => loading.close());
+    this.getProject();
   }
-}
+};
 </script>
 <style lang="less">
 @gery: #f2f2f2;
@@ -379,52 +526,51 @@ export default {
   margin: 0;
   padding: 0;
 }
-
-@media screen and (min-width: 720px){
-  #project{
-    height: 100%;
-    color: #666666;
-    .el-aside{
-      .el-menu{
+#project {
+  height: 100%;
+  color: #666666;
+  @media screen and (min-width: 720px) {
+    .el-aside {
+      .el-menu {
         height: 100%;
         border-right: @borderBold;
-        .el-menu-item{
+        .el-menu-item {
           overflow: hidden;
           text-overflow: ellipsis;
-          &:first-child{
-            box-sizing: content-box;
-            border-bottom: @borderBold;
-            i{
-              visibility: initial;
-            }
-          }
-          i{
+          i {
             visibility: hidden;
           }
-          &:hover{
+          &:hover {
             background-color: @blue-hover;
             color: @white;
-            i{
+            i {
               color: @white;
             }
           }
         }
-        .is-active{
+        .shoppingCar {
+          box-sizing: content-box;
+          border-bottom: @borderBold;
+          i {
+            visibility: initial;
+          }
+        }
+        .is-active {
           background-color: @blue;
           color: @white;
-          i{
+          i {
             visibility: initial;
           }
         }
       }
     }
-    .el-main{
+    .el-main {
       padding: 2rem;
-      .projectTeam{
+      .projectTeam {
         width: 100%;
         border: @border;
         box-sizing: border-box;
-        .teamHeader{
+        .teamHeader {
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -432,35 +578,35 @@ export default {
           height: 40px;
           box-sizing: border-box;
           background-color: @gery;
-          >div{
+          > div {
             display: flex;
             align-items: center;
-            .el-select{
-              input{
+            .el-select {
+              input {
                 height: 2.5rem !important;
               }
-              .clear
+              .clear;
             }
-            >i{
+            > i {
               font-size: 3rem;
             }
           }
         }
-        .teamContant{
+        .teamContant {
           display: flex;
           flex-wrap: wrap;
-          .el-card{
+          .el-card {
             text-align: center;
             width: 8rem;
             height: 12rem;
-            margin: .5rem;
-            .el-card__body{
+            margin: 0.5rem;
+            .el-card__body {
               padding: 0;
-              img{
+              img {
                 width: 100%;
                 max-height: 8rem;
               }
-              .item{
+              .item {
                 padding: 1rem;
                 display: block;
               }
@@ -469,25 +615,25 @@ export default {
         }
       }
     }
-    .el-table{
-      .el-table__body-wrapper{
-        .el-table__row{
-          .cell{
+    .el-table {
+      .el-table__body-wrapper {
+        .el-table__row {
+          .cell {
             display: flex;
-            >div{
+            > div {
               box-sizing: border-box;
-              &:first-child{
+              &:first-child {
                 margin-right: 1rem;
-                img{
+                img {
                   width: 100px;
                 }
               }
             }
-            .operation{
+            .operation {
               .clear;
               .el-select,
               .el-input,
-              input{
+              input {
                 height: 30px;
               }
             }
@@ -495,59 +641,54 @@ export default {
         }
       }
     }
-    .controller{
+    .controller {
       display: flex;
       justify-content: space-between;
       padding: 0 2rem;
       margin-top: 1rem;
     }
   }
-}
-@media screen and (max-width: 720px){
-  #project{
-    height: 100%;
-    color: #666666;
+  @media screen and (max-width: 720px) {
     flex-wrap: wrap;
-    .el-aside{
+    .el-aside {
       width: 100% !important;
-      .el-menu{
-        .el-menu-item{
-          &:first-child{
-            box-sizing: content-box;
-            border-bottom: @borderBold;
-            i{
-              visibility: initial;
-            }
-          }
-          i{
+      .el-menu {
+        .el-menu-item {
+          i {
             visibility: hidden;
           }
-          &:hover{
+          &:hover {
             background-color: @blue-hover;
             color: @white;
-            i{
+            i {
               color: @white;
             }
           }
         }
-        .is-active{
+        .shoppingCar {
+          box-sizing: content-box;
+          border-bottom: @borderBold;
+          i {
+            visibility: initial;
+          }
+        }
+        .is-active {
           background-color: @blue;
           color: @white;
-          i{
+          i {
             visibility: initial;
           }
         }
       }
     }
-
-    .el-main{
+    .el-main {
       display: block;
-      padding: .5rem;
-      .projectTeam{
+      padding: 0.5rem;
+      .projectTeam {
         width: 100%;
         border: @border;
         box-sizing: border-box;
-        .teamHeader{
+        .teamHeader {
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -555,35 +696,35 @@ export default {
           height: 40px;
           box-sizing: border-box;
           background-color: @gery;
-          >div{
+          > div {
             display: flex;
             align-items: center;
-            .el-select{
-              input{
+            .el-select {
+              input {
                 height: 2.5rem !important;
               }
-              .clear
+              .clear;
             }
-            >i{
+            > i {
               font-size: 3rem;
             }
           }
         }
-        .teamContant{
+        .teamContant {
           display: flex;
           flex-wrap: wrap;
-          .el-card{
+          .el-card {
             text-align: center;
             width: 8rem;
             height: 12rem;
-            margin: .5rem;
-            .el-card__body{
+            margin: 0.5rem;
+            .el-card__body {
               padding: 0;
-              img{
+              img {
                 width: 100%;
                 max-height: 8rem;
               }
-              .item{
+              .item {
                 padding: 1rem;
                 display: block;
               }
@@ -592,25 +733,25 @@ export default {
         }
       }
     }
-    .el-table{
-      .el-table__body-wrapper{
-        .el-table__row{
-          .cell{
+    .el-table {
+      .el-table__body-wrapper {
+        .el-table__row {
+          .cell {
             display: flex;
-            >div{
+            > div {
               box-sizing: border-box;
-              &:first-child{
+              &:first-child {
                 margin-right: 1rem;
-                img{
+                img {
                   width: 100px;
                 }
               }
             }
-            .operation{
+            .operation {
               .clear;
               .el-select,
               .el-input,
-              input{
+              input {
                 height: 30px;
               }
             }
@@ -618,11 +759,16 @@ export default {
         }
       }
     }
-    .controller{
+    .controller {
       display: flex;
       justify-content: space-between;
       padding: 0 2rem;
       margin-top: 1rem;
+    }
+  }
+  #moveItem {
+    .el-select {
+      width: 100%;
     }
   }
 }

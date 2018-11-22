@@ -117,170 +117,183 @@
 </template>
 <script>
 import { AreaCascader } from "vue-area-linkage";
-import { pca, pcaa } from 'area-data';
-import 'vue-area-linkage/dist/index.css';
-  export default {
-    name: 'addressManage',
-    data() {
-      return {
-        options: [{ value: '中国大陆 +86', label: '中国大陆' }],
-        pca: pca,
-        pcaa: pcaa,
-        formData: {
-          province: [],
-          detailed_address: '',
-          zip_code: '',
-          name: '',
-          contact_mobile: '',
-          contact_phone: {
-            region: '',
-            tel: '',
-            extension: ''
-          },
-          default: false
+import { pca, pcaa } from "area-data";
+import "vue-area-linkage/dist/index.css";
+export default {
+  name: "addressManage",
+  data() {
+    return {
+      options: [{ value: "中国大陆 +86", label: "中国大陆" }],
+      pca: pca,
+      pcaa: pcaa,
+      formData: {
+        province: [],
+        detailed_address: "",
+        zip_code: "",
+        name: "",
+        contact_mobile: "",
+        contact_phone: {
+          region: "",
+          tel: "",
+          extension: ""
         },
-        defaultAddress: [],
-        tableData: {}
-      }
-    },
-    methods:{
-      addAddress() {
-        let that = this,
-            loading = this.$loading({ lock: true }),
-            params = {
-              name: that.formData.name,
-              province: that.formData.province[0],
-              city: that.formData.province[1],
-              area: that.formData.province[2],
-              detailed_address: that.formData.detailed_address,
-              contact_mobile: that.formData.contact_mobile,
-              contact_phone: Object.values(that.formData.contact_phone).join('-'),
-              zip_code: that.formData.zip_code,
-              default: that.formData.default
-            }
-            that.$post('members/address/create', params).then( response => {
-              loading.close();
-              if(response.status != 200);
-                return false;
-
-              that.getAddressList();
-            }).catch(error => loading.close());
+        default: false
       },
-      changeDefault(index) {
-        const that = this,loading = this.$loading({ lock: true });
-        that.$post('members/default-address/' + that.tableData.list[index].slug).then( response => {
+      defaultAddress: [],
+      tableData: {}
+    };
+  },
+  methods: {
+    addAddress() {
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        params = {
+          name: that.formData.name,
+          province: that.formData.province[0],
+          city: that.formData.province[1],
+          area: that.formData.province[2],
+          detailed_address: that.formData.detailed_address,
+          contact_mobile: that.formData.contact_mobile,
+          contact_phone: Object.values(that.formData.contact_phone).join("-"),
+          zip_code: that.formData.zip_code,
+          default: that.formData.default
+        };
+      that
+        .$post("members/address/create", params)
+        .then(response => {
           loading.close();
-          if(response.status != 200)
-            return false;
+          if (response.status != 200) return false;
+          that.getAddressList();
+        })
+        .catch(error => loading.close());
+    },
+    changeDefault(index) {
+      const that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("members/default-address/" + that.tableData.list[index].slug, {
+          default: 1
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
 
           that.defaultAddress = that.tableData.list[index].slug;
-        }).catch( error => loading.close());
-      },
-      editRow(index) {
-        const that = this;
-        that.tableData.list[index].isEdit = true;
-      },
-      saveRow(row,index){
-        const that = this,loading = this.$loading({ lock: true });
-        that.$post('members/address/edit/' + row.slug, row).then( response => {
+        })
+        .catch(error => loading.close());
+    },
+    editRow(index) {
+      const that = this;
+      that.tableData.list[index].isEdit = true;
+    },
+    saveRow(row, index) {
+      const that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("members/address/edit/" + row.slug, row)
+        .then(response => {
           loading.close();
-          if(response.status != 200)
-            return false;
-          
-          that.$message({ message: response.message, type: 'success' });
-          that.tableData.list[index].isEdit = false;
-        }).catch(error => loading.close());
-      },
-      deleteRow(slug,index) {
-        const loading = this.$loading({ lock: true });
-        let that = this;
-        that.$post('members/address/delete/' + slug).then( response => {
-          loading.close();
-          if(response.status != 200)
-            return false;
+          if (response.status != 200) return false;
 
-          that.tableData.list.splice(index,1);
-        }).catch( error => loading.close());
-      },
-      getAddressList(){
-        const loading = this.$loading({ lock: true }),that = this;
-        that.$get('members/address').then( response => {
+          that.$message({ message: response.message, type: "success" });
+          that.tableData.list[index].isEdit = false;
+        })
+        .catch(error => loading.close());
+    },
+    deleteRow(slug, index) {
+      const loading = this.$loading({ lock: true });
+      let that = this;
+      that
+        .$post("members/address/delete/" + slug)
+        .then(response => {
           loading.close();
-          if(response.status != 200)
-            return false;
-          
-          response.data.list.forEach( e => {
+          if (response.status != 200) return false;
+
+          that.tableData.list.splice(index, 1);
+        })
+        .catch(error => loading.close());
+    },
+    getAddressList() {
+      const loading = this.$loading({ lock: true }),
+        that = this;
+      that
+        .$get("members/address")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+
+          response.data.list.forEach(e => {
             e.isEdit = false;
-            if(e.default)
-              that.defaultAddress = e.slug;
+            if (e.default) that.defaultAddress = e.slug;
           });
           that.tableData = response.data;
-        }).catch( error => loading.close());
-      }
-    },
-    created() {
-      this.getAddressList();
+        })
+        .catch(error => loading.close());
     }
+  },
+  created() {
+    this.getAddressList();
   }
+};
 </script> 
 <style lang="less">
-  #addressManage{
-    padding: 2rem;
-    color: #666666;
-    width: 100%;
-    box-sizing: border-box;
-    .el-container{
-      .el-row{
-        .el-col{
-          .el-form-item{
+#addressManage {
+  padding: 2rem;
+  color: #666666;
+  width: 100%;
+  box-sizing: border-box;
+  .el-container {
+    .el-row {
+      .el-col {
+        .el-form-item {
+          margin-bottom: 1rem;
+          .el-form-item__content {
+            display: flex;
+            > div {
+              margin-right: 1rem;
+            }
+            .area-cascader-wrap {
+              height: 100%;
+              .area-select {
+                height: 40px;
+                box-sizing: border-box;
+                .area-selected-trigger {
+                  padding: 0 1.2rem;
+                }
+              }
+            }
+          }
+          @media screen and (max-width: 720px) {
+            .el-form-item__content {
+              flex-wrap: wrap;
+              > div {
+                margin-bottom: 1rem;
+              }
+              span {
+                display: none;
+              }
+            }
+          }
+        }
+        .contact_phone {
+          .el-form-item__content {
+            .el-input {
+              width: 150px;
+            }
+            .delimiter {
+              line-height: 3;
+            }
+          }
+        }
+        &:last-child {
+          text-align: center;
+          label {
+            display: block;
             margin-bottom: 1rem;
-            .el-form-item__content{
-              display: flex;
-              >div{
-                margin-right: 1rem;
-              }
-              .area-cascader-wrap{
-                height: 100%;
-                .area-select{
-                  height: 40px;
-                  box-sizing: border-box;
-                  .area-selected-trigger{
-                    padding: 0 1.2rem;
-                  }
-                }
-              }
-            }
-            @media screen and (max-width: 720px){
-              .el-form-item__content{
-                flex-wrap: wrap;
-                >div{
-                  margin-bottom: 1rem;
-                }
-                span{
-                  display: none;
-                }
-              }
-            }
-          }
-          .contact_phone{
-            .el-form-item__content{
-              .el-input{
-                width: 150px;
-              }
-              .delimiter{
-                line-height: 3;
-              }
-            }
-          }
-          &:last-child{
-            text-align: center;
-            label{
-              display: block;
-              margin-bottom: 1rem;
-            }
           }
         }
       }
     }
   }
+}
 </style>

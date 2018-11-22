@@ -68,6 +68,7 @@
               </el-menu-item>
             </el-menu>
           </el-aside>
+          <!-- 商品列表 -->
           <el-main class="homeMainList" v-if="showDetailState == 0">
             <div v-for="(item,index) in selectedGood" :key="index" @click="showDetail(item)">
               <img :src="item.icon || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
@@ -83,21 +84,20 @@
                   <div>运动方式</div>
                   <div>
                     <el-radio v-model="params.exercise_mode" label="dot_to_dot">点到点</el-radio>
-                    <el-radio v-model="params.exercise_mode" label="scanning">扫描线</el-radio>
+                    <el-radio v-model="params.exercise_mode" label="scanning">扫描检测</el-radio>
                   </div>
                 </li>
                 <li>
                   <div>动子数</div>
                   <div>
                     <el-radio v-model="params.number_of_mover" label="1">1</el-radio>
-                    <el-radio v-model="params.number_of_mover" label="2">2</el-radio>
-                    <el-input class="labelInput" v-model="params.number_of_mover" placeholder="其他"></el-input>
                     <span>个</span>
                   </div>
                 </li>
                 <li>
                   <div>负载重量</div>
                   <div>
+                    <el-radio v-model="params.load_weight" label="1">1</el-radio>
                     <el-radio v-model="params.load_weight" label="3">3</el-radio>
                     <el-radio v-model="params.load_weight" label="5">5</el-radio>
                     <el-radio v-model="params.load_weight" label="10">10</el-radio>
@@ -202,6 +202,7 @@
                 </li>
                 <li>
                   <div>
+                    <el-radio v-model="params.feedback_type" label="">重现精度</el-radio>
                     <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
                     <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
                   </div>
@@ -220,24 +221,17 @@
                       <el-input class="labelInput" v-model="params.precision"></el-input>
                       <span>um</span>
                     </p>
-                    <p>
+                    <p v-else>
                       <span>重现精度: </span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
+                      <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
                       <span>um</span>
                     </p>
-                    <p>
-                      <span>定位精度: </span>
-                      <el-radio v-model="params.positioning_accuracy" label="5">5</el-radio>
-                      <el-radio v-model="params.positioning_accuracy" label="3">3</el-radio>
-                      <el-input v-model="params.positioning_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
-                    </p>
-                    <p class="tips">注意：定位精度 ≥ 重现精度</p>
                   </div>
                 </li>
                 <li>
-                  <div>密封方式</div>
+                  <div>防尘方式</div>
                   <div>
                     <el-radio v-model="params.seal" label="KA">半封闭</el-radio>
                     <el-radio v-model="params.seal" label="KS">全封闭</el-radio>
@@ -288,19 +282,21 @@
                 <li>
                   <div>电机安装方式</div>
                   <div>
-                    <el-radio v-model="params.mountingmotor" label="fl">左接</el-radio>
-                    <el-radio v-model="params.mountingmotor" label="fr">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FW">直接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FL">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FR">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FD">背接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FI">内藏</el-radio>
                   </div>
                 </li>
                 <li>
                   <div>光电开关</div>
                   <div>
-                    <el-radio v-model="params.oswitch" label="0">无</el-radio>
-                    <el-radio v-model="params.oswitch" label="X">内置（NPN）</el-radio>
-                    <el-radio v-model="params.oswitch" label="W">外置（PNP）</el-radio>
+                    <el-radio v-model="params.oswitch" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.oswitch" label="W">商家提供（PNP）</el-radio>
                   </div>
                 </li>
-                <li>
+                <li v-show="params.oswitch == 'W'">
                   <div>开关线</div>
                   <div>
                     <el-radio v-model="params.switchline" label="0">无</el-radio>
@@ -308,11 +304,11 @@
                     <el-radio v-model="params.switchline" label="5">5m</el-radio>
                   </div>
                 </li>
-                <li>
+                <li v-show="params.mountingmotor == 'FW'">
                   <div>联轴器</div>
                   <div>
                     <el-radio v-model="params.couplings" label="0">无</el-radio>
-                    <el-radio v-model="params.couplings" label="l">配联轴器</el-radio>
+                    <el-radio v-model="params.couplings" label="1">配联轴器</el-radio>
                   </div>
                 </li>
                 <li>
@@ -346,19 +342,21 @@
                 <li>
                   <div>电机安装方式</div>
                   <div>
-                    <el-radio v-model="params.mountingmotor" label="fl">左接</el-radio>
-                    <el-radio v-model="params.mountingmotor" label="fr">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FW">直接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FL">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FR">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FD">背接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FI">内藏</el-radio>
                   </div>
                 </li>
                 <li>
                   <div>光电开关</div>
                   <div>
-                    <el-radio v-model="params.oswitch" label="0">无</el-radio>
-                    <el-radio v-model="params.oswitch" label="X">内置（NPN）</el-radio>
-                    <el-radio v-model="params.oswitch" label="W">外置（PNP）</el-radio>
+                    <el-radio v-model="params.oswitch" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.oswitch" label="W">商家提供（PNP）</el-radio>
                   </div>
                 </li>
-                <li>
+                <li v-show="params.oswitch == 'W'">
                   <div>开关线</div>
                   <div>
                     <el-radio v-model="params.switchline" label="0">无</el-radio>
@@ -366,11 +364,11 @@
                     <el-radio v-model="params.switchline" label="5">5m</el-radio>
                   </div>
                 </li>
-                <li>
+                <li v-show="params.mountingmotor == 'FW'">
                   <div>联轴器</div>
                   <div>
                     <el-radio v-model="params.couplings" label="0">无</el-radio>
-                    <el-radio v-model="params.couplings" label="l">配联轴器</el-radio>
+                    <el-radio v-model="params.couplings" label="1">配联轴器</el-radio>
                   </div>
                 </li>
                 <li>
@@ -399,6 +397,13 @@
                     <el-radio v-model="params.cable_length" label="5">5m</el-radio>
                   </div>
                 </li>
+                <li>
+                  <div>刹车</div>
+                  <div>
+                    <el-radio v-model="params.motor_brake" label="A">带刹车</el-radio>
+                    <el-radio v-model="params.motor_brake" label="B">不带刹车</el-radio>
+                  </div>
+                </li>
               </ul>
               <div class="operation">
                 <span></span>
@@ -419,7 +424,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -436,8 +445,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <dir class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </dir>
                   </template>
                 </el-table-column>
               </el-table>
@@ -451,21 +463,20 @@
                   <div>运动方式</div>
                   <div>
                     <el-radio v-model="params.exercise_mode" label="dot_to_dot">点到点</el-radio>
-                    <el-radio v-model="params.exercise_mode" label="scanning">扫描线</el-radio>
+                    <el-radio v-model="params.exercise_mode" label="scanning">扫描检测</el-radio>
                   </div>
                 </li>
                 <li>
                   <div>动子数</div>
                   <div>
                     <el-radio v-model="params.number_of_mover" label="1">1</el-radio>
-                    <el-radio v-model="params.number_of_mover" label="2">2</el-radio>
-                    <el-input class="labelInput" v-model="params.number_of_mover" placeholder="其他"></el-input>
                     <span>个</span>
                   </div>
                 </li>
                 <li>
                   <div>负载重量</div>
                   <div>
+                    <el-radio v-model="params.load_weight" label="1">1</el-radio>
                     <el-radio v-model="params.load_weight" label="3">3</el-radio>
                     <el-radio v-model="params.load_weight" label="5">5</el-radio>
                     <el-radio v-model="params.load_weight" label="10">10</el-radio>
@@ -476,6 +487,11 @@
                 <li>
                   <div>有效行程</div>
                   <div>
+                    <el-radio v-model="params.distance" label="50">50</el-radio>
+                    <el-radio v-model="params.distance" label="1000">1000</el-radio>
+                    <el-radio v-model="params.distance" label="1500">1500</el-radio>
+                    <el-radio v-model="params.distance" label="2500">2500</el-radio>
+                    <el-radio v-model="params.distance" label="3800">3800</el-radio>
                     <el-input v-model="params.distance" placeholder="输入"></el-input>
                     <span>mm</span>
                   </div>
@@ -498,13 +514,15 @@
                         <span>速度: </span>
                         <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.speed" label="1">1</el-radio>
+                        <el-radio v-model="params.speed" label="2">2</el-radio>
                         <el-input class="labelInput" v-model="params.speed" placeholder="5">0.5</el-input>
                         <span>m/s</span>
                       </p>
                       <p>
                         <span>加速度: </span>
-                        <el-radio v-model="params.acceleration" label="0.5">0.5</el-radio>
-                        <el-radio v-model="params.acceleration" label="1">1</el-radio>
+                        <el-radio v-model="params.acceleration" label="5">5</el-radio>
+                        <el-radio v-model="params.acceleration" label="10">10</el-radio>
+                        <el-radio v-model="params.acceleration" label="20">20</el-radio>
                         <el-input class="labelInput" v-model="params.acceleration" placeholder="5"></el-input>
                         <span>m/s²</span>
                       </p>
@@ -524,7 +542,6 @@
                       <p>
                         <span>用时: </span>
                         <el-radio v-model="params.time" label="1">1</el-radio>
-                        <el-radio v-model="params.time" label="2">2</el-radio>
                         <el-input v-model="params.time" placeholder="其他"></el-input>
                         <span>s</span>
                       </p>
@@ -570,6 +587,7 @@
                 </li>
                 <li>
                   <div>
+                    <el-radio v-model="params.feedback_type" label="">重现精度</el-radio>
                     <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
                     <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
                   </div>
@@ -588,27 +606,37 @@
                       <el-input class="labelInput" v-model="params.precision"></el-input>
                       <span>um</span>
                     </p>
-                    <p>
+                    <p v-else>
                       <span>重现精度: </span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
+                      <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
                       <span>um</span>
                     </p>
-                    <p>
-                      <span>定位精度: </span>
-                      <el-radio v-model="params.positioning_accuracy" label="5">5</el-radio>
-                      <el-radio v-model="params.positioning_accuracy" label="3">3</el-radio>
-                      <el-input v-model="params.positioning_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
-                    </p>
-                    <p class="tips">注意：定位精度 ≥ 重现精度</p>
                   </div>
                 </li>
                 <li>
-                  <div>密封方式</div>
+                  <div>线缆长度</div>
                   <div>
-                    <el-radio v-model="params.seal" label="KA">半封闭</el-radio>
-                    <el-radio v-model="params.seal" label="KS">全封闭</el-radio>
+                    <el-radio v-model="params.cable_length" label="0">无</el-radio>
+                    <el-radio v-model="params.cable_length" label="2">2m</el-radio>
+                    <el-radio v-model="params.cable_length" label="4">4m</el-radio>
+                    <span>(不超过7m)</span>
+                  </div>
+                </li>
+                <li>
+                  <div>防尘装置</div>
+                  <div>
+                    <el-radio v-model="params.dustproof_device" label="">无</el-radio>
+                    <el-radio v-model="params.dustproof_device" label="metal_cover">金属盖板</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>驱动类型</div>
+                  <div>
+                    <el-radio v-model="params.driver_type" label="CDHD">高创</el-radio>
+                    <el-radio v-model="params.driver_type" label="Hiwin">Hiwin</el-radio>
+                    <el-radio v-model="params.driver_type" label="">客户自配</el-radio>
                   </div>
                 </li>
                 <li>
@@ -618,30 +646,6 @@
                     <el-radio v-model="params.moduleinstalled" label="upside_down">倒挂</el-radio>
                     <el-radio v-model="params.moduleinstalled" label="wall_hang">侧挂</el-radio>
                     <el-radio v-model="params.moduleinstalled" label="vertical">垂直</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>防尘装置</div>
-                  <div>
-                    <el-radio v-model="params.dustproof_device" label="">无</el-radio>
-                    <el-radio v-model="params.dustproof_device" label="metal_cover">金属盖板</el-radio>
-                    <el-radio v-model="params.dustproof_device" label="organ_cover">风琴罩</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>线缆长度</div>
-                  <div>
-                    <el-radio v-model="params.cable_length" label="0">无</el-radio>
-                    <el-radio v-model="params.cable_length" label="2">2m</el-radio>
-                    <el-radio v-model="params.cable_length" label="4">4m</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>驱动类型</div>
-                  <div>
-                    <el-radio v-model="params.driver_type" label="CDHD">高创</el-radio>
-                    <el-radio v-model="params.driver_type" label="Hiwin">Hiwin</el-radio>
-                    <el-radio v-model="params.driver_type" label="">客户自配</el-radio>
                   </div>
                 </li>
               </ul>
@@ -664,7 +668,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -681,8 +689,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -693,24 +704,9 @@
             <div class="main">
               <ul>
                 <li>
-                  <div>运动方式</div>
-                  <div>
-                    <el-radio v-model="params.exercise_mode" label="dot_to_dot">点到点</el-radio>
-                    <el-radio v-model="params.exercise_mode" label="scanning">扫描线</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>动子数</div>
-                  <div>
-                    <el-radio v-model="params.number_of_mover" label="1">1</el-radio>
-                    <el-radio v-model="params.number_of_mover" label="2">2</el-radio>
-                    <el-input class="labelInput" v-model="params.number_of_mover" placeholder="其他"></el-input>
-                    <span>个</span>
-                  </div>
-                </li>
-                <li>
                   <div>负载重量</div>
                   <div>
+                    <el-radio v-model="params.load_weight" label="1">1</el-radio>
                     <el-radio v-model="params.load_weight" label="3">3</el-radio>
                     <el-radio v-model="params.load_weight" label="5">5</el-radio>
                     <el-radio v-model="params.load_weight" label="10">10</el-radio>
@@ -721,178 +717,30 @@
                 <li>
                   <div>有效行程</div>
                   <div>
+                    <el-radio v-model="params.distance" label="50">50</el-radio>
+                    <el-radio v-model="params.distance" label="150">150</el-radio>
+                    <el-radio v-model="params.distance" label="1000">1000</el-radio>
+                    <el-radio v-model="params.distance" label="1250">1250</el-radio>
                     <el-input v-model="params.distance" placeholder="输入"></el-input>
                     <span>mm</span>
                   </div>
                 </li>
                 <li>
+                  <div>速度</div>
                   <div>
-                    <el-radio v-model="params.readswit" label="0">已知速度加速度</el-radio>
-                    <el-radio v-model="params.readswit" label="1">三角曲线</el-radio>
-                    <el-radio v-model="params.readswit" label="2">已知 V-T 曲线</el-radio>
-                  </div>
-                  <div class="chartOption">
-                    <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
-                    <div class="pull-left" v-if="params.readswit == 0">
-                      <p>
-                        <span>移动距离: </span>
-                        <el-input v-model="params.distance" placeholder="1000"></el-input>
-                        <span>mm</span>
-                      </p>
-                      <p>
-                        <span>速度: </span>
-                        <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
-                        <el-radio v-model="params.speed" label="1">1</el-radio>
-                        <el-input class="labelInput" v-model="params.speed" placeholder="5">0.5</el-input>
-                        <span>m/s</span>
-                      </p>
-                      <p>
-                        <span>加速度: </span>
-                        <el-radio v-model="params.acceleration" label="0.5">0.5</el-radio>
-                        <el-radio v-model="params.acceleration" label="1">1</el-radio>
-                        <el-input class="labelInput" v-model="params.acceleration" placeholder="5"></el-input>
-                        <span>m/s²</span>
-                      </p>
-                      <p>
-                        <span>停留时间: </span>
-                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
-                        <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
-                        <span>s</span>
-                      </p>
-                    </div>
-                    <div class="pull-left" v-else-if="params.readswit == 1">
-                      <p>
-                        <span>移动距离: </span>
-                        <el-input v-model="params.distance" placeholder="1000"></el-input>
-                        <span>mm</span>
-                      </p>
-                      <p>
-                        <span>用时: </span>
-                        <el-radio v-model="params.time" label="1">1</el-radio>
-                        <el-radio v-model="params.time" label="2">2</el-radio>
-                        <el-input v-model="params.time" placeholder="其他"></el-input>
-                        <span>s</span>
-                      </p>
-                      <p>
-                        <span>停留时间: </span>
-                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
-                        <el-input v-model="params.stay_time" placeholder="其他"></el-input>
-                        <span>s</span>
-                      </p>
-                    </div>
-                    <div class="pull-left" v-else>
-                      <p>
-                        <span>移动距离: </span>
-                        <el-input v-model="params.distance" placeholder="1000"></el-input>
-                        <span>mm</span>
-                      </p>
-                      <p>
-                        <span>加速时间 t1: </span>
-                        <el-radio v-model="params.accelerationTime" label="0.5">0.5</el-radio>
-                        <el-input v-model="params.accelerationTime" placeholder="其他"></el-input>
-                        <span>m/s</span>
-                      </p>
-                      <p>
-                        <span>匀速时间 t2: </span>
-                        <el-radio v-model="params.uniformTime" label="0.5">0.5</el-radio>
-                        <el-input v-model="params.uniformTime" placeholder="其他"></el-input>
-                        <span>m/s</span>
-                      </p>
-                      <p>
-                        <span>减速时间 t3: </span>
-                        <el-radio v-model="params.slowTime" label="0.5">0.5</el-radio>
-                        <el-input v-model="params.slowTime" placeholder="其他"></el-input>
-                        <span>m/s</span>
-                      </p>
-                      <p>
-                        <span>停留时间: </span>
-                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
-                        <el-input v-model="params.stay_time" placeholder="其他"></el-input>
-                        <span>s</span>
-                      </p>
-                    </div>
+                    <el-radio v-model="params.speed" label="250">250</el-radio>
+                    <el-radio v-model="params.speed" label="500">500</el-radio>
+                    <el-radio v-model="params.speed" label="1000">1000</el-radio>
+                    <el-input v-model="params.speed" placeholder="输入"></el-input>
+                    <span>mm/s （行程超过700mm每增加100mm，最大速度递减15%）</span>
                   </div>
                 </li>
-                <li>
-                  <div>
-                    <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
-                    <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
-                  </div>
-                  <div>
-                    <p v-if="params.feedback_type == 'grating_ruler'">
-                      <el-radio v-model="params.precision" label="1">1</el-radio>
-                      <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
-                      <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
-                      <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
-                    </p>
-                    <p v-else-if="params.feedback_type == 'magnetic_scale'">
-                      <el-radio v-model="params.precision" label="1">1</el-radio>
-                      <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
-                      <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
-                      <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
-                    </p>
-                    <p>
-                      <span>重现精度: </span>
-                      <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
-                      <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
-                    </p>
-                    <p>
-                      <span>定位精度: </span>
-                      <el-radio v-model="params.positioning_accuracy" label="5">5</el-radio>
-                      <el-radio v-model="params.positioning_accuracy" label="3">3</el-radio>
-                      <el-input v-model="params.positioning_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
-                    </p>
-                    <p class="tips">注意：定位精度 ≥ 重现精度</p>
-                  </div>
-                </li>
-                <li>
-                  <div>密封方式</div>
-                  <div>
-                    <el-radio v-model="params.seal" label="KA">半封闭</el-radio>
-                    <el-radio v-model="params.seal" label="KS">全封闭</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>安装方式</div>
-                  <div>
-                    <el-radio v-model="params.moduleinstalled" label="horizontal">水平</el-radio>
-                    <el-radio v-model="params.moduleinstalled" label="upside_down">倒挂</el-radio>
-                    <el-radio v-model="params.moduleinstalled" label="wall_hang">侧挂</el-radio>
-                    <el-radio v-model="params.moduleinstalled" label="vertical">垂直</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>电机安装方式</div>
-                  <div>
-                    <el-radio v-model="params.mountingmotor" label="fl">左接</el-radio>
-                    <el-radio v-model="params.mountingmotor" label="fr">右接</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>光电开关</div>
-                  <div>
-                    <el-radio v-model="params.oswitch" label="0">无</el-radio>
-                    <el-radio v-model="params.oswitch" label="X">内置（NPN）</el-radio>
-                    <el-radio v-model="params.oswitch" label="W">外置（PNP）</el-radio>
-                  </div>
-                </li>
-                <li>
-                  <div>开关线</div>
-                  <div>
-                    <el-radio v-model="params.switchline" label="0">无</el-radio>
-                    <el-radio v-model="params.switchline" label="2">2m</el-radio>
-                    <el-radio v-model="params.switchline" label="5">5m</el-radio>
-                  </div>
-                </li>
-                <li>
+                <li v-show="params.mountingmotor == 'FW'">
                   <div>联轴器</div>
                   <div>
-                    <el-radio v-model="params.couplings" label="0">无</el-radio>
-                    <el-radio v-model="params.couplings" label="l">配联轴器</el-radio>
+                    <el-radio v-model="params.couplings" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.couplings" label="1">配联轴器</el-radio>
+                    <span>（电机直接可选配联轴器，其他方式均无）</span>
                   </div>
                 </li>
                 <li>
@@ -914,11 +762,71 @@
                   </div>
                 </li>
                 <li>
+                  <div>功率</div>
+                  <div>
+                    <el-radio v-model="params.motor_power" label="05">50</el-radio>
+                    <el-radio v-model="params.motor_power" label="10">100</el-radio>
+                    <el-radio v-model="params.motor_power" label="20">200</el-radio>
+                    <el-radio v-model="params.motor_power" label="40">400</el-radio>
+                    <el-radio v-model="params.motor_power" label="75">750</el-radio>
+                    <el-radio v-model="params.motor_power" label="1K">1000</el-radio>
+                    <span>(W)</span>
+                  </div>
+                </li>
+                <li>
                   <div>电机线</div>
                   <div>
                     <el-radio v-model="params.cable_length" label="0">无</el-radio>
                     <el-radio v-model="params.cable_length" label="3">3m</el-radio>
                     <el-radio v-model="params.cable_length" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>刹车</div>
+                  <div>
+                    <el-radio v-model="params.motor_brake" label="A">带刹车</el-radio>
+                    <el-radio v-model="params.motor_brake" label="B">不带刹车</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>电机安装方式</div>
+                  <div>
+                    <el-radio v-model="params.mountingmotor" label="FW">直接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FL">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FR">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FD">背接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FI">内藏</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>光电开关</div>
+                  <div>
+                    <el-radio v-model="params.oswitch" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.oswitch" label="W">商家提供（PNP）</el-radio>
+                  </div>
+                </li>
+                <li v-show="params.oswitch == 'W'">
+                  <div>开关线</div>
+                  <div>
+                    <el-radio v-model="params.switchline" label="0">无</el-radio>
+                    <el-radio v-model="params.switchline" label="2">2m</el-radio>
+                    <el-radio v-model="params.switchline" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>防尘方式</div>
+                  <div>
+                    <el-radio v-model="params.seal" label="KA">半封闭</el-radio>
+                    <el-radio v-model="params.seal" label="KS">全封闭</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>安装方式</div>
+                  <div>
+                    <el-radio v-model="params.moduleinstalled" label="horizontal">水平</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="upside_down">倒挂</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="wall_hang">侧挂</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="vertical">垂直</el-radio>
                   </div>
                 </li>
               </ul>
@@ -941,7 +849,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -958,8 +870,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -968,8 +883,7 @@
           <!-- 升降平台 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 4">
             <div class="main">
-              <ul>
-              </ul>
+              <ul></ul>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -989,7 +903,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -1006,8 +924,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1021,15 +942,13 @@
                   <div>运动方式</div>
                   <div>
                     <el-radio v-model="params.exercise_mode" label="dot_to_dot">点到点</el-radio>
-                    <el-radio v-model="params.exercise_mode" label="scanning">扫描线</el-radio>
+                    <el-radio v-model="params.exercise_mode" label="scanning">扫描检测</el-radio>
                   </div>
                 </li>
                 <li>
                   <div>动子数</div>
                   <div>
                     <el-radio v-model="params.number_of_mover" label="1">1</el-radio>
-                    <el-radio v-model="params.number_of_mover" label="2">2</el-radio>
-                    <el-input class="labelInput" v-model="params.number_of_mover" placeholder="其他"></el-input>
                     <span>个</span>
                   </div>
                 </li>
@@ -1051,13 +970,15 @@
                         <span>速度: </span>
                         <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.speed" label="1">1</el-radio>
+                        <el-radio v-model="params.speed" label="2">2</el-radio>
                         <el-input class="labelInput" v-model="params.speed" placeholder="5">0.5</el-input>
                         <span>m/s</span>
                       </p>
                       <p>
                         <span>加速度: </span>
-                        <el-radio v-model="params.acceleration" label="0.5">0.5</el-radio>
-                        <el-radio v-model="params.acceleration" label="1">1</el-radio>
+                        <el-radio v-model="params.acceleration" label="5">5</el-radio>
+                        <el-radio v-model="params.acceleration" label="10">10</el-radio>
+                        <el-radio v-model="params.acceleration" label="20">20</el-radio>
                         <el-input class="labelInput" v-model="params.acceleration" placeholder="5"></el-input>
                         <span>m/s²</span>
                       </p>
@@ -1077,7 +998,6 @@
                       <p>
                         <span>用时: </span>
                         <el-radio v-model="params.time" label="1">1</el-radio>
-                        <el-radio v-model="params.time" label="2">2</el-radio>
                         <el-input v-model="params.time" placeholder="其他"></el-input>
                         <span>s</span>
                       </p>
@@ -1141,7 +1061,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -1158,8 +1082,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">                    
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1168,8 +1095,7 @@
           <!-- FPC 跳水台 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 6">
             <div class="main">
-              <ul>
-              </ul>
+              <ul></ul>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1189,7 +1115,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -1206,8 +1136,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1216,8 +1149,7 @@
           <!-- FPC 飞行光路 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 7">
             <div class="main">
-              <ul>
-              </ul>
+              <ul></ul>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1237,7 +1169,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -1254,8 +1190,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1264,8 +1203,7 @@
           <!-- FPC 桥架 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 8">
             <div class="main">
-              <ul>
-              </ul>
+              <ul></ul>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1285,7 +1223,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -1302,8 +1244,11 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1326,36 +1271,370 @@
                 <li>
                   <div>X轴 有效行程</div>
                   <div>
-                    <el-input v-model="params.distance" placeholder="输入"></el-input>
+                    <el-input v-model="params.x_distance" placeholder="输入"></el-input>
                     <span>mm</span>
                   </div>
                 </li>
                 <li>
                   <div>Y轴 有效行程</div>
                   <div>
-                    <el-input v-model="params.distance" placeholder="输入"></el-input>
+                    <el-input v-model="params.y_distance" placeholder="输入"></el-input>
                     <span>mm</span>
                   </div>
                 </li>
                 <li>
                   <div>X轴 速度</div>
                   <div>
-                    <el-input v-model="params.speed" placeholder="输入"></el-input>
+                    <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
                     <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
                   </div>
                 </li>
                 <li>
                   <div>Y轴 速度</div>
                   <div>
-                    <el-input v-model="params.speed" placeholder="输入"></el-input>
+                    <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
+                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                  </div>
+                </li>
+                <li v-show="params.mountingmotor == 'FW'">
+                  <div>联轴器</div>
+                  <div>
+                    <el-radio v-model="params.couplings" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.couplings" label="1">配联轴器</el-radio>
+                    <span>（电机直接可选配联轴器，其他方式均无）</span>
+                  </div>
+                </li>
+                <li>
+                  <div>模组是否配电机</div>
+                  <div>
+                    <el-radio v-model="params.module_configuration_motor" label="0">不配</el-radio>
+                    <el-radio v-model="params.module_configuration_motor" label="1">配</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>自选电机品牌</div>
+                  <div>
+                    <el-select v-model="params.motor_brand">
+                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
+                                :key="index" 
+                                :label="item.name"
+                                :value="item.value"></el-option>
+                    </el-select>
+                  </div>
+                </li>
+                <li>
+                  <div>电机线</div>
+                  <div>
+                    <el-radio v-model="params.cable_length" label="0">无</el-radio>
+                    <el-radio v-model="params.cable_length" label="3">3m</el-radio>
+                    <el-radio v-model="params.cable_length" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>电机安装方式</div>
+                  <div>
+                    <el-radio v-model="params.mountingmotor" label="FW">直接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FL">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FR">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FD">背接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FI">内藏</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>光电开关</div>
+                  <div>
+                    <el-radio v-model="params.oswitch" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.oswitch" label="1">商家提供（PNP）</el-radio>
+                  </div>
+                </li>
+                <li v-show="params.oswitch == '1'">
+                  <div>开关线</div>
+                  <div>
+                    <el-radio v-model="params.switchline" label="0">无</el-radio>
+                    <el-radio v-model="params.switchline" label="2">2m</el-radio>
+                    <el-radio v-model="params.switchline" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>横组安装方式</div>
+                  <div>
+                    <el-radio v-model="params.moduleinstalled" label="horizontal">水平</el-radio>
+                  </div>
+                </li>
+              </ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
+              <img src="../../../assets/img/screw_xy_platform.png" class="diagram" style="">
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- 丝杆 XY 悬臂 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 11">
+            <div class="main">
+              <ul>
+                <li>
+                  <div>负载重量</div>
+                  <div>
+                    <el-radio v-model="params.load_weight" label="3">3</el-radio>
+                    <el-radio v-model="params.load_weight" label="5">5</el-radio>
+                    <el-radio v-model="params.load_weight" label="10">10</el-radio>
+                    <el-input class="labelInput" v-model="params.load_weight" placeholder="其他"></el-input>
+                    <span>kg</span>
+                  </div>
+                </li>
+                <li>
+                  <div>X轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.x_distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>Y轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.y_distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>X轴 速度</div>
+                  <div>
+                    <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
                     <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
                   </div>
                 </li>
                 <li>
+                  <div>Y轴 速度</div>
+                  <div>
+                    <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
+                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                  </div>
+                </li>
+                <li v-show="params.mountingmotor == 'FW'">
                   <div>联轴器</div>
                   <div>
-                    <el-radio v-model="params.couplings" label="0">不配</el-radio>
-                    <el-radio v-model="params.couplings" label="l">配</el-radio>
+                    <el-radio v-model="params.couplings" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.couplings" label="1">配联轴器</el-radio>
+                    <span>（电机直接可选配联轴器，其他方式均无）</span>
+                  </div>
+                </li>
+                <li>
+                  <div>模组是否配电机</div>
+                  <div>
+                    <el-radio v-model="params.module_configuration_motor" label="0">不配</el-radio>
+                    <el-radio v-model="params.module_configuration_motor" label="1">配</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>自选电机品牌</div>
+                  <div>
+                    <el-select v-model="params.motor_brand">
+                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
+                                :key="index" 
+                                :label="item.name"
+                                :value="item.value"></el-option>
+                    </el-select>
+                  </div>
+                </li>
+                <li>
+                  <div>电机线</div>
+                  <div>
+                    <el-radio v-model="params.cable_length" label="0">无</el-radio>
+                    <el-radio v-model="params.cable_length" label="3">3m</el-radio>
+                    <el-radio v-model="params.cable_length" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>电机安装方式</div>
+                  <div>
+                    <el-radio v-model="params.mountingmotor" label="FW">直接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FL">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FR">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FD">背接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FI">内藏</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>光电开关</div>
+                  <div>
+                    <el-radio v-model="params.oswitch" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.oswitch" label="W">商家提供（PNP）</el-radio>
+                  </div>
+                </li>
+                <li v-show="params.oswitch == 'W'">
+                  <div>开关线</div>
+                  <div>
+                    <el-radio v-model="params.switchline" label="0">无</el-radio>
+                    <el-radio v-model="params.switchline" label="2">2m</el-radio>
+                    <el-radio v-model="params.switchline" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>横组安装方式</div>
+                  <div>
+                    <el-radio v-model="params.module_install_method" label="horizon">水平</el-radio>
+                  </div>
+                </li>
+              </ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- 丝杆 XYZ搭轴 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 12">
+            <div class="main">
+              <ul>
+                <li>
+                  <div>负载重量</div>
+                  <div>
+                    <el-radio v-model="params.load_weight" label="3">3</el-radio>
+                    <el-radio v-model="params.load_weight" label="5">5</el-radio>
+                    <el-radio v-model="params.load_weight" label="10">10</el-radio>
+                    <el-input class="labelInput" v-model="params.load_weight" placeholder="其他"></el-input>
+                    <span>kg</span>
+                  </div>
+                </li>
+                <li>
+                  <div>X轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.x_distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>Y轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.y_distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>Z轴 有效行程</div>
+                  <div>
+                    <el-input v-model="params.z_distance" placeholder="输入"></el-input>
+                    <span>mm</span>
+                  </div>
+                </li>
+                <li>
+                  <div>X轴 速度</div>
+                  <div>
+                    <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
+                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                  </div>
+                </li>
+                <li>
+                  <div>Y轴 速度</div>
+                  <div>
+                    <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
+                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                  </div>
+                </li>
+                <li>
+                  <div>Z轴 速度</div>
+                  <div>
+                    <el-input v-model="params.z_maximum_speed" placeholder="输入"></el-input>
+                    <span>mm/s</span>
+                  </div>
+                </li>
+                <li v-show="params.mountingmotor == 'FW'">
+                  <div>联轴器</div>
+                  <div>
+                    <el-radio v-model="params.couplings" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.couplings" label="1">配联轴器</el-radio>
+                    <span>（电机直接可选配联轴器，其他方式均无）</span>
                   </div>
                 </li>
                 <li>
@@ -1387,19 +1666,21 @@
                 <li>
                   <div>电机安装方式</div>
                   <div>
-                    <el-radio v-model="params.mountingmotor" label="fl">左接</el-radio>
-                    <el-radio v-model="params.mountingmotor" label="fr">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FW">直接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FL">左接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FR">右接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FD">背接</el-radio>
+                    <el-radio v-model="params.mountingmotor" label="FI">内藏</el-radio>
                   </div>
                 </li>
                 <li>
                   <div>光电开关</div>
                   <div>
-                    <el-radio v-model="params.oswitch" label="0">无</el-radio>
-                    <el-radio v-model="params.oswitch" label="X">内置（NPN）</el-radio>
-                    <el-radio v-model="params.oswitch" label="W">外置（PNP）</el-radio>
+                    <el-radio v-model="params.oswitch" label="0">客户自配</el-radio>
+                    <el-radio v-model="params.oswitch" label="1">商家提供（PNP）</el-radio>
                   </div>
                 </li>
-                <li>
+                <li v-show="params.oswitch == '1'">
                   <div>开关线</div>
                   <div>
                     <el-radio v-model="params.switchline" label="0">无</el-radio>
@@ -1410,11 +1691,11 @@
                 <li>
                   <div>横组安装方式</div>
                   <div>
-                    <el-radio v-model="params.switchline" label="0">水平</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="horizontal">水平</el-radio>
                   </div>
                 </li>
               </ul>
-              <img src="../../../assets/img/screw_xy_platform.png" class="diagram" style="">
+              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1434,7 +1715,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
-                <el-table-column prop="delivery_period" label="交期"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
@@ -1451,491 +1736,837 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <el-button type="primary" size="mini" 
-                              @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
           </el-main>
-          <!-- LK XY标准机 -->
+          <!-- 电机 XY标准机 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 10">
+            <div class="main">
+              <ul>
+                <li>
+                  <div>已知速度加速度</div>
+                  <div class="chartOption">
+                    <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
+                    <div class="pull-left">
+                      <p>
+                        <span>行程: </span>
+                        <el-input v-model="params.distance" placeholder="1000"></el-input>
+                        <span>mm</span>
+                      </p>
+                      <p>
+                        <span>速度: </span>
+                        <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
+                        <el-radio v-model="params.speed" label="1">1</el-radio>
+                        <el-radio v-model="params.speed" label="2">2</el-radio>
+                        <el-input class="labelInput" v-model="params.speed" placeholder="5">0.5</el-input>
+                        <span>m/s</span>
+                      </p>
+                      <p>
+                        <span>加速度: </span>
+                        <el-radio v-model="params.acceleration" label="5">5</el-radio>
+                        <el-radio v-model="params.acceleration" label="10">10</el-radio>
+                        <el-radio v-model="params.acceleration" label="20">20</el-radio>
+                        <el-input class="labelInput" v-model="params.acceleration" placeholder="5"></el-input>
+                        <span>m/s²</span>
+                      </p>
+                      <p>
+                        <span>停留时间: </span>
+                        <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
+                        <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
+                        <span>s</span>
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div>安装方式</div>
+                  <div>
+                    <el-radio v-model="params.moduleinstalled" label="horizontal">水平</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="upside_down">倒挂</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="wall_hang">侧挂</el-radio>
+                    <el-radio v-model="params.moduleinstalled" label="vertical">垂直</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>
+                    <el-radio v-model="params.feedback_type" label="">重现精度</el-radio>
+                    <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
+                    <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
+                  </div>
+                  <div>
+                    <p v-if="params.feedback_type == 'grating_ruler'">
+                      <el-radio v-model="params.precision" label="1">1</el-radio>
+                      <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
+                      <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
+                      <el-input class="labelInput" v-model="params.precision"></el-input>
+                      <span>um</span>
+                    </p>
+                    <p v-else-if="params.feedback_type == 'magnetic_scale'">
+                      <el-radio v-model="params.positioning_accuracy" label="1">1</el-radio>
+                      <el-radio v-model="params.positioning_accuracy" label="0.5">0.5</el-radio>
+                      <el-radio v-model="params.positioning_accuracy" label="0.1">0.1</el-radio>
+                      <el-input class="labelInput" v-model="params.positioning_accuracy"></el-input>
+                      <span>um</span>
+                    </p>
+                    <p v-else>
+                      <span>重现精度: </span>
+                      <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
+                      <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
+                      <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
+                      <span>um</span>
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <div>拖链方向</div>
+                  <div>
+                    <el-radio v-model="params.towline_direction" label="horizontal">水平</el-radio>
+                    <el-radio v-model="params.towline_direction" label="vertical">垂直</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>线缆长</div>
+                  <div>
+                    <el-radio v-model="params.cable_length" label="0">无</el-radio>
+                    <el-radio v-model="params.cable_length" label="3">3m</el-radio>
+                    <el-radio v-model="params.cable_length" label="5">5m</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>防尘装置</div>
+                  <div>
+                    <el-radio v-model="params.dustproof_device" label="">无</el-radio>
+                    <el-radio v-model="params.dustproof_device" label="metal_cover">金属盖板</el-radio>
+                    <el-radio v-model="params.dustproof_device" label="organ_cover">风琴罩</el-radio>
+                  </div>
+                </li>
+                <li>
+                  <div>动子数</div>
+                  <div>
+                    <el-radio v-model="params.number_of_mover" label="1">1</el-radio>
+                    <span>个</span>
+                  </div>
+                </li>
+                <li>
+                  <div>运动方式</div>
+                  <div>
+                    <el-radio v-model="params.exercise_mode" label="dot_to_dot">点到点</el-radio>
+                    <el-radio v-model="params.exercise_mode" label="scanning">扫描检测</el-radio>
+                  </div>
+                </li>
+                <li v-show="typeSelection.XYB == 0">
+                  <div>负载重量</div>
+                  <div>
+                    <el-radio v-model="params.load_weight" label="3">3</el-radio>
+                    <el-radio v-model="params.load_weight" label="5">5</el-radio>
+                    <el-radio v-model="params.load_weight" label="10">10</el-radio>
+                    <el-input class="labelInput" v-model="params.load_weight" placeholder="其他"></el-input>
+                    <span>kg</span>
+                  </div>
+                </li>
+                <li>
+                  <div>驱动类型</div>
+                  <div>
+                    <el-radio v-model="params.driver_type" label="CDHD">高创</el-radio>
+                    <el-radio v-model="params.driver_type" label="Hiwin">Hiwin</el-radio>
+                    <el-radio v-model="params.driver_type" label="">客户自配</el-radio>
+                  </div>
+                </li>
+              </ul>
+              <div class="typeSelection">
+                <div :class="typeSelection.XYB == 0 ? 'active' : '' ">Y轴</div>
+                <div :class="typeSelection.XYB == 1 ? 'active' : '' ">X轴</div>
+              </div>
+              <ul><li></li></ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen();typeSelection.selling_price_slug = ''" v-if="typeSelection.XYB == 0">下一步</el-button>
+                <el-button type="primary" size="mini" @click="typeSelection.XYB = 0;typeSelection.selling_price_slug = ''" v-if="typeSelection.XYB == 1">上一步</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row,$index }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
+                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row,$index }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row,$index }">
+                    <div class="drawing">
+                      <div>
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                      </div>
+                      <div>
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row,$index }">
+                    <div class="opera" v-if="!typeSelection.selling_price_slug">
+                      <el-button type="primary" size="mini" @click="typeSelection.selling_price_slug = row.selling_price_slug;screen()">筛选</el-button>
+                    </div>
+                    <div class="opera" v-else>
+                      <el-button type="primary" size="mini" 
+                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
         </el-container>
         <index-chart></index-chart>
       </el-main>
     </el-container>
+    <login-modal></login-modal>
   </div>
 </template>
 <script>
-  import indexChart from '@/pages/Index/common/indexChart';
-  import echarts from 'echarts';
-  import '@/assets/css/modal.css';
+import indexChart from "@/pages/Index/common/indexChart";
+import echarts from "echarts";
+import loginModal from "@/pages/Index/common/loginModal";
+import "@/assets/css/modal.css";
 
-  export default {
-    name: 'indexMain',
-    data() {
-      return {
-        product: {},
-        selectedCate: {},
-        selectedGood: {},
-        selectedDetail: {},
-        showDetailState: 0,
-        typeSelection: {
-          Int: 0,
-          FPC: 0,
-          motor_brand: [
-            { name: '松下', value: 'p' },
-            { name: '安川', value: 'Y' },
-            { name: '三菱/汇川', value: 'M' },
-            { name: '台达', value: 'T' },
-            { name: 'Hiwin', value: 'H' },
-            { name: '富士', value: 'F' },
-          ]
-        },
-        params: {
-          accelerationTime: '0.5',                     // 加速时间
-          distance: '1000',                            // 移动距离
-          speed: '0.5',                                // 速度
-          acceleration: '5',                           // 加速度
-          time: '1',                                   // 时间
-          accdistance: '1',                            // 加速距离
-          slowdistance: '1',                           // 减速距离 
-          slowTime: '0.5',                             // 减速时间
-          uniformTime: '1',                            // 匀速时间
-          uniformdistance: '1',                        // 匀速距离
-          stay_time: '0.5',                            // 停留时间
-
-          readswit: '0',                               // 行程计算
-          exercise_mode: "dot_to_dot",                 // 运动方式
-          number_of_mover: '1',                        // 动子数量
-          load_weight: '3',                            // 负载重量
-
-          feedback_type: "grating_ruler",              // 反馈类弄 光栅尺
-          positioning_accuracy: '5',                   // 定位精准
-          precision: '1',                              // 精度
-          towline_direction: "horizontal",             // 拖链方向  水平方向
-          cable_length: '0',                           // 线缆长	
-          reproduce_the_accuracy: '3',                 // 重现精度
-          dustproof_device: "metal_cover",             // 防尘装置
-          power_voltage: '220',                        // 驱动电压
-          moduleinstalled: 'horizontal',               // 安装方式 
-          mountingmotor: 'fl',                         // 电机安装方式
-          oswitch: '0',	                               // 光电开关
-          switchline: '2',                             // 开关线	
-          couplings: '0',                              // 联轴器	不配联轴器:0 配置联轴器:L	
-          module_motor: "n",                           // 是否带马达(模组带电机)	 模组不带马达:N 模组带马达:Y
-          motor_brand: "p",                            // 电机品牌	松下:P 安川:Y 三菱/汇川:M 台达:T Hiwin:H 富士:F
-          motor_power: "05",                           // 马达功率     50W:05 100W:10 200W:20 400W:40 750W:75 1000W:1K
-          cable_lenght: '3',                           // 电机线 
-          motor_brake: "A",                            // 马达刹车     带刹车:A 不带刹车:B  
-          seal: "KA",                                  // 密封方式	 半封闭KA,，KS全封闭
-          driver_type: ''                              // 驱动类型
-        },
-        speedChart: null,
-        modalShow: false,
-        joinProject: {
-          id: 0,
-          projectList: [],
-          projectSlug: '',
-          status: 0,
-          newProjectName: '',
-          member: [],
-          memberId: [],
-          description: ''
-        },
-        tableData: {}
-      }
-    },
-    components: {
-      'index-chart': indexChart
-    },
-    methods: {
-      showCategory(item) {
-        this.selectedCate = item;
-        this.goodsListActive = '0';
-        this.showGoodsList(item[0].children);
-        // this.changeGoodsListActive();
+export default {
+  name: "indexMain",
+  data() {
+    return {
+      product: {},
+      selectedCate: {},
+      selectedGood: {},
+      selectedDetail: {},
+      showDetailState: 0,
+      typeSelection: {
+        Int: 0,
+        FPC: 0,
+        XYB: 0,
+        selling_price_slug: '',
+        motor_brand: [
+          { name: "松下", value: "P" },
+          { name: "安川", value: "Y" },
+          { name: "三菱/汇川", value: "M" },
+          { name: "台达", value: "T" },
+          { name: "Hiwin", value: "H" },
+          { name: "富士", value: "F" }
+        ]
       },
-      showGoodsList(item) {
-        this.showDetailState = 0;
-        this.selectedDetail = {};
-        this.selectedGood = item;
+      params: {
+        accelerationTime: "0.5", // 加速时间
+        distance: "1000", // 移动距离
+        speed: "0.5", // 速度
+        acceleration: "5", // 加速度
+        time: "1", // 时间
+        accdistance: "1", // 加速距离
+        slowdistance: "1", // 减速距离
+        slowTime: "0.5", // 减速时间
+        uniformTime: "1", // 匀速时间
+        uniformdistance: "1", // 匀速距离
+        stay_time: "0.5", // 停留时间
+
+        readswit: "0", // 行程计算
+        exercise_mode: "dot_to_dot", // 运动方式
+        number_of_mover: "1", // 动子数量
+        load_weight: "3", // 负载重量
+
+        feedback_type: "grating_ruler", // 反馈类型 光栅尺
+        positioning_accuracy: "5", // 定位精准
+        precision: "1", // 精度
+        towline_direction: "horizontal", // 拖链方向  水平方向
+        cable_length: "0", // 线缆长
+        reproduce_the_accuracy: "3", // 重现精度
+        dustproof_device: "metal_cover", // 防尘装置
+        power_voltage: "220", // 驱动电压
+        moduleinstalled: "horizontal", // 安装方式
+        mountingmotor: "FL", // 电机安装方式
+        oswitch: "0", // 光电开关
+        switchline: "0", // 开关线
+        couplings: "0", // 联轴器	不配联轴器:0 配置联轴器:L
+        module_motor: "n", // 是否带马达(模组带电机)	 模组不带马达:N 模组带马达:Y
+        motor_brand: "P", // 电机品牌	松下:P 安川:Y 三菱/汇川:M 台达:T Hiwin:H 富士:F
+        motor_power: "05", // 马达功率     50W:05 100W:10 200W:20 400W:40 750W:75 1000W:1K
+        cable_lenght: "3", // 电机线
+        motor_brake: "A", // 马达刹车     带刹车:A 不带刹车:B
+        seal: "KA", // 防尘方式	 半封闭KA,，KS全封闭
+        driver_type: "", // 驱动类型
+
+        // XY轴平台选型
+        x_distance: "400",
+        y_distance: "300",
+        z_distance: "300",
+        x_maximum_speed: "1000",
+        y_maximum_speed: "1000",
+        z_maximum_speed: "250",
+        module_install_method: "horizon",
+        module_configuration_motor: '0'
       },
-      showDetail(item) {
-        let that = this;
-        if(item.enable == 1){
-          switch(item.code){
-            case 'linear_module':
-              this.showDetailState = 1;
-              break;
-            case 'liner_motor':
-              this.showDetailState = 2;
-              break;
-            case 'screw_module':
-              this.showDetailState = 3;
-              break;
-            case 'precision_lifting_platform':
-              this.showDetailState = 4;
-              break;
-            case 'moving_stator':
-              this.showDetailState = 5;
-              break;
-            case 'fpc_diving_platform':
-              this.showDetailState = 6;
-              break;
-            case 'fpc_flying_light_path':
-              this.showDetailState = 7;
-              break;
-            case 'fpc_bridge':
-              this.showDetailState = 8;
-              break;
-            case 'screw_xy_platform':
-              this.showDetailState = 9;
-              break;
-            case 'LK XY':
-              this.showDetailState = 10;
-              break;
-            default:
-              break;
+      speedChart: null,
+      modalShow: false,
+      joinProject: {
+        id: 0,
+        projectList: [],
+        projectSlug: "",
+        status: 0,
+        newProjectName: "",
+        member: [],
+        memberId: [],
+        description: ""
+      },
+      tableData: {}
+    };
+  },
+  components: {
+    "index-chart": indexChart,
+    "login-modal": loginModal
+  },
+  methods: {
+    getCategory() {
+      const loading = this.$loading({ lock: true }),
+        that = this;
+      that
+        .$get("store/category")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) {
+            return false;
           }
-          that.initChart();
-        }
-      },
-      // 修改Echart显示
-      changeSpeedChart() {
-        let that = this, _self = that.params;
-        let option = {
-          xAxis: {
-            type: 'value',
-            axisLine: {onZero: false}
-          },
-          yAxis: {
-            type: 'value',
-            name : '速度 m/s(秒)',
-            left:'10%',
-            axisLabel : {
-              formatter:'{value}'    //控制输出格式
-            }
-          },
-          grid: {
-            left: '6%',
-            right: '6%',
-            top: '15%',
-            bottom: '5%',
-            containLabel: true
-          },
-          series: [{
-              data: [
-                [0, 0],
-                [_self.accelerationTime, _self.speed],
-                [parseFloat(_self.accelerationTime) + parseFloat(_self.uniformTime), _self.speed],
-                [parseFloat(_self.accelerationTime) + parseFloat(_self.uniformTime) + parseFloat(_self.slowTime), 0],
-                [parseFloat(_self.accelerationTime) + parseFloat(_self.uniformTime) + parseFloat(_self.slowTime)+parseFloat(_self.stay_time), 0]
-              ],
-              type: 'line'
-          }]
-        };
-        if (option && typeof option === "object") {
-          that.speedChart.setOption(option, true);
-        }
-      },
-      // 筛选
-      screen() {
-        let that = this, loading = this.$loading({ lock: true }),url = null;
-        switch(that.showDetailState){
-          case 1:
-            switch(that.typeSelection.Int){
-              case 0:
-                url = 'products/selected/liner_motor';
-                break;
-              case 1:
-                url = 'products/selected/belt_module';
-                break;
-              case 2:
-                url = 'products/selected/screw_module';
-                break;
-            }
+          that.product = response.data.list;
+          that.showCategory(that.product[0].children);
+        })
+        .catch(error => loading.close());
+    },
+    showCategory(item) {
+      this.selectedCate = item;
+      this.goodsListActive = "0";
+      this.showGoodsList(item[0].children);
+      // this.changeGoodsListActive();
+
+      if (this.$route.params.modal && this.firstJoin)
+        this.showDetail({ enable: 1, code: this.$route.params.modal });
+      this.firstJoin = false;
+    },
+    showGoodsList(item) {
+      this.showDetailState = 0;
+      this.selectedDetail = {};
+      this.selectedGood = item;
+      this.tableData = {};
+    },
+    showDetail(item) {
+      let that = this;
+      if (item.enable == 1) {
+        let url = location.href.split("#")[0];
+        switch (item.code) {
+          case "linear_module":
+            this.showDetailState = 1;
+            url += "#/linear_module";
             break;
-          case 2:
-            url = 'products/selected/liner_motor';
+          case "liner_motor":
+            this.showDetailState = 2;
+            url += "#/liner_motor";
             break;
-          case 3:
-            url = 'products/selected/screw_module';
+          case "screw_module":
+            this.showDetailState = 3;
+            url += "#/screw_module";
             break;
-          case 4:
-            url = 'products/selected/precision_lifting_platform';
+          case "precision_lifting_platform":
+            this.showDetailState = 4;
+            url += "#/precision_lifting_platform";
             break;
-          case 5:
-            url = 'products/selected/moving_stator';
+          case "moving_stator":
+            this.showDetailState = 5;
+            url += "#/moving_stator";
             break;
-          case 6:
-            url = '';
+          case "fpc_diving_platform":
+            this.showDetailState = 6;
+            url += "#/fpc_diving_platform";
             break;
-          case 7:
-            url = '';
+          case "fpc_flying_light_path":
+            this.showDetailState = 7;
+            url += "#/fpc_flying_light_path";
             break;
-          case 8:
-            url = '';
+          case "fpc_bridge":
+            this.showDetailState = 8;
+            url += "#/fpc_bridge";
             break;
-          case 9:
-            url = '';
+          case "screw_xy_platform":
+            // 丝杆十字标准
+            this.showDetailState = 9;
+            url += "#/screw_xy_platform";
             break;
-          case 10:
-            url = '';
+          case "screw_xy_cantilever":
+            // 丝杆悬臂
+            this.showDetailState = 11;
+            url += "#/screw_xy_cantilever";
+            break;
+          case "screw_xyz_cantilever":
+            this.showDetailState = 12;
+            url += "#/screw_xyz_cantilever";
+            break;
+          case "xy_platform":
+            this.showDetailState = 10;
+            url += "#/xy_platform";
             break;
           default:
+            url = null;
             break;
         }
-        that.$post(url ,that.params).then( response => {
-          loading.close()
-          if(response.status != 200)
-            return false;
-          that.tableData = response.data;
-        }).catch( error => loading.close())
-      },
-      getBranch(){
-        let that = this;
-        that.$get('members/company/branch').then( response => {
-          if(response.status != 200)
-            return false;
-          that.joinProject.member = response.data.list;
-        }).catch( error => {});
-      },
-      getProject() {
-        if(!localStorage.getItem('user')){
-          this.$notify({ title: '警告', message: '请登陆后再作操作', type: 'warning' });
-          return false;
-        }
-
-        const loading = this.$loading({ lock: true }),that = this;
-        that.$get('carts').then( response => {
+        if(url)
+          location.href = url;
+        that.initChart();
+      }
+    },
+    // 修改Echart显示
+    changeSpeedChart() {
+      let that = this,
+        _self = that.params;
+      let option = {
+        xAxis: {
+          type: "value",
+          axisLine: { onZero: false }
+        },
+        yAxis: {
+          type: "value",
+          name: "速度 m/s(秒)",
+          left: "10%",
+          axisLabel: {
+            formatter: "{value}" //控制输出格式
+          }
+        },
+        grid: {
+          left: "6%",
+          right: "6%",
+          top: "15%",
+          bottom: "5%",
+          containLabel: true
+        },
+        series: [
+          {
+            data: [
+              [0, 0],
+              [_self.accelerationTime, _self.speed],
+              [
+                parseFloat(_self.accelerationTime) +
+                  parseFloat(_self.uniformTime),
+                _self.speed
+              ],
+              [
+                parseFloat(_self.accelerationTime) +
+                  parseFloat(_self.uniformTime) +
+                  parseFloat(_self.slowTime),
+                0
+              ],
+              [
+                parseFloat(_self.accelerationTime) +
+                  parseFloat(_self.uniformTime) +
+                  parseFloat(_self.slowTime) +
+                  parseFloat(_self.stay_time),
+                0
+              ]
+            ],
+            type: "line"
+          }
+        ]
+      };
+      if (option && typeof option === "object") {
+        that.speedChart.setOption(option, true);
+      }
+    },
+    sendMailto(str_id) {
+      let that = this;
+      this.$prompt("请输入邮箱", "提示", {
+        confirmButtonText: "确定",
+        inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: "邮箱格式不正确"
+      }).then(({ value }) => {
+        that
+          .$post("products/details/email/project-paper", {
+            strid: str_id,
+            email: value
+          })
+          .catch(cancel => console.log(cancel));
+      });
+    },
+    // 筛选
+    screen() {
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        url = null;
+      switch (that.showDetailState) {
+        case 1:
+          switch (that.typeSelection.Int) {
+            case 0:
+              url = "products/selected/liner_motor";
+              break;
+            case 1:
+              url = "products/selected/belt_module";
+              break;
+            case 2:
+              url = "products/selected/screw_module";
+              break;
+          }
+          break;
+        case 2:
+          url = "products/selected/liner_motor";
+          break;
+        case 3:
+          url = "products/selected/screw_module";
+          break;
+        case 4:
+          url = "products/selected/precision_lifting_platform";
+          break;
+        case 5:
+          url = "products/selected/moving_stator";
+          break;
+        case 6:
+          url = "products/selected/fpc_bridge";
+          break;
+        case 7:
+          url = "products/selected/fpc_bridge";
+          break;
+        case 8:
+          url = "products/selected/fpc_bridge";
+          break;
+        case 9:
+          // 丝杆十字标准
+          url = "products/selected/screw_xy_platform";
+          that.params.motor_installation_method = that.params.mountingmotor; // 电机安装方式
+          if (that.params.motor_install_method != "FW")
+            that.params.couplings = "0"; // 是否带电机
+          that.params.screw_photoelectric_switch = that.params.oswitch; // 光电开关
+          if (that.params.screw_photoelectric_switch == "0")
+            that.params.switch_line_length = 0;
+          else that.params.switch_line_length = that.params.switchline; // 开关线
+          break;
+        case 11:
+          // 丝杆悬臂
+          url = "products/selected/screw_xy_cantilever";
+          that.params.motor_installation_method = that.params.mountingmotor; // 电机安装方式
+          if (that.params.motor_install_method != "FW")
+            that.params.couplings = "0"; // 是否带电机
+          that.params.screw_photoelectric_switch = that.params.oswitch; // 光电开关
+          if (that.params.screw_photoelectric_switch == "0")
+            that.params.switch_line_length = 0;
+          else that.params.switch_line_length = that.params.switchline; // 开关线
+          break;
+        case 10:
+          url = "products/selected/xy_platform";
+          switch(that.typeSelection.XYB){
+            case 0:
+              that.params.type = 'Y';
+              that.typeSelection.XYB = 1;
+              break;
+            case 1:
+              that.params.type = 'X';
+              that.params.selling_price_slug = that.typeSelection.selling_price_slug;
+              break;
+          }
+          break;
+        case 12:
+          url = "products/selected/screw_shaft";
+          that.params.motor_installation_method = that.params.mountingmotor; // 电机安装方式
+          if (that.params.motor_install_method != "FW")
+            that.params.couplings = "0"; // 是否带电机
+          that.params.screw_photoelectric_switch = that.params.oswitch; // 光电开关
+          if (that.params.screw_photoelectric_switch == "0")
+            that.params.switch_line_length = 0;
+          else that.params.switch_line_length = that.params.switchline; // 开关线
+          break;
+        default:
+          break;
+      }
+      that
+        .$post(url, that.params)
+        .then(response => {
           loading.close();
-          if(response.status != 200)
-            return false;
+          if (response.status != 200) return false;
+          that.tableData = response.data;
+        })
+        .catch(error => loading.close());
+    },
+    getBranch() {
+      let that = this;
+      that
+        .$get("members/company/branch")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.joinProject.member = response.data.list;
+        })
+        .catch(error => {});
+    },
+    getProject() {
+      if (!localStorage.getItem("user")) {
+        this.$store.commit("change");
+        this.$notify({
+          title: "警告",
+          message: "请登陆后再作操作",
+          type: "warning"
+        });
+        return false;
+      }
+
+      const loading = this.$loading({ lock: true }),
+        that = this;
+      that
+        .$get("carts")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
           that.modalShow = true;
           that.joinProject.projectList = response.data.list;
-          if(JSON.parse(localStorage.getItem('user')).slug)
-            that.getBranch();
-        }).catch( error => loading.close());
-      },
-      addProject() {
-        let that = this,loading = this.$loading({ lock: true });;
-        that.$post('carts/create',{
+          if (JSON.parse(localStorage.getItem("user")).slug) that.getBranch();
+        })
+        .catch(error => loading.close());
+    },
+    addProject() {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("carts/create", {
           name: that.joinProject.newProjectName,
-          members_ids: that.joinProject.member.join(','),
+          members_ids: that.joinProject.member.join(","),
           description: that.joinProject.description
-        }).then( response => {
-          loading.close()
-          if(response.status != 200)
-            return false;
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
           that.joinProject.status = 0;
           that.modalShow = false;
-          that.getProject();
-        }).catch( error => loading.close())
-      },
-      joinProjectCart() {
-        let that = this,loading = this.$loading({ lock: true });
-        that.$post('carts/items/create/' + that.joinProject.projectSlug,{
+          that.joinProject.projectSlug = response.data.slug;
+          that.joinProjectCart();
+        })
+        .catch(error => loading.close());
+    },
+    joinProjectCart() {
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        url = "";
+      if (that.joinProject.projectSlug)
+        url = "carts/items/create/" + that.joinProject.projectSlug;
+      // else if(that.joinProject.projectList.length)
+      //   url = 'carts/items/create/' + that.joinProject.projectList[0].slug;
+      else url = "carts/items/create/cart_item";
+
+      that
+        .$post(url, {
           product: that.joinProject.id,
           quantity: 1,
           selling_price_slug: that.joinProject.history
-        }).then( response => {
+        })
+        .then(response => {
           loading.close();
-          if(response.status != 200)
-            return false;
+          if (response.status != 200) return false;
           that.modalShow = false;
-          that.$message({ message: '添加成功', type: 'success' });
-        }).catch( error => loading.close());
-      },
-      // 初始化Echart
-      initChart() {
-        let that = this;
-        setTimeout(() => {
-          that.speedChart = echarts.init(document.getElementById("speedChart"));
-          that.changeSpeedChart();
-        },500)
-      },
-      changeGoodsListActive() {
-        setTimeout(() => {
-          let $active = document.getElementsByClassName("homeAsideList")[0].children[0].children;
-          for(let i = 0;i < $active.length;i++){
-            if(!i){
-              if(!$active[i].classList.contains('is-active')){
-                $active[i].classList.add('is-active');
-              }
-            }else{
-              $active[i].classList.remove('is-active');
+          that.$message({ message: "添加成功", type: "success" });
+        })
+        .catch(error => loading.close());
+    },
+    // 初始化Echart
+    initChart() {
+      let that = this;
+      setTimeout(() => {
+        that.speedChart = echarts.init(document.getElementById("speedChart"));
+        that.changeSpeedChart();
+      }, 500);
+    },
+    changeGoodsListActive() {
+      setTimeout(() => {
+        let $active = document.getElementsByClassName("homeAsideList")[0]
+          .children[0].children;
+        for (let i = 0; i < $active.length; i++) {
+          if (!i) {
+            if (!$active[i].classList.contains("is-active")) {
+              $active[i].classList.add("is-active");
             }
+          } else {
+            $active[i].classList.remove("is-active");
           }
-        },100)
-      }
-    },
-    watch: {
-      params: {
-        handler(val, oldVal){
-          this.changeSpeedChart();
-        },
-        deep: true
-      }
-    },
-    created() {
-      const loading = this.$loading({ lock: true }), that = this;
-      that.$get('store/category').then( response => {
-        loading.close();
-        if(response.status != 200){
-          return false
         }
-        that.product = response.data.list;
-        that.showCategory(that.product[0].children)
-      }).catch(error => loading.close());
+      }, 100);
     }
+  },
+  watch: {
+    params: {
+      handler(val, oldVal) {
+        this.changeSpeedChart();
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.firstJoin = true;
+    this.getCategory();
   }
+};
 </script>
 <style lang="less">
 @border: solid 1px #e6e6e6;
 @gery: #666666;
 @blue: #0064db;
-@white: #FFFFFF;
-.borShadow (){
+@white: #ffffff;
+.borShadow () {
   // border: @border;
   // box-shadow: 0 0 15px #a7a6a6;
-  background-color: #ffffff;
+  background-color: @white;
   height: 100% !important;
 }
-#main{
+#main {
   max-width: 1280px;
   margin: 0 auto;
   // 保留底部颜色
   height: 83%;
-  @media screen and (min-width: 820px){
-    >.el-container{
+  @media screen and (min-width: 820px) {
+    > .el-container {
       height: 100%;
-      .homeMainAside{
+      .homeMainAside {
         padding: 0;
         margin-top: 1.5rem;
-        margin-right: 1.5rem;
-        .el-menu{
+        border-right: solid 1.5rem #f2f2f2;
+        .el-menu {
           border: none;
           padding-left: 1rem;
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             color: #ff9900;
             border-bottom: 2px solid #ff9900;
           }
         }
-        .borShadow
+        .borShadow;
       }
     }
-    .homeMainContent{
+    .homeMainContent {
       position: relative;
       padding: 0;
       margin-top: 1.5rem;
       height: 100% !important;
-      background: #ffffff;
-      >section{
+      background: @white;
+      > section {
         height: 100%;
-        .homeAsideList{
-          .el-menu-item{
+        .homeAsideList {
+          .el-menu-item {
             border-bottom: 1px solid #e6e6e6;
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             background-color: #ff9900;
             color: #ffffff;
           }
         }
-        .homeMainList{
+        .homeMainList {
           display: flex;
           flex-wrap: wrap;
           background: #ffffff;
-          >div{
+          > div {
             width: 15rem;
             height: 15rem;
             overflow: hidden;
             text-align: center;
             padding: 1rem;
-            img{
+            img {
               display: block;
               margin: 0 auto;
-              padding: .5rem;
-              border: 1px solid #EEEEEE;
+              padding: 0.5rem;
+              border: 1px solid #eeeeee;
               box-sizing: border-box;
               width: 80%;
             }
-            span{
+            span {
               line-height: 2;
-              color: #666666;
+              color: @gery;
             }
           }
         }
-        .homeGoodDetail{
-          .main{
+        .homeGoodDetail {
+          .main {
             width: 92%;
             box-sizing: border-box;
             position: relative;
-            ul{
+            ul {
               width: 100%;
               list-style: none;
               color: @gery;
-              li{
+              li {
                 display: flex;
                 width: 100%;
                 border-top: @border;
                 border-right: @border;
-                >div{
+                > div {
                   border-left: @border;
                   padding: 1rem;
-                  &:first-child{
+                  &:first-child {
                     display: flex;
                     flex-wrap: wrap;
                     align-items: center;
                     width: 160px;
-                    .el-radio{
+                    .el-radio {
                       width: 100%;
                       margin-left: 0;
+                      margin-bottom: 1rem;
                     }
                   }
-                  &:last-child{
-                    canvas{
+                  &:last-child {
+                    canvas {
                       float: left;
                     }
-                    .el-input{
+                    .el-input {
                       width: 6rem;
                       box-sizing: content-box;
-                      input{
+                      input {
                         border: none;
                         border-radius: 0;
                         border-bottom: @border;
                       }
                     }
-                    .labelInput{
+                    .labelInput {
                       margin-left: 1rem;
                     }
-                    .tips{
+                    .tips {
                       margin-top: 1rem;
                     }
                   }
                 }
-                &:last-child{
+                &:last-child {
                   border-bottom: @border;
                 }
-                .chartOption{
+                .chartOption {
                   display: flex;
                   align-items: center;
                   justify-content: space-between;
                   box-sizing: border-box;
-                  div:last-child{
+                  div:last-child {
                     margin-left: 1rem;
                   }
                 }
               }
             }
-            .typeSelection{
+            .typeSelection {
               display: flex;
               align-items: center;
               border: @border;
               border-bottom: none;
               padding-top: 3rem;
-              >div{
+              > div {
                 height: 3rem;
                 line-height: 3rem;
                 text-align: center;
@@ -1943,45 +2574,45 @@
                 background-color: @white;
                 border-top: @border;
                 border-right: @border;
-                &:last-child{
+                &:last-child {
                   border-right: none;
                 }
-                &:hover{
+                &:hover {
                   color: @white;
                   background: @blue;
                 }
               }
-              .active{
+              .active {
                 color: @white;
                 background: @blue;
               }
             }
-            .operation{
+            .operation {
               display: flex;
               justify-content: space-between;
-              padding: .5rem 0;
+              padding: 0.5rem 0;
             }
-            .el-table{
+            .el-table {
               width: 100%;
-              .el-table__row{
-                .productInfo{
+              .el-table__row {
+                .productInfo {
                   display: flex;
                   align-items: center;
-                  >div{
-                    &:first-child{
+                  > div {
+                    &:first-child {
                       border: @border;
                       margin-right: 1rem;
-                      img{
+                      img {
                         max-width: 80px;
                         max-height: 80px;
                       }
                     }
                   }
                 }
-                .drawing{
+                .drawing {
                   display: flex;
                   justify-content: center;
-                  >div{
+                  > div {
                     display: flex;
                     align-content: center;
                     justify-content: center;
@@ -1990,25 +2621,31 @@
                     height: 80px;
                     text-align: center;
                     color: @blue;
-                    margin: 0 .2rem;
-                    i{
+                    margin: 0 0.2rem;
+                    i {
                       display: block;
                       font-size: 4rem;
                     }
-                    a{
+                    a {
                       padding-top: 1rem;
                       text-decoration: none;
                     }
                   }
                 }
+                .opera {
+                  button {
+                    display: block;
+                    margin: 0.5rem auto;
+                  }
+                }
               }
             }
-            .diagram{
+            .diagram {
               position: absolute;
               top: 0;
               right: 0;
               border: @border;
-              background-color: #ffffff;
+              background-color: @white;
               height: 195px;
               box-sizing: border-box;
             }
@@ -2018,148 +2655,148 @@
     }
   }
 
-  @media screen and (max-width: 820px){
-    >.el-container{
+  @media screen and (max-width: 820px) {
+    > .el-container {
       height: auto;
       display: block;
-      .homeMainAside{
+      .homeMainAside {
         padding: 0;
         width: 100% !important;
         height: auto;
-        .el-menu{
+        .el-menu {
           border: none;
-          .el-menu-item{
+          .el-menu-item {
             border-bottom: 1px solid #e6e6e6;
             box-sizing: border-box;
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             color: #ff9900;
             border-bottom: 2px solid #ff9900;
           }
         }
       }
     }
-    .homeMainContent{
+    .homeMainContent {
       display: block;
       padding: 0;
-      background: #ffffff;
-      >section{
-        .homeAsideList{
+      background: @white;
+      > section {
+        .homeAsideList {
           box-sizing: border-box;
-          .el-menu-item{
+          .el-menu-item {
             border-bottom: 1px solid #e6e6e6;
             box-sizing: border-box;
-            &:first-child{
+            &:first-child {
               border-top: 1px solid #e6e6e6;
             }
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             background-color: #ff9900;
-            color: #ffffff;
+            color: @white;
           }
         }
-        .homeMainList{
+        .homeMainList {
           display: flex;
           flex-wrap: wrap;
-          background: #ffffff;
-          padding: .5rem;
-          >div{
+          background: @white;
+          padding: 0.5rem;
+          > div {
             width: 50%;
             box-sizing: border-box;
             text-align: center;
-            img{
+            img {
               display: block;
               margin: auto;
-              padding: .5rem;
-              border: 1px solid #EEEEEE;
+              padding: 0.5rem;
+              border: 1px solid #eeeeee;
               box-sizing: border-box;
               width: 90%;
             }
-            span{
+            span {
               line-height: 2;
-              color: #666666;
+              color: @gery;
             }
           }
         }
-        .homeGoodDetail{
+        .homeGoodDetail {
           padding: 0;
-          ul{
+          ul {
             list-style: none;
             color: @gery;
             box-sizing: border-box;
-            li{
+            li {
               width: 100%;
               border-top: @border;
               border-right: @border;
               box-sizing: border-box;
-              >div{
+              > div {
                 border-left: @border;
                 padding: 1rem;
                 width: 99%;
                 box-sizing: border-box;
-                &:first-child{
-                  .el-radio{
+                &:first-child {
+                  .el-radio {
                     width: 100%;
                     margin-left: 0;
                     margin-right: 0;
                   }
                 }
-                &:last-child{
+                &:last-child {
                   display: block;
-                  .el-input{
-                    width: 4rem;
+                  .el-input {
+                    width: 60px;
                     box-sizing: content-box;
-                    input{
+                    input {
                       border: none;
                       border-radius: 0;
                       border-bottom: @border;
                     }
                   }
-                  .el-radio{
+                  .el-radio {
                     margin-left: 5px;
                   }
-                  .labelInput{
+                  .labelInput {
                     margin-left: 1rem;
                   }
-                  .pull-left{
+                  .pull-left {
                     float: initial;
                     text-align: left;
                   }
-                  .tips{
+                  .tips {
                     margin-top: 1rem;
                   }
                 }
               }
-              &:last-child{
+              &:last-child {
                 border-bottom: @border;
               }
             }
           }
-          .operation{
+          .operation {
             display: flex;
             justify-content: center;
-            padding: .5rem 6rem;
+            padding: 0.5rem 6rem;
           }
-          .el-table{
-            .el-table__row{
-              .productInfo{
+          .el-table {
+            .el-table__row {
+              .productInfo {
                 display: flex;
                 align-items: center;
-                >div{
-                  &:first-child{
+                > div {
+                  &:first-child {
                     border: @border;
                     margin-right: 1rem;
-                    img{
+                    img {
                       max-width: 80px;
                       max-height: 80px;
                     }
                   }
                 }
               }
-              .drawing{
+              .drawing {
                 display: flex;
                 justify-content: center;
-                >div{
+                > div {
                   display: flex;
                   align-content: center;
                   justify-content: center;
@@ -2168,19 +2805,25 @@
                   height: 80px;
                   text-align: center;
                   color: @blue;
-                  i{
+                  i {
                     display: block;
                     font-size: 4rem;
                   }
-                  a{
+                  a {
                     padding-top: 1rem;
                     text-decoration: none;
                   }
                 }
               }
+              .opera {
+                button {
+                  display: block;
+                  margin: 0.5rem auto;
+                }
+              }
             }
           }
-          .diagram{
+          .diagram {
             width: 100%;
             border-left: @border;
             border-right: @border;
@@ -2190,34 +2833,37 @@
       }
     }
   }
-  .modalBoxMain{
+  .modalBoxMain {
     width: 330px;
-    @media screen and (min-width: 500px){
+    @media screen and (min-width: 500px) {
       margin-top: 180px;
     }
-    #joinProject{
-      p{
+    #joinProject {
+      p {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
       }
-      .goBack{
+      .goBack {
         float: right;
         padding-top: 0;
       }
-      >div{
+      > div {
         text-align: center;
         margin-bottom: 1rem;
-        .el-select{
+        .el-select {
           width: 100%;
         }
-        &:last-child{
+        &:last-child {
           margin-top: 2rem;
           margin-bottom: 0;
         }
       }
     }
   }
+}
+.el-message-box {
+  height: auto !important;
 }
 </style>

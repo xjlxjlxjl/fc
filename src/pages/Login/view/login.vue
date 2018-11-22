@@ -17,16 +17,17 @@
                 type="password"
                 auto-complete="on"
                 v-if="!isCodeLogin"
-                v-model="loginDetail.password"></el-input>
+                v-model="loginDetail.password" @keyup.13.native="login"></el-input>
       <el-input placeholder="请输入验证码" 
                 auto-complete="on"
                 v-else
-                v-model="loginDetail.code">
+                v-model="loginDetail.code" @keyup.13.native="login">
         <el-button slot="suffix" type="info" @click="getCode" round>{{ codeCacheTime }}</el-button>
       </el-input>
       <el-input placeholder="公司代码" 
                 v-if="loginDetail.login_type != '0'"
                 v-model="loginDetail.slug" 
+                @keyup.13.native="login"
                 clearable></el-input>
     </el-main>
     <el-footer>
@@ -41,138 +42,149 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-  export default {
-    name: 'login',
-    data() {
-      return {
-        userProtocol: false,
-        isCodeLogin: false,
-        loginDetail: {
-          mobile: '',
-          password: '',
-          code: '',
-          slug: '', // 记住账号(0或者1)
-          login_type: '0' //登录类型0默认，1团队，2公司
-        },
-        codeCacheTime: '获取验证码',
-        isClick: false
+export default {
+  name: "login",
+  data() {
+    return {
+      userProtocol: false,
+      isCodeLogin: false,
+      loginDetail: {
+        mobile: "",
+        password: "",
+        code: "",
+        slug: "", // 记住账号(0或者1)
+        login_type: "0" //登录类型0默认，1团队，2公司
+      },
+      codeCacheTime: "获取验证码",
+      isClick: false
+    };
+  },
+  methods: {
+    getCode() {
+      let that = this;
+      if (that.isClick) {
+        return false;
       }
-    },
-    methods: {
-      getCode() {
-        let that = this;
-        if(that.isClick){
-          return false;
-        }
-        if(that.loginDetail.mobile == ''){
-          that.$message({ 
-            message: '请输入手机号码',
-            type: 'error'
-          });
-          return false;
-        }
-        const loading = this.$loading({ lock: true });
-        that.$get('members/entry-send', {
+      if (that.loginDetail.mobile == "") {
+        that.$message({
+          message: "请输入手机号码",
+          type: "error"
+        });
+        return false;
+      }
+      const loading = this.$loading({ lock: true });
+      that
+        .$get("members/entry-send", {
           mobile: that.loginDetail.mobile
-        }).then( response => {
+        })
+        .then(response => {
           loading.close();
-          if(response.status != 200){
+          if (response.status != 200) {
             return false;
           }
           that.isClick = true;
           that.lastTime();
-        }).catch(error => loading.close())
-      },
-      lastTime() {
-        let that = this;
-        that.codeCacheTime = 60;
-        let setTimeOut = setInterval(function(){
-          if(that.codeCacheTime > 1){
-            that.codeCacheTime--;
-          }else{
-            clearInterval(setTimeOut);
-            that.codeCacheTime = '重新发送'
-            that.isClick = false;
-          }
-        },1000);
-      },
-      login() {
-        let that = this;
-        if(that.loginDetail.mobile == ''){
-          that.$message({ 
-            message: '请输入手机号码',
-            type: 'error'
-          });
-          return false;
+        })
+        .catch(error => loading.close());
+    },
+    lastTime() {
+      let that = this;
+      that.codeCacheTime = 60;
+      let setTimeOut = setInterval(function() {
+        if (that.codeCacheTime > 1) {
+          that.codeCacheTime--;
+        } else {
+          clearInterval(setTimeOut);
+          that.codeCacheTime = "重新发送";
+          that.isClick = false;
         }
-        const loading = that.$loading({ lock: true });
-        that.$post('members/entry',that.loginDetail).then(response => {
-          loading.close();
-          if(response.status != 200){
-            return false;
-          }
-          localStorage.setItem('user',JSON.stringify(response.data));
-          window.location.href = './index.html';
-        }).catch(error => loading.close())
+      }, 1000);
+    },
+    login() {
+      let that = this;
+      if (that.loginDetail.mobile == "") {
+        that.$message({
+          message: "请输入手机号码",
+          type: "error"
+        });
+        return false;
       }
+      const loading = that.$loading({ lock: true });
+      let params = {
+        mobile: that.loginDetail.mobile,
+        login_type: that.loginDetail.login_type
+      };
+      if (that.loginDetail.code) params.code = that.loginDetail.code;
+      else params.password = that.loginDetail.password;
+
+      if (that.loginDetail.login_type != 0) params.slug = that.loginDetail.slug;
+
+      that
+        .$post("members/entry", params)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          // this.$store.commit("updateUserInfo", response.data);
+          localStorage.setItem("user", JSON.stringify(response.data));
+          window.location.href = "./index.html";
+        })
+        .catch(error => loading.close());
     }
   }
+};
 </script>
-
 <style lang="less" scoped>
 @color: #0064db;
-.loginContainer{
+.loginContainer {
   display: block;
   margin-left: auto;
   margin-right: auto;
   max-width: 330px;
-  .headPortrait{
+  .headPortrait {
     text-align: center;
     color: @color;
     i {
       font-size: 12rem;
       display: block;
     }
-    .loginType{
+    .loginType {
       margin-top: 1.5rem;
     }
   }
-  .el-main{
+  .el-main {
     padding: 20px 20px 0px 20px;
-    div{
+    div {
       display: block;
       margin-top: 15px;
       margin-bottom: 15px;
       margin-left: auto;
       margin-right: auto;
-      &:last-child{
+      &:last-child {
         margin-bottom: 0px;
       }
-      button{
+      button {
         padding: 3px;
         width: 80px;
       }
     }
   }
-  .el-footer{
+  .el-footer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    >div{
+    > div {
       width: 100%;
-      &:first-child{
+      &:first-child {
         text-align: right;
-        button{
+        button {
           padding-bottom: 0;
         }
       }
-      &:nth-child(2){
+      &:nth-child(2) {
         text-align: right;
       }
-      &:last-child{
-        button{
+      &:last-child {
+        button {
           width: 100%;
         }
       }

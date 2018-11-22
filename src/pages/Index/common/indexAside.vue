@@ -9,15 +9,12 @@
   </div>
 </template>
 <script>
-  export default {
-    name: 'indexAside',
-    data() {
-      return {
-
-      }
-    }
+export default {
+  name: "indexAside",
+  data() {
+    return {};
   }
+};
 </script>
 <style lang="less">
-
 </style>

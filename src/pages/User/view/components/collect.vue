@@ -18,52 +18,53 @@
       <el-table-column prop="products.sales_price" label="价格"></el-table-column>
       <el-table-column prop="id" label="操作">
         <template slot-scope="{ row, $index}">
-          <el-button type="info" size="mini" @click="delete(row.id)">删除</el-button>
+          <el-button type="info" size="mini" @click="delCollect(row.products.id)">删除</el-button>
         </template>
       </el-table-column>      
     </el-table>
   </div>
 </template>
  <script>
- export default {
-    name: 'collect',
-    data() {
-      return {
-        collectList: {}
-      }
-    },
-    methods:{
-      getList(){
-        let that = this,loading = this.$loading({ lock: true });
-        that.$get('members/collects').then(response => {
-          loading.close()
-          if(response.status != 200)
-            return false;
+export default {
+  name: "collect",
+  data() {
+    return {
+      collectList: {}
+    };
+  },
+  methods: {
+    getList() {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$get("members/collects")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
           that.collectList = response.data;
-        }).catch(error => loading.close());
-      },
-      delete(id) {
-        let that = this;
-        this.$post('members/collects/delete',{
-          products: id
-        }).then( response => {
-          if(response.status != 200)
-            return false;
-          that.getList();
         })
-      }
+        .catch(error => loading.close());
     },
-    created(){
-      this.getList();
+    delCollect(id) {
+      console.log(id);
+      let that = this;
+      that.$post("members/collects/delete", { products: id }).then(response => {
+        if (response.status != 200) return false;
+        that.getList();
+      });
     }
- }
- </script> 
+  },
+  created() {
+    this.getList();
+  }
+};
+</script> 
 <style lang="less">
-#collect{
+#collect {
   width: 100%;
-  .flex{
+  .flex {
     display: flex;
-    img{
+    img {
       width: 80px;
       height: 80px;
       margin-right: 1rem;

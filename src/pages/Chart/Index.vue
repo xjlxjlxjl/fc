@@ -29,29 +29,29 @@
 </template>
 
 <script>
-import indexRise from '@/pages/Index/common/indexRise';
-import indexTail from '@/pages/Index/common/indexTail';
-import indexChart from '@/pages/Index/common/indexChart';
+import indexRise from "@/pages/Index/common/indexRise";
+import indexTail from "@/pages/Index/common/indexTail";
+import indexChart from "@/pages/Index/common/indexChart";
 
 export default {
-  name: 'Index',
-  components:{
-    'index-rise': indexRise,
-    'index-chart': indexChart,
-    'index-tail': indexTail
+  name: "Index",
+  components: {
+    "index-rise": indexRise,
+    "index-chart": indexChart,
+    "index-tail": indexTail
   }
-}
+};
 </script>
 <style lang="less">
 .el-header,
 .el-main,
-.el-footer{
+.el-footer {
   padding: 0;
 }
-.homeContainer{
+.homeContainer {
   background-color: #f2f2f2;
 }
-.homeFooter{
+.homeFooter {
   position: fixed;
   width: 100%;
   left: 0;
@@ -63,53 +63,52 @@ export default {
 @border: solid 1px #e6e6e6;
 @white: #ffffff;
 @sky: #2288ff;
-.borShadow (){
+.borShadow () {
   background-color: @white;
   height: 100% !important;
 }
-#main{
+#main {
   max-width: 1280px;
   margin: 0 auto;
   height: 83%;
-  @media screen and (min-width: 820px){
-    >.el-container{
+  @media screen and (min-width: 820px) {
+    > .el-container {
       height: 100%;
-      .homeMainAside{
+      .homeMainAside {
         padding: 0;
         margin-top: 1.5rem;
         margin-right: 1.5rem;
-        .borShadow
+        .borShadow;
       }
     }
-    .homeMainContent{
+    .homeMainContent {
       position: relative;
       padding: 0;
       margin-top: 1.5rem;
       height: 100% !important;
       background: #ffffff;
-      >section{
+      > section {
         height: 100%;
         width: 94.3%;
       }
     }
   }
 
-  @media screen and (max-width: 820px){
-    >.el-container{
+  @media screen and (max-width: 820px) {
+    > .el-container {
       height: auto;
       display: block;
-      .homeMainAside{
+      .homeMainAside {
         padding: 0;
         width: 100% !important;
         height: auto;
       }
     }
-    .homeMainContent{
+    .homeMainContent {
       display: block;
       padding: 0;
       background: #ffffff;
     }
   }
 }
-
 </style>

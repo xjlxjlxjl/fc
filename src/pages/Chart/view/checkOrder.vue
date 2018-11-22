@@ -116,7 +116,7 @@
       <el-table-column label="操作" width="170">
         <template slot-scope="{ row,$index }">
           <div class="operation">
-            <el-select @change="cartsItem(0,row.str_id,row.supplier)" v-model="row.supplier" placeholder="选择供应商">
+            <el-select @change="cartsItem(0,row.str_id,row.supplier.slug)" v-model="row.supplier.slug" placeholder="选择供应商">
               <el-option
                 v-for="item in row.all_supplier"
                 :key="item.slug"
@@ -124,7 +124,7 @@
                 :value="item.slug">
               </el-option>
             </el-select>
-            <el-select @change="cartsItem(1,row.str_id,row.invoice_type)" v-model="row.invoice_type" placeholder="发票类型">
+            <el-select @change="cartsItem(1,row.str_id,row.invoice_type.slug)" v-model="row.invoice_type.slug" placeholder="发票类型">
               <el-option
                 v-for="item in row.all_invoice_type"
                 :key="item.slug"
@@ -132,7 +132,7 @@
                 :value="item.slug">
               </el-option>
             </el-select>
-            <el-select @change="cartsItem(2,row.str_id,row.payment_type)" v-model="row.payment_type" placeholder="付款方式">
+            <el-select @change="cartsItem(2,row.str_id,row.payment_type.slug)" v-model="row.payment_type.slug" placeholder="付款方式">
               <el-option
                 v-for="item in row.all_payment_type"
                 :key="item.slug"
@@ -159,197 +159,221 @@
   </div>
 </template>
 <script>
-import  "@/assets/css/modal.css";
+import "@/assets/css/modal.css";
 import { AreaCascader } from "vue-area-linkage";
-import { pca, pcaa } from 'area-data';
-import 'vue-area-linkage/dist/index.css';
+import { pca, pcaa } from "area-data";
+import "vue-area-linkage/dist/index.css";
 
 export default {
-  name: 'checkOrder',
+  name: "checkOrder",
   data() {
     return {
       pcaa: pcaa,
-      activeAddress: '',
+      activeAddress: "",
       addressList: {},
-      projectSlug: JSON.parse(localStorage.getItem('order')).projectSlug,
-      projectDetail: JSON.parse(localStorage.getItem('order')).list,
+      projectSlug: JSON.parse(localStorage.getItem("order")).projectSlug,
+      projectDetail: JSON.parse(localStorage.getItem("order")).list,
       modalShow: false,
       editForm: {
-        slug: '',
+        slug: "",
         province: [],
-        detailed_address: '',
-        zip_code: '',
-        name: '',
-        contact_mobile: '',
+        detailed_address: "",
+        zip_code: "",
+        name: "",
+        contact_mobile: "",
         contact_phone: {
-          region: '',
-          tel: '',
-          extension: ''
+          region: "",
+          tel: "",
+          extension: ""
         },
         default: false
       }
-    }
+    };
   },
   methods: {
-    getAddressList(){
+    getAddressList() {
       let that = this;
-      this.$get('members/address').then( response => {
-        if(response.status != 200)
-          return false;
-        that.addressList = response.data;
-        that.addressList.list.forEach(e => {
-          if(e.default)
-            that.activeAddress = e.slug;
-        });
-      }).catch( error => console.log(error));
+      this.$get("members/address")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.addressList = response.data;
+          that.addressList.list.forEach(e => {
+            if (e.default) that.activeAddress = e.slug;
+          });
+        })
+        .catch(error => console.log(error));
     },
-    editAddress(index){
-      let that = this,self = that.addressList.list[index];
+    editAddress(index) {
+      let that = this,
+        self = that.addressList.list[index];
       that.modalShow = true;
       that.editForm = {
         slug: self.slug,
-        province: [
-          self.province,
-          self.city,
-          self.area
-        ].join('/'),
+        province: [self.province, self.city, self.area].join("/"),
         detailed_address: self.detailed_address,
         zip_code: self.zip_code,
         name: self.name,
         contact_mobile: self.contact_mobile,
         contact_phone: {
-          region: self.contact_phone.split('-')[0],
-          tel: self.contact_phone.split('-')[1],
-          extension: self.contact_phone.split('-')[2]
+          region: self.contact_phone.split("-")[0],
+          tel: self.contact_phone.split("-")[1],
+          extension: self.contact_phone.split("-")[2]
         },
-        default: self.default ? true : false,
-      }
+        default: self.default ? true : false
+      };
     },
-    saveAddress(slug){
-      if(this.editForm.name == ''){
-        this.$notify.error({ title: '', message: '请填写姓名' });
+    saveAddress(slug) {
+      if (this.editForm.name == "") {
+        this.$notify.error({ title: "", message: "请填写姓名" });
         return false;
       }
-      if(this.editForm.detailed_address == ''){
-        this.$notify.error({ title: '', message: '请填写详细地址' });
+      if (this.editForm.detailed_address == "") {
+        this.$notify.error({ title: "", message: "请填写详细地址" });
         return false;
       }
-      if(this.editForm.contact_mobile == ''){
-        this.$notify.error({ title: '', message: '请填写联系电话' });
+      if (this.editForm.contact_mobile == "") {
+        this.$notify.error({ title: "", message: "请填写联系电话" });
         return false;
       }
       const loading = this.$loading({ lock: true });
-      let that = this,url = null;
-      if(slug)
-        url = 'members/address/edit/' + slug;
-      else
-        url = 'members/address/create';
+      let that = this,
+        url = null;
+      if (slug) url = "members/address/edit/" + slug;
+      else url = "members/address/create";
 
-      that.editForm.area = that.editForm.province[2]
-      that.editForm.city = that.editForm.province[1]
-      that.editForm.province = that.editForm.province[0]
+      that.editForm.area = that.editForm.province[2];
+      that.editForm.city = that.editForm.province[1];
+      that.editForm.province = that.editForm.province[0];
 
-      that.editForm.contact_phone = Object.values(that.editForm.contact_phone).join('-')
-      
+      that.editForm.contact_phone = Object.values(
+        that.editForm.contact_phone
+      ).join("-");
+
       that.modalShow = false;
 
-      that.$post(url,that.editForm).then( response => {
-        loading.close();
-        if(response.status != 200){
+      that
+        .$post(url, that.editForm)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) {
+            that.modalShow = true;
+            return false;
+          } else {
+            that.clearEditForm();
+            that.getAddressList();
+          }
+        })
+        .catch(error => {
           that.modalShow = true;
-          return false;
-        }else{
-          that.clearEditForm();
-          that.getAddressList();
-        }
-      }).catch(error => {
-        that.modalShow = true;
-        loading.close()
-      })
+          loading.close();
+        });
     },
-    clearEditForm(){
+    clearEditForm() {
       this.modalShow = false;
       this.editForm = {
-        slug: '',
+        slug: "",
         province: [],
-        detailed_address: '',
-        zip_code: '',
-        name: '',
-        contact_mobile: '',
+        detailed_address: "",
+        zip_code: "",
+        name: "",
+        contact_mobile: "",
         contact_phone: {
-          region: '',
-          tel: '',
-          extension: ''
+          region: "",
+          tel: "",
+          extension: ""
         },
-        default: false,
-      }
+        default: false
+      };
     },
-    changeDefault(slug){
-      this.$get('members/default-address/' + slug).then(response => {
-        if(response.status != 200)
-          return false;
-      }).catch( error => console.log(error))
+    changeDefault(slug) {
+      this.$get("members/default-address/" + slug)
+        .then(response => {
+          if (response.status != 200) return false;
+        })
+        .catch(error => console.log(error));
     },
-    cartsItem(key,str_id,slug){
-      let url = null,that = this;
-      switch(key){
+    cartsItem(key, str_id, slug) {
+      let url = null,
+        that = this;
+      switch (key) {
         case 0:
-          url = 'carts/items/price-company/' + that.projectSlug + '/' + str_id + '/' + slug
+          url =
+            "carts/items/price-company/" +
+            that.projectSlug +
+            "/" +
+            str_id +
+            "/" +
+            slug;
           break;
         case 1:
-          url = 'carts/items/price-invoice/' + that.projectSlug + '/' + str_id + '/' + slug
+          url =
+            "carts/items/price-invoice/" +
+            that.projectSlug +
+            "/" +
+            str_id +
+            "/" +
+            slug;
           break;
         case 2:
-          url = 'carts/items/price-payment/' + that.projectSlug + '/' + str_id + '/' + slug
+          url =
+            "carts/items/price-payment/" +
+            that.projectSlug +
+            "/" +
+            str_id +
+            "/" +
+            slug;
           break;
       }
       const loading = this.$loading({ lock: true });
-      that.$post(url)
-      .then( response => {
-        loading.close()
-        if(response.status != 200)
-          return false;
-        let arr = [],obj = {};
-        response.data.list.forEach( e => {
-          if(e.str_id == str_id)
-            obj = e;
-        });
-        that.projectDetail.forEach((e, k) => {
-          if(e.str_id == str_id)
-            arr.push(obj);
-          else
-            arr.push(e);
+      that
+        .$post(url)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          let arr = [],
+            obj = {};
+          response.data.list.forEach(e => {
+            if (e.str_id == str_id) obj = e;
+          });
+          that.projectDetail.forEach((e, k) => {
+            if (e.str_id == str_id) arr.push(obj);
+            else arr.push(e);
+          });
+          that.projectDetail = arr;
         })
-        that.projectDetail = arr;
-      })
-      .catch( error => loading.close());
+        .catch(error => loading.close());
     },
-    checkout(){
-      let that = this,loading = this.$loading({ lock: true }),arr = [],activeAddress = {};
+    checkout() {
+      let that = this,
+        loading = this.$loading({ lock: true }),
+        arr = [],
+        activeAddress = {};
       that.addressList.list.forEach(e => {
-        if(e.slug == that.activeAddress)
-          activeAddress = e;
+        if (e.slug == that.activeAddress) activeAddress = e;
       });
-      console.log(that.projectDetail)
+      console.log(that.projectDetail);
       that.projectDetail.forEach(e => arr.push(e.id));
-      that.$post('orders/checkout',{
-        ids: arr.join(','),
-        address: activeAddress.province + activeAddress.city + activeAddress.area,
-        mobile: activeAddress.contact_mobile,
-        consignee: activeAddress.name
-      }).then( response => {
-        loading.close()
-        if(response.status != 200)
-          return false;
-        
-        window.location.href = 'user.html#/order';
-      }).catch( error => loading.close())
+      that
+        .$post("orders/checkout", {
+          ids: arr.join(","),
+          address:
+            activeAddress.province + activeAddress.city + activeAddress.area,
+          mobile: activeAddress.contact_mobile,
+          consignee: activeAddress.name
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+
+          window.location.href = "user.html#/order";
+        })
+        .catch(error => loading.close());
     }
   },
   created() {
     this.getAddressList();
   }
-}
+};
 </script>
 <style lang="less">
 @org: #ff9900;
@@ -361,112 +385,112 @@ export default {
   padding: 0;
 }
 
-#checkOrder{
+#checkOrder {
   padding: 2rem;
   color: #666666;
   margin: 0 auto;
   box-sizing: border-box;
   max-width: 100%;
   overflow-y: auto;
-  #editAddress{
+  #editAddress {
     margin: 0 auto;
     box-sizing: border-box;
     padding: 0 1rem;
     width: 30rem;
-    max-width: 100%;    
-    .input-suffix{
+    max-width: 100%;
+    .input-suffix {
       display: flex;
       white-space: nowrap;
       align-items: center;
-      margin-bottom: .5rem;
-      label{
+      margin-bottom: 0.5rem;
+      label {
         width: 8rem;
       }
-      .area-cascader-wrap{
+      .area-cascader-wrap {
         width: 19.8rem;
-        .area-select{
+        .area-select {
           width: 100%;
         }
       }
-      .el-input{
+      .el-input {
         width: 20rem;
       }
-      .contact_phone{
-        .el-input{
+      .contact_phone {
+        .el-input {
           width: 19.5rem / 3;
         }
       }
     }
   }
-  @media screen and (min-width: 820px){
-    h1{
+  @media screen and (min-width: 820px) {
+    h1 {
       font-size: 2rem;
     }
-    .addressList{
+    .addressList {
       display: flex;
       flex-wrap: wrap;
       padding-top: 2rem;
       padding-bottom: 1rem;
       max-width: 100%;
       overflow-x: auto;
-      .addressDetail{
+      .addressDetail {
         box-sizing: border-box;
-        margin-right: .5rem;
-        margin-bottom: .5rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
         width: 30rem;
-        .el-card__body{
+        .el-card__body {
           height: 13rem;
           overflow-y: auto;
           .clear;
         }
-        header{
+        header {
           display: flex;
           justify-content: space-between;
           padding: 1rem;
           background-color: @gery;
           div {
-            button{
-              .clear()
+            button {
+              .clear();
             }
-            .el-radio__label{
+            .el-radio__label {
               display: none;
             }
           }
         }
-        .contant{
+        .contant {
           padding: 1rem;
           line-height: 1.6;
           word-break: break-all;
         }
       }
     }
-    .addAddressBtn{
+    .addAddressBtn {
       margin-bottom: 2rem;
     }
-    .el-table{
+    .el-table {
       max-width: 100%;
       overflow-x: auto;
-      .el-table__body-wrapper{
-        .el-table__row{
-          .cell{
+      .el-table__body-wrapper {
+        .el-table__row {
+          .cell {
             display: flex;
-            >div{
+            > div {
               box-sizing: border-box;
-              &:first-child{
+              &:first-child {
                 margin-right: 1rem;
-                img{
+                img {
                   width: 100px;
                 }
               }
             }
-            .operation{
-              button{
+            .operation {
+              button {
                 width: 100%;
               }
               .clear;
               .el-select,
               .el-input,
-              input{
+              input {
                 height: 30px;
               }
             }
@@ -474,23 +498,23 @@ export default {
         }
       }
     }
-    .checkOrder{
+    .checkOrder {
       float: right;
       text-align: right;
-      .selectForm{
+      .selectForm {
         text-align: right;
-        padding: .5rem 0 0 0;
-        label{
+        padding: 0.5rem 0 0 0;
+        label {
           width: 50px;
         }
       }
-      .sum{
+      .sum {
         width: 15rem;
-        padding: .5rem;
+        padding: 0.5rem;
         border: @border;
         color: @org;
         font-size: 1.8rem;
-        margin: .5rem 0;
+        margin: 0.5rem 0;
         text-align: left;
       }
     }

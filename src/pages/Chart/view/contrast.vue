@@ -1,20 +1,17 @@
 <template>
   <div id="contrast">
-    bbbbbbbbbbbbbbbbbbbbbb
+    
   </div>
 </template>
 <script>
 export default {
-  name: 'contrast',
+  name: "contrast",
   data() {
-    return {
-
-    }
+    return {};
   }
-}
+};
 </script>
 <style lang="less">
-  #contrast{
-
-  }
+#contrast {
+}
 </style>

@@ -1,20 +1,1103 @@
 <template>
   <div id="message">
-    44444444444444444444444444
+    <transition name="el-fade-in-linear">
+      <div v-show="modalShow">
+        <div class="Curtain"></div>
+        <div class="modalBox">
+          <div class="modalBoxMain">
+            <div class="modalBoxMainHeader">
+              <div class="modalBoxMainHeaderTitle">
+                邀请加入群聊
+              </div>
+              <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
+                <i class="el-message-box__close el-icon-close"></i>
+              </div>
+            </div>
+            <div class="modalBoxMainContent">
+              <div id="userList">
+                <el-checkbox-group v-model="userList">
+                  <el-checkbox v-for="(item,index) in checkBoxList" :key="index" :label="item.id">{{ item.last_name }}</el-checkbox>
+                </el-checkbox-group>
+              </div>
+                <el-button size="mini" type="primary" @click="joinGroup(userList, '', groupId)">确定</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <el-container>
+      <el-aside width="60px">
+        <ul class="function">
+          <li><img :src="user.user.avatar"></li>
+          <li v-for="(item,index) in interface" :key="index" v-if="index < 3">
+            <i :class="item.isDefault ? `is-active ${item.icon}` : item.icon" @click="changeView(index)" :alt="item.alt"></i>
+          </li>
+        </ul>
+      </el-aside>
+      <el-main>
+        <el-container>
+          <el-aside width="250px">
+            <div class="search" v-if="interface[2].isDefault || interface[4].isDefault">
+              <el-input placeholder="搜索群组" v-model="searchId" size="mini" @keyup.13.native="changeView(4)">
+                <i slot="prefix" class="el-input__icon el-icon-search" @click="changeView(4)"></i>
+              </el-input>
+              <button @click="changeView(4)">+</button>
+            </div>
+            <div class="search" v-else>
+              <el-input placeholder="搜索用户" v-model="searchId" size="mini" @keyup.13.native="changeView(3)">
+                <i slot="prefix" class="el-input__icon el-icon-search" @click="changeView(3)"></i>
+              </el-input>
+              <button @click="changeView(3)">+</button>
+            </div>
+            <el-menu default-active="0" v-if="interface[0].isDefault">
+              <el-menu-item v-for="(item,index) in chatList.list" v-if="item.friend_uid != 1"
+                          :key="index" :index="index.toString()" 
+                          @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.display_name : item.group.group_name, index: index })">
+                <div class="avatarBox">
+                  <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
+                </div>
+                <span slot="title">{{ item.friend_user ? item.friend_user.display_name : item.group.group_name }}</span>
+                <el-popover
+                  placement="right"
+                  trigger="hover">
+                  <el-button type="danger" size="mini" v-if="item.friend_user" @click="delChat(item.id, index)">删除</el-button>
+                  <el-button size="mini" type="warning" v-else @click="delGroup(item.group_id, index);delChat(item.id, index)">退出</el-button>
+                  <el-button type="primary" size="mini" v-if="item.friend_user"
+                    @click="joinGroup([item.friend_uid],[item.friend_user.display_name,user.user.display_name])">创建群聊</el-button>
+                  <el-button size="mini" slot="reference">操作</el-button>
+                </el-popover>
+              </el-menu-item>
+            </el-menu>
+            <el-menu default-active="0" v-else-if="interface[1].isDefault">
+              <el-menu-item v-for="(item,index) in friendList.list" v-if="item.friend_uid != 1"
+                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index })">
+                <div class="avatarBox">
+                  <img :src="item.avatar">
+                </div>
+                <span slot="title">{{ item.display_name }}</span>
+                <el-popover
+                  placement="right"
+                  trigger="hover">
+                  <el-button type="danger" size="mini" @click="delUser(item.id,index)">删除</el-button>
+                  <el-button type="primary" size="mini" @click="joinGroup([item.id],[item.display_name,user.user.display_name])">创建群聊</el-button>
+                  <el-button size="mini" slot="reference">操作</el-button>
+                </el-popover>
+              </el-menu-item>
+            </el-menu>
+            <el-menu default-active="0" v-else-if="interface[2].isDefault">
+              <el-menu-item v-for="(item,index) in groupList.list"
+                          :key="index" :index="index.toString()" @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index })">
+                <div class="avatarBox">
+                  <img :src="item.avatar">
+                </div>
+                <span slot="title">{{ item.group_name }}</span>
+                <el-popover
+                  placement="right"
+                  trigger="hover">
+                  <el-button size="mini" slot="reference">操作</el-button>
+                  <el-button size="mini" type="success" @click="editGroup(item.id, item.group_name, item.group_description, index)">修改群信息</el-button>
+                  <el-button size="mini" type="warning" @click="delGroup(item.id, index)">退出</el-button>
+                  <el-button size="mini" type="danger" v-if="item.admin_id == user.user.id" @click="dissolution(item.id, index)">解散</el-button>
+                  <el-button size="mini" type="primary" v-if="item.admin_id == user.user.id" @click="groupId = item.id;modalShow = true;">邀请加入群聊</el-button>
+                </el-popover>
+              </el-menu-item>
+            </el-menu>
+            <el-menu default-active="0" v-else-if="interface[3].isDefault">
+              <el-menu-item v-for="(item,index) in searchList" v-if="item.friend_uid != 1"
+                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index })">
+                <div class="avatarBox">
+                  <img :src="item.avatar">
+                </div>
+                <span slot="title">{{ item.display_name }}</span>
+                <el-popover
+                  placement="right"
+                  trigger="hover">
+                  <el-button size="mini" slot="reference">操作</el-button>
+                  <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
+                </el-popover>
+              </el-menu-item>
+            </el-menu>
+            <el-menu default-active="0" v-else-if="interface[4].isDefault">
+              <el-menu-item v-for="(item,index) in searchList"
+                          :key="index" :index="index.toString()" @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index })">
+                <div class="avatarBox">
+                  <img :src="item.avatar">
+                </div>
+                <span slot="title">{{ item.group_name }}</span>
+                <el-popover
+                  placement="right"
+                  trigger="hover">
+                  <el-button size="mini" slot="reference">操作</el-button>
+                  <el-button size="mini" type="danger" @click="addGroup(item.id)">加入群组</el-button>
+                </el-popover>
+              </el-menu-item>
+            </el-menu>
+          </el-aside>
+          <el-main>
+            <el-container v-show='toUser'>
+              <el-header>
+                <div><span>{{ userName }}</span></div>
+              </el-header>
+              <el-main id="chatMain">
+                <div class="chatMain">
+                  <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
+                    <div v-if="item.from_user_id == user.user.id || item.user_id == user.user.id" class="formMessage">
+                      <div class="messgaeBox">
+                        <div class="Bubble"></div>
+                        <div class="messgaeCentent">
+                          <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
+                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" style="max-width: 200px;position: inherit;background-color:#fff;">
+                          <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
+                            <img :src="fileImg">
+                            <div>
+                              <h1>{{ item.content.split('/').pop() }}</h1>
+                              <span>{{ item.content }}</span>
+                              <a target="_blank" :href="item.content">下载</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
+                    </div>
+                    <div v-else class="toMessage">
+                      <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
+                      <div class="messgaeBox">
+                        <div class="Bubble"></div>
+                        <div class="messgaeCentent">
+                          <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
+                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" style="max-width: 200px;position: inherit;background-color:#fff;">
+                          <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
+                            <img :src="fileImg">
+                            <div>
+                              <h1>{{ item.content.split('/').pop() }}</h1>
+                              <span>{{ item.content }}</span>
+                              <a target="_blank" :href="item.content">下载</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </el-main>
+              <el-footer>
+                <el-upload class="file-upload"
+                  action="https://jsonplaceholder.typicode.com/posts/"
+                 :show-file-list="false"
+                 :before-upload="uploadFile">
+                  <i class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+                <el-upload
+                  class="avatar-uploader"
+                  action="https://jsonplaceholder.typicode.com/posts/"
+                 :show-file-list="false"
+                 :before-upload="uploadImg">
+                  <i class="el-icon-picture avatar-uploader-icon"></i>
+                </el-upload>
+                <el-input type="textarea" v-model="message" @keyup.13.native="sendMessage"></el-input>
+                <div class="btnBox">
+                  <el-button type="primary" size="mini" @click="sendMessage">发送</el-button>
+                </div>
+              </el-footer>
+            </el-container>
+          </el-main>
+        </el-container>
+      </el-main>
+    </el-container>
   </div>
 </template>
 <script>
+import fileImg from "@/assets/img/file.png";
+
 export default {
-  name: 'message',
+  name: "message",
   data() {
     return {
+      fileImg: fileImg,
+      user: JSON.parse(localStorage.getItem("user")),
+      interface: [
+        {
+          alt: "聊天",
+          id: "chat",
+          icon: "font_family icon-yuyin",
+          isDefault: true
+        },
+        {
+          alt: "通讯录",
+          id: "mail",
+          icon: "font_family icon-yonghuliebiao",
+          isDefault: false
+        },
+        {
+          alt: "群组",
+          id: "group",
+          icon: "font_family icon-qunzu",
+          isDefault: false
+        },
+        {
+          alt: "用户搜索",
+          id: "search",
+          icon: "el-input__icon el-icon-search",
+          isDefault: false
+        },
+        {
+          alt: "群搜索",
+          id: "search",
+          icon: "el-input__icon el-icon-search",
+          isDefault: false
+        }
+      ],
+      searchId: "",
+      chatList: {
+        list: []
+      },
+      friendList: {
+        list: []
+      },
+      groupList: {
+        list: []
+      },
+      searchList: {
+        list: []
+      },
+      record: {
+        list: [],
+        pagination: {
+          total: 1,
+          current_page: 1
+        }
+      },
+      checkBoxList: [],
+      // 公用变量
+      key: 0,
+      toUser: 0,
+      userName: "",
+      message: "",
+      // 群聊变量
+      groupId: 0,
+      userList: [],
+      modalShow: false
+    };
+  },
+  methods: {
+    changeView(index) {
+      this.interface.forEach((e, k) => {
+        if (index == k) e.isDefault = true;
+        else e.isDefault = false;
+      });
+      switch (index) {
+        case 0:
+          this.getChatList();
+          break;
+        case 3:
+          this.userSearch();
+          break;
+        case 4:
+          this.groupSearch();
+          break;
+      }
+    },
+    getFriendList() {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$get("friend/list")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.friendList = response.data;
+        })
+        .catch(err => loading.close());
+    },
+    addFriend(id) {
+      let that = this,
+        loading = this.$loading({ lock: true });
 
+      that
+        .$post("friend/add", { friend_id: id })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.searchId = "";
+          that.getFriendList();
+        })
+        .catch(err => loading.close());
+    },
+    delUser(id, index) {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("/friend/del", {
+          friend_id: id
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.friendList.list.splice(index, 1);
+        })
+        .catch(err => loading.close());
+    },
+    userSearch() {
+      let that = this;
+      that
+        .$get("users/search", { name: that.searchId })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.searchList = response.data.list;
+        })
+        .catch(err => console.error(err));
+    },
+    getChatList() {
+      let that = this;
+      that
+        .$post("chat/session/record")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.chatList = response.data;
+          if (!that.chatList.list.length) return false;
+          switch (that.chatList.list[0].friend_uid) {
+            case 0:
+              that.state = 2;
+              that.getRecord({
+                id: that.chatList.list[0].group_id,
+                username: that.chatList.list[0].group.group_name
+              });
+              break;
+            case 1:
+              if (that.chatList.list[1].friend_uid) {
+                that.state = 1;
+                that.getRecord({
+                  id: that.chatList.list[1].friend_uid,
+                  username: that.chatList.list[1].friend_user.display_name
+                });
+              } else {
+                that.state = 2;
+                that.getRecord({
+                  id: that.chatList.list[1].group.group_id,
+                  username: that.chatList.list[1].group.group_name
+                });
+              }
+              break;
+            default:
+              that.state = 1;
+              that.getRecord({
+                id: that.chatList.list[0].friend_uid,
+                username: that.chatList.list[0].friend_user.display_name
+              });
+              break;
+          }
+        })
+        .catch(err => console.error(err));
+    },
+    getRecord({ id, username, index = 0 }) {
+      let that = this,
+        url = null,
+        params = { page: that.current_page },
+        loading = this.$loading({ lock: true });
+      that.key = index;
+      that.toUser = id;
+      that.userName = username;
+      if (that.state == 1) {
+        url = "chat/record";
+        params.to_user_id = id;
+      } else if (that.state == 2) {
+        url = "group/chat/record";
+        params.group = id;
+      } else return false;
+      that
+        .$get(url, params)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          if (
+            response.pagination.current_page == 1 ||
+            response.pagination.currentPage == 1
+          )
+            that.record.list = response.data.list;
+          else response.data.list.forEach(e => that.record.list.push(e));
+          that.record.pagination = response.pagination;
+          that.fixLocation();
+        })
+        .catch(error => loading.close());
+    },
+    delChat(id, key) {
+      let that = this;
+      that
+        .$post("/chat/session/remove", {
+          cid: id
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.toUser = 0;
+          that.chatList.list.splice(key, 1);
+        })
+        .catch(err => console.error(err));
+    },
+    getGroupList() {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$get("group/list")
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.groupList.list = response.data.list;
+        })
+        .catch(err => loading.close());
+    },
+    addGroup(id) {
+      let that = this;
+      that
+        .$post("/group/join", {
+          group: id
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.getGroupList();
+        })
+        .catch(err => console.error(err));
+    },
+    delGroup(id, index) {
+      let that = this;
+      that
+        .$post("/group/leave", {
+          group: id
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.toUser = 0;
+          that.groupList.list.splice(index, 1);
+        })
+        .catch(err => console.error(err));
+    },
+    groupSearch() {
+      let that = this;
+      that
+        .$get("group/search", { name: that.searchId })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.searchList = response.data.list;
+        })
+        .catch(err => console.error(err));
+    },
+    editGroup(id, name, desc, key) {
+      let that = this;
+      this.$prompt("", "修改群名", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValue: name
+      }).then(({ value, action }) => {
+        that
+          .$post("group/modify", {
+            group_id: id,
+            group_name: value
+          })
+          .then(response => {
+            if (response.status != 200) return false;
+            that.groupList.list[key].group_name = value;
+            that.userName = value;
+          })
+          .catch(err => console.error(err));
+      });
+    },
+    dissolution(id, key) {
+      let that = this;
+      this.$confirm("此操作将永久该群组, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(res => {
+          that
+            .$post("group/dissolution", { group_id: id })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.toUser = 0;
+              that.groupList.list.splice(key, 1);
+            })
+            .catch(error => console.error(error));
+        })
+        .catch(err => console.log("点错了"));
+    },
+    joinGroup(userId, groupName = "", groupId = 0) {
+      let that = this,
+        params = { user_ids: userId.join(",") };
+      if (groupId) params.group_id = groupId;
+      else params.group_name = groupName.join(",");
+      that
+        .$post("group/invite", params)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.getGroupList();
+          that.modalShow = false;
+        })
+        .catch(error => console.error(error));
+    },
+    // 发信息
+    sendMessage() {
+      let that = this,
+        params = {
+          req: {
+            type: 1,
+            content: that.message
+          }
+        };
+      if (that.message == "") {
+        this.$message({ message: "发送消息不能为空", type: "error" });
+        return false;
+      }
+      if (that.state == 1) {
+        params.action = "chat";
+        params.req.to_uid = that.toUser;
+      } else if (that.state == 2) {
+        params.action = "group";
+        params.req.to_group_id = that.toUser;
+      } else return false;
+      this.webSocketSend(params);
+      this.record.list.push({
+        from_user_id: that.user.user.id,
+        from_user: {
+          from_user_id: that.user.user.id,
+          avatar: that.user.user.avatar,
+          last_name: that.user.user.display_name
+        },
+        msg_type: 1,
+        content: that.message
+      });
+      this.message = "";
+    },
+    // 发文件
+    uploadFile(file) {
+      let form = new FormData(),
+        that = this,
+        params = {
+          req: {
+            type: 3
+          }
+        };
+      form.append("file", file);
+      that
+        .$upload("chat/upload_file", form)
+        .then(response => {
+          if (response.status != 200) return false;
+
+          if (that.state == 1) {
+            params.action = "chat";
+            params.req.to_uid = that.toUser;
+          } else if (that.state == 2) {
+            params.action = "group";
+            params.req.to_group_id = that.toUser;
+          } else return false;
+
+          params.req.content = response.data.path;
+          that.webSocketSend(params);
+          that.record.list.push({
+            from_user_id: that.user.user.id,
+            from_user: {
+              from_user_id: that.user.user.id,
+              avatar: that.user.user.avatar,
+              last_name: that.user.user.display_name
+            },
+            msg_type: 3,
+            content: response.data.path
+          });
+        })
+        .catch(error => console.error(error));
+    },
+    // 发图片
+    uploadImg(file) {
+      let form = new FormData(),
+        that = this,
+        params = {
+          req: {
+            type: 2
+          }
+        };
+      form.append("file", file);
+      that
+        .$upload("chat/upload_file", form)
+        .then(response => {
+          if (response.status != 200) return false;
+          if (that.state == 1) {
+            params.action = "chat";
+            params.req.to_uid = that.toUser;
+          } else if (that.state == 2) {
+            params.action = "group";
+            params.req.to_group_id = that.toUser;
+          } else return false;
+          params.req.content = response.data.path;
+          that.webSocketSend(params);
+          that.record.list.push({
+            from_user_id: that.user.user.id,
+            from_user: {
+              from_user_id: that.user.user.id,
+              avatar: that.user.user.avatar,
+              last_name: that.user.user.display_name
+            },
+            msg_type: 2,
+            content: response.data.path
+          });
+        })
+        .catch(error => console.error(error));
+    },
+    getMembers() {
+      let that = this;
+      that
+        .$get("chat/select/members")
+        .then(response => {
+          if (response.status != 200) return false;
+          let arr = [];
+          response.data.colleagues.forEach(e => arr.push(e));
+          response.data.friends.forEach(e => arr.push(e));
+          response.data.strangers.forEach(e => arr.push(e));
+
+          that.checkBoxList = arr;
+        })
+        .catch(error => console.error(error));
+    },
+    webSocket() {
+      let socketAddress = "wss://factoryun.com/wss";
+      // let socketAddress = "ws://skyliu.cn/ws";
+      // let socketAddress = "ws://192.168.66.28:6868";
+      this.ws = new WebSocket(socketAddress);
+      this.ws.onmessage = event => {
+        let result = JSON.parse(event.data);
+        switch (result.action) {
+          case "init":
+            this.webSocketLogin();
+            break;
+          case "login":
+            if (result.resp.code != 200) {
+              this.webSocketLogin();
+              return false;
+            } else {
+              this.pong = setInterval(() => {
+                this.webSocketSend({
+                  action: "pong",
+                  req: {
+                    message: "hello"
+                  }
+                });
+              }, 5000);
+            }
+          case "pong":
+            break;
+          case "chat":
+            console.log(result);
+            switch (result.resp.type) {
+              case 1:
+              case "1":
+              // 文字消息
+              case 2:
+              case "2":
+              // 图片消息
+              case 3:
+              case "3":
+              // 产品
+              case 4:
+              case "4":
+              // 语音消息
+              case 5:
+              case "5":
+              // 视频消息
+              case 6:
+              case "6":
+                // 位置消息
+                if (
+                  result.resp_event == 200 &&
+                  result.resp.from_uid == this.toUser
+                ) {
+                  this.record.list.push({
+                    from_user_id: result.resp.from_uid,
+                    from_user: {
+                      from_user_id: result.resp.from_uid,
+                      avatar:
+                        result.resp.avatar ||
+                        "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                      last_name: this.userName
+                    },
+                    msg_type: result.resp.type,
+                    content: result.resp.content
+                  });
+                  let notification = new Notification("收到新消息");
+                }
+                break;
+              case "7":
+                // 广播消息
+                break;
+            }
+            // this.getRecord({ id: this.toUser, username: this.userName });
+            this.fixLocation();
+            break;
+          case "group":
+            console.log(result);
+            if (result.resp_event == 200) {
+              this.record.list.push({
+                from_user_id: result.resp.from_uid,
+                from_user: {
+                  from_user_id: result.resp.from_uid,
+                  avatar:
+                    result.resp.avatar ||
+                    "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                  last_name: this.userName
+                },
+                msg_type: result.resp.type,
+                content: result.resp.content
+              });
+              let notification = new Notification("收到新消息");
+            }
+            this.fixLocation();
+            break;
+          case "close":
+            this.webSocketClose();
+            break;
+          default:
+            console.log("抛出");
+            break;
+        }
+      };
+    },
+    webSocketLogin() {
+      this.webSocketSend({
+        action: "login",
+        req: {
+          token: this.user.token
+        }
+      });
+    },
+    webSocketSend(action) {
+      let that = this;
+      this.ws.send(JSON.stringify(action));
+    },
+    webSocketClose() {
+      this.ws.close();
+    },
+    fixLocation() {
+      let div = document.getElementById("chatMain");
+      setTimeout(() => (div.scrollTop = div.scrollHeight), 500);
+    }
+  },
+  created() {
+    this.getChatList();
+    this.getFriendList();
+    this.getGroupList();
+    this.webSocket();
+    this.getMembers();
+  }
+};
+</script>
+<style lang="less">
+@FFF: #ffffff;
+@white: #eeeeee;
+@gery: #666666;
+@black: #1d1d1d;
+@blue: #0064db;
+@border: 1px solid @gery;
+@listBackground: @white;
+@hoverBackground: #e6e6e6;
+@background: #dedede;
+@chatBackground: #fffefe;
+@chatBorder: 1px solid #dedede;
+.Bubble() {
+  padding: 0;
+  margin: 0;
+  width: 0px;
+  height: 0px;
+  box-sizing: content-box;
+  position: absolute;
+  top: 2rem;
+}
+
+#message {
+  width: 100%;
+  box-sizing: border-box;
+  .el-container {
+    height: 100%;
+    .el-aside {
+      height: 100%;
+      background-color: @black;
+      box-sizing: border-box;
+      padding: 2rem 1rem;
+      .function {
+        list-style: none;
+        li {
+          margin-bottom: 1.5rem;
+          text-align: center;
+          img {
+            width: 100%;
+            border-radius: 0.5rem;
+          }
+          i {
+            font-size: 27px;
+            color: @gery;
+          }
+          .is-active {
+            color: @blue;
+          }
+        }
+      }
+    }
+    .el-main {
+      .el-container {
+        height: 100%;
+        .el-aside {
+          height: 100%;
+          background-color: @listBackground;
+          padding: 0;
+          .search {
+            padding: 2rem 0.5rem 1rem 0.5rem;
+            display: flex;
+            > div {
+              margin: 0.5rem;
+            }
+            button {
+              padding: 0.5rem;
+              line-height: 1;
+              margin: 0.5rem;
+              width: 30px;
+              cursor: pointer;
+              background-color: @background;
+              color: @gery;
+              border: none;
+              border-radius: 0.5rem;
+              outline: none;
+            }
+            input {
+              background-color: @background;
+              color: @gery;
+            }
+            ::-webkit-input-placeholder {
+              color: @gery;
+            }
+          }
+          .el-menu {
+            background-color: @listBackground;
+            .el-menu-item {
+              color: @gery;
+              display: flex;
+              align-items: center;
+              box-sizing: border-box;
+              &:hover {
+                background-color: @hoverBackground;
+              }
+              .avatarBox {
+                width: 50px;
+                height: 50px;
+                overflow: hidden;
+                display: inline-block;
+                img {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+              > span {
+                margin-left: 1rem;
+              }
+              button {
+                position: absolute;
+                right: 1rem;
+                top: 1.3rem;
+              }
+            }
+            .is-active {
+              background-color: @background;
+            }
+          }
+        }
+        .el-main {
+          background-color: @chatBackground;
+          color: @gery;
+          .el-header {
+            border-bottom: @chatBorder;
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            div {
+              > span {
+                font-size: 2rem;
+              }
+              > button {
+                > span {
+                  font-size: 1.2rem;
+                }
+              }
+            }
+          }
+          .el-main {
+            overflow-y: auto;
+            border-bottom: @chatBorder;
+            .chatMain {
+              padding: 2rem 2.5rem 1rem 1.5rem;
+              .chatMessage {
+                position: relative;
+                .formMessage {
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-end;
+                  > img {
+                    width: 36px;
+                    height: 36px;
+                    position: absolute;
+                    top: 1rem;
+                  }
+                  .messgaeBox {
+                    position: relative;
+                    box-sizing: border-box;
+                    padding: 1rem;
+                    padding-right: 1rem;
+                    color: @FFF;
+                    word-break: break-word;
+                    margin-right: 36px;
+                    .messgaeCentent {
+                      background-color: @blue;
+                      border-radius: 8px;
+                      padding: 1rem;
+                      .goodsMsg {
+                        display: flex;
+                        align-items: center;
+                        width: 250px;
+                        height: 100px;
+                        img {
+                          position: inherit;
+                          width: 5rem;
+                          height: 5rem;
+                        }
+                        div {
+                          padding: 0.5rem;
+                          span {
+                            max-height: 60px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            word-wrap: break-word;
+                            -webkit-box-orient: vertical;
+                            -webkit-line-clamp: 3;
+                          }
+                          a {
+                            color: @white;
+                          }
+                        }
+                      }
+                    }
+                    .Bubble {
+                      .Bubble();
+                      right: 0;
+                      border-top: 0.5rem solid @FFF;
+                      border-left: 0.5rem solid @blue;
+                      border-right: 0.5rem solid @FFF;
+                      border-bottom: 0.5rem solid @FFF;
+                    }
+                  }
+                }
+                .toMessage {
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-start;
+                  > img {
+                    width: 36px;
+                    height: 36px;
+                    position: absolute;
+                    top: 1rem;
+                  }
+                  .messgaeBox {
+                    position: relative;
+                    box-sizing: border-box;
+                    padding: 1rem;
+                    padding-left: 1rem;
+                    color: @FFF;
+                    word-break: break-word;
+                    margin-left: 36px;
+                    .messgaeCentent {
+                      background-color: @blue;
+                      border-radius: 8px;
+                      padding: 1rem;
+                      .goodsMsg {
+                        display: flex;
+                        align-items: center;
+                        width: 250px;
+                        height: 100px;
+                        img {
+                          position: inherit;
+                          width: 5rem;
+                          height: 5rem;
+                        }
+                        div {
+                          padding: 0.5rem;
+                          span {
+                            max-height: 60px;
+                            min-height: 50px;
+                            margin: 0.3rem 0;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            word-wrap: break-word;
+                            -webkit-box-orient: vertical;
+                            -webkit-line-clamp: 3;
+                          }
+                          a {
+                            color: @white;
+                          }
+                        }
+                      }
+                    }
+                    .Bubble {
+                      .Bubble();
+                      left: 0;
+                      border-top: 0.5rem solid @FFF;
+                      border-left: 0.5rem solid @FFF;
+                      border-right: 0.5rem solid @blue;
+                      border-bottom: 0.5rem solid @FFF;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          .el-footer {
+            box-sizing: border-box;
+            padding: 2rem 2.5rem 1rem 1.5rem;
+            position: relative;
+            .file-upload,
+            .avatar-uploader {
+              display: inline-block;
+              i {
+                font-size: 2rem;
+                margin: 0 0.5rem;
+              }
+            }
+            textarea {
+              border: none;
+              resize: none;
+            }
+            .btnBox {
+              margin-top: 1rem;
+              text-align: right;
+            }
+          }
+        }
+      }
+    }
+  }
+  .modalBox {
+    #userList {
+      height: 20rem;
+      overflow-y: auto;
+      .el-checkbox-group {
+        .el-checkbox {
+          min-width: 60px;
+          margin-right: 30px;
+          margin-left: 0px;
+          margin-bottom: 0.5rem;
+          &:last-child {
+            margin-right: 0px;
+          }
+        }
+      }
+    }
+    button {
+      display: block;
+      margin: 1rem auto 0 auto;
     }
   }
 }
-</script>
-<style lang="less">
-  #message{
-
-  }
 </style>

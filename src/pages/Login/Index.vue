@@ -5,12 +5,12 @@
 </template>
 
 <script>
-import loginRise from '@/pages/Login/common/loginRise';
+import loginRise from "@/pages/Login/common/loginRise";
 
 export default {
-  name: 'Index',
-  components:{
-    'login-rise': loginRise,
+  name: "Index",
+  components: {
+    "login-rise": loginRise
   }
-}
+};
 </script>

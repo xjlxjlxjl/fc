@@ -37,50 +37,50 @@
 </template>
 
 <script>
-import indexRise from '@/pages/Index/common/indexRise';
-import indexTail from '@/pages/Index/common/indexTail';
-import indexChart from '@/pages/Index/common/indexChart';
+import indexRise from "@/pages/Index/common/indexRise";
+import indexTail from "@/pages/Index/common/indexTail";
+import indexChart from "@/pages/Index/common/indexChart";
 
 export default {
-  name: 'Center',
+  name: "Center",
   data() {
     return {
       service: [
-        { name: '我的订单', url: 'order' },
-        { name: '我的合同', url: 'contract' },
-        { name: '我的收藏', url: 'collect' },
-        { name: '个人信息', url: 'account' },
-        { name: '实名认证', url: 'authentication' },
-        { name: '收货地址管理', url: 'addressManage' },
-        { name: '安全中心', url: 'security' },
+        { name: "我的订单", url: "/order" },
+        { name: "我的合同", url: "/contract" },
+        { name: "我的收藏", url: "/collect" },
+        { name: "个人信息", url: "/account" },
+        { name: "实名认证", url: "/authentication" },
+        { name: "收货地址管理", url: "/addressManage" },
+        { name: "安全中心", url: "/security" }
       ]
-    }
+    };
   },
-  components:{
-    'index-rise': indexRise,
-    'index-chart': indexChart,
-    'index-tail': indexTail
+  components: {
+    "index-rise": indexRise,
+    "index-chart": indexChart,
+    "index-tail": indexTail
   },
   methods: {
     changeState(item) {
       this.content = item;
-    },
+    }
   }
-}
+};
 </script>
 <style lang="less">
-a{
+a {
   text-decoration: none;
 }
 .el-header,
 .el-main,
-.el-footer{
+.el-footer {
   padding: 0;
 }
-.homeContainer{
+.homeContainer {
   background-color: #f2f2f2;
 }
-.homeFooter{
+.homeFooter {
   position: fixed;
   width: 100%;
   left: 0;
@@ -91,78 +91,78 @@ a{
 @border: solid 1px #e6e6e6;
 @white: #ffffff;
 @sky: #2288ff;
-.borShadow (){
+.borShadow () {
   // border: @border;
   // box-shadow: 0 0 15px #a7a6a6;
   background-color: @white;
   height: 100% !important;
 }
-#main{
+#main {
   max-width: 1280px;
   margin: 0 auto;
   // 保留底部颜色
   height: 83%;
-  
-  @media screen and (min-width: 820px){
-    >.el-container{
+
+  @media screen and (min-width: 820px) {
+    > .el-container {
       height: 100%;
-      .homeMainAside{
+      .homeMainAside {
         padding: 0;
         margin-top: 1.5rem;
         margin-right: 1.5rem;
-        .el-menu{
+        .el-menu {
           border: none;
-          .el-menu-item{
-            &:hover{
+          .el-menu-item {
+            &:hover {
               background-color: @sky;
               color: @white;
             }
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             background-color: #0064db;
             color: #ffffff;
           }
         }
-        .borShadow
+        .borShadow;
       }
     }
-    .homeMainContent{
+    .homeMainContent {
       position: relative;
       padding: 0;
       margin-top: 1.5rem;
       height: 100% !important;
       background: #ffffff;
-      >section{
+      > section {
         height: 92%;
         width: 93%;
-        .homeAsideList{
-          .el-menu-item{
+        .homeAsideList {
+          .el-menu-item {
             border-bottom: 1px solid #e6e6e6;
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             background-color: #ff9900;
             color: #ffffff;
           }
         }
-        .homeMainList{
+        .homeMainList {
           display: flex;
           flex-wrap: wrap;
           background: #ffffff;
-          >div{
+          > div {
             width: 15rem;
             height: 15rem;
             overflow: hidden;
             text-align: center;
             padding: 1rem;
-            img{
+            img {
               display: block;
               margin: 0 auto;
-              padding: .5rem;
-              border: 1px solid #EEEEEE;
+              padding: 0.5rem;
+              border: 1px solid #eeeeee;
               box-sizing: border-box;
               width: 80%;
             }
-            span{
+            span {
               line-height: 2;
               color: #666666;
             }
@@ -172,64 +172,64 @@ a{
     }
   }
 
-  @media screen and (max-width: 820px){
-    >.el-container{
+  @media screen and (max-width: 820px) {
+    > .el-container {
       height: auto;
       display: block;
-      .homeMainAside{
+      .homeMainAside {
         padding: 0;
         width: 100% !important;
         height: auto;
-        .el-menu{
+        .el-menu {
           border: none;
-          .el-menu-item{
+          .el-menu-item {
             border-bottom: 1px solid #e6e6e6;
             box-sizing: border-box;
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             background-color: #0064db;
             color: #ffffff;
           }
         }
       }
     }
-    .homeMainContent{
+    .homeMainContent {
       display: block;
       padding: 0;
       background: #ffffff;
-      >section{
-        .homeAsideList{
+      > section {
+        .homeAsideList {
           box-sizing: border-box;
-          .el-menu-item{
+          .el-menu-item {
             border-bottom: 1px solid #e6e6e6;
             box-sizing: border-box;
-            &:first-child{
+            &:first-child {
               border-top: 1px solid #e6e6e6;
             }
           }
-          .el-menu-item.is-active{
+          .el-menu-item.is-active {
             background-color: #ff9900;
             color: #ffffff;
           }
         }
-        .homeMainList{
+        .homeMainList {
           display: flex;
           flex-wrap: wrap;
           background: #ffffff;
-          padding: .5rem;
-          >div{
+          padding: 0.5rem;
+          > div {
             width: 50%;
             box-sizing: border-box;
             text-align: center;
-            img{
+            img {
               display: block;
               margin: auto;
-              padding: .5rem;
-              border: 1px solid #EEEEEE;
+              padding: 0.5rem;
+              border: 1px solid #eeeeee;
               box-sizing: border-box;
               width: 90%;
             }
-            span{
+            span {
               line-height: 2;
               color: #666666;
             }
