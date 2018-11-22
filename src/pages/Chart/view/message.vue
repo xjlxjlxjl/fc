@@ -29,7 +29,7 @@
       <el-aside width="60px">
         <ul class="function">
           <li><img :src="user.user.avatar"></li>
-          <li v-for="(item,index) in interface" :key="index" v-if="index < 3">
+          <li v-for="(item,index) in interface" :key="index" v-if="index < 3 || index > 4">
             <i :class="item.isDefault ? `is-active ${item.icon}` : item.icon" @click="changeView(index)" :alt="item.alt"></i>
           </li>
         </ul>
@@ -99,6 +99,7 @@
                   <el-button size="mini" type="warning" @click="delGroup(item.id, index)">退出</el-button>
                   <el-button size="mini" type="danger" v-if="item.admin_id == user.user.id" @click="dissolution(item.id, index)">解散</el-button>
                   <el-button size="mini" type="primary" v-if="item.admin_id == user.user.id" @click="groupId = item.id;modalShow = true;">邀请加入群聊</el-button>
+                  <el-button size="mini" type="info" @click="getGroupUser(item.id)">查看群成员</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
@@ -129,6 +130,22 @@
                   trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
                   <el-button size="mini" type="danger" @click="addGroup(item.id)">加入群组</el-button>
+                </el-popover>
+              </el-menu-item>
+            </el-menu>
+            <el-menu default-active="0" v-else-if="interface[5].isDefault">
+              <el-menu-item v-for="(item,index) in mailList.colleagues"
+                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.last_name, index: index })">
+                <div class="avatarBox">
+                  <img :src="item.avatar">
+                </div>
+                <span slot="title">{{ item.last_name }}</span>
+                <el-popover
+                  placement="right"
+                  trigger="hover">
+                  <el-button size="mini" slot="reference">操作</el-button>
+                  <el-button size="mini" type="primary" @click="addGroup(item.id)">加入群组</el-button>
+                  <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
@@ -245,6 +262,12 @@ export default {
           id: "search",
           icon: "el-input__icon el-icon-search",
           isDefault: false
+        },
+        {
+          alt: "公司成员",
+          id: "member",
+          icon: "el-input__icon el-icon-tickets",
+          isDefault: false
         }
       ],
       searchId: "",
@@ -260,6 +283,7 @@ export default {
       searchList: {
         list: []
       },
+      mailList: {},
       record: {
         list: [],
         pagination: {
@@ -470,6 +494,26 @@ export default {
         })
         .catch(err => console.error(err));
     },
+    getGroupUser(id) {
+      let that = this, content = [];
+      that
+        .$get("group/users", { group_id: id })
+        .then(response => {
+          if(response.status != 200) return false;
+          response.data.list.forEach(e => {
+            content.push(`
+              <div style="display: inline-block;width: 49%;box-sizing: border-box;">
+                <p>${ e.last_name }</p>
+                <img src="${ e.avatar }" width="150">
+              </div>
+            `);
+          })
+          this.$alert(content.join(''), '群成员', { dangerouslyUseHTMLString: true });
+          document.getElementsByClassName('el-message-box__content')[0].style.height = '300px';
+          document.getElementsByClassName('el-message-box__content')[0].style.overflowY = 'auto';
+        })
+        .catch(err => console.error(err));
+    },
     groupSearch() {
       let that = this;
       that
@@ -650,7 +694,7 @@ export default {
           response.data.colleagues.forEach(e => arr.push(e));
           response.data.friends.forEach(e => arr.push(e));
           response.data.strangers.forEach(e => arr.push(e));
-
+          that.mailList = response.data;
           that.checkBoxList = arr;
         })
         .catch(error => console.error(error));

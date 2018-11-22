@@ -73,7 +73,7 @@
             <div v-for="(item,index) in selectedGood" :key="index" @click="showDetail(item)">
               <img :src="item.icon || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
               <span>{{ item.name }}</span>
-              <p>{{ item.message }}</p>
+              <p v-show="!item.enable">{{ item.message }}</p>
             </div>
           </el-main>
           <!-- 智能选形 -->
@@ -432,14 +432,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -676,14 +677,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -830,6 +832,7 @@
                   </div>
                 </li>
               </ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -857,14 +860,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -884,6 +888,7 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 4">
             <div class="main">
               <ul></ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -911,14 +916,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1069,14 +1075,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1096,6 +1103,7 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 6">
             <div class="main">
               <ul></ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1123,14 +1131,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1150,6 +1159,7 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 7">
             <div class="main">
               <ul></ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1177,14 +1187,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1204,6 +1215,7 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 8">
             <div class="main">
               <ul></ul>
+              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1231,14 +1243,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1391,14 +1404,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1550,14 +1564,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1723,14 +1738,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1913,14 +1929,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row,$index }">
                     <div class="drawing">
-                      <div>
+                      <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
                         <a target="_blank" :href='row.drawing_2d'>下载</a>
                       </div>
-                      <div>
+                      <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
                         <a target="_blank" :href='row.drawing_3d'>下载</a>
                       </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
                   </template>
                 </el-table-column>
