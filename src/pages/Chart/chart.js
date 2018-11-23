@@ -42,10 +42,10 @@ Array.prototype.repeatDepth = function() {
 Array.prototype.sum = function() {
   return this.reduce(reducer, 0);
 };
-
 var reducer = function add(sumSoFar, item) {
   return sumSoFar + parseInt(item.quantity) * parseFloat(item.price);
 };
+
 
 new Vue({
   el: "#app",

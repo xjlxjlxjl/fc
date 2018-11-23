@@ -240,7 +240,7 @@
                  :before-upload="uploadImg">
                   <i class="el-icon-picture avatar-uploader-icon"></i>
                 </el-upload>
-                <el-input type="textarea" v-model="message" @keyup.13.native="sendMessage"></el-input>
+                <el-input type="textarea" id="el-textarea" v-model="message" @keyup.13.native="sendMessage"></el-input>
                 <div class="btnBox">
                   <el-button type="primary" size="mini" @click="sendMessage">发送</el-button>
                 </div>
@@ -665,7 +665,10 @@ export default {
             content: that.message
           }
         };
-      if (that.message == "" || that.message.replace(/[\r\n]/g,"").length == 0) {
+      if (
+        that.message == "" ||
+        that.message.replace(/[\r\n]/g, "").length == 0
+      ) {
         this.$message({ message: "发送消息不能为空", type: "error" });
         that.message = "";
         return false;
@@ -699,9 +702,9 @@ export default {
             type: 3
           }
         };
-      console.log(file.size)
-      if(file.size / 1024 / 1024 > 100) {
-        this.$message.error('上传文件大小不能超过 100MB!');
+      console.log(file.size);
+      if (file.size / 1024 / 1024 > 100) {
+        this.$message.error("上传文件大小不能超过 100MB!");
         return false;
       }
       form.append("file", file);
@@ -742,19 +745,19 @@ export default {
             type: 2
           }
         };
-    
-      switch(file.type) {
-        case 'image/jpeg':
-        case 'image/png':
-        case 'image/x-icon':
-        // case 'image/svg+xml':
-          if(file.size / 1024 / 1024 > 10) {
-            this.$message.error('上传图像大小不能超过 10MB!');
+
+      switch (file.type) {
+        case "image/jpeg":
+        case "image/png":
+        case "image/x-icon":
+          // case 'image/svg+xml':
+          if (file.size / 1024 / 1024 > 10) {
+            this.$message.error("上传图像大小不能超过 10MB!");
             return false;
           }
           break;
         default:
-          this.$message.error('上传头像图片只能是 JPG / PNG / ico 格式!');
+          this.$message.error("上传头像图片只能是 JPG / PNG / ico 格式!");
           return false;
           break;
       }
@@ -959,6 +962,20 @@ export default {
   },
   mounted() {
     Notification.requestPermission(status => console.log(status));
+    document.getElementById("el-textarea").addEventListener("paste", e => {
+      for (var i = 0; i < e.clipboardData.items.length; i++) {
+        // 检测是否为图片类型
+        if (
+          e.clipboardData.items[i].kind == "file" &&
+          /image\//.test(e.clipboardData.items[i].type)
+        ) {
+          var imageFile = e.clipboardData.items[i].getAsFile();
+          // console.log(imageFile)
+          this.uploadImg(imageFile)
+          break;
+        }
+      }
+    });
   },
   created() {
     this.getChatList();
@@ -1122,6 +1139,10 @@ export default {
             border-bottom: @chatBorder;
             .chatMain {
               padding: 2rem 2.5rem 1rem 1.5rem;
+              @media screen and (max-width: 820px){
+                height: 38rem;
+                overflow-y: auto;
+              }
               .chatMessage {
                 position: relative;
                 .formMessage {
@@ -1142,7 +1163,7 @@ export default {
                     color: @FFF;
                     word-break: break-word;
                     margin-right: 36px;
-                    .messageUser{
+                    .messageUser {
                       color: @gery;
                     }
                     .messgaeCentent {
@@ -1204,7 +1225,7 @@ export default {
                     color: @FFF;
                     word-break: break-word;
                     margin-left: 36px;
-                    .messageUser{
+                    .messageUser {
                       color: @gery;
                     }
                     .messgaeCentent {
