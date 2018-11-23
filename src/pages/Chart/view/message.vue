@@ -20,7 +20,7 @@
                   <el-checkbox v-for="(item,index) in checkBoxList" :key="index" :label="item.id">{{ item.last_name }}</el-checkbox>
                 </el-checkbox-group>
               </div>
-                <el-button size="mini" type="primary" @click="joinGroup(userList, '', groupId)">确定</el-button>
+                <el-button size="mini" type="primary" @click="joinGroup(userList, '群聊', groupId)">确定</el-button>
             </div>
           </div>
         </div>
@@ -74,8 +74,7 @@
                   trigger="hover">
                   <el-button type="danger" size="mini" v-if="item.friend_user" @click="delChat(item.id, index)">删除</el-button>
                   <el-button size="mini" type="warning" v-else @click="delGroup(item.group_id, index);delChat(item.id, index)">退出</el-button>
-                  <el-button type="primary" size="mini" v-if="item.friend_user"
-                    @click="joinGroup([item.friend_uid],[item.friend_user.display_name,user.user.display_name])">创建群聊</el-button>
+                  <el-button type="primary" size="mini" v-if="item.friend_user" @click="modalShow = true">创建群聊</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
               </el-menu-item>
@@ -91,7 +90,7 @@
                   placement="right"
                   trigger="hover">
                   <el-button type="danger" size="mini" @click="delUser(item.id,index)">删除</el-button>
-                  <el-button type="primary" size="mini" @click="joinGroup([item.id],[item.display_name,user.user.display_name])">创建群聊</el-button>
+                  <el-button type="primary" size="mini" @click="modalShow = true">创建群聊</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
               </el-menu-item>
@@ -157,7 +156,7 @@
                     placement="right"
                     trigger="hover">
                     <el-button size="mini" slot="reference">操作</el-button>
-                    <el-button size="mini" type="primary" @click="addGroup(item.id)">加入群组</el-button>
+                    <el-button size="mini" type="primary" @click="modalShow = true">创建群聊</el-button>
                     <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
                   </el-popover>
                 </el-menu-item>
@@ -371,7 +370,7 @@ export default {
     },
     addFriend(id) {
       let that = this;
-      this.$prompt("请输入你的交友宣言", "发送验证消息").then(({ value }) => {
+      this.$prompt("请输入验证信息", "发送验证消息").then(({ value }) => {
         that
           .$post("/friend/add/verify", {
             friend_id: id,
@@ -550,9 +549,9 @@ export default {
           if (response.status != 200) return false;
           response.data.list.forEach(e => {
             content.push(`
-              <div style="display: inline-block;width: 49%;box-sizing: border-box;">
-                <p>${e.last_name}</p>
-                <img src="${e.avatar}" width="150">
+              <div style="display: inline-block;width: 49%;box-sizing: border-box;line-height: 2">
+                <img src="${e.avatar}" style="height: 16px;">
+                <span>${e.last_name}</span>
               </div>
             `);
           });
@@ -600,7 +599,7 @@ export default {
     },
     dissolution(id, key) {
       let that = this;
-      this.$confirm("此操作将永久该群组, 是否继续?", "提示", {
+      this.$confirm("此操作将永久解散该群组, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -621,12 +620,13 @@ export default {
       let that = this,
         params = { user_ids: userId.join(",") };
       if (groupId) params.group_id = groupId;
-      else params.group_name = groupName.join(",");
+      else params.group_name = groupName;
       that
         .$post("group/invite", params)
         .then(response => {
           if (response.status != 200) return false;
           that.getGroupList();
+          that.groupId = 0;
           that.modalShow = false;
         })
         .catch(error => console.error(error));
@@ -773,9 +773,8 @@ export default {
         .catch(error => console.error(error));
     },
     webSocket() {
-      let socketAddress = "wss://factoryun.com/wss";
-      // let socketAddress = "ws://skyliu.cn/ws";
-      // let socketAddress = "ws://192.168.66.28:6868";
+      // let socketAddress = "wss://factoryun.com/wss";
+      let socketAddress = "ws://skyliu.cn/ws";
       this.ws = new WebSocket(socketAddress);
       this.ws.onmessage = event => {
         let result = JSON.parse(event.data);
@@ -873,6 +872,7 @@ export default {
               }请求添加您为好友，请去通知列表查看`,
               message: result.resp.content
             });
+            let notification = new Notification("收到一条添加好友请求");
             this.getNotices();
             break;
           case "close":
@@ -880,6 +880,7 @@ export default {
             break;
           default:
             console.log("抛出");
+            console.log(result);
             break;
         }
       };
@@ -897,6 +898,7 @@ export default {
       this.ws.send(JSON.stringify(action));
     },
     webSocketClose() {
+      clearInterval(this.pong);
       this.ws.close();
     },
     fixLocation() {
@@ -1226,6 +1228,7 @@ export default {
       .el-checkbox-group {
         .el-checkbox {
           min-width: 60px;
+          width: 25%;
           margin-right: 30px;
           margin-left: 0px;
           margin-bottom: 0.5rem;
