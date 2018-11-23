@@ -187,7 +187,8 @@
                   <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
                     <div v-if="item.from_user_id == user.user.id || item.user_id == user.user.id" class="formMessage">
                       <div class="messgaeBox">
-                        <div class="Bubble"></div>
+                        <p v-if="item.user" class="messageUser" align="right">{{ item.user.remark || item.user.display_name }}</p>
+                        <div class="Bubble" :style="item.user ? 'top: 3.5rem;' : ''"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
                           <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" style="max-width: 200px;position: inherit;background-color:#fff;">
@@ -206,7 +207,8 @@
                     <div v-else class="toMessage">
                       <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
                       <div class="messgaeBox">
-                        <div class="Bubble"></div>
+                        <p v-if="item.user" class="messageUser">{{ item.user.remark || item.user.display_name }}</p>
+                        <div class="Bubble" :style="item.user ? 'top: 3.5rem;' : ''"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
                           <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" style="max-width: 200px;position: inherit;background-color:#fff;">
@@ -663,8 +665,9 @@ export default {
             content: that.message
           }
         };
-      if (that.message == "") {
+      if (that.message == "" || that.message.replace(/[\r\n]/g,"").length == 0) {
         this.$message({ message: "发送消息不能为空", type: "error" });
+        that.message = "";
         return false;
       }
       if (that.state == 1) {
@@ -696,6 +699,11 @@ export default {
             type: 3
           }
         };
+      console.log(file.size)
+      if(file.size / 1024 / 1024 > 100) {
+        this.$message.error('上传文件大小不能超过 100MB!');
+        return false;
+      }
       form.append("file", file);
       that
         .$upload("chat/upload_file", form)
@@ -734,6 +742,23 @@ export default {
             type: 2
           }
         };
+    
+      switch(file.type) {
+        case 'image/jpeg':
+        case 'image/png':
+        case 'image/x-icon':
+        // case 'image/svg+xml':
+          if(file.size / 1024 / 1024 > 10) {
+            this.$message.error('上传图像大小不能超过 10MB!');
+            return false;
+          }
+          break;
+        default:
+          this.$message.error('上传头像图片只能是 JPG / PNG / ico 格式!');
+          return false;
+          break;
+      }
+
       form.append("file", file);
       that
         .$upload("chat/upload_file", form)
@@ -1117,6 +1142,9 @@ export default {
                     color: @FFF;
                     word-break: break-word;
                     margin-right: 36px;
+                    .messageUser{
+                      color: @gery;
+                    }
                     .messgaeCentent {
                       background-color: @blue;
                       border-radius: 8px;
@@ -1176,6 +1204,9 @@ export default {
                     color: @FFF;
                     word-break: break-word;
                     margin-left: 36px;
+                    .messageUser{
+                      color: @gery;
+                    }
                     .messgaeCentent {
                       background-color: @blue;
                       border-radius: 8px;

@@ -1,7 +1,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import Home from './Home';
-import router from '../../router';
+import router from './router';
 import store from '../../store';
 import elementUi from 'element-ui';
 import { post, get, patch, put } from '../../assets/js/http';
