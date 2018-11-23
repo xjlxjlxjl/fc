@@ -71,7 +71,7 @@
           <!-- 商品列表 -->
           <el-main class="homeMainList" v-if="showDetailState == 0">
             <div v-for="(item,index) in selectedGood" :key="index" @click="showDetail(item)">
-              <img :src="item.icon || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
+              <img :src="item.icon || ''">
               <span>{{ item.name }}</span>
               <p v-show="!item.enable">{{ item.message }}</p>
             </div>
@@ -2259,10 +2259,10 @@ export default {
           url = "products/selected/moving_stator";
           break;
         case 6:
-          url = "products/selected/fpc_bridge";
+          url = "products/selected/fpc_diving_platform";
           break;
         case 7:
-          url = "products/selected/fpc_bridge";
+          url = "products/selected/fpc_flying_light_path";
           break;
         case 8:
           url = "products/selected/fpc_bridge";

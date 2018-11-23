@@ -264,6 +264,13 @@ export default {
         height: auto;
         .el-menu-item {
           color: @white !important;
+          .dearUserName{
+            text-align: right;
+            width: 150px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
           &:hover {
             background-color: #0064db !important;
           }

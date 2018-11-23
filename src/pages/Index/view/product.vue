@@ -57,11 +57,11 @@
           <header>选型器</header>
           <div class="body">
             <div class="goodsImg">
-              <img v-if="assigned.images.length > 0" :src="assigned.images ? assigned.images : 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
-              <img v-else src="https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg">
+              <img v-if="assigned.images.length > 0" :src="assigned.images ? assigned.images : ''">
+              <!-- <img v-else src="https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg"> -->
             </div>
             <div class="qrCode">
-              <img src="https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg" alt="">
+              <!-- <img src="https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg"> -->
             </div>
           </div>
         </div>

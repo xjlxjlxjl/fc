@@ -344,10 +344,7 @@ export default {
       let that = this;
       that
         .$post(
-          "carts/items/edit/" +
-            that.projectList.list[that.index].slug +
-            "/" +
-            str_id,
+          `carts/items/edit/${ that.projectList.list[that.index].slug }/${ str_id }`,
           { quantity: quantity }
         )
         .then(response => {
@@ -379,31 +376,13 @@ export default {
         loading = this.$loading({ lock: true });
       switch (key) {
         case 0:
-          url =
-            "carts/items/price-company/" +
-            that.projectList.list[that.index].slug +
-            "/" +
-            str_id +
-            "/" +
-            slug;
+          url = `carts/items/price-company/${ that.projectList.list[that.index].slug }/${ str_id }/${ slug }`;
           break;
         case 1:
-          url =
-            "carts/items/price-invoice/" +
-            that.projectList.list[that.index].slug +
-            "/" +
-            str_id +
-            "/" +
-            slug;
+          url = `carts/items/price-invoice/${ that.projectList.list[that.index].slug }/${ str_id }/${ slug }`;
           break;
         case 2:
-          url =
-            "carts/items/price-payment/" +
-            that.projectList.list[that.index].slug +
-            "/" +
-            str_id +
-            "/" +
-            slug;
+          url = `carts/items/price-payment/${ that.projectList.list[that.index].slug }/${ str_id }/${ slug }`;
           break;
       }
       that

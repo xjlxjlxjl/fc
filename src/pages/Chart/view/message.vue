@@ -1,5 +1,6 @@
 <template>
   <div id="message">
+    <!-- 邀请好友进入群 -->
     <transition name="el-fade-in-linear">
       <div v-show="modalShow">
         <div class="Curtain"></div>
@@ -23,6 +24,17 @@
             </div>
           </div>
         </div>
+      </div>
+    </transition>
+    <!-- 图片画廊 -->
+    <transition name="el-fade-in-linear">
+      <div v-if="Gallery">
+        <div class="Curtain"></div>
+        <el-carousel class="gallery" :interval="0" :autoplay="new Boolean(false)" :loop="new Boolean(false)" :initial-index='5'>
+          <el-carousel-item v-for="(item,index) in record.list" :key="index" v-if="item.type == 2 || item.msg_type == 2">
+            <img :src="item.content">
+          </el-carousel-item>
+        </el-carousel>
       </div>
     </transition>
     <el-container>
@@ -134,18 +146,32 @@
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[5].isDefault">
-              <el-menu-item v-for="(item,index) in mailList.colleagues"
-                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.last_name, index: index })">
-                <div class="avatarBox">
-                  <img :src="item.avatar">
-                </div>
-                <span slot="title">{{ item.last_name }}</span>
+              <div v-for="(val,key) in mailList" :key="key">
+                <p>{{ val.branch_name }}</p>
+                <el-menu-item  v-for="(item,index) in val.member" :key="index" :index="item.id.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index })">
+                  <div class="avatarBox">
+                    <img :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'">
+                  </div>
+                  <span slot="title">{{ item.display_name }}</span>
+                  <el-popover
+                    placement="right"
+                    trigger="hover">
+                    <el-button size="mini" slot="reference">操作</el-button>
+                    <el-button size="mini" type="primary" @click="addGroup(item.id)">加入群组</el-button>
+                    <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
+                  </el-popover>
+                </el-menu-item>
+              </div>
+            </el-menu>
+            <el-menu default-active="0" v-else-if="interface[6].isDefault">
+              <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read"
+                          :key="index" :index="index.toString()">
+                <span slot="title">{{ item.message }}</span>
                 <el-popover
                   placement="right"
                   trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
-                  <el-button size="mini" type="primary" @click="addGroup(item.id)">加入群组</el-button>
-                  <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
+                  <el-button size="mini" type="danger" v-if="item.type == 3" @click="acceptFriend(item.id)">添加</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
@@ -268,6 +294,12 @@ export default {
           id: "member",
           icon: "el-input__icon el-icon-tickets",
           isDefault: false
+        },
+        {
+          alt: "通知",
+          id: "notices",
+          icon: "el-input__icon el-icon-bell",
+          isDefault: false
         }
       ],
       searchId: "",
@@ -284,6 +316,9 @@ export default {
         list: []
       },
       mailList: {},
+      noticesList: {
+        list: []
+      },
       record: {
         list: [],
         pagination: {
@@ -300,7 +335,8 @@ export default {
       // 群聊变量
       groupId: 0,
       userList: [],
-      modalShow: false
+      modalShow: false,
+      Gallery: false
     };
   },
   methods: {
@@ -334,18 +370,29 @@ export default {
         .catch(err => loading.close());
     },
     addFriend(id) {
-      let that = this,
-        loading = this.$loading({ lock: true });
-
+      let that = this;
+      this.$prompt("请输入你的交友宣言", "发送验证消息").then(({ value }) => {
+        that
+          .$post("/friend/add/verify", {
+            friend_id: id,
+            content: value
+          })
+          .then(response => {
+            if (response.status != 200) return false;
+            that.$message({ message: "发送成功", type: "success" });
+          })
+          .catch(error => console.error(error));
+      });
+    },
+    acceptFriend(noticeId) {
+      let that = this;
       that
-        .$post("friend/add", { friend_id: id })
+        .$post("friend/add", { notice_id: noticeId })
         .then(response => {
-          loading.close();
           if (response.status != 200) return false;
-          that.searchId = "";
           that.getFriendList();
         })
-        .catch(err => loading.close());
+        .catch(err => console.error(err));
     },
     delUser(id, index) {
       let that = this,
@@ -495,22 +542,29 @@ export default {
         .catch(err => console.error(err));
     },
     getGroupUser(id) {
-      let that = this, content = [];
+      let that = this,
+        content = [];
       that
         .$get("group/users", { group_id: id })
         .then(response => {
-          if(response.status != 200) return false;
+          if (response.status != 200) return false;
           response.data.list.forEach(e => {
             content.push(`
               <div style="display: inline-block;width: 49%;box-sizing: border-box;">
-                <p>${ e.last_name }</p>
-                <img src="${ e.avatar }" width="150">
+                <p>${e.last_name}</p>
+                <img src="${e.avatar}" width="150">
               </div>
             `);
-          })
-          this.$alert(content.join(''), '群成员', { dangerouslyUseHTMLString: true });
-          document.getElementsByClassName('el-message-box__content')[0].style.height = '300px';
-          document.getElementsByClassName('el-message-box__content')[0].style.overflowY = 'auto';
+          });
+          this.$alert(content.join(""), "群成员", {
+            dangerouslyUseHTMLString: true
+          });
+          document.getElementsByClassName(
+            "el-message-box__content"
+          )[0].style.height = "300px";
+          document.getElementsByClassName(
+            "el-message-box__content"
+          )[0].style.overflowY = "auto";
         })
         .catch(err => console.error(err));
     },
@@ -694,8 +748,27 @@ export default {
           response.data.colleagues.forEach(e => arr.push(e));
           response.data.friends.forEach(e => arr.push(e));
           response.data.strangers.forEach(e => arr.push(e));
-          that.mailList = response.data;
           that.checkBoxList = arr;
+        })
+        .catch(error => console.error(error));
+    },
+    getBranch() {
+      let that = this;
+      that
+        .$get("members/company/branch")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.mailList = response.data.list;
+        })
+        .catch(error => console.error(error));
+    },
+    getNotices() {
+      let that = this;
+      that
+        .$get("chat/notices")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.noticesList.list = response.data.list;
         })
         .catch(error => console.error(error));
     },
@@ -792,6 +865,16 @@ export default {
             }
             this.fixLocation();
             break;
+          case "notice":
+            console.log(result);
+            this.$notify({
+              title: `${
+                result.resp.from_name
+              }请求添加您为好友，请去通知列表查看`,
+              message: result.resp.content
+            });
+            this.getNotices();
+            break;
           case "close":
             this.webSocketClose();
             break;
@@ -821,12 +904,18 @@ export default {
       setTimeout(() => (div.scrollTop = div.scrollHeight), 500);
     }
   },
+  mounted() {
+    Notification.requestPermission(status => console.log(status));
+  },
   created() {
     this.getChatList();
     this.getFriendList();
     this.getGroupList();
     this.webSocket();
     this.getMembers();
+    this.getNotices();
+
+    if (this.user.slug) this.getBranch();
   }
 };
 </script>
@@ -867,6 +956,8 @@ export default {
         li {
           margin-bottom: 1.5rem;
           text-align: center;
+          height: 31px;
+          overflow: hidden;
           img {
             width: 100%;
             border-radius: 0.5rem;
@@ -916,6 +1007,12 @@ export default {
           }
           .el-menu {
             background-color: @listBackground;
+            p {
+              padding: 1rem 1.5rem;
+              background-color: @white;
+              color: @gery;
+              border-bottom: @border;
+            }
             .el-menu-item {
               color: @gery;
               display: flex;
@@ -1141,6 +1238,18 @@ export default {
     button {
       display: block;
       margin: 1rem auto 0 auto;
+    }
+  }
+  .gallery {
+    z-index: 2001;
+    .el-carousel__container {
+      height: 680px;
+      .el-carousel__item {
+        text-align: center;
+        img {
+          max-width: 100%;
+        }
+      }
     }
   }
 }

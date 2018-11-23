@@ -109,13 +109,19 @@ export default {
         });
         return false;
       }
-      const loading = that.$loading({ lock: true });
       let params = {
         mobile: that.loginDetail.mobile,
         login_type: that.loginDetail.login_type
       };
       if (that.loginDetail.code) params.code = that.loginDetail.code;
-      else params.password = that.loginDetail.password;
+      else if (that.loginDetail.password)
+        params.password = that.loginDetail.password;
+      else {
+        this.$message({ message: "密码或者验证码不能为空", type: "error" });
+        return false;
+      }
+
+      const loading = that.$loading({ lock: true });
 
       if (that.loginDetail.login_type != 0) params.slug = that.loginDetail.slug;
 
