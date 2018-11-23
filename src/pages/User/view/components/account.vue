@@ -30,7 +30,7 @@
             <el-form-item label="我的头像">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload">
                 <img v-if="formData.avatar" :src="formData.avatar" class="avatar">

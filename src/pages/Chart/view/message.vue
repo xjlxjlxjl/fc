@@ -64,33 +64,35 @@
             <el-menu default-active="0" v-if="interface[0].isDefault">
               <el-menu-item v-for="(item,index) in chatList.list" v-if="item.friend_uid != 1"
                           :key="index" :index="index.toString()" 
-                          @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.display_name : item.group.group_name, index: index })">
+                          @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index })">
                 <div class="avatarBox">
                   <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
                 </div>
-                <span slot="title">{{ item.friend_user ? item.friend_user.display_name : item.group.group_name }}</span>
+                <span slot="title">{{ item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name }}</span>
                 <el-popover
                   placement="right"
                   trigger="hover">
                   <el-button type="danger" size="mini" v-if="item.friend_user" @click="delChat(item.id, index)">删除</el-button>
                   <el-button size="mini" type="warning" v-else @click="delGroup(item.group_id, index);delChat(item.id, index)">退出</el-button>
                   <el-button type="primary" size="mini" v-if="item.friend_user" @click="modalShow = true">创建群聊</el-button>
+                  <el-button size="mini" type="info" v-else @click="getGroupUser(item.group_id)">查看群成员</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[1].isDefault">
               <el-menu-item v-for="(item,index) in friendList.list" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index })">
+                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index })">
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
-                <span slot="title">{{ item.display_name }}</span>
+                <span slot="title">{{ item.remark || item.display_name }}</span>
                 <el-popover
                   placement="right"
                   trigger="hover">
                   <el-button type="danger" size="mini" @click="delUser(item.id,index)">删除</el-button>
                   <el-button type="primary" size="mini" @click="modalShow = true">创建群聊</el-button>
+                  <el-button type="success" size="mini" @click="setRemarks(item.id,index)">修改备注</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
               </el-menu-item>
@@ -116,11 +118,11 @@
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[3].isDefault">
               <el-menu-item v-for="(item,index) in searchList" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index })">
+                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index })">
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
-                <span slot="title">{{ item.display_name }}</span>
+                <span slot="title">{{ item.last_name || item.display_name }}</span>
                 <el-popover
                   placement="right"
                   trigger="hover">
@@ -165,7 +167,7 @@
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
               <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read"
                           :key="index" :index="index.toString()">
-                <span slot="title">{{ item.message }}</span>
+                <label slot="title">{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message  }}</label>
                 <el-popover
                   placement="right"
                   trigger="hover">
@@ -224,14 +226,14 @@
               </el-main>
               <el-footer>
                 <el-upload class="file-upload"
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                  :show-file-list="false"
                  :before-upload="uploadFile">
                   <i class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
                 <el-upload
                   class="avatar-uploader"
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                  :show-file-list="false"
                  :before-upload="uploadImg">
                   <i class="el-icon-picture avatar-uploader-icon"></i>
@@ -368,20 +370,43 @@ export default {
         })
         .catch(err => loading.close());
     },
-    addFriend(id) {
+    setRemarks(id, key) {
       let that = this;
-      this.$prompt("请输入验证信息", "发送验证消息").then(({ value }) => {
+      this.$prompt("", "设置备注", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValue: name
+      }).then(({ value, action }) => {
         that
-          .$post("/friend/add/verify", {
+          .$post("friend/remark", {
             friend_id: id,
-            content: value
+            remark: value
           })
           .then(response => {
             if (response.status != 200) return false;
-            that.$message({ message: "发送成功", type: "success" });
+            console.log(key);
+            that.friendList.list[key].remark = value;
+            that.userName = value;
           })
-          .catch(error => console.error(error));
+          .catch(err => console.error(err));
       });
+    },
+    addFriend(id) {
+      let that = this;
+      this.$prompt("请输入验证信息", "发送验证消息")
+        .then(({ value }) => {
+          that
+            .$post("/friend/add/verify", {
+              friend_id: id,
+              content: value
+            })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.$message({ message: "发送成功", type: "success" });
+            })
+            .catch(error => console.error(error));
+        })
+        .catch(err => console.error(err));
     },
     acceptFriend(noticeId) {
       let that = this;
@@ -462,8 +487,8 @@ export default {
     getRecord({ id, username, index = 0 }) {
       let that = this,
         url = null,
-        params = { page: that.current_page },
-        loading = this.$loading({ lock: true });
+        params = { page: that.current_page };
+      // loading = this.$loading({ lock: true });
       that.key = index;
       that.toUser = id;
       that.userName = username;
@@ -474,21 +499,19 @@ export default {
         url = "group/chat/record";
         params.group = id;
       } else return false;
-      that
-        .$get(url, params)
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          if (
-            response.pagination.current_page == 1 ||
-            response.pagination.currentPage == 1
-          )
-            that.record.list = response.data.list;
-          else response.data.list.forEach(e => that.record.list.push(e));
-          that.record.pagination = response.pagination;
-          that.fixLocation();
-        })
-        .catch(error => loading.close());
+      that.$get(url, params).then(response => {
+        // loading.close();
+        if (response.status != 200) return false;
+        if (
+          response.pagination.current_page == 1 ||
+          response.pagination.currentPage == 1
+        )
+          that.record.list = response.data.list;
+        else response.data.list.forEach(e => that.record.list.push(e));
+        that.record.pagination = response.pagination;
+        that.fixLocation();
+      });
+      // .catch(error => loading.close());
     },
     delChat(id, key) {
       let that = this;
@@ -773,8 +796,8 @@ export default {
         .catch(error => console.error(error));
     },
     webSocket() {
-      // let socketAddress = "wss://factoryun.com/wss";
-      let socketAddress = "ws://skyliu.cn/ws";
+      let socketAddress = "wss://factoryun.com/wss";
+      // let socketAddress = "ws://skyliu.cn/ws";
       this.ws = new WebSocket(socketAddress);
       this.ws.onmessage = event => {
         let result = JSON.parse(event.data);
@@ -835,6 +858,7 @@ export default {
                     msg_type: result.resp.type,
                     content: result.resp.content
                   });
+                  // this.getRecord({ id: this.toUser, username: this.userName });
                   let notification = new Notification("收到新消息");
                 }
                 break;
@@ -842,12 +866,12 @@ export default {
                 // 广播消息
                 break;
             }
-            // this.getRecord({ id: this.toUser, username: this.userName });
             this.fixLocation();
             break;
           case "group":
             console.log(result);
             if (result.resp_event == 200) {
+              /*
               this.record.list.push({
                 from_user_id: result.resp.from_uid,
                 from_user: {
@@ -860,6 +884,8 @@ export default {
                 msg_type: result.resp.type,
                 content: result.resp.content
               });
+              */
+              this.getRecord({ id: this.toUser, username: this.userName });
               let notification = new Notification("收到新消息");
             }
             this.fixLocation();

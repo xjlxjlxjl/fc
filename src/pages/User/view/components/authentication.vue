@@ -16,7 +16,7 @@
             <el-form-item label="身份证正面">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                 :show-file-list="false"
                 :disabled="isDisabled"
                 :before-upload="beforeAvatarUploadPositive">
@@ -29,7 +29,7 @@
             <el-form-item label="身份证背面">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                 :show-file-list="false"
                 :disabled="isDisabled"
                 :before-upload="beforeAvatarUploadNegative">
