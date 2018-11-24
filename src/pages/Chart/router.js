@@ -17,13 +17,7 @@ export default new Router({
       component: project,
       children: [
           {
-            path: "/",
-            name: "project",
-            component: project,
-          },
-          {
             path: "/project",
-            name: "project",
             component: project,
           }
       ]

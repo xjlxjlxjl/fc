@@ -29,8 +29,8 @@
     <!-- 图片画廊 -->
     <transition name="el-fade-in-linear">
       <div v-if="Gallery">
-        <div class="Curtain"></div>
-        <el-carousel class="gallery" :interval="0" :autoplay="new Boolean(false)" :loop="new Boolean(false)" :initial-index='5'>
+        <div class="Curtain" @click="Gallery = false;"></div>
+        <el-carousel class="gallery" :interval="0" :autoplay="new Boolean(false)" :loop="new Boolean(false)" :initial-index='galleryIndex'>
           <el-carousel-item v-for="(item,index) in record.list" :key="index" v-if="item.type == 2 || item.msg_type == 2">
             <img :src="item.content">
           </el-carousel-item>
@@ -48,7 +48,7 @@
       </el-aside>
       <el-main>
         <el-container>
-          <el-aside width="250px">
+          <el-aside width="250px" :id="interface[6].isDefault ? 'notices' : ''">
             <div class="search" v-if="interface[2].isDefault || interface[4].isDefault">
               <el-input placeholder="搜索群组" v-model="searchId" size="mini" @keyup.13.native="changeView(4)">
                 <i slot="prefix" class="el-input__icon el-icon-search" @click="changeView(4)"></i>
@@ -165,7 +165,7 @@
               </div>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
-              <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read"
+              <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read || !item.is_agree"
                           :key="index" :index="index.toString()">
                 <label slot="title">{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message  }}</label>
                 <el-popover
@@ -173,6 +173,7 @@
                   trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
                   <el-button size="mini" type="danger" v-if="item.type == 3" @click="acceptFriend(item.id)">添加</el-button>
+                  <el-button size="mini" type="danger" v-if="item.type == 16" @click="acceptGroup(item.id)">同意添加</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
@@ -191,7 +192,7 @@
                         <div class="Bubble" :style="item.user ? 'top: 3.5rem;' : ''"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
-                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" style="max-width: 200px;position: inherit;background-color:#fff;">
+                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" @click="Gallery = true;galleryIndex = item.msgImgKey" class="messageImg">
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
                             <img :src="fileImg">
                             <div>
@@ -211,9 +212,9 @@
                         <div class="Bubble" :style="item.user ? 'top: 3.5rem;' : ''"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
-                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" style="max-width: 200px;position: inherit;background-color:#fff;">
+                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" @click="Gallery = true;galleryIndex = item.msgImgKey" class="messageImg">
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
-                            <img :src="fileImg">
+                            <img :src="fileImg" >
                             <div>
                               <h1>{{ item.content.split('/').pop() }}</h1>
                               <span>{{ item.content }}</span>
@@ -320,7 +321,11 @@ export default {
       },
       mailList: {},
       noticesList: {
-        list: []
+        list: [],
+        pagination: {
+          total: 1,
+          current_page: 0
+        }
       },
       record: {
         list: [],
@@ -339,7 +344,9 @@ export default {
       groupId: 0,
       userList: [],
       modalShow: false,
-      Gallery: false
+      Gallery: false,
+      galleryIndex: 0,
+      msgImgArr: []
     };
   },
   methods: {
@@ -357,6 +364,22 @@ export default {
           break;
         case 4:
           this.groupSearch();
+          break;
+        case 6:
+          // this.getNotices();
+          setTimeout(() => {
+            document.getElementById("notices").onscroll = e => {
+              let isLoad =
+                e.target.scrollTop >=
+                e.target.scrollHeight - e.target.offsetHeight;
+              if (isLoad && 
+                this.noticesList.pagination.total > 15 &&
+                this.noticesList.pagination.total / 15 >
+                (this.noticesList.pagination.currentPage ||
+                this.noticesList.pagination.current_page))
+                this.getNotices();
+            };
+          }, 100);
           break;
       }
     },
@@ -447,7 +470,7 @@ export default {
     getChatList() {
       let that = this;
       that
-        .$post("chat/session/record")
+        .$get("chat/session/record")
         .then(response => {
           if (response.status != 200) return false;
           that.chatList = response.data;
@@ -487,10 +510,18 @@ export default {
         .catch(err => console.error(err));
     },
     getRecord({ id, username, index = 0 }) {
+      if (id != this.toUser)
+        this.record.pagination = { total: 1, current_page: 1 };
+
       let that = this,
         url = null,
-        params = { page: that.current_page };
-      // loading = this.$loading({ lock: true });
+        params = {
+          page:
+            ++that.record.pagination.currentPage ||
+            that.record.pagination.current_page
+        },
+        height = document.getElementById("chatMain").scrollHeight;
+
       that.key = index;
       that.toUser = id;
       that.userName = username;
@@ -501,19 +532,38 @@ export default {
         url = "group/chat/record";
         params.group = id;
       } else return false;
-      that.$get(url, params).then(response => {
-        // loading.close();
-        if (response.status != 200) return false;
-        if (
-          response.pagination.current_page == 1 ||
-          response.pagination.currentPage == 1
-        )
-          that.record.list = response.data.list;
-        else response.data.list.forEach(e => that.record.list.push(e));
-        that.record.pagination = response.pagination;
-        that.fixLocation();
-      });
-      // .catch(error => loading.close());
+      that
+        .$get(url, params)
+        .then(response => {
+          if (response.status != 200) return false;
+          if (response.data.list.length) {
+            response.data.list.forEach(e => {
+              if (e.msg_type == 2 || e.type == 2) {
+                that.msgImgArr.push(e);
+                that.msgImgArr.forEach((item, k) => (e.msgImgKey = k));
+              }
+            });
+          }
+          if (
+            response.pagination.current_page == 1 ||
+            response.pagination.currentPage == 1
+          ) {
+            that.record.list = response.data.list;
+            that.fixLocation();
+          } else {
+            // 跳跃到 div 高度 / 页面数 - 显示高度
+            // document.getElementById("chatMain").scrollTop = (document.getElementById("chatMain").scrollHeight / response.pagination.currentPage) - document.getElementById('chatMain').offsetHeight;
+            response.data.list.forEach(e => that.record.list.unshift(e));
+            setTimeout(
+              () =>
+                (document.getElementById("chatMain").scrollTop =
+                  document.getElementById("chatMain").scrollHeight - height),
+              100
+            );
+          }
+          that.record.pagination = response.pagination;
+        })
+        .catch(error => console.error(error));
     },
     delChat(id, key) {
       let that = this;
@@ -543,8 +593,29 @@ export default {
     addGroup(id) {
       let that = this;
       that
+        .$prompt("请输入验证消息", "验证消息", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        })
+        .then(({ value }) => {
+          that
+            .$post("group/join/verify", {
+              group_id: id,
+              content: value
+            })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.getGroupList();
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
+    },
+    acceptGroup(id) {
+      let that = this;
+      that
         .$post("/group/join", {
-          group: id
+          notice_id: id
         })
         .then(response => {
           if (response.status != 200) return false;
@@ -816,10 +887,16 @@ export default {
     getNotices() {
       let that = this;
       that
-        .$get("chat/notices")
+        .$get("chat/notices", {
+          page:
+            ++that.noticesList.pagination.currentPage ||
+            ++that.noticesList.pagination.current_page
+        })
         .then(response => {
           if (response.status != 200) return false;
-          that.noticesList.list = response.data.list;
+          response.data.list.forEach(e => that.noticesList.list.push(e));
+          // response.data.list.forEach(e => that.noticesList.list.unshift(e));
+          that.noticesList.pagination = response.pagination;
         })
         .catch(error => console.error(error));
     },
@@ -921,12 +998,12 @@ export default {
           case "notice":
             console.log(result);
             this.$notify({
-              title: `${
-                result.resp.from_name
-              }请求添加您为好友，请去通知列表查看`,
+              title: `您有一条来自${result.resp.from_name}的通知`,
               message: result.resp.content
             });
-            let notification = new Notification("收到一条添加好友请求");
+            let notification = new Notification(
+              `您有一条来自${result.resp.from_name}的通知`
+            );
             this.getNotices();
             break;
           case "close":
@@ -957,7 +1034,7 @@ export default {
     },
     fixLocation() {
       let div = document.getElementById("chatMain");
-      setTimeout(() => (div.scrollTop = div.scrollHeight), 500);
+      setTimeout(() => (div.scrollTop = div.scrollHeight), 100);
     }
   },
   mounted() {
@@ -971,11 +1048,20 @@ export default {
         ) {
           var imageFile = e.clipboardData.items[i].getAsFile();
           // console.log(imageFile)
-          this.uploadImg(imageFile)
+          this.uploadImg(imageFile);
           break;
         }
       }
     });
+
+    document.getElementById("chatMain").onscroll = e => {
+      if (!e.target.scrollTop && this.record.pagination.total > 15)
+        this.getRecord({
+          id: this.toUser,
+          username: this.userName,
+          index: this.key
+        });
+    };
   },
   created() {
     this.getChatList();
@@ -1139,12 +1225,17 @@ export default {
             border-bottom: @chatBorder;
             .chatMain {
               padding: 2rem 2.5rem 1rem 1.5rem;
-              @media screen and (max-width: 820px){
+              @media screen and (max-width: 820px) {
                 height: 38rem;
                 overflow-y: auto;
               }
               .chatMessage {
                 position: relative;
+                .messageImg {
+                  max-width: 200px;
+                  position: inherit;
+                  background-color: #fff;
+                }
                 .formMessage {
                   display: flex;
                   align-items: center;

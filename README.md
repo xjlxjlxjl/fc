@@ -19,3 +19,6 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+# signature_pad file export use "signature_pad.m.min.js"
+# modify package.json "module": "dist/signature_pad.min.m.js" => "module": "dist/signature_pad.min.js",

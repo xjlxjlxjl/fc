@@ -21,7 +21,6 @@ export default new Router({
       children: [
         {
           path: "/order",
-          name: "order",
           component: order,
         }
       ]
