@@ -41,7 +41,7 @@
           :class="state == item.state ? 'isActive' : ''" 
           @click="getOrderStatusData(item.state,item.order_status)">{{ item.name }}</div>
     </div>
-    <div class="orderList">
+    <div class="orderList" id="orderList">
       <div class="orderDetail" v-for="(item,index) in tableData" :key="index">
         <div class="orderDetailHeader">
           <div class="number">
@@ -254,6 +254,12 @@ export default {
         .catch(error => loading.close());
     },
     getLogistics(slug) {}
+  },
+  mounted() {
+    document.getElementById('orderList').onscroll = e => {
+      if(e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight)
+        this.getOrderStatusData(this.state, this.tabsNav[this.state].order_status);
+    }
   },
   created() {
     this.getOrderStatusData(0, "");

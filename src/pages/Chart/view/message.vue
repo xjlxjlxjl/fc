@@ -17,7 +17,7 @@
             <div class="modalBoxMainContent">
               <div id="userList">
                 <el-checkbox-group v-model="userList">
-                  <el-checkbox v-for="(item,index) in checkBoxList" :key="index" :label="item.id">{{ item.last_name }}</el-checkbox>
+                  <el-checkbox v-for="(item,index) in checkBoxList" v-if="item.id != user.user.id" :key="index" :label="item.id">{{ item.last_name }}</el-checkbox>
                 </el-checkbox-group>
               </div>
                 <el-button size="mini" type="primary" @click="joinGroup(userList, '群聊', groupId)">确定</el-button>
@@ -132,8 +132,7 @@
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[4].isDefault">
-              <el-menu-item v-for="(item,index) in searchList"
-                          :key="index" :index="index.toString()" @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index })">
+              <el-menu-item v-for="(item,index) in searchList" :key="index" :index="index.toString()">
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
@@ -165,7 +164,7 @@
               </div>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
-              <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read || !item.is_agree"
+              <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read && !item.is_agree && !item.is_delete"
                           :key="index" :index="index.toString()">
                 <label slot="title">{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message  }}</label>
                 <el-popover
@@ -773,7 +772,6 @@ export default {
             type: 3
           }
         };
-      console.log(file.size);
       if (file.size / 1024 / 1024 > 100) {
         this.$message.error("上传文件大小不能超过 100MB!");
         return false;
@@ -947,10 +945,7 @@ export default {
               case 6:
               case "6":
                 // 位置消息
-                if (
-                  result.resp_event == 200 &&
-                  result.resp.from_uid == this.toUser
-                ) {
+                if (result.resp_event == 200) {
                   this.record.list.push({
                     from_user_id: result.resp.from_uid,
                     from_user: {
@@ -964,7 +959,8 @@ export default {
                     content: result.resp.content
                   });
                   // this.getRecord({ id: this.toUser, username: this.userName });
-                  let notification = new Notification("收到新消息");
+                  this.$notify({ title: `收到一条新消息`, message: result.resp.content });
+                  let notification = new Notification("收到一条新消息",{ body: result.resp.content });
                 }
                 break;
               case "7":
@@ -976,7 +972,6 @@ export default {
           case "group":
             console.log(result);
             if (result.resp_event == 200) {
-              /*
               this.record.list.push({
                 from_user_id: result.resp.from_uid,
                 from_user: {
@@ -989,22 +984,33 @@ export default {
                 msg_type: result.resp.type,
                 content: result.resp.content
               });
-              */
-              this.getRecord({ id: this.toUser, username: this.userName });
-              let notification = new Notification("收到新消息");
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              this.$notify({ title: `${ this.userName }收到一条群消息`, message: result.resp.content });
+              let notification = new Notification(`${ this.userName }收到一条群消息`,{ body: result.resp.content });
             }
             this.fixLocation();
             break;
           case "notice":
             console.log(result);
             this.$notify({
-              title: `您有一条来自${result.resp.from_name}的通知`,
+              title: `您有一条来自${ result.resp.from_name }的通知`,
               message: result.resp.content
             });
             let notification = new Notification(
-              `您有一条来自${result.resp.from_name}的通知`
+              `您有一条来自${ result.resp.from_name }的通知`, {
+                body: result.resp.content
+              }
             );
-            this.getNotices();
+            this.noticesList.list.unshift({
+              id: result.resp.notice_id,
+              from_user: {
+                last_name: result.resp.from_name,
+              },
+              message: result.resp.content,
+              type: result.resp.type,
+              user_id: result.resp.user_id
+            })
+            // this.getNotices();
             break;
           case "close":
             this.webSocketClose();
@@ -1055,7 +1061,7 @@ export default {
     });
 
     document.getElementById("chatMain").onscroll = e => {
-      if (!e.target.scrollTop && this.record.pagination.total > 15)
+      if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.currentPage)
         this.getRecord({
           id: this.toUser,
           username: this.userName,
@@ -1189,6 +1195,12 @@ export default {
               }
               > span {
                 margin-left: 1rem;
+              }
+              label{
+                display: block;
+                width: 85%;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
               button {
                 position: absolute;

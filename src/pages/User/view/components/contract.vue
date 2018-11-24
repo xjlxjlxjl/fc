@@ -5,7 +5,7 @@
           :class="state == item.state ? 'isActive' : ''" 
           @click="getContract(item.state, item.contractStatus)">{{ item.name }}</div>
     </div>
-    <div class="contractList">
+    <div id="contractList" class="contractList">
       <div class="contractDetail" v-for="(item,index) in tableData" :key="index">
         <div class="contractHeader">
           <div>
@@ -69,8 +69,7 @@ export default {
   },
   methods: {
     changeContractState(state, contractStatus) {
-      const loading = this.$loading({ lock: true }),
-        that = this;
+      let that = this;
       switch (state) {
         case 1:
           that.tableData = that.alreadyList.list;
@@ -86,7 +85,6 @@ export default {
           break;
       }
       that.state = state;
-      loading.close();
     },
     getContract(state, contractStatus) {
       const loading = this.$loading({ lock: true }),
@@ -124,6 +122,12 @@ export default {
           --self.pagination.page;
           loading.close();
         });
+    }
+  },
+  mounted() {
+    document.getElementById('contractList').onscroll = e => {
+      if(e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight)
+        this.getContract(this.state, this.tabsNav[this.state].contractStatus);
     }
   },
   created() {
