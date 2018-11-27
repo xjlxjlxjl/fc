@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import loginModal from "@/pages/Index/common/loginModal";
+
 export default {
   name: "login",
   data() {
@@ -61,81 +63,16 @@ export default {
   },
   methods: {
     getCode() {
-      let that = this;
-      if (that.isClick) {
-        return false;
-      }
-      if (that.loginDetail.mobile == "") {
-        that.$message({
-          message: "请输入手机号码",
-          type: "error"
-        });
-        return false;
-      }
-      const loading = this.$loading({ lock: true });
-      that
-        .$get("members/entry-send", {
-          mobile: that.loginDetail.mobile
-        })
-        .then(response => {
-          loading.close();
-          if (response.status != 200) {
-            return false;
-          }
-          that.isClick = true;
-          that.lastTime();
-        })
-        .catch(error => loading.close());
+      loginModal.methods.getCode.call(this);
     },
     lastTime() {
-      let that = this;
-      that.codeCacheTime = 60;
-      let setTimeOut = setInterval(function() {
-        if (that.codeCacheTime > 1) {
-          that.codeCacheTime--;
-        } else {
-          clearInterval(setTimeOut);
-          that.codeCacheTime = "重新发送";
-          that.isClick = false;
-        }
-      }, 1000);
+      loginModal.methods.lastTime.call(this);
     },
     login() {
-      let that = this;
-      if (that.loginDetail.mobile == "") {
-        that.$message({
-          message: "请输入手机号码",
-          type: "error"
-        });
-        return false;
-      }
-      let params = {
-        mobile: that.loginDetail.mobile,
-        login_type: that.loginDetail.login_type
-      };
-      if (that.loginDetail.code) params.code = that.loginDetail.code;
-      else if (that.loginDetail.password)
-        params.password = that.loginDetail.password;
-      else {
-        this.$message({ message: "密码或者验证码不能为空", type: "error" });
-        return false;
-      }
-
-      const loading = that.$loading({ lock: true });
-
-      if (that.loginDetail.login_type != 0) params.slug = that.loginDetail.slug;
-
-      that
-        .$post("members/entry", params)
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          // this.$store.commit("updateUserInfo", response.data);
-          localStorage.setItem("user", JSON.stringify(response.data));
-          window.location.href = "./index.html";
-        })
-        .catch(error => loading.close());
+      loginModal.methods.login.call(this);
     }
+  },
+  created() {
   }
 };
 </script>

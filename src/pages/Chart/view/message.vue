@@ -1,31 +1,7 @@
 <template>
   <div id="message">
-    <!-- 邀请好友进入群 -->
-    <transition name="el-fade-in-linear">
-      <div v-show="modalShow">
-        <div class="Curtain"></div>
-        <div class="modalBox">
-          <div class="modalBoxMain">
-            <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                邀请加入群聊
-              </div>
-              <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
-                <i class="el-message-box__close el-icon-close"></i>
-              </div>
-            </div>
-            <div class="modalBoxMainContent">
-              <div id="userList">
-                <el-checkbox-group v-model="userList">
-                  <el-checkbox v-for="(item,index) in checkBoxList" v-if="item.id != user.user.id" :key="index" :label="item.id">{{ item.last_name }}</el-checkbox>
-                </el-checkbox-group>
-              </div>
-                <el-button size="mini" type="primary" @click="joinGroup(userList, '群聊', groupId)">确定</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
+    <!-- 踢出群聊，邀请群聊（ 0：邀请，1：添加 ） -->
+    <groupUserCheckBox :groupId="groupId" :groupUser="groupUserList" :groupState="groupState"></groupUserCheckBox>
     <!-- 图片画廊 -->
     <transition name="el-fade-in-linear">
       <div v-if="Gallery">
@@ -38,7 +14,7 @@
       </div>
     </transition>
     <el-container>
-      <el-aside width="60px">
+      <el-aside class="pcShowImportant" width="60px" v-show="!mainDisplay">
         <ul class="function">
           <li><img :src="user.user.avatar"></li>
           <li v-for="(item,index) in interface" :key="index" v-if="index < 3 || index > 4">
@@ -48,7 +24,7 @@
       </el-aside>
       <el-main>
         <el-container>
-          <el-aside width="250px" :id="interface[6].isDefault ? 'notices' : ''">
+          <el-aside class="pcShowImportant" width="250px" :id="interface[6].isDefault ? 'notices' : ''" v-show="!mainDisplay">
             <div class="search" v-if="interface[2].isDefault || interface[4].isDefault">
               <el-input placeholder="搜索群组" v-model="searchId" size="mini" @keyup.13.native="changeView(4)">
                 <i slot="prefix" class="el-input__icon el-icon-search" @click="changeView(4)"></i>
@@ -64,7 +40,7 @@
             <el-menu default-active="0" v-if="interface[0].isDefault">
               <el-menu-item v-for="(item,index) in chatList.list" v-if="item.friend_uid != 1"
                           :key="index" :index="index.toString()" 
-                          @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index })">
+                          @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true">
                 <div class="avatarBox">
                   <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
                 </div>
@@ -74,7 +50,7 @@
                   trigger="hover">
                   <el-button type="danger" size="mini" v-if="item.friend_user" @click="delChat(item.id, index)">删除</el-button>
                   <el-button size="mini" type="warning" v-else @click="delGroup(item.group_id, index);delChat(item.id, index)">退出</el-button>
-                  <el-button type="primary" size="mini" v-if="item.friend_user" @click="modalShow = true">创建群聊</el-button>
+                  <el-button type="primary" size="mini" v-if="item.friend_user" @click="joinGroup">创建群聊</el-button>
                   <el-button size="mini" type="info" v-else @click="getGroupUser(item.group_id)">查看群成员</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
@@ -82,7 +58,8 @@
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[1].isDefault">
               <el-menu-item v-for="(item,index) in friendList.list" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index })">
+                          :key="index" :index="index.toString()" 
+                          @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true">
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
@@ -91,7 +68,7 @@
                   placement="right"
                   trigger="hover">
                   <el-button type="danger" size="mini" @click="delUser(item.id,index)">删除</el-button>
-                  <el-button type="primary" size="mini" @click="modalShow = true">创建群聊</el-button>
+                  <el-button type="primary" size="mini" @click="joinGroup">创建群聊</el-button>
                   <el-button type="success" size="mini" @click="setRemarks(item.id,index)">修改备注</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
@@ -99,7 +76,8 @@
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[2].isDefault">
               <el-menu-item v-for="(item,index) in groupList.list"
-                          :key="index" :index="index.toString()" @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index })">
+                          :key="index" :index="index.toString()" 
+                          @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index });mainDisplay = true">
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
@@ -111,14 +89,15 @@
                   <el-button size="mini" type="success" @click="editGroup(item.id, item.group_name, item.group_description, index)">修改群信息</el-button>
                   <el-button size="mini" type="warning" @click="delGroup(item.id, index)">退出</el-button>
                   <el-button size="mini" type="danger" v-if="item.admin_id == user.user.id" @click="dissolution(item.id, index)">解散</el-button>
-                  <el-button size="mini" type="primary" v-if="item.admin_id == user.user.id" @click="groupId = item.id;modalShow = true;">邀请加入群聊</el-button>
+                  <el-button size="mini" type="primary" v-if="item.admin_id == user.user.id" @click="joinGroup(item.id)">邀请加入群聊</el-button>
                   <el-button size="mini" type="info" @click="getGroupUser(item.id)">查看群成员</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[3].isDefault">
               <el-menu-item v-for="(item,index) in searchList" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index })">
+                          :key="index" :index="index.toString()" 
+                          @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true">
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
@@ -148,7 +127,7 @@
             <el-menu default-active="0" v-else-if="interface[5].isDefault">
               <div v-for="(val,key) in mailList" :key="key">
                 <p>{{ val.branch_name }}</p>
-                <el-menu-item  v-for="(item,index) in val.member" :key="index" :index="item.id.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index })">
+                <el-menu-item  v-for="(item,index) in val.member" :key="index" :index="item.id.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true">
                   <div class="avatarBox">
                     <img :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'">
                   </div>
@@ -157,7 +136,7 @@
                     placement="right"
                     trigger="hover">
                     <el-button size="mini" slot="reference">操作</el-button>
-                    <el-button size="mini" type="primary" @click="modalShow = true">创建群聊</el-button>
+                    <el-button size="mini" type="primary" @click="joinGroup">创建群聊</el-button>
                     <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
                   </el-popover>
                 </el-menu-item>
@@ -177,10 +156,11 @@
               </el-menu-item>
             </el-menu>
           </el-aside>
-          <el-main>
+          <el-main class="pcShowImportant" v-show="mainDisplay">
             <el-container v-show='toUser'>
               <el-header>
                 <div><span>{{ userName }}</span></div>
+                <div @click="mainDisplay = false"><i class="el-icon-back"></i></div>
               </el-header>
               <el-main id="chatMain">
                 <div class="chatMain">
@@ -254,6 +234,7 @@
 </template>
 <script>
 import fileImg from "@/assets/img/file.png";
+import groupUserCheckBox from '@/pages/Chart/common/groupUserCheckBox';
 
 export default {
   name: "message",
@@ -305,6 +286,7 @@ export default {
           isDefault: false
         }
       ],
+      mainDisplay: false,
       searchId: "",
       chatList: {
         list: []
@@ -333,19 +315,19 @@ export default {
           current_page: 1
         }
       },
-      checkBoxList: [],
       // 公用变量
       key: 0,
       toUser: 0,
       userName: "",
       message: "",
       // 群聊变量
-      groupId: 0,
-      userList: [],
-      modalShow: false,
+      checkBoxList: [],
       Gallery: false,
       galleryIndex: 0,
-      msgImgArr: []
+      msgImgArr: [],
+      groupId: 0,
+      groupState: 0,
+      groupUserList: [],
     };
   },
   methods: {
@@ -357,6 +339,9 @@ export default {
       switch (index) {
         case 0:
           this.getChatList();
+          break;
+        case 2:
+          this.getGroupList();
           break;
         case 3:
           this.userSearch();
@@ -519,7 +504,8 @@ export default {
             ++that.record.pagination.currentPage ||
             that.record.pagination.current_page
         },
-        height = document.getElementById("chatMain").scrollHeight;
+        pcHeight = document.getElementById("chatMain").scrollHeight,
+        moblieHeight = document.getElementsByClassName("chatMain")[0].scrollHeight;
 
       that.key = index;
       that.toUser = id;
@@ -553,12 +539,10 @@ export default {
             // 跳跃到 div 高度 / 页面数 - 显示高度
             // document.getElementById("chatMain").scrollTop = (document.getElementById("chatMain").scrollHeight / response.pagination.currentPage) - document.getElementById('chatMain').offsetHeight;
             response.data.list.forEach(e => that.record.list.unshift(e));
-            setTimeout(
-              () =>
-                (document.getElementById("chatMain").scrollTop =
-                  document.getElementById("chatMain").scrollHeight - height),
-              100
-            );
+            setTimeout(() => {
+              document.getElementById("chatMain").scrollTop = document.getElementById("chatMain").scrollHeight - pcHeight;
+              document.getElementsByClassName("chatMain")[0].scrollTop = document.getElementsByClassName("chatMain")[0].scrollHeight - moblieHeight;
+            }, 100);
           }
           that.record.pagination = response.pagination;
         })
@@ -625,8 +609,8 @@ export default {
     delGroup(id, index) {
       let that = this;
       that
-        .$post("/group/leave", {
-          group: id
+        .$post("/group/exit", {
+          group_id: id
         })
         .then(response => {
           if (response.status != 200) return false;
@@ -636,29 +620,15 @@ export default {
         .catch(err => console.error(err));
     },
     getGroupUser(id) {
-      let that = this,
-        content = [];
+      let that = this;
+      this.groupId = id;
       that
         .$get("group/users", { group_id: id })
         .then(response => {
           if (response.status != 200) return false;
-          response.data.list.forEach(e => {
-            content.push(`
-              <div style="display: inline-block;width: 49%;box-sizing: border-box;line-height: 2">
-                <img src="${e.avatar}" style="height: 16px;">
-                <span>${e.last_name}</span>
-              </div>
-            `);
-          });
-          this.$alert(content.join(""), "群成员", {
-            dangerouslyUseHTMLString: true
-          });
-          document.getElementsByClassName(
-            "el-message-box__content"
-          )[0].style.height = "300px";
-          document.getElementsByClassName(
-            "el-message-box__content"
-          )[0].style.overflowY = "auto";
+          that.groupUserList = response.data.list;
+          that.groupState = 0;
+          this.$store.commit("change");
         })
         .catch(err => console.error(err));
     },
@@ -711,20 +681,11 @@ export default {
         })
         .catch(err => console.log("点错了"));
     },
-    joinGroup(userId, groupName = "", groupId = 0) {
-      let that = this,
-        params = { user_ids: userId.join(",") };
-      if (groupId) params.group_id = groupId;
-      else params.group_name = groupName;
-      that
-        .$post("group/invite", params)
-        .then(response => {
-          if (response.status != 200) return false;
-          that.getGroupList();
-          that.groupId = 0;
-          that.modalShow = false;
-        })
-        .catch(error => console.error(error));
+    joinGroup(groupId = 0){
+      this.groupId = parseInt(groupId);
+      this.groupUserList = this.checkBoxList;
+      this.groupState = 1;
+      this.$store.commit("change");
     },
     // 发信息
     sendMessage() {
@@ -1039,9 +1000,14 @@ export default {
       this.ws.close();
     },
     fixLocation() {
-      let div = document.getElementById("chatMain");
-      setTimeout(() => (div.scrollTop = div.scrollHeight), 100);
+      setTimeout(() => {
+        document.getElementById("chatMain").scrollTop = document.getElementById("chatMain").scrollHeight;
+        document.getElementsByClassName("chatMain")[0].scrollTop = document.getElementsByClassName("chatMain")[0].scrollHeight;
+      }, 100);
     }
+  },
+  components: {
+    groupUserCheckBox: groupUserCheckBox
   },
   mounted() {
     Notification.requestPermission(status => console.log(status));
@@ -1062,12 +1028,12 @@ export default {
 
     document.getElementById("chatMain").onscroll = e => {
       if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.currentPage)
-        this.getRecord({
-          id: this.toUser,
-          username: this.userName,
-          index: this.key
-        });
+        this.getRecord({ id: this.toUser, username: this.userName, index: this.key });
     };
+    document.getElementsByClassName("chatMain")[0].onscroll = e => {
+      if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.currentPage)
+        this.getRecord({ id: this.toUser, username: this.userName, index: this.key });
+    }
   },
   created() {
     this.getChatList();
@@ -1102,23 +1068,30 @@ export default {
   position: absolute;
   top: 2rem;
 }
-
 #message {
   width: 100%;
   box-sizing: border-box;
   .el-container {
     height: 100%;
+    @media screen and (min-width: 820px){
+      .pcShowImportant{
+        display: block !important;
+      }
+    }
     .el-aside {
       height: 100%;
       background-color: @black;
       box-sizing: border-box;
       padding: 2rem 1rem;
+      @media screen and (max-width: 820px){
+        
+      }
       .function {
         list-style: none;
         li {
           margin-bottom: 1.5rem;
           text-align: center;
-          height: 31px;
+          height: 3rem;
           overflow: hidden;
           img {
             width: 100%;
@@ -1141,6 +1114,9 @@ export default {
           height: 100%;
           background-color: @listBackground;
           padding: 0;
+          @media screen and (max-width: 820px){
+            width: 100% !important;
+          }
           .search {
             padding: 2rem 0.5rem 1rem 0.5rem;
             display: flex;
@@ -1216,10 +1192,14 @@ export default {
         .el-main {
           background-color: @chatBackground;
           color: @gery;
+          @media screen and (max-width: 820px){
+            display: block;
+          }
           .el-header {
             border-bottom: @chatBorder;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 1.5rem 2rem;
             div {
               > span {
@@ -1230,6 +1210,13 @@ export default {
                   font-size: 1.2rem;
                 }
               }
+              > i {
+                @media screen and (min-width: 820px){
+                  display: none;
+                }
+                font-size: 2rem;
+                font-weight: bold;
+              }
             }
           }
           .el-main {
@@ -1238,7 +1225,7 @@ export default {
             .chatMain {
               padding: 2rem 2.5rem 1rem 1.5rem;
               @media screen and (max-width: 820px) {
-                height: 38rem;
+                height: 20rem;
                 overflow-y: auto;
               }
               .chatMessage {
@@ -1377,6 +1364,11 @@ export default {
               }
             }
           }
+          ::-webkit-scrollbar{
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
           .el-footer {
             box-sizing: border-box;
             padding: 2rem 2.5rem 1rem 1.5rem;
@@ -1400,28 +1392,6 @@ export default {
           }
         }
       }
-    }
-  }
-  .modalBox {
-    #userList {
-      height: 20rem;
-      overflow-y: auto;
-      .el-checkbox-group {
-        .el-checkbox {
-          min-width: 60px;
-          width: 25%;
-          margin-right: 30px;
-          margin-left: 0px;
-          margin-bottom: 0.5rem;
-          &:last-child {
-            margin-right: 0px;
-          }
-        }
-      }
-    }
-    button {
-      display: block;
-      margin: 1rem auto 0 auto;
     }
   }
   .gallery {

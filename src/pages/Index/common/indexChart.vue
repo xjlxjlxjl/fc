@@ -9,6 +9,7 @@
   </div>
 </template>
 <script>
+import loginModal from "@/pages/Index/common/loginModal";
 export default {
   name: "indexChart",
   data() {
@@ -37,17 +38,12 @@ export default {
       ]
     };
   },
+  components: {
+    "login-modal": loginModal
+  },
   methods: {
     jump(url) {
-      if (!localStorage.getItem("user")) {
-        this.$notify({
-          title: "警告",
-          message: "请登陆后再作操作",
-          type: "warning"
-        });
-        return false;
-      }
-
+      if(!this.$ifLogin()) return false;
       window.location.href = url;
     }
   }
@@ -60,7 +56,7 @@ export default {
     justify-content: space-around;
     width: 100%;
     margin-top: 1rem;
-    margin-bottom: 9rem;
+    margin-bottom: 11rem;
     a {
       text-decoration: none;
       color: #ffffff;

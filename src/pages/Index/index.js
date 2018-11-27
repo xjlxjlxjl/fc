@@ -16,6 +16,17 @@ Vue.config.productionTip = false;
 Vue.use(elementUi);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;
+Vue.prototype.$ifLogin = () => {
+    if (!localStorage.getItem("user")) {
+    store.commit("change");
+    Vue.prototype.$notify({
+      title: "警告",
+      message: "请登陆后再作操作",
+      type: "warning"
+    });
+    return false;
+  } else return true;
+}
 
 /* eslint-disable no-new */
 new Vue({

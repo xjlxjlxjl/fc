@@ -2,6 +2,7 @@
 import Vue from "vue";
 import Index from "./Index";
 import router from "./router";
+import store from '../../store';
 import elementUi from "element-ui";
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
@@ -50,6 +51,7 @@ var reducer = function add(sumSoFar, item) {
 new Vue({
   el: "#app",
   router,
+  store,
   components: { Index },
   template: "<Index/>"
 });

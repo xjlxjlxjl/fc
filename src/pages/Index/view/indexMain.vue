@@ -2335,15 +2335,7 @@ export default {
         .catch(error => {});
     },
     getProject() {
-      if (!localStorage.getItem("user")) {
-        this.$store.commit("change");
-        this.$notify({
-          title: "警告",
-          message: "请登陆后再作操作",
-          type: "warning"
-        });
-        return false;
-      }
+      if(!this.$ifLogin()) return false;
 
       const loading = this.$loading({ lock: true }),
         that = this;

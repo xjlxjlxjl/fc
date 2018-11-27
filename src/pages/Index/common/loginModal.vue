@@ -7,7 +7,7 @@
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
               <div class="modalBoxMainHeaderTitle">
-                加入项目
+                用户登录
               </div>
               <div class="modalBoxMainHeaderBtn" @click="close">
                 <i class="el-message-box__close el-icon-close"></i>
@@ -28,20 +28,23 @@
                           type="password"
                           auto-complete="on"
                           v-if="!isCodeLogin"
+                          @keyup.enter.native="login"
                           v-model="loginDetail.password"></el-input>
                 <el-input placeholder="请输入验证码" 
                           auto-complete="on"
                           v-else
+                          @keyup.enter.native="login"
                           v-model="loginDetail.code">
                   <el-button slot="suffix" type="info" @click="getCode" size="mini" round>{{ codeCacheTime }}</el-button>
                 </el-input>
                 <el-input placeholder="公司代码" 
                           v-if="loginDetail.login_type != '0'"
+                          @keyup.enter.native="login"
                           v-model="loginDetail.slug" 
                           clearable></el-input>
                 <div class="btn-box">
                   <el-button type="text" @click="isCodeLogin = !isCodeLogin">{{ isCodeLogin ? '使用密码登陆' : '使用短信验证登陆'  }}</el-button>
-                  <div><a to="/login.html#/sign"><el-button size="mini" type="text">没有账号，注册</el-button></a></div>
+                  <div><a href="/login.html#/sign"><el-button size="mini" type="text">没有账号，注册</el-button></a></div>
                 </div>
                 <div class="query"><el-button type="primary" size="mini" @click="login">登陆</el-button></div>
               </div>
@@ -125,22 +128,39 @@ export default {
         });
         return false;
       }
+      let params = {
+        mobile: that.loginDetail.mobile,
+        login_type: that.loginDetail.login_type
+      };
+      if (that.loginDetail.code) params.code = that.loginDetail.code;
+      else if (that.loginDetail.password)
+        params.password = that.loginDetail.password;
+      else {
+        this.$message({ message: "密码或者验证码不能为空", type: "error" });
+        return false;
+      }
       const loading = that.$loading({ lock: true });
+      if (that.loginDetail.login_type != 0) params.slug = that.loginDetail.slug;
       that
-        .$post("members/entry", that.loginDetail)
+        .$post("members/entry", params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          this.$store.commit("change");
           localStorage.setItem("user", JSON.stringify(response.data));
+          switch(window.location.pathname){
+            case '/login.html':
+              window.location.href = "./index.html";
+              break;
+            case '/':
+            case '/index.html':
+              that.close();
+              break;
+          }
         })
         .catch(error => loading.close());
     }
   },
   computed: mapState(["ModalShow"]),
-  created() {
-    // console.log(this.$store.state.ModalShow)
-  }
 };
 </script>
 <style lang="less" scoped>

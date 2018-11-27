@@ -22,7 +22,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userInfo: {},
-    ModalShow: false
+    ModalShow: false,
   },
   mutations: {
     change(state) {
@@ -30,6 +30,6 @@ export default new Vuex.Store({
     },
     updateUserInfo(state, userInfo) {
       state.userInfo = userInfo;
-    }
+    },
   }
 });
