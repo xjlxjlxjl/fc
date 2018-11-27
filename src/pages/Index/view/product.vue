@@ -1,56 +1,7 @@
 <template>
   <div id="product">
-    <transition name="el-fade-in-linear">
-      <div v-show="modalShow">
-        <div class="Curtain"></div>
-        <div class="modalBox">
-          <div class="modalBoxMain">
-            <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                加入项目
-              </div>
-              <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
-                <i class="el-message-box__close el-icon-close"></i>
-              </div>
-            </div>
-            <div class="modalBoxMainContent">
-              <div id="joinProject" v-show="joinProject.status == 0">
-                <p>
-                  <span>选择您要加入的项目</span>
-                  <el-button type="text" @click="joinProject.status = 1">+新建项目</el-button>
-                </p>
-                <div>
-                  <el-select v-model="joinProject.projectSlug">
-                    <el-option v-for="(item,key) in joinProject.projectList" 
-                              :key="key" :label="item.name" :value="item.slug"></el-option>
-                  </el-select>
-                </div>
-                <div>
-                  <el-button type="primary" size="mini" @click="joinProjectCart">确认</el-button>
-                </div>
-              </div>
-              <div id="joinProject" v-show="joinProject.status == 1">
-                <el-button class="goBack" type="text" @click="joinProject.status = 0">返回</el-button>
-                <el-input v-model="joinProject.newProjectName" placeholder="输入项目名称"></el-input>
-                <div>
-                  <el-select v-model="joinProject.memberId" size="mini" multiple>
-                    <el-option-group v-for="(item,key) in joinProject.member" 
-                                    :key="key" :label="item.branch_name" :value="item.branch_id">
-                      <el-option v-for="(val,el) in item.member" 
-                                :key="el" :label="val.display_name" :value="val.id"></el-option>
-                    </el-option-group>
-                  </el-select>
-                </div>
-                <el-input v-model="joinProject.description" placeholder="项目介绍"></el-input>
-                <div>
-                  <el-button type="primary" size="mini" @click="addProject">确定</el-button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
+    <join-project :join-project="joinProject" :quantity="assigned.quantitative"></join-project>
+    <login-modal></login-modal>
     <div class="main">
       <el-aside width="298px">
         <div class="typeSelector">
@@ -146,18 +97,17 @@
         <index-chart></index-chart>
       </el-main>
     </div>
-    <login-modal></login-modal>
   </div>
 </template>
 <script>
 import indexChart from "@/pages/Index/common/indexChart";
+import joinProjectModel from "@/pages/Index/common/joinProject";
 import loginModal from "@/pages/Index/common/loginModal";
 
 export default {
   name: "product",
   data() {
     return {
-      modalShow: false,
       params: {},
       goodsParams: {
         exercise_mode: "1",
@@ -193,18 +143,12 @@ export default {
   },
   components: {
     "index-chart": indexChart,
+    "join-project": joinProjectModel,
     "login-modal": loginModal
   },
   methods: {
     joinCollect() {
-      if (!localStorage.getItem("user")) {
-        this.$notify({
-          title: "警告",
-          message: "请登陆后再作操作",
-          type: "warning"
-        });
-        return false;
-      }
+      if(!this.$ifLogin()) return false;
       let that = this;
       this.$post("members/collects/create", { products: that.params.model })
         .then(response => {
@@ -224,99 +168,17 @@ export default {
         .catch(err => console.error(err));
     },
     joinContrast() {
-      if (!localStorage.getItem("user")) {
-        this.$notify({
-          title: "警告",
-          message: "请登陆后再作操作",
-          type: "warning"
-        });
-        return false;
-      }
-    },
-    getBranch() {
-      let that = this;
-      that
-        .$get("members/company/branch")
-        .then(response => {
-          if (response.status != 200) return false;
-          that.joinProject.member = response.data.list;
-        })
-        .catch(error => {});
+      if(!this.$ifLogin()) return false;
     },
     getProject() {
-      if (!localStorage.getItem("user")) {
-        this.$store.commit("change");
-        this.$notify({
-          title: "警告",
-          message: "请登陆后再作操作",
-          type: "warning"
-        });
-        return false;
-      }
-      const loading = this.$loading({ lock: true }),
-        that = this;
-      that
-        .$get("carts")
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          that.modalShow = true;
-          that.joinProject.projectList = response.data.list;
-          if (JSON.parse(localStorage.getItem("user")).slug) that.getBranch();
-        })
-        .catch(error => loading.close());
-    },
-    addProject() {
-      let that = this,
-        loading = this.$loading({ lock: true });
-      that
-        .$post("carts/create", {
-          name: that.joinProject.newProjectName,
-          members_ids: that.joinProject.member.join(","),
-          description: that.joinProject.description
-        })
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          that.joinProject.status = 0;
-          that.modalShow = false;
-
-          that.joinProject.projectSlug = response.data.slug;
-          that.joinProjectCart();
-          // that.getProject();
-        })
-        .catch(error => loading.close());
-    },
-    joinProjectCart() {
-      let that = this,
-        loading = this.$loading({ lock: true }),
-        url = "";
-      if (that.joinProject.projectSlug)
-        url = "carts/items/create/" + that.joinProject.projectSlug;
-      // else if(that.joinProject.projectList.length)
-      //   url = 'carts/items/create/' + that.joinProject.projectList[0].slug;
-      else url = "carts/items/create/cart_item";
-
-      that
-        .$post(url, {
-          product: that.joinProject.id,
-          quantity: that.assigned.quantitative,
-          selling_price_slug: that.joinProject.history
-        })
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          that.modalShow = false;
-          that.$message({ message: "添加成功", type: "success" });
-        })
-        .catch(error => loading.close());
+      if(!this.$ifLogin()) return false;
+      joinProjectModel.methods.getProject.call(this);
     }
   },
   created() {
     const that = this,
       loading = this.$loading({ lock: true });
     that.params = that.$route.params;
-    console.log(that.params);
     that
       .$post("products/product-details/" + that.params.slug, {
         selling_price_slug: that.params.code
@@ -617,35 +479,6 @@ export default {
               width: 100%;
             }
           }
-        }
-      }
-    }
-  }
-  .modalBoxMain {
-    width: 330px;
-    @media screen and (min-width: 500px) {
-      margin-top: 180px;
-    }
-    #joinProject {
-      p {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .goBack {
-        float: right;
-        padding-top: 0;
-      }
-      > div {
-        text-align: center;
-        margin-bottom: 1rem;
-        .el-select {
-          width: 100%;
-        }
-        &:last-child {
-          margin-top: 2rem;
-          margin-bottom: 0;
         }
       }
     }

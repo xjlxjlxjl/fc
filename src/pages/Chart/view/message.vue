@@ -312,7 +312,7 @@ export default {
         list: [],
         pagination: {
           total: 1,
-          current_page: 1
+          current_page: 0
         }
       },
       // 公用变量
@@ -495,14 +495,14 @@ export default {
     },
     getRecord({ id, username, index = 0 }) {
       if (id != this.toUser)
-        this.record.pagination = { total: 1, current_page: 1 };
+        this.record.pagination = { total: 1, current_page: 0 };
 
       let that = this,
         url = null,
         params = {
           page:
-            ++that.record.pagination.currentPage ||
-            that.record.pagination.current_page
+            ++that.record.pagination.current_page ||
+            that.record.pagination.currentPage
         },
         pcHeight = document.getElementById("chatMain").scrollHeight,
         moblieHeight = document.getElementsByClassName("chatMain")[0].scrollHeight;
@@ -536,8 +536,6 @@ export default {
             that.record.list = response.data.list;
             that.fixLocation();
           } else {
-            // 跳跃到 div 高度 / 页面数 - 显示高度
-            // document.getElementById("chatMain").scrollTop = (document.getElementById("chatMain").scrollHeight / response.pagination.currentPage) - document.getElementById('chatMain').offsetHeight;
             response.data.list.forEach(e => that.record.list.unshift(e));
             setTimeout(() => {
               document.getElementById("chatMain").scrollTop = document.getElementById("chatMain").scrollHeight - pcHeight;
@@ -727,55 +725,18 @@ export default {
     // 发文件
     uploadFile(file) {
       let form = new FormData(),
-        that = this,
-        params = {
-          req: {
-            type: 3
-          }
-        };
+        that = this;
       if (file.size / 1024 / 1024 > 100) {
         this.$message.error("上传文件大小不能超过 100MB!");
         return false;
       }
       form.append("file", file);
-      that
-        .$upload("chat/upload_file", form)
-        .then(response => {
-          if (response.status != 200) return false;
-
-          if (that.state == 1) {
-            params.action = "chat";
-            params.req.to_uid = that.toUser;
-          } else if (that.state == 2) {
-            params.action = "group";
-            params.req.to_group_id = that.toUser;
-          } else return false;
-
-          params.req.content = response.data.path;
-          that.webSocketSend(params);
-          that.record.list.push({
-            from_user_id: that.user.user.id,
-            from_user: {
-              from_user_id: that.user.user.id,
-              avatar: that.user.user.avatar,
-              last_name: that.user.user.display_name
-            },
-            msg_type: 3,
-            content: response.data.path
-          });
-        })
-        .catch(error => console.error(error));
+      that.upload(form, 3)
     },
     // 发图片
     uploadImg(file) {
       let form = new FormData(),
-        that = this,
-        params = {
-          req: {
-            type: 2
-          }
-        };
-
+        that = this;
       switch (file.type) {
         case "image/jpeg":
         case "image/png":
@@ -791,12 +752,21 @@ export default {
           return false;
           break;
       }
-
       form.append("file", file);
+      that.upload(form, 2)
+    },
+    upload(form, type){
+      let that = this,
+        params = {
+          req: {
+            type: type
+          }
+        };
       that
         .$upload("chat/upload_file", form)
         .then(response => {
           if (response.status != 200) return false;
+
           if (that.state == 1) {
             params.action = "chat";
             params.req.to_uid = that.toUser;
@@ -804,6 +774,7 @@ export default {
             params.action = "group";
             params.req.to_group_id = that.toUser;
           } else return false;
+
           params.req.content = response.data.path;
           that.webSocketSend(params);
           that.record.list.push({
@@ -813,7 +784,7 @@ export default {
               avatar: that.user.user.avatar,
               last_name: that.user.user.display_name
             },
-            msg_type: 2,
+            msg_type: type,
             content: response.data.path
           });
         })
@@ -1026,14 +997,10 @@ export default {
       }
     });
 
-    document.getElementById("chatMain").onscroll = e => {
-      if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.currentPage)
+    document.getElementById("chatMain").onscroll = document.getElementsByClassName("chatMain")[0].onscroll = e => {
+      if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.current_page)
         this.getRecord({ id: this.toUser, username: this.userName, index: this.key });
     };
-    document.getElementsByClassName("chatMain")[0].onscroll = e => {
-      if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.currentPage)
-        this.getRecord({ id: this.toUser, username: this.userName, index: this.key });
-    }
   },
   created() {
     this.getChatList();
