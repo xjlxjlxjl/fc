@@ -167,8 +167,8 @@
                   <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
                     <div v-if="item.from_user_id == user.user.id || item.user_id == user.user.id" class="formMessage">
                       <div class="messgaeBox">
-                        <p v-if="item.user" class="messageUser" align="right">{{ item.user.remark || item.user.display_name }}</p>
-                        <div class="Bubble" :style="item.user ? 'top: 3.5rem;' : ''"></div>
+                        <p class="messageUser" align="right"><span>{{ item.created_at }}</span> 　<span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span></p>
+                        <div class="Bubble"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
                           <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" @click="Gallery = true;galleryIndex = item.msgImgKey" class="messageImg">
@@ -187,8 +187,8 @@
                     <div v-else class="toMessage">
                       <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
                       <div class="messgaeBox">
-                        <p v-if="item.user" class="messageUser">{{ item.user.remark || item.user.display_name }}</p>
-                        <div class="Bubble" :style="item.user ? 'top: 3.5rem;' : ''"></div>
+                        <p class="messageUser"><span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span> 　<span>{{ item.created_at }}</span></p>
+                        <div class="Bubble"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
                           <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" @click="Gallery = true;galleryIndex = item.msgImgKey" class="messageImg">
@@ -234,7 +234,7 @@
 </template>
 <script>
 import fileImg from "@/assets/img/file.png";
-import groupUserCheckBox from '@/pages/Chart/common/groupUserCheckBox';
+import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
 
 export default {
   name: "message",
@@ -327,7 +327,7 @@ export default {
       msgImgArr: [],
       groupId: 0,
       groupState: 0,
-      groupUserList: [],
+      groupUserList: []
     };
   },
   methods: {
@@ -356,11 +356,13 @@ export default {
               let isLoad =
                 e.target.scrollTop >=
                 e.target.scrollHeight - e.target.offsetHeight;
-              if (isLoad && 
+              if (
+                isLoad &&
                 this.noticesList.pagination.total > 15 &&
                 this.noticesList.pagination.total / 15 >
-                (this.noticesList.pagination.currentPage ||
-                this.noticesList.pagination.current_page))
+                  (this.noticesList.pagination.currentPage ||
+                    this.noticesList.pagination.current_page)
+              )
                 this.getNotices();
             };
           }, 100);
@@ -505,7 +507,8 @@ export default {
             that.record.pagination.currentPage
         },
         pcHeight = document.getElementById("chatMain").scrollHeight,
-        moblieHeight = document.getElementsByClassName("chatMain")[0].scrollHeight;
+        moblieHeight = document.getElementsByClassName("chatMain")[0]
+          .scrollHeight;
 
       that.key = index;
       that.toUser = id;
@@ -538,8 +541,11 @@ export default {
           } else {
             response.data.list.forEach(e => that.record.list.unshift(e));
             setTimeout(() => {
-              document.getElementById("chatMain").scrollTop = document.getElementById("chatMain").scrollHeight - pcHeight;
-              document.getElementsByClassName("chatMain")[0].scrollTop = document.getElementsByClassName("chatMain")[0].scrollHeight - moblieHeight;
+              document.getElementById("chatMain").scrollTop =
+                document.getElementById("chatMain").scrollHeight - pcHeight;
+              document.getElementsByClassName("chatMain")[0].scrollTop =
+                document.getElementsByClassName("chatMain")[0].scrollHeight -
+                moblieHeight;
             }, 100);
           }
           that.record.pagination = response.pagination;
@@ -679,7 +685,7 @@ export default {
         })
         .catch(err => console.log("点错了"));
     },
-    joinGroup(groupId = 0){
+    joinGroup(groupId = 0) {
       this.groupId = parseInt(groupId);
       this.groupUserList = this.checkBoxList;
       this.groupState = 1;
@@ -731,7 +737,7 @@ export default {
         return false;
       }
       form.append("file", file);
-      that.upload(form, 3)
+      that.upload(form, 3);
     },
     // 发图片
     uploadImg(file) {
@@ -753,9 +759,9 @@ export default {
           break;
       }
       form.append("file", file);
-      that.upload(form, 2)
+      that.upload(form, 2);
     },
-    upload(form, type){
+    upload(form, type) {
       let that = this,
         params = {
           req: {
@@ -891,8 +897,13 @@ export default {
                     content: result.resp.content
                   });
                   // this.getRecord({ id: this.toUser, username: this.userName });
-                  this.$notify({ title: `收到一条新消息`, message: result.resp.content });
-                  let notification = new Notification("收到一条新消息",{ body: result.resp.content });
+                  this.$notify({
+                    title: `收到一条新消息`,
+                    message: result.resp.content
+                  });
+                  let notification = new Notification("收到一条新消息", {
+                    body: result.resp.content
+                  });
                 }
                 break;
               case "7":
@@ -917,31 +928,38 @@ export default {
                 content: result.resp.content
               });
               // this.getRecord({ id: this.toUser, username: this.userName });
-              this.$notify({ title: `${ this.userName }收到一条群消息`, message: result.resp.content });
-              let notification = new Notification(`${ this.userName }收到一条群消息`,{ body: result.resp.content });
+              this.$notify({
+                title: `${this.userName}收到一条群消息`,
+                message: result.resp.content
+              });
+              let notification = new Notification(
+                `${this.userName}收到一条群消息`,
+                { body: result.resp.content }
+              );
             }
             this.fixLocation();
             break;
           case "notice":
             console.log(result);
             this.$notify({
-              title: `您有一条来自${ result.resp.from_name }的通知`,
+              title: `您有一条来自${result.resp.from_name}的通知`,
               message: result.resp.content
             });
             let notification = new Notification(
-              `您有一条来自${ result.resp.from_name }的通知`, {
+              `您有一条来自${result.resp.from_name}的通知`,
+              {
                 body: result.resp.content
               }
             );
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
               from_user: {
-                last_name: result.resp.from_name,
+                last_name: result.resp.from_name
               },
               message: result.resp.content,
               type: result.resp.type,
               user_id: result.resp.user_id
-            })
+            });
             // this.getNotices();
             break;
           case "close":
@@ -972,8 +990,14 @@ export default {
     },
     fixLocation() {
       setTimeout(() => {
-        document.getElementById("chatMain").scrollTop = document.getElementById("chatMain").scrollHeight;
-        document.getElementsByClassName("chatMain")[0].scrollTop = document.getElementsByClassName("chatMain")[0].scrollHeight;
+        document.getElementById("chatMain").scrollTop = document.getElementById(
+          "chatMain"
+        ).scrollHeight;
+        document.getElementsByClassName(
+          "chatMain"
+        )[0].scrollTop = document.getElementsByClassName(
+          "chatMain"
+        )[0].scrollHeight;
       }, 100);
     }
   },
@@ -997,9 +1021,21 @@ export default {
       }
     });
 
-    document.getElementById("chatMain").onscroll = document.getElementsByClassName("chatMain")[0].onscroll = e => {
-      if (!e.target.scrollTop && this.record.pagination.total > 15 && (this.record.pagination.total / 15) > this.record.pagination.current_page)
-        this.getRecord({ id: this.toUser, username: this.userName, index: this.key });
+    document.getElementById(
+      "chatMain"
+    ).onscroll = document.getElementsByClassName(
+      "chatMain"
+    )[0].onscroll = e => {
+      if (
+        !e.target.scrollTop &&
+        this.record.pagination.total > 15 &&
+        this.record.pagination.total / 15 > this.record.pagination.current_page
+      )
+        this.getRecord({
+          id: this.toUser,
+          username: this.userName,
+          index: this.key
+        });
     };
   },
   created() {
@@ -1033,15 +1069,15 @@ export default {
   height: 0px;
   box-sizing: content-box;
   position: absolute;
-  top: 2rem;
+  top: 3rem;
 }
 #message {
   width: 100%;
   box-sizing: border-box;
   .el-container {
     height: 100%;
-    @media screen and (min-width: 820px){
-      .pcShowImportant{
+    @media screen and (min-width: 820px) {
+      .pcShowImportant {
         display: block !important;
       }
     }
@@ -1050,8 +1086,7 @@ export default {
       background-color: @black;
       box-sizing: border-box;
       padding: 2rem 1rem;
-      @media screen and (max-width: 820px){
-        
+      @media screen and (max-width: 820px) {
       }
       .function {
         list-style: none;
@@ -1081,7 +1116,7 @@ export default {
           height: 100%;
           background-color: @listBackground;
           padding: 0;
-          @media screen and (max-width: 820px){
+          @media screen and (max-width: 820px) {
             width: 100% !important;
           }
           .search {
@@ -1139,7 +1174,7 @@ export default {
               > span {
                 margin-left: 1rem;
               }
-              label{
+              label {
                 display: block;
                 width: 85%;
                 overflow: hidden;
@@ -1159,7 +1194,7 @@ export default {
         .el-main {
           background-color: @chatBackground;
           color: @gery;
-          @media screen and (max-width: 820px){
+          @media screen and (max-width: 820px) {
             display: block;
           }
           .el-header {
@@ -1178,7 +1213,7 @@ export default {
                 }
               }
               > i {
-                @media screen and (min-width: 820px){
+                @media screen and (min-width: 820px) {
                   display: none;
                 }
                 font-size: 2rem;
@@ -1331,7 +1366,7 @@ export default {
               }
             }
           }
-          ::-webkit-scrollbar{
+          ::-webkit-scrollbar {
             display: none !important;
             width: 0 !important;
             height: 0 !important;

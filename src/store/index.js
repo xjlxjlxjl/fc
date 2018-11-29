@@ -6,7 +6,8 @@ export default new Vuex.Store({
   state: {
     userInfo: {},
     ModalShow: false,
-    joinModal: false
+    joinModal: false,
+    supplierModal: false,
   },
   mutations: {
     change(state) {
@@ -15,6 +16,10 @@ export default new Vuex.Store({
     joinModalDispaly(state, status) {
       if(status) state.joinModal = status;
       else state.joinModal = !state.joinModal;
+    },
+    supplierModalDisplay(state, status) {
+      if(status) state.supplierModal = status;
+      else state.supplierModal = !state.supplierModal;
     },
     updateUserInfo(state, userInfo) {
       state.userInfo = userInfo;

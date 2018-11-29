@@ -62,7 +62,7 @@ export default {
   },
   props: {
     joinProject: Object,
-    quantitative: Number
+    quantity: Number
   },
   methods: {
     getBranch() {
@@ -115,11 +115,11 @@ export default {
       if (that.joinProject.projectSlug)
         url = "carts/items/create/" + that.joinProject.projectSlug;
       else url = "carts/items/create/cart_item";
-
+      
       that
         .$post(url, {
           product: that.joinProject.id,
-          quantity: that.quantitative,
+          quantity: that.quantity,
           selling_price_slug: that.joinProject.history
         })
         .then(response => {

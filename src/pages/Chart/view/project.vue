@@ -2,18 +2,24 @@
   <el-container id="project">
     <el-aside width="200px">
       <el-menu default-active="0" v-if="projectList.list.length > 0">
-        <el-menu-item v-for="(item,index) in projectList.list" 
-                       v-if="item.is_default"
-                      :key="index" :index="index.toString()"
-                      @click="showProjectChange(index)"
-                      class="shoppingCar">
+        <el-menu-item
+          v-for="(item,index) in projectList.list"
+          v-if="item.is_default"
+          :key="index"
+          :index="index.toString()"
+          @click="showProjectChange(index)"
+          class="shoppingCar"
+        >
           <i class="font_family icon-xianmu"></i>
-          <span>　购物车</span>
+          <span>购物车</span>
         </el-menu-item>
-        <el-menu-item v-for="(item,index) in projectList.list" 
-                      v-if="!item.is_default"
-                     :key="index" :index="index.toString()"
-                     @click="showProjectChange(index)">
+        <el-menu-item
+          v-for="(item,index) in projectList.list"
+          v-if="!item.is_default"
+          :key="index"
+          :index="index.toString()"
+          @click="showProjectChange(index)"
+        >
           <i class="el-icon-location"></i>
           <span>{{ item.name }}</span>
         </el-menu-item>
@@ -28,17 +34,27 @@
           <div>
             <i class="font_family icon-chengyuan"></i>
             <el-select v-model="members" placeholder="请选择" @change="editCart" multiple>
-              <el-option-group v-for="group in options" :key="group.branch_id" :label="group.branch_name">
-                <el-option v-for="item in group.member" :key="item.id"
-                  :label="item.display_name" :value="item.id">
-                </el-option>
+              <el-option-group
+                v-for="group in options"
+                :key="group.branch_id"
+                :label="group.branch_name"
+              >
+                <el-option
+                  v-for="item in group.member"
+                  :key="item.id"
+                  :label="item.display_name"
+                  :value="item.id"
+                ></el-option>
               </el-option-group>
             </el-select>
           </div>
         </div>
         <div class="teamContant">
           <el-card v-for="(item,index) in displayArr" :key="index">
-            <img :src="item.url || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'" class="image">
+            <img
+              :src="item.url || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'"
+              class="image"
+            >
             <div>
               <span>{{ item.display_name }}</span>
             </div>
@@ -46,13 +62,19 @@
         </div>
       </div>
 
-      <el-table ref="multipleTable" :data="projectDetail.list" tooltip-effect="dark"
-        @selection-change="handleSelectionChange">
+      <el-table
+        ref="multipleTable"
+        :data="projectDetail.list"
+        tooltip-effect="dark"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="50"></el-table-column>
         <el-table-column label="产品" width="400">
           <template slot-scope="{ row,$index }">
             <div>
-              <img :src="row.product.image || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
+              <img
+                :src="row.product.image || 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'"
+              >
             </div>
             <div>
               <p>型号：{{ row.model }}</p>
@@ -63,7 +85,13 @@
         </el-table-column>
         <el-table-column label="数量" width="150">
           <template slot-scope="{ row,$index }">
-            <el-input-number v-model="row.quantity" :min="1" label="件数" size="mini" @change="editGoods(row.quantity, row.str_id)"></el-input-number>
+            <el-input-number
+              v-model="row.quantity"
+              :min="1"
+              label="件数"
+              size="mini"
+              @change="editGoods(row.quantity, row.str_id)"
+            ></el-input-number>
           </template>
         </el-table-column>
         <el-table-column label="价格" width="100" show-overflow-tooltip>
@@ -71,13 +99,21 @@
             <div v-if="isNaN(row.price)">
               <span>待报价</span>
               <div>
-                <el-button type="primary" size="mini" @click="company.id = row.id;company.list = row.all_supplier;modalShow = true">询价</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="company.id = row.id;company.list = row.all_supplier;modalShow = true"
+                >询价</el-button>
               </div>
             </div>
             <div v-else>
               <span>{{ row.price }}</span>
               <div v-if="!row.is_close">
-                <el-button type="primary" size="mini" @click="company.id = row.id;company.list = row.all_supplier;modalShow = true">询价</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="company.id = row.id;company.list = row.all_supplier;modalShow = true"
+                >询价</el-button>
               </div>
             </div>
           </template>
@@ -90,29 +126,41 @@
         <el-table-column label="操作" width="120">
           <template slot-scope="{ row,$index }">
             <div class="operation">
-              <el-select @change="cartsItem(0,row.str_id,row.supplier.slug)" v-model="row.supplier.slug" placeholder="选择供应商">
+              <el-select
+                @change="cartsItem(0,row.str_id,row.supplier.slug)"
+                v-model="row.supplier.slug"
+                placeholder="选择供应商"
+              >
                 <el-option
                   v-for="item in row.all_supplier"
                   :key="item.slug"
                   :label="item.name"
-                  :value="item.slug">
-                </el-option>
+                  :value="item.slug"
+                ></el-option>
               </el-select>
-              <el-select @change="cartsItem(1,row.str_id,row.invoice_type.slug)" v-model="row.invoice_type.slug" placeholder="发票类型">
+              <el-select
+                @change="cartsItem(1,row.str_id,row.invoice_type.slug)"
+                v-model="row.invoice_type.slug"
+                placeholder="发票类型"
+              >
                 <el-option
                   v-for="item in row.all_invoice_type"
                   :key="item.slug"
                   :label="item.name"
-                  :value="item.slug">
-                </el-option>
+                  :value="item.slug"
+                ></el-option>
               </el-select>
-              <el-select @change="cartsItem(2,row.str_id,row.payment_type.slug)" v-model="row.payment_type.slug" placeholder="付款方式">
+              <el-select
+                @change="cartsItem(2,row.str_id,row.payment_type.slug)"
+                v-model="row.payment_type.slug"
+                placeholder="付款方式"
+              >
                 <el-option
                   v-for="item in row.all_payment_type"
                   :key="item.slug"
                   :label="item.name"
-                  :value="item.slug">
-                </el-option>
+                  :value="item.slug"
+                ></el-option>
               </el-select>
             </div>
           </template>
@@ -121,8 +169,12 @@
       <div class="controller">
         <div></div>
         <div>
-          <el-button type="warning" size="mini" @click="moveItem = true" 
-                     v-if="projectList.list[index].is_default">移入项目</el-button>
+          <el-button
+            type="warning"
+            size="mini"
+            @click="moveItem = true"
+            v-if="projectList.list[index].is_default"
+          >移入项目</el-button>
           <el-button type="primary" size="mini" @click="delGoods">删除</el-button>
           <el-button type="success" size="mini" @click="checkOrder">结算</el-button>
         </div>
@@ -134,9 +186,7 @@
         <div class="modalBox">
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                询价
-              </div>
+              <div class="modalBoxMainHeaderTitle">询价</div>
               <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
                 <i class="el-message-box__close el-icon-close"></i>
               </div>
@@ -144,7 +194,11 @@
             <div class="modalBoxMainContent">
               <div id="companySelect">
                 <el-checkbox-group v-model="company.company_ids">
-                  <el-checkbox v-for="(item,key) in company.list" :label="item.id" :key="key"> {{ item.name }} </el-checkbox>
+                  <el-checkbox
+                    v-for="(item,key) in company.list"
+                    :label="item.id"
+                    :key="key"
+                  >{{ item.name }}</el-checkbox>
                 </el-checkbox-group>
               </div>
             </div>
@@ -162,9 +216,7 @@
         <div class="modalBox">
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                移入项目
-              </div>
+              <div class="modalBoxMainHeaderTitle">移入项目</div>
               <div class="modalBoxMainHeaderBtn" @click="moveItem = false;">
                 <i class="el-message-box__close el-icon-close"></i>
               </div>
@@ -172,8 +224,13 @@
             <div class="modalBoxMainContent">
               <div id="moveItem">
                 <el-select v-model="moveSlug" placeholder="请选择移入项目">
-                  <el-option v-for="(item,index) in projectList.list" :key="index"
-                             v-if="!item.is_default" :label="item.name" :value="item.slug"></el-option>
+                  <el-option
+                    v-for="(item,index) in projectList.list"
+                    :key="index"
+                    v-if="!item.is_default"
+                    :label="item.name"
+                    :value="item.slug"
+                  ></el-option>
                 </el-select>
               </div>
             </div>
@@ -344,7 +401,9 @@ export default {
       let that = this;
       that
         .$post(
-          `carts/items/edit/${ that.projectList.list[that.index].slug }/${ str_id }`,
+          `carts/items/edit/${
+            that.projectList.list[that.index].slug
+          }/${str_id}`,
           { quantity: quantity }
         )
         .then(response => {
@@ -376,13 +435,19 @@ export default {
         loading = this.$loading({ lock: true });
       switch (key) {
         case 0:
-          url = `carts/items/price-company/${ that.projectList.list[that.index].slug }/${ str_id }/${ slug }`;
+          url = `carts/items/price-company/${
+            that.projectList.list[that.index].slug
+          }/${str_id}/${slug}`;
           break;
         case 1:
-          url = `carts/items/price-invoice/${ that.projectList.list[that.index].slug }/${ str_id }/${ slug }`;
+          url = `carts/items/price-invoice/${
+            that.projectList.list[that.index].slug
+          }/${str_id}/${slug}`;
           break;
         case 2:
-          url = `carts/items/price-payment/${ that.projectList.list[that.index].slug }/${ str_id }/${ slug }`;
+          url = `carts/items/price-payment/${
+            that.projectList.list[that.index].slug
+          }/${str_id}/${slug}`;
           break;
       }
       that
@@ -404,7 +469,7 @@ export default {
       let loading = this.$loading({ lock: true }),
         that = this;
       this.$post(
-        "carts/items/price-inquiry/" + that.projectList.list[that.index].slug,
+        `carts/items/price-inquiry/${ that.projectList.list[that.index].slug }`,
         {
           ids: that.company.id,
           company_ids: that.company.company_ids.join(",")

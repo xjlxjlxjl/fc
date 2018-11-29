@@ -21,7 +21,7 @@
             <li v-for="(item,index) in assigned.attribute" :key="index">
               <p>{{ item.name }}</p>
               <div>
-                  <el-input :value="item.value"></el-input>
+                <el-input :value="item.value"></el-input>
               </div>
             </li>
           </ul>
@@ -35,7 +35,10 @@
               <span>{{ assigned.type }}</span>
               <span>价格：{{ assigned.sales_price }}</span>
               <span>交期：{{ assigned.delivery_period }}天</span>
-              <span>共有<span class="org">{{ assigned.dealer_quantity }}</span>家供应商</span>
+              <span>
+                共有
+                <span class="org">{{ assigned.dealer_quantity }}</span>家供应商
+              </span>
             </div>
             <div class="operation">
               <span>
@@ -43,7 +46,12 @@
                 <el-input-number size="mini" v-model="assigned.quantitative"></el-input-number>
                 <span>件</span>
               </span>
-              <el-button type="primary" size="mini" v-if="!assigned.is_collect" @click="joinCollect">收藏</el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                v-if="!assigned.is_collect"
+                @click="joinCollect"
+              >收藏</el-button>
               <el-button type="primary" size="mini" v-else @click="delCollect(assigned.id)">取消收藏</el-button>
               <el-button type="primary" size="mini" @click="joinContrast">加入对比</el-button>
               <el-button type="primary" size="mini" @click="getProject">加入项目</el-button>
@@ -53,7 +61,7 @@
             <el-tabs type="card">
               <el-tab-pane label="详细规格参数">
                 <ul class="modelUl">
-                  <li v-for="(item,key) in assigned.assigned" :key='key'>
+                  <li v-for="(item,key) in assigned.assigned" :key="key">
                     <div>{{ item.name }}</div>
                     <div>{{ item.value }}</div>
                   </li>
@@ -65,7 +73,10 @@
               </el-tab-pane>
               <el-tab-pane label="3D预览">
                 <div class="model3D">
-                  <iframe :src="'https://factoryun.com/store/3d?strid=' + assigned.str_id" frameborder="0"></iframe>  
+                  <iframe
+                    :src="'https://factoryun.com/store/3d?strid=' + assigned.str_id"
+                    frameborder="0"
+                  ></iframe>
                 </div>
               </el-tab-pane>
               <el-tab-pane label="2D图纸">
@@ -74,7 +85,7 @@
                 </div>
               </el-tab-pane>
               <el-tab-pane label="型号列表">
-                <el-table stripe >
+                <el-table stripe>
                   <el-table-column prop="model" label="型号"></el-table-column>
                   <el-table-column prop="model" label="系列"></el-table-column>
                   <el-table-column prop="model" label="地板宽度"></el-table-column>
@@ -87,8 +98,13 @@
               </el-tab-pane>
               <el-tab-pane label="规格表">
                 <div class="Specification">
-                  <img v-if="assigned.images.length > 0" :src="assigned.images ? assigned.images : 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'">
-                  <img src="https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg">
+                  <img
+                    v-if="assigned.images.length > 0"
+                    :src="assigned.images ? assigned.images : 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'"
+                  >
+                  <img
+                    src="https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg"
+                  >
                 </div>
               </el-tab-pane>
             </el-tabs>
@@ -148,7 +164,7 @@ export default {
   },
   methods: {
     joinCollect() {
-      if(!this.$ifLogin()) return false;
+      if (!this.$ifLogin()) return false;
       let that = this;
       this.$post("members/collects/create", { products: that.params.model })
         .then(response => {
@@ -168,10 +184,20 @@ export default {
         .catch(err => console.error(err));
     },
     joinContrast() {
-      if(!this.$ifLogin()) return false;
+      if (!this.$ifLogin()) return false;
+      let arr = JSON.parse(localStorage.getItem("contrast") || "{}"),
+        inArr = false;
+      if (!arr[this.assigned.parent_category.name])
+        arr[this.assigned.parent_category.name] = [];
+      arr[this.assigned.parent_category.name].forEach(e => {
+        if (e.slug == this.$route.params.slug) inArr = true;
+      });
+      this.assigned.historySlug = this.$route.params.code;
+      if (!inArr) arr[this.assigned.parent_category.name].push(this.assigned);
+      localStorage.setItem("contrast", JSON.stringify(arr));
     },
     getProject() {
-      if(!this.$ifLogin()) return false;
+      if (!this.$ifLogin()) return false;
       joinProjectModel.methods.getProject.call(this);
     }
   },

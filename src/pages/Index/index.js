@@ -4,7 +4,7 @@ import Home from './Home';
 import router from './router';
 import store from '../../store';
 import elementUi from 'element-ui';
-import { post, get, patch, put } from '../../assets/js/http';
+import { post, get, upload, patch, put } from '../../assets/js/http';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/icon/iconfont.css'; // 字体
 import 'element-ui/lib/theme-chalk/display.css'; // 响应式
@@ -16,6 +16,7 @@ Vue.config.productionTip = false;
 Vue.use(elementUi);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;
+Vue.prototype.$upload = upload;
 Vue.prototype.$ifLogin = () => {
     if (!localStorage.getItem("user")) {
     store.commit("change");

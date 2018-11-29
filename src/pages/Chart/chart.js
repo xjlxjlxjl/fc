@@ -2,7 +2,7 @@
 import Vue from "vue";
 import Index from "./Index";
 import router from "./router";
-import store from '../../store';
+import store from "../../store";
 import elementUi from "element-ui";
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
@@ -21,6 +21,17 @@ Vue.use(elementUi);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;
 Vue.prototype.$upload = upload;
+Vue.prototype.$ifLogin = () => {
+  if (!localStorage.getItem("user")) {
+    store.commit("change");
+    Vue.prototype.$notify({
+      title: "警告",
+      message: "请登陆后再作操作",
+      type: "warning"
+    });
+    return false;
+  } else return true;
+};
 Array.prototype.repeat = function() {
   var arr = [];
   for (var i = 0; i < this.length; i++) {
@@ -46,7 +57,6 @@ Array.prototype.sum = function() {
 var reducer = function add(sumSoFar, item) {
   return sumSoFar + parseInt(item.quantity) * parseFloat(item.price);
 };
-
 
 new Vue({
   el: "#app",

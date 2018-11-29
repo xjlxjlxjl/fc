@@ -170,6 +170,20 @@ export default {
             { name: "售后计划", url: "project" },
             { name: "售后维修", url: "project" }
           ]
+        },
+        {
+          name: "财务",
+          url: "Finance",
+          child: [
+            { name: "财务", url: "project" }
+          ]
+        },
+        {
+          name: "人事",
+          url: "Matters",
+          child: [
+            { name: "人事", url: "Matters" }
+          ]
         }
       ],
       menuShow: false,
