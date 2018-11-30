@@ -5,7 +5,12 @@
     <el-container>
       <el-aside class="homeMainAside" width="200px">
         <el-menu default-active="0">
-          <el-menu-item v-for="(item,index) in product" :key="index" :index="index.toString()" @click="showCategory(item.children)">
+          <el-menu-item
+            v-for="(item,index) in product"
+            :key="index"
+            :index="index.toString()"
+            @click="showCategory(item.children)"
+          >
             <span slot="title">{{ item.name }}</span>
           </el-menu-item>
         </el-menu>
@@ -14,7 +19,12 @@
         <el-container>
           <el-aside class="homeAsideList" width="120px">
             <el-menu default-active="0">
-              <el-menu-item v-for="(item,index) in selectedCate" :key="index" :index="index.toString()" @click="showGoodsList(item.children)">
+              <el-menu-item
+                v-for="(item,index) in selectedCate"
+                :key="index"
+                :index="index.toString()"
+                @click="showGoodsList(item.children)"
+              >
                 <span slot="title">{{ item.name }}</span>
               </el-menu-item>
             </el-menu>
@@ -73,26 +83,26 @@
                     <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
                     <div class="pull-left" v-if="params.readswit == 0">
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>速度: </span>
+                        <span>速度:</span>
                         <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.speed" label="1">1</el-radio>
                         <el-input class="labelInput" v-model="params.speed" placeholder="5">0.5</el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>加速度: </span>
+                        <span>加速度:</span>
                         <el-radio v-model="params.acceleration" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.acceleration" label="1">1</el-radio>
                         <el-input class="labelInput" v-model="params.acceleration" placeholder="5"></el-input>
                         <span>m/s²</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -100,19 +110,19 @@
                     </div>
                     <div class="pull-left" v-else-if="params.readswit == 1">
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>用时: </span>
+                        <span>用时:</span>
                         <el-radio v-model="params.time" label="1">1</el-radio>
                         <el-radio v-model="params.time" label="2">2</el-radio>
                         <el-input v-model="params.time" placeholder="其他"></el-input>
                         <span>s</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -120,30 +130,30 @@
                     </div>
                     <div class="pull-left" v-else>
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>加速时间 t1: </span>
+                        <span>加速时间 t1:</span>
                         <el-radio v-model="params.accelerationTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.accelerationTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>匀速时间 t2: </span>
+                        <span>匀速时间 t2:</span>
                         <el-radio v-model="params.uniformTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.uniformTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>减速时间 t3: </span>
+                        <span>减速时间 t3:</span>
                         <el-radio v-model="params.slowTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.slowTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -153,7 +163,7 @@
                 </li>
                 <li>
                   <div>
-                    <el-radio v-model="params.feedback_type" label="">重现精度</el-radio>
+                    <el-radio v-model="params.feedback_type" label>重现精度</el-radio>
                     <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
                     <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
                   </div>
@@ -173,7 +183,7 @@
                       <span>um</span>
                     </p>
                     <p v-else>
-                      <span>重现精度: </span>
+                      <span>重现精度:</span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
                       <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
@@ -199,15 +209,24 @@
                 </li>
               </ul>
               <div class="typeSelection">
-                <div :class="typeSelection.Int == 0 ? 'active' : '' " @click="typeSelection.Int = 0">直线电机模组</div>
-                <div :class="typeSelection.Int == 1 ? 'active' : '' " @click="typeSelection.Int = 1">皮带模组</div>
-                <div :class="typeSelection.Int == 2 ? 'active' : '' " @click="typeSelection.Int = 2">螺杆模组</div>
+                <div
+                  :class="typeSelection.Int == 0 ? 'active' : '' "
+                  @click="typeSelection.Int = 0"
+                >直线电机模组</div>
+                <div
+                  :class="typeSelection.Int == 1 ? 'active' : '' "
+                  @click="typeSelection.Int = 1"
+                >皮带模组</div>
+                <div
+                  :class="typeSelection.Int == 2 ? 'active' : '' "
+                  @click="typeSelection.Int = 2"
+                >螺杆模组</div>
               </div>
               <ul v-if="typeSelection.Int == 0">
                 <li>
                   <div>防尘装置</div>
                   <div>
-                    <el-radio v-model="params.dustproof_device" label="">无</el-radio>
+                    <el-radio v-model="params.dustproof_device" label>无</el-radio>
                     <el-radio v-model="params.dustproof_device" label="metal_cover">金属盖板</el-radio>
                     <el-radio v-model="params.dustproof_device" label="organ_cover">风琴罩</el-radio>
                   </div>
@@ -225,7 +244,7 @@
                   <div>
                     <el-radio v-model="params.driver_type" label="CDHD">高创</el-radio>
                     <el-radio v-model="params.driver_type" label="Hiwin">Hiwin</el-radio>
-                    <el-radio v-model="params.driver_type" label="">客户自配</el-radio>
+                    <el-radio v-model="params.driver_type" label>客户自配</el-radio>
                   </div>
                 </li>
               </ul>
@@ -273,10 +292,12 @@
                   <div>电机品牌</div>
                   <div>
                     <el-select v-model="params.motor_brand">
-                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
-                                :key="index" 
-                                :label="item.name"
-                                :value="item.value"></el-option>
+                      <el-option
+                        v-for="(item,index) in typeSelection.motor_brand"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </li>
@@ -333,10 +354,12 @@
                   <div>电机品牌</div>
                   <div>
                     <el-select v-model="params.motor_brand">
-                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
-                                :key="index" 
-                                :label="item.name"
-                                :value="item.value"></el-option>
+                      <el-option
+                        v-for="(item,index) in typeSelection.motor_brand"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </li>
@@ -368,8 +391,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -385,11 +420,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -398,8 +433,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <dir class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </dir>
                   </template>
@@ -458,12 +496,12 @@
                     <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
                     <div class="pull-left" v-if="params.readswit == 0">
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>速度: </span>
+                        <span>速度:</span>
                         <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.speed" label="1">1</el-radio>
                         <el-radio v-model="params.speed" label="2">2</el-radio>
@@ -471,7 +509,7 @@
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>加速度: </span>
+                        <span>加速度:</span>
                         <el-radio v-model="params.acceleration" label="5">5</el-radio>
                         <el-radio v-model="params.acceleration" label="10">10</el-radio>
                         <el-radio v-model="params.acceleration" label="20">20</el-radio>
@@ -479,7 +517,7 @@
                         <span>m/s²</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -487,18 +525,18 @@
                     </div>
                     <div class="pull-left" v-else-if="params.readswit == 1">
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>用时: </span>
+                        <span>用时:</span>
                         <el-radio v-model="params.time" label="1">1</el-radio>
                         <el-input v-model="params.time" placeholder="其他"></el-input>
                         <span>s</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -506,30 +544,30 @@
                     </div>
                     <div class="pull-left" v-else>
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>加速时间 t1: </span>
+                        <span>加速时间 t1:</span>
                         <el-radio v-model="params.accelerationTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.accelerationTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>匀速时间 t2: </span>
+                        <span>匀速时间 t2:</span>
                         <el-radio v-model="params.uniformTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.uniformTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>减速时间 t3: </span>
+                        <span>减速时间 t3:</span>
                         <el-radio v-model="params.slowTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.slowTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -539,7 +577,7 @@
                 </li>
                 <li>
                   <div>
-                    <el-radio v-model="params.feedback_type" label="">重现精度</el-radio>
+                    <el-radio v-model="params.feedback_type" label>重现精度</el-radio>
                     <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
                     <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
                   </div>
@@ -559,7 +597,7 @@
                       <span>um</span>
                     </p>
                     <p v-else>
-                      <span>重现精度: </span>
+                      <span>重现精度:</span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
                       <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
@@ -579,7 +617,7 @@
                 <li>
                   <div>防尘装置</div>
                   <div>
-                    <el-radio v-model="params.dustproof_device" label="">无</el-radio>
+                    <el-radio v-model="params.dustproof_device" label>无</el-radio>
                     <el-radio v-model="params.dustproof_device" label="metal_cover">金属盖板</el-radio>
                   </div>
                 </li>
@@ -588,7 +626,7 @@
                   <div>
                     <el-radio v-model="params.driver_type" label="CDHD">高创</el-radio>
                     <el-radio v-model="params.driver_type" label="Hiwin">Hiwin</el-radio>
-                    <el-radio v-model="params.driver_type" label="">客户自配</el-radio>
+                    <el-radio v-model="params.driver_type" label>客户自配</el-radio>
                   </div>
                 </li>
                 <li>
@@ -613,8 +651,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -630,11 +680,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -643,8 +693,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -707,10 +760,12 @@
                   <div>电机品牌</div>
                   <div>
                     <el-select v-model="params.motor_brand">
-                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
-                                :key="index" 
-                                :label="item.name"
-                                :value="item.value"></el-option>
+                      <el-option
+                        v-for="(item,index) in typeSelection.motor_brand"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </li>
@@ -796,8 +851,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -813,11 +880,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -826,8 +893,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -852,8 +922,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -869,11 +951,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -882,8 +964,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -919,12 +1004,12 @@
                     <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
                     <div class="pull-left" v-if="params.readswit == 0">
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>速度: </span>
+                        <span>速度:</span>
                         <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.speed" label="1">1</el-radio>
                         <el-radio v-model="params.speed" label="2">2</el-radio>
@@ -932,7 +1017,7 @@
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>加速度: </span>
+                        <span>加速度:</span>
                         <el-radio v-model="params.acceleration" label="5">5</el-radio>
                         <el-radio v-model="params.acceleration" label="10">10</el-radio>
                         <el-radio v-model="params.acceleration" label="20">20</el-radio>
@@ -940,7 +1025,7 @@
                         <span>m/s²</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -948,18 +1033,18 @@
                     </div>
                     <div class="pull-left" v-else-if="params.readswit == 1">
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>用时: </span>
+                        <span>用时:</span>
                         <el-radio v-model="params.time" label="1">1</el-radio>
                         <el-input v-model="params.time" placeholder="其他"></el-input>
                         <span>s</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -967,30 +1052,30 @@
                     </div>
                     <div class="pull-left" v-else>
                       <p>
-                        <span>移动距离: </span>
+                        <span>移动距离:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>加速时间 t1: </span>
+                        <span>加速时间 t1:</span>
                         <el-radio v-model="params.accelerationTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.accelerationTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>匀速时间 t2: </span>
+                        <span>匀速时间 t2:</span>
                         <el-radio v-model="params.uniformTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.uniformTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>减速时间 t3: </span>
+                        <span>减速时间 t3:</span>
                         <el-radio v-model="params.slowTime" label="0.5">0.5</el-radio>
                         <el-input v-model="params.slowTime" placeholder="其他"></el-input>
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -1011,8 +1096,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1028,11 +1125,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1040,9 +1137,12 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
-                    <div class="opera">                    
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                    <div class="opera">
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1067,8 +1167,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1084,11 +1196,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1097,8 +1209,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1123,8 +1238,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1140,11 +1267,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1153,8 +1280,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1179,8 +1309,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1196,11 +1338,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1209,8 +1351,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1250,14 +1395,20 @@
                   <div>X轴 速度</div>
                   <div>
                     <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
-                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                    <span>
+                      mm/s
+                      <small>（行程超过700mm，最大速度递减15%）</small>
+                    </span>
                   </div>
                 </li>
                 <li>
                   <div>Y轴 速度</div>
                   <div>
                     <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
-                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                    <span>
+                      mm/s
+                      <small>（行程超过700mm，最大速度递减15%）</small>
+                    </span>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -1279,10 +1430,12 @@
                   <div>自选电机品牌</div>
                   <div>
                     <el-select v-model="params.motor_brand">
-                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
-                                :key="index" 
-                                :label="item.name"
-                                :value="item.value"></el-option>
+                      <el-option
+                        v-for="(item,index) in typeSelection.motor_brand"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </li>
@@ -1327,7 +1480,7 @@
                 </li>
               </ul>
               <canvas id="speedChart" style="display: none;"></canvas>
-              <img src="../../../assets/img/screw_xy_platform.png" class="diagram" style="">
+              <img src="../../../assets/img/screw_xy_platform.png" class="diagram" style>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
@@ -1340,8 +1493,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1357,11 +1522,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1370,8 +1535,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1411,14 +1579,20 @@
                   <div>X轴 速度</div>
                   <div>
                     <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
-                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                    <span>
+                      mm/s
+                      <small>（行程超过700mm，最大速度递减15%）</small>
+                    </span>
                   </div>
                 </li>
                 <li>
                   <div>Y轴 速度</div>
                   <div>
                     <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
-                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                    <span>
+                      mm/s
+                      <small>（行程超过700mm，最大速度递减15%）</small>
+                    </span>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -1440,10 +1614,12 @@
                   <div>自选电机品牌</div>
                   <div>
                     <el-select v-model="params.motor_brand">
-                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
-                                :key="index" 
-                                :label="item.name"
-                                :value="item.value"></el-option>
+                      <el-option
+                        v-for="(item,index) in typeSelection.motor_brand"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </li>
@@ -1500,8 +1676,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1517,11 +1705,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1530,8 +1718,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1578,14 +1769,20 @@
                   <div>X轴 速度</div>
                   <div>
                     <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
-                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                    <span>
+                      mm/s
+                      <small>（行程超过700mm，最大速度递减15%）</small>
+                    </span>
                   </div>
                 </li>
                 <li>
                   <div>Y轴 速度</div>
                   <div>
                     <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
-                    <span>mm/s <small>（行程超过700mm，最大速度递减15%）</small></span>
+                    <span>
+                      mm/s
+                      <small>（行程超过700mm，最大速度递减15%）</small>
+                    </span>
                   </div>
                 </li>
                 <li>
@@ -1614,10 +1811,12 @@
                   <div>自选电机品牌</div>
                   <div>
                     <el-select v-model="params.motor_brand">
-                      <el-option v-for="(item,index) in typeSelection.motor_brand" 
-                                :key="index" 
-                                :label="item.name"
-                                :value="item.value"></el-option>
+                      <el-option
+                        v-for="(item,index) in typeSelection.motor_brand"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </li>
@@ -1674,8 +1873,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1691,11 +1902,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1704,8 +1915,11 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera">
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
@@ -1723,12 +1937,12 @@
                     <canvas id="speedChart" width="200" height="200" class="pull-left"></canvas>
                     <div class="pull-left">
                       <p>
-                        <span>行程: </span>
+                        <span>行程:</span>
                         <el-input v-model="params.distance" placeholder="1000"></el-input>
                         <span>mm</span>
                       </p>
                       <p>
-                        <span>速度: </span>
+                        <span>速度:</span>
                         <el-radio v-model="params.speed" label="0.5">0.5</el-radio>
                         <el-radio v-model="params.speed" label="1">1</el-radio>
                         <el-radio v-model="params.speed" label="2">2</el-radio>
@@ -1736,7 +1950,7 @@
                         <span>m/s</span>
                       </p>
                       <p>
-                        <span>加速度: </span>
+                        <span>加速度:</span>
                         <el-radio v-model="params.acceleration" label="5">5</el-radio>
                         <el-radio v-model="params.acceleration" label="10">10</el-radio>
                         <el-radio v-model="params.acceleration" label="20">20</el-radio>
@@ -1744,7 +1958,7 @@
                         <span>m/s²</span>
                       </p>
                       <p>
-                        <span>停留时间: </span>
+                        <span>停留时间:</span>
                         <el-radio v-model="params.stay_time" label="0.5">0.5</el-radio>
                         <el-input class="labelInput" v-model="params.stay_time" placeholder="其他"></el-input>
                         <span>s</span>
@@ -1763,7 +1977,7 @@
                 </li>
                 <li>
                   <div>
-                    <el-radio v-model="params.feedback_type" label="">重现精度</el-radio>
+                    <el-radio v-model="params.feedback_type" label>重现精度</el-radio>
                     <el-radio v-model="params.feedback_type" label="grating_ruler">光栅尺</el-radio>
                     <el-radio v-model="params.feedback_type" label="magnetic_scale">磁栅尺</el-radio>
                   </div>
@@ -1783,7 +1997,7 @@
                       <span>um</span>
                     </p>
                     <p v-else>
-                      <span>重现精度: </span>
+                      <span>重现精度:</span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
                       <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
@@ -1809,7 +2023,7 @@
                 <li>
                   <div>防尘装置</div>
                   <div>
-                    <el-radio v-model="params.dustproof_device" label="">无</el-radio>
+                    <el-radio v-model="params.dustproof_device" label>无</el-radio>
                     <el-radio v-model="params.dustproof_device" label="metal_cover">金属盖板</el-radio>
                     <el-radio v-model="params.dustproof_device" label="organ_cover">风琴罩</el-radio>
                   </div>
@@ -1843,7 +2057,7 @@
                   <div>
                     <el-radio v-model="params.driver_type" label="CDHD">高创</el-radio>
                     <el-radio v-model="params.driver_type" label="Hiwin">Hiwin</el-radio>
-                    <el-radio v-model="params.driver_type" label="">客户自配</el-radio>
+                    <el-radio v-model="params.driver_type" label>客户自配</el-radio>
                   </div>
                 </li>
               </ul>
@@ -1851,11 +2065,23 @@
                 <div :class="typeSelection.XYB == 0 ? 'active' : '' ">Y轴</div>
                 <div :class="typeSelection.XYB == 1 ? 'active' : '' ">X轴</div>
               </div>
-              <ul><li></li></ul>
+              <ul>
+                <li></li>
+              </ul>
               <div class="operation">
                 <span></span>
-                <el-button type="primary" size="mini" @click="screen();typeSelection.selling_price_slug = ''" v-if="typeSelection.XYB == 0">下一步</el-button>
-                <el-button type="primary" size="mini" @click="typeSelection.XYB = 0;typeSelection.selling_price_slug = ''" v-if="typeSelection.XYB == 1">上一步</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="screen();typeSelection.selling_price_slug = ''"
+                  v-if="typeSelection.XYB == 0"
+                >下一步</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="typeSelection.XYB = 0;typeSelection.selling_price_slug = ''"
+                  v-if="typeSelection.XYB == 1"
+                >上一步</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
@@ -1865,8 +2091,20 @@
                         <img :src="row.image" :alt="row.name">
                       </div>
                       <div>
-                        <p>名称：<a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`">{{ row.name }}</a></p>
-                        <p>型号: <a target="_blank" :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"> {{ row.model }}</a></p>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
                       </div>
                     </div>
                   </template>
@@ -1882,11 +2120,11 @@
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href='row.drawing_2d'>下载</a>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
                       </div>
                       <div v-if="row.drawing_3d">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href='row.drawing_3d'>下载</a>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
                       </div>
                       <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
                     </div>
@@ -1895,16 +2133,50 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="{ row,$index }">
                     <div class="opera" v-if="!typeSelection.selling_price_slug">
-                      <el-button type="primary" size="mini" @click="typeSelection.selling_price_slug = row.selling_price_slug;screen()">筛选</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="typeSelection.selling_price_slug = row.selling_price_slug;screen()"
+                      >筛选</el-button>
                     </div>
                     <div class="opera" v-else>
-                      <el-button type="primary" size="mini" 
-                                @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()">加入项目</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
                       <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
                     </div>
                   </template>
                 </el-table-column>
               </el-table>
+            </div>
+          </el-main>
+          <!-- 非标准品 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 13">
+            <div class="main">
+              <canvas id="speedChart" style="display: none;"></canvas>
+              <el-form label-position="top" :model="nonstandard">
+                <el-form-item label="非标产品需求描述">
+                  <el-input type="textarea" placeholder="请填写" v-model="nonstandard.requirements"></el-input>
+                </el-form-item>
+                <el-form-item label="上传附件">
+                  <el-upload
+                    class="upload-demo"
+                    action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
+                    :file-list="nonstandard.fileUrl"
+                    :before-upload="upload"
+                    :on-remove="handleRemove"
+                    list-type="picture"
+                  >
+                    <el-button size="small" type="primary">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip">单文件上传100M以内</div>
+                  </el-upload>
+                </el-form-item>
+              </el-form>
+              <div align="right">
+                <el-button size="mini" type="primary" @click="createNon">确定</el-button>
+              </div>
             </div>
           </el-main>
         </el-container>
@@ -1932,7 +2204,7 @@ export default {
         Int: 0,
         FPC: 0,
         XYB: 0,
-        selling_price_slug: '',
+        selling_price_slug: "",
         motor_brand: [
           { name: "松下", value: "P" },
           { name: "安川", value: "Y" },
@@ -1989,10 +2261,9 @@ export default {
         y_maximum_speed: "1000",
         z_maximum_speed: "250",
         module_install_method: "horizon",
-        module_configuration_motor: '0'
+        module_configuration_motor: "0"
       },
       speedChart: null,
-      modalShow: false,
       joinProject: {
         id: 0,
         projectList: [],
@@ -2003,7 +2274,13 @@ export default {
         memberId: [],
         description: ""
       },
-      tableData: {}
+      tableData: {},
+      // 非标
+      nonstandard: {
+        requirements: "",
+        images_ids: [],
+        fileUrl: []
+      }
     };
   },
   components: {
@@ -2098,12 +2375,17 @@ export default {
             this.showDetailState = 10;
             url += "#/xy_platform";
             break;
+          // 非标定制
+          case "non_standard_customization":
+            if (!this.$ifLogin()) return false;
+            this.showDetailState = 13;
+            url += "#/non_standard_customization";
+            break;
           default:
             url = null;
             break;
         }
-        if(url)
-          location.href = url;
+        if (url) location.href = url;
         that.initChart();
       }
     },
@@ -2175,7 +2457,7 @@ export default {
             strid: str_id,
             email: value
           })
-          .catch(cancel => console.log(cancel));
+          .catch(err => console.log(err));
       });
     },
     // 筛选
@@ -2242,14 +2524,15 @@ export default {
           break;
         case 10:
           url = "products/selected/xy_platform";
-          switch(that.typeSelection.XYB){
+          switch (that.typeSelection.XYB) {
             case 0:
-              that.params.type = 'Y';
+              that.params.type = "Y";
               that.typeSelection.XYB = 1;
               break;
             case 1:
-              that.params.type = 'X';
-              that.params.selling_price_slug = that.typeSelection.selling_price_slug;
+              that.params.type = "X";
+              that.params.selling_price_slug =
+                that.typeSelection.selling_price_slug;
               break;
           }
           break;
@@ -2286,8 +2569,28 @@ export default {
         .catch(error => {});
     },
     getProject() {
-      if(!this.$ifLogin()) return false;
+      if (!this.$ifLogin()) return false;
       joinProjectModel.methods.getProject.call(this);
+    },
+    createNon() {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("products/demand/create", {
+          requirements: that.nonstandard.requirements,
+          images_ids: that.nonstandard.images_ids.join(",")
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.$message({ message: "添加非标商品报价成功", type: "success" });
+          that.nonstandard = {
+            requirements: "",
+            images_ids: [],
+            fileUrl: []
+          };
+        })
+        .catch(err => loading.close());
     },
     // 初始化Echart
     initChart() {
@@ -2296,6 +2599,36 @@ export default {
         that.speedChart = echarts.init(document.getElementById("speedChart"));
         that.changeSpeedChart();
       }, 500);
+    },
+    upload(file) {
+      let that = this,
+        form = new FormData();
+      form.append("upload", file);
+      form.append("slug", "non_standard_requirements");
+      that
+        .$upload("files/upload", form)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.nonstandard.fileUrl.push({
+            name: file.name,
+            url: response.data.url
+          });
+          that.nonstandard.images_ids.push(response.data.upload.id);
+        })
+        .catch(err => console.error(err));
+    },
+    handleRemove(file, fileList) {
+      let delArr = [],
+        inArr = false;
+      this.nonstandard.fileUrl.forEach((e, k) => {
+        inArr = false;
+        fileList.forEach(item => {
+          if (item.name == e.name) inArr = true;
+        });
+        if (!inArr) delArr.push(k);
+      });
+      delArr.forEach((e, k) => this.nonstandard.images_ids.splice(k, 1));
+      this.nonstandard.fileUrl = fileList;
     },
     changeGoodsListActive() {
       setTimeout(() => {
@@ -2554,6 +2887,12 @@ export default {
               height: 195px;
               box-sizing: border-box;
             }
+            .el-form {
+              textarea {
+                height: 15rem;
+                resize: none;
+              }
+            }
           }
         }
       }
@@ -2734,35 +3073,12 @@ export default {
             border-right: @border;
             border-bottom: @border;
           }
-        }
-      }
-    }
-  }
-  .modalBoxMain {
-    width: 330px;
-    @media screen and (min-width: 500px) {
-      margin-top: 180px;
-    }
-    #joinProject {
-      p {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .goBack {
-        float: right;
-        padding-top: 0;
-      }
-      > div {
-        text-align: center;
-        margin-bottom: 1rem;
-        .el-select {
-          width: 100%;
-        }
-        &:last-child {
-          margin-top: 2rem;
-          margin-bottom: 0;
+          .el-form {
+            padding: 1rem;
+            textarea {
+              resize: none;
+            }
+          }
         }
       }
     }

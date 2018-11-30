@@ -1,5 +1,39 @@
 <template>
   <el-container id="project">
+    <!-- 选择供应商 -->
+    <supplier :list="company.list" :slug="projectList.list[index].slug" :productId="company.id.toString()"></supplier>
+    <!-- 移入项目 -->
+    <transition name="el-fade-in-linear">
+      <div v-show="moveItem">
+        <div class="Curtain"></div>
+        <div class="modalBox">
+          <div class="modalBoxMain">
+            <div class="modalBoxMainHeader">
+              <div class="modalBoxMainHeaderTitle">移入项目</div>
+              <div class="modalBoxMainHeaderBtn" @click="moveItem = false;">
+                <i class="el-message-box__close el-icon-close"></i>
+              </div>
+            </div>
+            <div class="modalBoxMainContent">
+              <div id="moveItem">
+                <el-select v-model="moveSlug" placeholder="请选择移入项目">
+                  <el-option
+                    v-for="(item,index) in projectList.list"
+                    :key="index"
+                    v-if="!item.is_default"
+                    :label="item.name"
+                    :value="item.slug"
+                  ></el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="modalBoxMainBtn">
+              <el-button size="mini" type="primary" @click="moveProject">确定</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
     <el-aside width="200px">
       <el-menu default-active="0" v-if="projectList.list.length > 0">
         <el-menu-item
@@ -102,7 +136,7 @@
                 <el-button
                   type="primary"
                   size="mini"
-                  @click="company.id = row.id;company.list = row.all_supplier;modalShow = true"
+                  @click="company.id = row.id;company.list = row.all_supplier;inquiry();"
                 >询价</el-button>
               </div>
             </div>
@@ -112,7 +146,7 @@
                 <el-button
                   type="primary"
                   size="mini"
-                  @click="company.id = row.id;company.list = row.all_supplier;modalShow = true"
+                  @click="company.id = row.id;company.list = row.all_supplier;inquiry();"
                 >询价</el-button>
               </div>
             </div>
@@ -180,71 +214,12 @@
         </div>
       </div>
     </el-main>
-    <transition name="el-fade-in-linear">
-      <div v-show="modalShow">
-        <div class="Curtain"></div>
-        <div class="modalBox">
-          <div class="modalBoxMain">
-            <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">询价</div>
-              <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
-                <i class="el-message-box__close el-icon-close"></i>
-              </div>
-            </div>
-            <div class="modalBoxMainContent">
-              <div id="companySelect">
-                <el-checkbox-group v-model="company.company_ids">
-                  <el-checkbox
-                    v-for="(item,key) in company.list"
-                    :label="item.id"
-                    :key="key"
-                  >{{ item.name }}</el-checkbox>
-                </el-checkbox-group>
-              </div>
-            </div>
-            <div class="modalBoxMainBtn">
-              <el-button size="mini" @click="modalShow = false;">取消</el-button>
-              <el-button size="mini" type="primary" @click="inquiry">确定</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
-    <transition name="el-fade-in-linear">
-      <div v-show="moveItem">
-        <div class="Curtain"></div>
-        <div class="modalBox">
-          <div class="modalBoxMain">
-            <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">移入项目</div>
-              <div class="modalBoxMainHeaderBtn" @click="moveItem = false;">
-                <i class="el-message-box__close el-icon-close"></i>
-              </div>
-            </div>
-            <div class="modalBoxMainContent">
-              <div id="moveItem">
-                <el-select v-model="moveSlug" placeholder="请选择移入项目">
-                  <el-option
-                    v-for="(item,index) in projectList.list"
-                    :key="index"
-                    v-if="!item.is_default"
-                    :label="item.name"
-                    :value="item.slug"
-                  ></el-option>
-                </el-select>
-              </div>
-            </div>
-            <div class="modalBoxMainBtn">
-              <el-button size="mini" type="primary" @click="moveProject">确定</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
   </el-container>
 </template>
 <script>
 import "@/assets/css/modal.css";
+import supplier from "@/pages/Chart/common/supplier";
+
 export default {
   name: "project",
   data() {
@@ -262,10 +237,12 @@ export default {
         id: "",
         company_ids: []
       },
-      modalShow: false,
       moveItem: false,
       moveSlug: ""
     };
+  },
+  components: {
+    supplier: supplier
   },
   methods: {
     showProjectChange(index) {
@@ -466,23 +443,7 @@ export default {
     },
     // 询价
     inquiry() {
-      let loading = this.$loading({ lock: true }),
-        that = this;
-      this.$post(
-        `carts/items/price-inquiry/${ that.projectList.list[that.index].slug }`,
-        {
-          ids: that.company.id,
-          company_ids: that.company.company_ids.join(",")
-        }
-      )
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-
-          this.$notify({ title: "", message: "请求报价成功", type: "success" });
-          that.modalShow = false;
-        })
-        .catch(error => loading.close());
+      supplier.methods.close.call(this);
     },
     checkOrder() {
       let arr = [],

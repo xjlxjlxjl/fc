@@ -5,14 +5,22 @@
         <i class="font_family icon-logo1" onclick="window.location.href = '/'"></i>
         <!-- <el-input placeholder="搜索输入型号/产品名/品牌名等关键字" v-model="searchText">
           <i slot="prefix" class="el-input__icon el-icon-search" @click="search"></i>
-        </el-input> -->
+        </el-input>-->
       </div>
       <div>
         <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
           <el-menu-item index="1">
             <div class="dearUserName">
-              <a onclick="window.location.href = './user.html#/order'" href="javascript:;" v-if="user != null">欢迎您: 尊敬的 {{ user.user.display_name }}</a>
-              <a onclick="window.location.href = './login.html#/login'" href="javascript:;" v-else>未登录，请登录</a>
+              <a
+                onclick="window.location.href = './user.html#/order'"
+                href="javascript:;"
+                v-if="user != null"
+              >欢迎您: 尊敬的 {{ user.user.display_name }}</a>
+              <a
+                onclick="window.location.href = './login.html#/login'"
+                href="javascript:;"
+                v-else
+              >未登录，请登录</a>
             </div>
           </el-menu-item>
           <el-menu-item index="2">
@@ -31,33 +39,37 @@
       </div>
     </el-header>
     <el-header class="hidden-md-and-up">
-      <section><i class="font_family icon-logo1" onclick="window.location.href = '/'"></i></section>
       <section>
-        <el-button type="text" 
-                   class="moblieHomeMenu"
-                   @click="menuShow = !menuShow">
-                  <i class="el-icon-close" v-if="menuShow"></i>
-                  <i class="el-icon-back" v-else></i>
+        <i class="font_family icon-logo1" onclick="window.location.href = '/'"></i>
+      </section>
+      <section>
+        <el-button type="text" class="moblieHomeMenu" @click="menuShow = !menuShow">
+          <i class="el-icon-close" v-if="menuShow"></i>
+          <i class="el-icon-back" v-else></i>
         </el-button>
         <transition name="el-fade-in">
           <div class="Curtain" v-show="menuShow" @click="menuShow = false"></div>
         </transition>
         <transition name="el-zoom-in-right">
-          <div class="menuContent" 
-              v-show="menuShow">
-            <el-menu
-              background-color="transparent"
-              text-color="#fff"
-              active-text-color="#0064db">
+          <div class="menuContent" v-show="menuShow">
+            <el-menu background-color="transparent" text-color="#fff" active-text-color="#0064db">
               <!-- <el-menu-item index="1">
                 <el-input placeholder="搜索输入型号/产品名/品牌名等关键字" v-model="searchText">
                   <i slot="prefix" class="el-input__icon el-icon-search" @click="search"></i>
                 </el-input>
-              </el-menu-item> -->
+              </el-menu-item>-->
               <el-menu-item index="2">
                 <div class="dearUserName">
-                  <a onclick="window.location.href = './user.html#/order'" href="javascript:;" v-if="user != null">欢迎您: 尊敬的 {{ user.user.display_name }}</a>
-                  <a onclick="window.location.href = './login.html#/login'" href="javascript:;" v-else>未登录，请登录</a>
+                  <a
+                    onclick="window.location.href = './user.html#/order'"
+                    href="javascript:;"
+                    v-if="user != null"
+                  >欢迎您: 尊敬的 {{ user.user.display_name }}</a>
+                  <a
+                    onclick="window.location.href = './login.html#/login'"
+                    href="javascript:;"
+                    v-else
+                  >未登录，请登录</a>
                 </div>
               </el-menu-item>
               <el-menu-item index="3">
@@ -81,13 +93,12 @@
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
           <div class="whiteRoundBox">
-            <router-link :to="val.url">{{ val.name }}</router-link>
-            <div class="processExtend">
+            <a :href="val.url">{{ val.name }}</a>
+            <!-- <div class="processExtend">
               <nav v-for="(item,index) in val.child" :key="index">
-                <router-link to="#">{{ item.name }}</router-link>
-                <!-- <router-link :to="item.url">{{ item.name }}</router-link> -->
+                <router-link :to="item.url">{{ item.name }}</router-link>
               </nav>
-            </div>
+            </div>-->
           </div>
           <i class="font_family icon-jiantou" v-show="key !=  process.length - 1"></i>
         </el-menu-item>
@@ -104,7 +115,7 @@ export default {
       process: [
         {
           name: "销售",
-          url: "Sale",
+          url: "/process.html#/Sale",
           child: [
             { name: "客户管理", url: "customers" },
             { name: "销售订单", url: "orders" },
@@ -113,7 +124,7 @@ export default {
         },
         {
           name: "工程",
-          url: "Engineer",
+          url: "/process.html#/Engineer",
           child: [
             { name: "Bom", url: "project" },
             { name: "料品", url: "materials" }
@@ -121,7 +132,7 @@ export default {
         },
         {
           name: "采购",
-          url: "Purchase",
+          url: "/process.html#/Purchase",
           child: [
             { name: "采购计划", url: "project" },
             { name: "采购单", url: "project" }
@@ -129,12 +140,12 @@ export default {
         },
         {
           name: "IQC",
-          url: "IQC",
+          url: "/process.html#/IQC",
           child: [{ name: "来料检测", url: "project" }]
         },
         {
           name: "仓库",
-          url: "WareHouse",
+          url: "/process.html#/WareHouse",
           child: [
             { name: "料品管理", url: "project" },
             { name: "出库", url: "project" },
@@ -143,7 +154,7 @@ export default {
         },
         {
           name: "生产",
-          url: "Produce",
+          url: "/process.html#/Produce",
           child: [
             { name: "生产计划", url: "project" },
             { name: "生产领料", url: "project" },
@@ -152,7 +163,7 @@ export default {
         },
         {
           name: "OQC",
-          url: "OQC",
+          url: "/process.html#/OQC",
           child: [
             { name: "成品检测", url: "project" },
             { name: "质检报告", url: "project" }
@@ -160,12 +171,12 @@ export default {
         },
         {
           name: "物流",
-          url: "Logistics",
+          url: "/process.html#/Logistics",
           child: [{ name: "物流管理", url: "project" }]
         },
         {
           name: "售后",
-          url: "AfterSale",
+          url: "/process.html#/AfterSale",
           child: [
             { name: "售后计划", url: "project" },
             { name: "售后维修", url: "project" }
@@ -173,17 +184,13 @@ export default {
         },
         {
           name: "财务",
-          url: "Finance",
-          child: [
-            { name: "财务", url: "project" }
-          ]
+          url: "/process.html#/Finance",
+          child: [{ name: "财务", url: "project" }]
         },
         {
           name: "人事",
-          url: "Matters",
-          child: [
-            { name: "人事", url: "Matters" }
-          ]
+          url: "/process.html#/Matters",
+          child: [{ name: "人事", url: "Matters" }]
         }
       ],
       menuShow: false,
@@ -278,7 +285,7 @@ export default {
         height: auto;
         .el-menu-item {
           color: @white !important;
-          .dearUserName{
+          .dearUserName {
             text-align: right;
             width: 150px;
             text-overflow: ellipsis;
@@ -355,7 +362,8 @@ export default {
       display: flex;
       justify-content: center;
       margin: 0 auto;
-      max-width: 1280px;
+      // max-width: 1280px;
+      width: max-content;
       .el-menu-item {
         padding: 0 0.5rem;
         border-bottom: none;

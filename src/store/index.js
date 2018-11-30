@@ -8,21 +8,26 @@ export default new Vuex.Store({
     ModalShow: false,
     joinModal: false,
     supplierModal: false,
+    demandModal: false
   },
   mutations: {
     change(state) {
       state.ModalShow = !state.ModalShow;
     },
     joinModalDispaly(state, status) {
-      if(status) state.joinModal = status;
+      if (status) state.joinModal = status;
       else state.joinModal = !state.joinModal;
     },
     supplierModalDisplay(state, status) {
-      if(status) state.supplierModal = status;
+      if (status) state.supplierModal = status;
       else state.supplierModal = !state.supplierModal;
+    },
+    demandModalDisplay(state, status) {
+      if (status) state.demandModal = status;
+      else state.demandModal = !state.demandModal;
     },
     updateUserInfo(state, userInfo) {
       state.userInfo = userInfo;
-    },
+    }
   }
 });

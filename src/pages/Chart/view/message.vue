@@ -144,9 +144,10 @@
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
               <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read && !item.is_agree && !item.is_delete"
-                          :key="index" :index="index.toString()">
+                          :key="index" :index="index.toString()" @click="getNoticesDetail(item, index)">
                 <label slot="title">{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message  }}</label>
                 <el-popover
+                  v-if="item.type != 15"
                   placement="right"
                   trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
@@ -835,6 +836,16 @@ export default {
           that.noticesList.pagination = response.pagination;
         })
         .catch(error => console.error(error));
+    },
+    getNoticesDetail(item, key) {
+      this.$alert(`
+        <p>通知时间：${ item.created_at }</p>
+        <p>通知内容：<b>${item.message}</b>
+      </p>`, '通知', {
+        confirmButtonText: '确定',
+        dangerouslyUseHTMLString: true,
+        callback: action => {}
+      });
     },
     webSocket() {
       let socketAddress = "wss://factoryun.com/wss";
