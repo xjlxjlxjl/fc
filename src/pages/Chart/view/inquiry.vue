@@ -48,7 +48,7 @@
                   @change="selectSupplier(row.cart_slug, row.supplier, row.str_id)"
                 >
                   <el-option
-                    v-for="item in row.supplier_list || row.price"
+                    v-for="item in (row.supplier_list ? row.supplier_list : typeof(row.price) == 'object' ? row.price : [] )"
                     :key="item.id"
                     :label="item.name"
                     :value="item"
@@ -161,8 +161,8 @@ export default {
         loading = this.$loading({ lock: true });
       that
         .$get("carts/inquiry-price/list", {
-          per_page: 15,
-          page: ++that.inquiryList.pagination.current_page
+          // per_page: 15
+          // page: ++that.inquiryList.pagination.current_page
         })
         .then(response => {
           loading.close();
@@ -177,8 +177,8 @@ export default {
       let that = this;
       that
         .$get("products/demand/me", {
-          per_page: 15,
-          page: ++that.demandList.pagination.current_page
+          // per_page: 15,
+          // page: ++that.demandList.pagination.current_page
         })
         .then(response => {
           if (response.status != 200) return false;
@@ -193,8 +193,8 @@ export default {
         loading = this.$loading({ lock: true });
       that
         .$get("orders/quoted-price", {
-          per_page: 15,
-          page: ++that.offerList.pagination.current_page
+          // per_page: 15,
+          // page: ++that.offerList.pagination.current_page
         })
         .then(response => {
           loading.close();
@@ -260,9 +260,14 @@ export default {
         .then(response => {
           if (response.status != 200) return false;
           if (that.activeName == "inquiry") {
+            that.inquiryList.list = [];
+            that.demandList.list = [];
             that.getInquiry();
             that.getDemand();
-          } else that.getOffer();
+          } else {
+            that.offerList.list = [];
+            that.getOffer();
+          }
         })
         .catch(err => console.error(err));
     },

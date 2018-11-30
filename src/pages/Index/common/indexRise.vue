@@ -93,7 +93,8 @@
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
           <div class="whiteRoundBox">
-            <a :href="val.url">{{ val.name }}</a>
+            <!-- <a :href="val.url">{{ val.name }}</a> -->
+            <router-link :to="val.url">{{ val.name }}</router-link>
             <!-- <div class="processExtend">
               <nav v-for="(item,index) in val.child" :key="index">
                 <router-link :to="item.url">{{ item.name }}</router-link>
