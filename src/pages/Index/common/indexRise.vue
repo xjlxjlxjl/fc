@@ -246,6 +246,7 @@ export default {
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
+  line-height: 1;
 }
 
 .homeHeader {

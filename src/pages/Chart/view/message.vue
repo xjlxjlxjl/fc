@@ -1162,7 +1162,6 @@ export default {
     groupUserCheckBox: groupUserCheckBox
   },
   mounted() {
-    Notification.requestPermission(status => console.log(status));
     document.getElementById("el-textarea").addEventListener("paste", e => {
       for (var i = 0; i < e.clipboardData.items.length; i++) {
         // 检测是否为图片类型
@@ -1177,7 +1176,6 @@ export default {
         }
       }
     });
-
     document.getElementById(
       "chatMain"
     ).onscroll = document.getElementsByClassName(
@@ -1194,6 +1192,8 @@ export default {
           index: this.key
         });
     };
+    
+    Notification.requestPermission(status => console.log(status));
   },
   created() {
     this.getChatList();
