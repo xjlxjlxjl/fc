@@ -2,6 +2,7 @@
 import Vue from "vue";
 import Center from "./Center";
 import router from "./router";
+import store from "../../store";
 import elementUi from "element-ui";
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
@@ -36,6 +37,7 @@ Vue.prototype.$ifLogin = () => {
 new Vue({
   el: "#app",
   router,
+  store,
   components: { Center },
   template: "<Center/>"
 });

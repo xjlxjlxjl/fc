@@ -328,30 +328,33 @@
                 </div>
               </el-main>
               <el-footer>
-                <el-upload
-                  class="file-upload"
-                  action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                  :show-file-list="false"
-                  :before-upload="uploadFile"
-                >
-                  <i class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
-                <el-upload
-                  class="avatar-uploader"
-                  action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                  :show-file-list="false"
-                  :before-upload="uploadImg"
-                >
-                  <i class="el-icon-picture avatar-uploader-icon"></i>
-                </el-upload>
-                <el-input
-                  type="textarea"
-                  id="el-textarea"
-                  v-model="message"
-                  @keyup.13.native="sendMessage"
-                ></el-input>
-                <div class="btnBox">
-                  <el-button type="primary" size="mini" @click="sendMessage">发送</el-button>
+                <div ref="uploadBox">
+                  <el-upload
+                    class="file-upload"
+                    action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
+                    :show-file-list="false"
+                    :before-upload="uploadFile"
+                  >
+                    <i class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
+                    :show-file-list="false"
+                    :before-upload="uploadImg"
+                  >
+                    <i class="el-icon-picture avatar-uploader-icon"></i>
+                  </el-upload>
+                  <el-input
+                    type="textarea"
+                    id="el-textarea"
+                    ref="uploadText"
+                    v-model="message"
+                    @keyup.13.native="sendMessage"
+                  ></el-input>
+                  <div class="btnBox">
+                    <el-button type="primary" size="mini" @click="sendMessage">发送</el-button>
+                  </div>
                 </div>
               </el-footer>
             </el-container>
@@ -463,7 +466,9 @@ export default {
       msgImgArr: [],
       groupId: 0,
       groupState: 0,
-      groupUserList: []
+      groupUserList: [],
+      // socket
+      lockReconnect: false
     };
   },
   methods: {
@@ -832,9 +837,12 @@ export default {
         params = {
           req: {
             type: 1,
-            content: that.message
+            content: that.message,
+            from_name: this.user.user.display_name,
+            avatar: this.user.user.avatar
           }
         };
+
       if (
         that.message == "" ||
         that.message.replace(/[\r\n]/g, "").length == 0
@@ -856,7 +864,7 @@ export default {
         from_user: {
           from_user_id: that.user.user.id,
           avatar: that.user.user.avatar,
-          display_name: that.user.user.display_name,
+          display_name: that.user.user.display_name
         },
         created_at: new Date().toLocaleString(),
         msg_type: 1,
@@ -868,8 +876,8 @@ export default {
     uploadFile(file) {
       let form = new FormData(),
         that = this;
-      if (file.size / 1024 / 1024 > 100) {
-        this.$message.error("上传文件大小不能超过 100MB!");
+      if (file.size / 1024 / 1024 > 500) {
+        this.$message.error("上传文件大小不能超过 500MB!");
         return false;
       }
       form.append("file", file);
@@ -901,7 +909,9 @@ export default {
       let that = this,
         params = {
           req: {
-            type: type
+            type: type,
+            from_name: this.user.user.display_name,
+            avatar: this.user.user.avatar
           }
         };
       that
@@ -976,7 +986,7 @@ export default {
     getNoticesDetail(item, key) {
       this.$alert(
         `
-        ${item.created_at ? '<p>通知时间：' + item.created_at + '</p>' : ''} 
+        ${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} 
         <p>通知内容：<b>${item.message}</b>
       </p>`,
         "通知",
@@ -1002,6 +1012,8 @@ export default {
               this.webSocketLogin();
               return false;
             } else {
+              this.connectNum = 0;
+              clearInterval(this.pong);
               this.pong = setInterval(() => {
                 this.webSocketSend({
                   action: "pong",
@@ -1035,7 +1047,7 @@ export default {
               case "6":
                 // 位置消息
                 if (result.resp_event == 200) {
-                  if(result.resp.from_uid == this.toUser){
+                  if (result.resp.from_uid == this.toUser) {
                     this.record.list.push({
                       from_user_id: result.resp.from_uid,
                       from_user: {
@@ -1069,10 +1081,10 @@ export default {
           case "group":
             console.log(result);
             if (result.resp_event == 200) {
-              if(result.resp.group == this.toUser){
+              if (result.resp.group == this.toUser) {
                 this.record.list.push({
                   from_user_id: result.resp.from_uid,
-                  from_user: {
+                  user: {
                     from_user_id: result.resp.from_uid,
                     avatar:
                       result.resp.avatar ||
@@ -1089,10 +1101,9 @@ export default {
                 title: `收到一条新消息`,
                 message: result.resp.content
               });
-              let notification = new Notification(
-                `收到一条新消息`,
-                { body: result.resp.content }
-              );
+              let notification = new Notification(`收到一条新消息`, {
+                body: result.resp.content
+              });
             }
             this.fixLocation();
             break;
@@ -1128,6 +1139,23 @@ export default {
             break;
         }
       };
+      this.ws.onclose = this.ws.onerror = () => {
+        this.connectNum++;
+        this.reconnect(socketAddress);
+      };
+    },
+    reconnect(url) {
+      if (lockReconnect) return false;
+
+      this.lockReconnect = true;
+      //没连接上会一直重连，设置延迟避免请求过多
+
+      if (this.connectNum > 3) this.webSocketClose();
+
+      setTimeout(function() {
+        this.webSocket(url);
+        this.lockReconnect = false;
+      }, 2000);
     },
     webSocketLogin() {
       this.webSocketSend({
@@ -1162,6 +1190,22 @@ export default {
     groupUserCheckBox: groupUserCheckBox
   },
   mounted() {
+    this.$refs.uploadBox.ondragover = this.$refs.uploadBox.ondragleave = this.$refs.uploadBox.ondragenter = e => {
+      if (e.preventDefault) e.preventDefault();
+      else window.event.returnValue == false;
+    };
+    this.$refs.uploadBox.ondrop = e => {
+      if (e.preventDefault) e.preventDefault();
+      else window.event.returnValue == false;
+      const data = e.dataTransfer.files; // 获取文件对象
+      if (data.length < 1) {
+        return false; // 检测是否有文件拖拽到页面
+      }
+      for (let i = 0; i < e.dataTransfer.files.length; i++) {
+        this.uploadFile(e.dataTransfer.files[i])
+      }
+    };
+    // 粘贴上传
     document.getElementById("el-textarea").addEventListener("paste", e => {
       for (var i = 0; i < e.clipboardData.items.length; i++) {
         // 检测是否为图片类型
@@ -1176,6 +1220,7 @@ export default {
         }
       }
     });
+    // 分页
     document.getElementById(
       "chatMain"
     ).onscroll = document.getElementsByClassName(
@@ -1192,7 +1237,8 @@ export default {
           index: this.key
         });
     };
-    
+
+
     Notification.requestPermission(status => console.log(status));
   },
   created() {
@@ -1491,7 +1537,7 @@ export default {
                           position: inherit;
                           width: 5rem;
                           height: 5rem;
-                          margin-right: .5rem;
+                          margin-right: 0.5rem;
                         }
                         div {
                           padding: 0.5rem;
@@ -1526,7 +1572,7 @@ export default {
               }
             }
           }
-          #chatMain{
+          #chatMain {
             height: 100px !important;
           }
           ::-webkit-scrollbar {
