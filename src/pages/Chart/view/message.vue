@@ -6,8 +6,18 @@
     <transition name="el-fade-in-linear">
       <div v-if="Gallery">
         <div class="Curtain" @click="Gallery = false;"></div>
-        <el-carousel class="gallery" :interval="0" :autoplay="new Boolean(false)" :loop="new Boolean(false)" :initial-index='galleryIndex'>
-          <el-carousel-item v-for="(item,index) in record.list" :key="index" v-if="item.type == 2 || item.msg_type == 2">
+        <el-carousel
+          class="gallery"
+          :interval="0"
+          :autoplay="new Boolean(false)"
+          :loop="new Boolean(false)"
+          :initial-index="galleryIndex"
+        >
+          <el-carousel-item
+            v-for="(item,index) in record.list"
+            :key="index"
+            v-if="item.type == 2 || item.msg_type == 2"
+          >
             <img :src="item.content">
           </el-carousel-item>
         </el-carousel>
@@ -16,57 +26,104 @@
     <el-container>
       <el-aside class="pcShowImportant" width="60px" v-show="!mainDisplay">
         <ul class="function">
-          <li><img :src="user.user.avatar"></li>
+          <li>
+            <img :src="user.user.avatar">
+          </li>
           <li v-for="(item,index) in interface" :key="index" v-if="index < 3 || index > 4">
-            <i :class="item.isDefault ? `is-active ${item.icon}` : item.icon" @click="changeView(index)" :alt="item.alt"></i>
+            <i
+              :class="item.isDefault ? `is-active ${item.activeIcon}` : item.icon"
+              @click="changeView(index)"
+              :alt="item.alt"
+            ></i>
           </li>
         </ul>
       </el-aside>
       <el-main>
         <el-container>
-          <el-aside class="pcShowImportant" width="250px" :id="interface[6].isDefault ? 'notices' : ''" v-show="!mainDisplay">
+          <el-aside
+            class="pcShowImportant"
+            width="250px"
+            :id="interface[6].isDefault ? 'notices' : ''"
+            v-show="!mainDisplay"
+          >
             <div class="search" v-if="interface[2].isDefault || interface[4].isDefault">
-              <el-input placeholder="搜索群组" v-model="searchId" size="mini" @keyup.13.native="changeView(4)">
+              <el-input
+                placeholder="搜索群组"
+                v-model="searchId"
+                size="mini"
+                @keyup.13.native="changeView(4)"
+              >
                 <i slot="prefix" class="el-input__icon el-icon-search" @click="changeView(4)"></i>
               </el-input>
               <button @click="changeView(4)">+</button>
             </div>
             <div class="search" v-else>
-              <el-input placeholder="搜索用户" v-model="searchId" size="mini" @keyup.13.native="changeView(3)">
+              <el-input
+                placeholder="搜索用户"
+                v-model="searchId"
+                size="mini"
+                @keyup.13.native="changeView(3)"
+              >
                 <i slot="prefix" class="el-input__icon el-icon-search" @click="changeView(3)"></i>
               </el-input>
               <button @click="changeView(3)">+</button>
             </div>
             <el-menu default-active="0" v-if="interface[0].isDefault">
-              <el-menu-item v-for="(item,index) in chatList.list" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" 
-                          @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true">
+              <el-menu-item
+                v-for="(item,index) in chatList.list"
+                v-if="item.friend_uid != 1"
+                :key="index"
+                :index="index.toString()"
+                @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true"
+              >
                 <div class="avatarBox">
                   <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
                 </div>
-                <span slot="title">{{ item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name }}</span>
-                <el-popover
-                  placement="right"
-                  trigger="hover">
-                  <el-button type="danger" size="mini" v-if="item.friend_user" @click="delChat(item.id, index)">删除</el-button>
-                  <el-button size="mini" type="warning" v-else @click="delGroup(item.group_id, index);delChat(item.id, index)">退出</el-button>
-                  <el-button type="primary" size="mini" v-if="item.friend_user" @click="joinGroup">创建群聊</el-button>
-                  <el-button size="mini" type="info" v-else @click="getGroupUser(item.group_id)">查看群成员</el-button>
+                <span
+                  slot="title"
+                >{{ item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name }}</span>
+                <el-popover placement="right" trigger="hover">
+                  <el-button
+                    type="danger"
+                    size="mini"
+                    v-if="item.friend_user"
+                    @click="delChat(item.id, index)"
+                  >删除</el-button>
+                  <el-button
+                    size="mini"
+                    type="warning"
+                    v-else
+                    @click="delGroup(item.group_id, index);delChat(item.id, index)"
+                  >退出</el-button>
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    v-if="item.friend_user"
+                    @click="joinGroup"
+                  >创建群聊</el-button>
+                  <el-button
+                    size="mini"
+                    type="info"
+                    v-else
+                    @click="getGroupUser(item.group_id)"
+                  >查看群成员</el-button>
                   <el-button size="mini" slot="reference">操作</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[1].isDefault">
-              <el-menu-item v-for="(item,index) in friendList.list" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" 
-                          @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true">
+              <el-menu-item
+                v-for="(item,index) in friendList.list"
+                v-if="item.friend_uid != 1"
+                :key="index"
+                :index="index.toString()"
+                @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true"
+              >
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
                 <span slot="title">{{ item.remark || item.display_name }}</span>
-                <el-popover
-                  placement="right"
-                  trigger="hover">
+                <el-popover placement="right" trigger="hover">
                   <el-button type="danger" size="mini" @click="delUser(item.id,index)">删除</el-button>
                   <el-button type="primary" size="mini" @click="joinGroup">创建群聊</el-button>
                   <el-button type="success" size="mini" @click="setRemarks(item.id,index)">修改备注</el-button>
@@ -75,50 +132,69 @@
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[2].isDefault">
-              <el-menu-item v-for="(item,index) in groupList.list"
-                          :key="index" :index="index.toString()" 
-                          @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index });mainDisplay = true">
+              <el-menu-item
+                v-for="(item,index) in groupList.list"
+                :key="index"
+                :index="index.toString()"
+                @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index });mainDisplay = true"
+              >
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
                 <span slot="title">{{ item.group_name }}</span>
-                <el-popover
-                  placement="right"
-                  trigger="hover">
+                <el-popover placement="right" trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
-                  <el-button size="mini" type="success" @click="editGroup(item.id, item.group_name, item.group_description, index)">修改群信息</el-button>
+                  <el-button
+                    size="mini"
+                    type="success"
+                    @click="editGroup(item.id, item.group_name, item.group_description, index)"
+                  >修改群信息</el-button>
                   <el-button size="mini" type="warning" @click="delGroup(item.id, index)">退出</el-button>
-                  <el-button size="mini" type="danger" v-if="item.admin_id == user.user.id" @click="dissolution(item.id, index)">解散</el-button>
-                  <el-button size="mini" type="primary" v-if="item.admin_id == user.user.id" @click="joinGroup(item.id)">邀请加入群聊</el-button>
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    v-if="item.admin_id == user.user.id"
+                    @click="dissolution(item.id, index)"
+                  >解散</el-button>
+                  <el-button
+                    size="mini"
+                    type="primary"
+                    v-if="item.admin_id == user.user.id"
+                    @click="joinGroup(item.id)"
+                  >邀请加入群聊</el-button>
                   <el-button size="mini" type="info" @click="getGroupUser(item.id)">查看群成员</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[3].isDefault">
-              <el-menu-item v-for="(item,index) in searchList" v-if="item.friend_uid != 1"
-                          :key="index" :index="index.toString()" 
-                          @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true">
+              <el-menu-item
+                v-for="(item,index) in searchList"
+                v-if="item.friend_uid != 1"
+                :key="index"
+                :index="index.toString()"
+                @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true"
+              >
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
                 <span slot="title">{{ item.last_name || item.display_name }}</span>
-                <el-popover
-                  placement="right"
-                  trigger="hover">
+                <el-popover placement="right" trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
                   <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[4].isDefault">
-              <el-menu-item v-for="(item,index) in searchList" :key="index" :index="index.toString()">
+              <el-menu-item
+                v-for="(item,index) in searchList"
+                :key="index"
+                :index="index.toString()"
+              >
                 <div class="avatarBox">
                   <img :src="item.avatar">
                 </div>
                 <span slot="title">{{ item.group_name }}</span>
-                <el-popover
-                  placement="right"
-                  trigger="hover">
+                <el-popover placement="right" trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
                   <el-button size="mini" type="danger" @click="addGroup(item.id)">加入群组</el-button>
                 </el-popover>
@@ -127,14 +203,19 @@
             <el-menu default-active="0" v-else-if="interface[5].isDefault">
               <div v-for="(val,key) in mailList" :key="key">
                 <p>{{ val.branch_name }}</p>
-                <el-menu-item  v-for="(item,index) in val.member" :key="index" :index="item.id.toString()" @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true">
+                <el-menu-item
+                  v-for="(item,index) in val.member"
+                  :key="index"
+                  :index="item.id.toString()"
+                  @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true"
+                >
                   <div class="avatarBox">
-                    <img :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'">
+                    <img
+                      :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'"
+                    >
                   </div>
                   <span slot="title">{{ item.display_name }}</span>
-                  <el-popover
-                    placement="right"
-                    trigger="hover">
+                  <el-popover placement="right" trigger="hover">
                     <el-button size="mini" slot="reference">操作</el-button>
                     <el-button size="mini" type="primary" @click="joinGroup">创建群聊</el-button>
                     <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
@@ -143,41 +224,71 @@
               </div>
             </el-menu>
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
-              <el-menu-item v-for="(item,index) in noticesList.list" v-if="!item.is_read && !item.is_agree && !item.is_delete"
-                          :key="index" :index="index.toString()" @click="getNoticesDetail(item, index)">
-                <label slot="title">{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message  }}</label>
-                <el-popover
-                  v-if="item.type != 15"
-                  placement="right"
-                  trigger="hover">
+              <el-menu-item
+                v-for="(item,index) in noticesList.list"
+                v-if="!item.is_read && !item.is_agree && !item.is_delete"
+                :key="index"
+                :index="index.toString()"
+                @click="getNoticesDetail(item, index)"
+              >
+                <label
+                  slot="title"
+                >{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message }}</label>
+                <el-popover v-if="item.type != 15" placement="right" trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
-                  <el-button size="mini" type="danger" v-if="item.type == 3" @click="acceptFriend(item.id)">添加</el-button>
-                  <el-button size="mini" type="danger" v-if="item.type == 16" @click="acceptGroup(item.id)">同意添加</el-button>
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    v-if="item.type == 3"
+                    @click="acceptFriend(item.id)"
+                  >添加</el-button>
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    v-if="item.type == 16"
+                    @click="acceptGroup(item.id)"
+                  >同意添加</el-button>
                 </el-popover>
               </el-menu-item>
             </el-menu>
           </el-aside>
           <el-main class="pcShowImportant" v-show="mainDisplay">
-            <el-container v-show='toUser'>
+            <el-container v-show="toUser">
               <el-header>
-                <div><span>{{ userName }}</span></div>
-                <div @click="mainDisplay = false"><i class="el-icon-back"></i></div>
+                <div>
+                  <span>{{ userName }}</span>
+                </div>
+                <div @click="mainDisplay = false">
+                  <i class="el-icon-back"></i>
+                </div>
               </el-header>
               <el-main id="chatMain">
                 <div class="chatMain">
                   <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
-                    <div v-if="item.from_user_id == user.user.id || item.user_id == user.user.id" class="formMessage">
+                    <div
+                      v-if="item.from_user_id == user.user.id || item.user_id == user.user.id"
+                      class="formMessage"
+                    >
                       <div class="messgaeBox">
-                        <p class="messageUser" align="right"><span>{{ item.created_at }}</span> 　<span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span></p>
+                        <p class="messageUser" align="right">
+                          <span>{{ item.created_at }}</span>
+                          <span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span>
+                        </p>
                         <div class="Bubble"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
-                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" @click="Gallery = true;galleryIndex = item.msgImgKey" class="messageImg">
+                          <img
+                            v-else-if="item.msg_type == 2 || item.type == 2"
+                            :src="item.content"
+                            @click="Gallery = true;galleryIndex = item.msgImgKey"
+                            class="messageImg"
+                          >
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
                             <img :src="fileImg">
                             <div>
                               <h1>{{ item.content.split('/').pop() }}</h1>
-                              <span>{{ item.content }}</span>
+                              <!-- <span>{{ item.content }}</span> -->
+                              <br>
                               <a target="_blank" :href="item.content">下载</a>
                             </div>
                           </div>
@@ -188,16 +299,25 @@
                     <div v-else class="toMessage">
                       <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
                       <div class="messgaeBox">
-                        <p class="messageUser"><span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span> 　<span>{{ item.created_at }}</span></p>
+                        <p class="messageUser">
+                          <span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span>
+                          <span>{{ item.created_at }}</span>
+                        </p>
                         <div class="Bubble"></div>
                         <div class="messgaeCentent">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
-                          <img v-else-if="item.msg_type == 2 || item.type == 2" :src="item.content" @click="Gallery = true;galleryIndex = item.msgImgKey" class="messageImg">
+                          <img
+                            v-else-if="item.msg_type == 2 || item.type == 2"
+                            :src="item.content"
+                            @click="Gallery = true;galleryIndex = item.msgImgKey"
+                            class="messageImg"
+                          >
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
-                            <img :src="fileImg" >
+                            <img :src="fileImg">
                             <div>
                               <h1>{{ item.content.split('/').pop() }}</h1>
-                              <span>{{ item.content }}</span>
+                              <!-- <span>{{ item.content }}</span> -->
+                              <br>
                               <a target="_blank" :href="item.content">下载</a>
                             </div>
                           </div>
@@ -208,20 +328,28 @@
                 </div>
               </el-main>
               <el-footer>
-                <el-upload class="file-upload"
+                <el-upload
+                  class="file-upload"
                   action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                 :show-file-list="false"
-                 :before-upload="uploadFile">
+                  :show-file-list="false"
+                  :before-upload="uploadFile"
+                >
                   <i class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
                 <el-upload
                   class="avatar-uploader"
                   action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                 :show-file-list="false"
-                 :before-upload="uploadImg">
+                  :show-file-list="false"
+                  :before-upload="uploadImg"
+                >
                   <i class="el-icon-picture avatar-uploader-icon"></i>
                 </el-upload>
-                <el-input type="textarea" id="el-textarea" v-model="message" @keyup.13.native="sendMessage"></el-input>
+                <el-input
+                  type="textarea"
+                  id="el-textarea"
+                  v-model="message"
+                  @keyup.13.native="sendMessage"
+                ></el-input>
                 <div class="btnBox">
                   <el-button type="primary" size="mini" @click="sendMessage">发送</el-button>
                 </div>
@@ -247,43 +375,50 @@ export default {
         {
           alt: "聊天",
           id: "chat",
-          icon: "font_family icon-yuyin",
+          icon: "font_family icon-liaotian",
+          activeIcon: "font_family icon-liaotian_",
           isDefault: true
         },
         {
           alt: "通讯录",
           id: "mail",
-          icon: "font_family icon-yonghuliebiao",
+          icon: "font_family icon-haoyou_1",
+          activeIcon: "font_family icon-haoyou_",
           isDefault: false
         },
         {
           alt: "群组",
           id: "group",
-          icon: "font_family icon-qunzu",
+          icon: "font_family icon-qunliao1",
+          activeIcon: "font_family icon-qunliao",
           isDefault: false
         },
         {
           alt: "用户搜索",
           id: "search",
           icon: "el-input__icon el-icon-search",
+          activeIcon: "el-input__icon el-icon-search",
           isDefault: false
         },
         {
           alt: "群搜索",
           id: "search",
           icon: "el-input__icon el-icon-search",
+          activeIcon: "el-input__icon el-icon-search",
           isDefault: false
         },
         {
           alt: "公司成员",
           id: "member",
-          icon: "el-input__icon el-icon-tickets",
+          icon: "font_family icon-tongshi_1",
+          activeIcon: "font_family icon-tongshi_",
           isDefault: false
         },
         {
           alt: "通知",
           id: "notices",
-          icon: "el-input__icon el-icon-bell",
+          icon: "font_family icon-tongzhi1",
+          activeIcon: "font_family icon-tongzhi",
           isDefault: false
         }
       ],
@@ -341,6 +476,9 @@ export default {
         case 0:
           this.getChatList();
           break;
+        case 1:
+          this.getFriendList();
+          break;
         case 2:
           this.getGroupList();
           break;
@@ -371,16 +509,14 @@ export default {
       }
     },
     getFriendList() {
-      let that = this,
-        loading = this.$loading({ lock: true });
+      let that = this;
       that
         .$get("friend/list")
         .then(response => {
-          loading.close();
           if (response.status != 200) return false;
           that.friendList = response.data;
         })
-        .catch(err => loading.close());
+        .catch(err => console.error(err));
     },
     setRemarks(id, key) {
       let that = this;
@@ -567,16 +703,14 @@ export default {
         .catch(err => console.error(err));
     },
     getGroupList() {
-      let that = this,
-        loading = this.$loading({ lock: true });
+      let that = this;
       that
         .$get("group/list")
         .then(response => {
-          loading.close();
           if (response.status != 200) return false;
           that.groupList.list = response.data.list;
         })
-        .catch(err => loading.close());
+        .catch(err => console.error(err));
     },
     addGroup(id) {
       let that = this;
@@ -722,8 +856,9 @@ export default {
         from_user: {
           from_user_id: that.user.user.id,
           avatar: that.user.user.avatar,
-          last_name: that.user.user.display_name
+          display_name: that.user.user.display_name,
         },
+        created_at: new Date().toLocaleString(),
         msg_type: 1,
         content: that.message
       });
@@ -789,8 +924,9 @@ export default {
             from_user: {
               from_user_id: that.user.user.id,
               avatar: that.user.user.avatar,
-              last_name: that.user.user.display_name
+              display_name: that.user.user.display_name
             },
+            created_at: new Date().toLocaleString(),
             msg_type: type,
             content: response.data.path
           });
@@ -838,14 +974,18 @@ export default {
         .catch(error => console.error(error));
     },
     getNoticesDetail(item, key) {
-      this.$alert(`
-        <p>通知时间：${ item.created_at }</p>
+      this.$alert(
+        `
+        ${item.created_at ? '<p>通知时间：' + item.created_at + '</p>' : ''} 
         <p>通知内容：<b>${item.message}</b>
-      </p>`, '通知', {
-        confirmButtonText: '确定',
-        dangerouslyUseHTMLString: true,
-        callback: action => {}
-      });
+      </p>`,
+        "通知",
+        {
+          confirmButtonText: "确定",
+          dangerouslyUseHTMLString: true,
+          callback: action => {}
+        }
+      );
     },
     webSocket() {
       let socketAddress = "wss://factoryun.com/wss";
@@ -895,18 +1035,21 @@ export default {
               case "6":
                 // 位置消息
                 if (result.resp_event == 200) {
-                  this.record.list.push({
-                    from_user_id: result.resp.from_uid,
-                    from_user: {
+                  if(result.resp.from_uid == this.toUser){
+                    this.record.list.push({
                       from_user_id: result.resp.from_uid,
-                      avatar:
-                        result.resp.avatar ||
-                        "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                      last_name: this.userName
-                    },
-                    msg_type: result.resp.type,
-                    content: result.resp.content
-                  });
+                      from_user: {
+                        from_user_id: result.resp.from_uid,
+                        avatar:
+                          result.resp.avatar ||
+                          "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                        display_name: this.userName
+                      },
+                      created_at: new Date().toLocaleString(),
+                      msg_type: result.resp.type,
+                      content: result.resp.content
+                    });
+                  }
                   // this.getRecord({ id: this.toUser, username: this.userName });
                   this.$notify({
                     title: `收到一条新消息`,
@@ -926,25 +1069,28 @@ export default {
           case "group":
             console.log(result);
             if (result.resp_event == 200) {
-              this.record.list.push({
-                from_user_id: result.resp.from_uid,
-                from_user: {
+              if(result.resp.group == this.toUser){
+                this.record.list.push({
                   from_user_id: result.resp.from_uid,
-                  avatar:
-                    result.resp.avatar ||
-                    "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                  last_name: this.userName
-                },
-                msg_type: result.resp.type,
-                content: result.resp.content
-              });
+                  from_user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: result.resp.from_name
+                  },
+                  created_at: new Date().toLocaleString(),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                });
+              }
               // this.getRecord({ id: this.toUser, username: this.userName });
               this.$notify({
-                title: `${this.userName}收到一条群消息`,
+                title: `收到一条新消息`,
                 message: result.resp.content
               });
               let notification = new Notification(
-                `${this.userName}收到一条群消息`,
+                `收到一条新消息`,
                 { body: result.resp.content }
               );
             }
@@ -1332,21 +1478,24 @@ export default {
                       color: @gery;
                     }
                     .messgaeCentent {
-                      background-color: @blue;
+                      background-color: @white;
+                      color: @gery;
                       border-radius: 8px;
                       padding: 1rem;
                       .goodsMsg {
                         display: flex;
                         align-items: center;
-                        width: 250px;
-                        height: 100px;
+                        width: 200px;
+                        height: 70px;
                         img {
                           position: inherit;
                           width: 5rem;
                           height: 5rem;
+                          margin-right: .5rem;
                         }
                         div {
                           padding: 0.5rem;
+                          word-break: break-all;
                           span {
                             max-height: 60px;
                             min-height: 50px;
@@ -1359,7 +1508,7 @@ export default {
                             -webkit-line-clamp: 3;
                           }
                           a {
-                            color: @white;
+                            color: @gery;
                           }
                         }
                       }
@@ -1369,13 +1518,16 @@ export default {
                       left: 0;
                       border-top: 0.5rem solid @FFF;
                       border-left: 0.5rem solid @FFF;
-                      border-right: 0.5rem solid @blue;
+                      border-right: 0.5rem solid @white;
                       border-bottom: 0.5rem solid @FFF;
                     }
                   }
                 }
               }
             }
+          }
+          #chatMain{
+            height: 100px !important;
           }
           ::-webkit-scrollbar {
             display: none !important;

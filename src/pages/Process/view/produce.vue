@@ -29,7 +29,9 @@
         data-id-field="orderId"
         data-show-toggle="true"
         data-show-export="true"
-        data-classes="table table-no-bordered "
+        data-classes="table table-no-bordered"
+        data-page-list="[10, 25, 50, 100, All]"
+        exportDataType="all"
       ></table>
       <!-- data-card-view="true" -->
     </el-main>
@@ -42,7 +44,6 @@ export default {
   name: "produce",
   methods: {
     tableAjaxData(params) {
-      console.log(123213);
       return [
         { ORDER_NO: 1 },
         { ORDER_NO: 1 },
@@ -105,7 +106,8 @@ export default {
         },
         {
           field: "ORDER_NO",
-          title: "部门"
+          title: "部门",
+          formatter: event => {}
         },
         {
           field: "ORDER_NO",

@@ -15,6 +15,7 @@ import "element-ui/lib/theme-chalk/display.css";
 import "element-ui/lib/theme-chalk/base.css";
 
 import "@/assets/css/transform.css";
+
 Vue.config.productionTip = false;
 Vue.use(VueAreaLinkage);
 Vue.use(elementUi);

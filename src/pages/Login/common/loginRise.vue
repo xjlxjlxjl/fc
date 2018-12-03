@@ -3,7 +3,7 @@
     <el-row>
         <el-col :span="24">
             <header class="loginHeader">
-                <i class="font_family icon-logo" onclick="window.location.href = '/'"></i>
+                <i class="font_family icon-logo1" onclick="window.location.href = '/'"></i>
                 <span></span>
             </header>
         </el-col>

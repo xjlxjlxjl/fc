@@ -28,7 +28,8 @@ export default {
         {
           name: "询价",
           icon: "font_family icon-xunjia1",
-          url: "/chart.html#/inquiry"
+          // url: "/chart.html#/inquiry"
+          url: "#"
         },
         {
           name: "消息",

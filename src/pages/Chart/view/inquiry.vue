@@ -21,12 +21,12 @@
             <template slot-scope="{ row, $index }">
               <div class="imgBox">
                 <img
-                  :src="row.product ? row.product.image : typeof(row.images) != 'undefined' ? row.images.length > 0 ? row.images[0].url : fLOGO : fLOGO"
+                  :src="row.product ? row.product.image : fLOGO"
                   width="100"
                 >
               </div>
               <div class="description">
-                <p>{{ row.product ? row.product.name : '非标商品' }}</p>
+                <p>{{ row.product ? row.product.name : row.cart_slug ? '' : '非标商品' }}</p>
                 <p>{{ row.product ? row.product.model : row.product_model }}</p>
                 <p>{{ row.product ? row.product.description : row.requirements }}</p>
                 <el-button
@@ -38,7 +38,11 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="created_at" label="询价日期" width="107"></el-table-column>
+          <el-table-column label="询价日期" width="107">
+            <template slot-scope="{ row,$index }">
+              <span>{{ row.inquiry_datetime || row.created_at }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="supplier" label="供应商" width="220">
             <template slot-scope="{ row,$index }">
               <div align="center" class="supplier">
@@ -48,7 +52,7 @@
                   @change="selectSupplier(row.cart_slug, row.supplier, row.str_id)"
                 >
                   <el-option
-                    v-for="item in (row.supplier_list ? row.supplier_list : typeof(row.price) == 'object' ? row.price : [] )"
+                    v-for="item in (row.supplier_list || [] )"
                     :key="item.id"
                     :label="item.name"
                     :value="item"
@@ -64,17 +68,17 @@
           </el-table-column>
           <el-table-column label="报价日期" width="107">
             <template slot-scope="{ row, $index }">
-              <span>{{ row.product ? row.product.created_at : typeof(row.quoted_list) != 'undefined' ? row.quoted_list.length > 0 ? row.quoted_list[0].quotation_period : "" : "" }}</span>
+              <span>{{ row.product ? row.product.created_at : "" }}</span>
             </template>
           </el-table-column>
           <el-table-column label="单价" width="85">
             <template slot-scope="{ row, $index }">
-              <span>{{ row.product ? row.product.sales_price : row.price ? row.price : row.quoted_list != 'undefined' ? row.quoted_list.length > 0 ? row.quoted_list[0].price : '报价中' : '报价中' }}</span>
+              <span>{{ row.product ? row.product.sales_price : row.price }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="delivery_period" label="交期" width="50">
             <template slot-scope="{ row, $index }">
-              <span>{{ row.delivery_period ? row.delivery_period : typeof(row.quoted_list) != 'undefined' ? row.quoted_list.length > 0 ? row.quoted_list[0].delivery_period : '' : '' }}</span>
+              <span>{{ row.delivery_period ? row.delivery_period : '' }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="end_at" label="报价有效期至" width="100"></el-table-column>
@@ -160,7 +164,7 @@ export default {
       let that = this,
         loading = this.$loading({ lock: true });
       that
-        .$get("carts/inquiry-price/list", {
+        .$get("orders/inquiry-price", {
           // per_page: 15
           // page: ++that.inquiryList.pagination.current_page
         })
@@ -172,21 +176,6 @@ export default {
           this.handleClick();
         })
         .catch(err => loading.close());
-    },
-    getDemand() {
-      let that = this;
-      that
-        .$get("products/demand/me", {
-          // per_page: 15,
-          // page: ++that.demandList.pagination.current_page
-        })
-        .then(response => {
-          if (response.status != 200) return false;
-          response.data.list.forEach(e => that.demandList.list.push(e));
-          that.demandList.pagination = response.data.pagination;
-          this.handleClick();
-        })
-        .catch(err => console.error(err));
     },
     getOffer() {
       let that = this,
@@ -299,7 +288,6 @@ export default {
       this.getOffer();
     }
     this.getInquiry();
-    this.getDemand();
   },
   mounted() {
     // document.getElementsByClassName("el-tabs__content")[0].onscroll = e => {
