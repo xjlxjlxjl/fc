@@ -3,37 +3,9 @@
     <!-- 选择供应商 -->
     <supplier :list="company.list" :slug="projectList.list[index].slug" :productId="company.id.toString()"></supplier>
     <!-- 移入项目 -->
-    <transition name="el-fade-in-linear">
-      <div v-show="moveItem">
-        <div class="Curtain"></div>
-        <div class="modalBox">
-          <div class="modalBoxMain">
-            <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">移入项目</div>
-              <div class="modalBoxMainHeaderBtn" @click="moveItem = false;">
-                <i class="el-message-box__close el-icon-close"></i>
-              </div>
-            </div>
-            <div class="modalBoxMainContent">
-              <div id="moveItem">
-                <el-select v-model="moveSlug" placeholder="请选择移入项目">
-                  <el-option
-                    v-for="(item,index) in projectList.list"
-                    :key="index"
-                    v-if="!item.is_default"
-                    :label="item.name"
-                    :value="item.slug"
-                  ></el-option>
-                </el-select>
-              </div>
-            </div>
-            <div class="modalBoxMainBtn">
-              <el-button size="mini" type="primary" @click="moveProject">确定</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
+    <moveProject :multipleSelection="multipleSelection" :projectList="projectList"></moveProject>
+    <!-- 创建项目 -->
+    <joinProject :joinProject="joinProject" :quantity="0"></joinProject>
     <el-aside width="200px">
       <el-menu default-active="0" v-if="projectList.list.length > 0">
         <el-menu-item
@@ -58,9 +30,14 @@
           <span>{{ item.name }}</span>
         </el-menu-item>
       </el-menu>
+      <div class="operation">
+        <el-button type="primary" @click="addProject" size="mini">新建</el-button>
+        <el-button type="primary" @click="editProject('close')" size="mini">关闭</el-button>
+        <el-button type="primary" @click="editProject('del')" size="mini">删除</el-button>
+      </div>
     </el-aside>
     <el-main>
-      <div class="projectTeam">
+      <div class="projectTeam" v-if="!projectList.list[index].is_default">
         <div class="teamHeader">
           <div>
             <span>项目成员（创始人：{{ projectDetail.display_name }}）</span>
@@ -206,7 +183,7 @@
           <el-button
             type="warning"
             size="mini"
-            @click="moveItem = true"
+            @click="moveProject"
             v-if="projectList.list[index].is_default"
           >移入项目</el-button>
           <el-button type="primary" size="mini" @click="delGoods">删除</el-button>
@@ -217,8 +194,10 @@
   </el-container>
 </template>
 <script>
-import "@/assets/css/modal.css";
+import { mapState } from "vuex";
 import supplier from "@/pages/Chart/common/supplier";
+import moveProject from "@/pages/Chart/common/moveProject";
+import joinProject from "@/pages/Index/common/joinProject";
 
 export default {
   name: "project",
@@ -226,6 +205,7 @@ export default {
     return {
       user: JSON.parse(localStorage.getItem("user")),
       index: "0",
+      multipleSelection: [],
       projectList: { list: [{ is_default: 1 }] },
       projectDetail: {},
       shoppingCar: {},
@@ -237,12 +217,23 @@ export default {
         id: "",
         company_ids: []
       },
-      moveItem: false,
-      moveSlug: ""
+      joinProject: {
+        id: 0,
+        projectList: [],
+        projectSlug: "",
+        history: '',
+        status: 1,
+        newProjectName: "",
+        member: [],
+        memberId: [],
+        description: ""
+      }
     };
   },
   components: {
-    supplier: supplier
+    supplier: supplier,
+    moveProject: moveProject,
+    joinProject: joinProject
   },
   methods: {
     showProjectChange(index) {
@@ -255,9 +246,8 @@ export default {
         loading.close();
         return false;
       }
-
       that
-        .$get("carts/items/" + self.slug)
+        .$get(`carts/items/${self.slug}`)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -303,8 +293,32 @@ export default {
         })
         .catch(error => loading.close());
     },
+    addProject() {
+      joinProject.methods.show.call(this);
+    },
+    editProject(state) {
+      let that = this,
+        url = null;
+      switch(state){
+        case 'close':
+          url = `carts/close/${this.projectList.list[this.index].slug}`
+          break;
+        case 'del':
+          url = `carts/delete/${this.projectList.list[this.index].slug}`
+          break;
+      }
+      that.$get(url).then(response => {
+        if(response.status != 200) return false;
+        if (state == 'del'){
+          that.projectList.list.splice(that.index, 1);
+          that.projectDetail.list = [];
+        }
+        that.$message({ message: response.message, type: 'success' });
+      }).catch(err => console.error(err));
+    },
     getBranch() {
       let that = this;
+      if(that.options.length) return false;
       that
         .$get("members/company/branch")
         .then(response => {
@@ -346,33 +360,7 @@ export default {
         .catch(error => loading.close());
     },
     moveProject() {
-      if (!this.multipleSelection.length) {
-        this.$message.error("你没有选择商品");
-        return false;
-      }
-      if (this.moveSlug == "") {
-        this.$message.error("没有选择加入项目");
-        return false;
-      }
-      let that = this,
-        loading = this.$loading({ lock: true }),
-        ids = [];
-      // this.multipleSelection.forEach( e => ids.push(e.str_id));
-      this.multipleSelection.forEach(e => {
-        that
-          .$post("carts/move-item", {
-            // str_id: ids.join(','),
-            str_id: e.str_id,
-            slug: that.moveSlug
-          })
-          .then(response => {
-            loading.close();
-            if (response.status != 200) return false;
-            that.moveItem = false;
-            that.showProjectChange(that.index);
-          })
-          .catch(error => loading.close());
-      });
+      moveProject.methods.close.call(this);
     },
     editGoods(quantity, str_id) {
       let that = this;
@@ -512,8 +500,17 @@ export default {
 
       that.members = arr;
       that.setMembersCard();
+    },
+    moveModal(newValue, oldValue) {
+      if(!newValue)
+        this.showProjectChange(this.index);
+    },
+    joinModal(newValue, oldValue) {
+      if(!newValue)
+        this.getProject()
     }
   },
+  computed: mapState(["moveModal", "joinModal"]),
   created() {
     this.getProject();
   }
@@ -536,6 +533,7 @@ export default {
   color: #666666;
   @media screen and (min-width: 720px) {
     .el-aside {
+      position: relative;
       .el-menu {
         height: 100%;
         border-right: @borderBold;
@@ -567,6 +565,14 @@ export default {
             visibility: initial;
           }
         }
+      }
+      .operation {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
       }
     }
     .el-main {
@@ -771,10 +777,8 @@ export default {
       margin-top: 1rem;
     }
   }
-  #moveItem {
-    .el-select {
-      width: 100%;
-    }
+  #joinProject > button {
+    display: none;
   }
 }
 </style>

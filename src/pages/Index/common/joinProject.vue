@@ -101,10 +101,12 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          that.joinProject.status = 0;
-        
-          that.joinProject.projectSlug = response.data.slug;
-          that.joinProjectCart();
+          if (that.joinProject.id) {
+            that.joinProject.status = 0;
+
+            that.joinProject.projectSlug = response.data.slug;
+            that.joinProjectCart();
+          } else that.close();
         })
         .catch(error => loading.close());
     },
@@ -130,11 +132,18 @@ export default {
         })
         .catch(error => loading.close());
     },
+    show() {
+      this.$store.commit("changeModal", 'joinModal');
+    },
     close() {
-      this.$store.commit("joinModalDispaly", false);
+      this.$store.commit("changeModal", 'joinModal', false);
     }
   },
-  computed: mapState(["joinModal"])
+  computed: mapState(["joinModal"]),
+  created() {
+    if (JSON.parse(localStorage.getItem('user')).slug) 
+      this.getBranch();
+  }
 }
 </script>
 <style lang="less">

@@ -8,7 +8,8 @@ export default new Vuex.Store({
     ModalShow: false,
     joinModal: false,
     supplierModal: false,
-    demandModal: false
+    demandModal: false,
+    moveModal: false
   },
   mutations: {
     change(state) {
@@ -25,6 +26,10 @@ export default new Vuex.Store({
     demandModalDisplay(state, status) {
       if (status) state.demandModal = status;
       else state.demandModal = !state.demandModal;
+    },
+    changeModal(state, name ,status) {
+      if (status) state[name] = status;
+      else state[name] = !state[name];
     },
     updateUserInfo(state, userInfo) {
       state.userInfo = userInfo;
