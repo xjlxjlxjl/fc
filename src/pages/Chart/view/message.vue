@@ -461,9 +461,9 @@ export default {
       message: "",
       // 群聊变量
       checkBoxList: [],
+      msgImgArr: [],
       Gallery: false,
       galleryIndex: 0,
-      msgImgArr: [],
       groupId: 0,
       groupState: 0,
       groupUserList: [],
@@ -537,9 +537,9 @@ export default {
           })
           .then(response => {
             if (response.status != 200) return false;
-            console.log(key);
             that.friendList.list[key].remark = value;
-            that.userName = value;
+            if(id == that.toUser)
+              that.userName = value;
           })
           .catch(err => console.error(err));
       });
@@ -616,7 +616,7 @@ export default {
                 that.state = 1;
                 that.getRecord({
                   id: that.chatList.list[1].friend_uid,
-                  username: that.chatList.list[1].friend_user.display_name
+                  username: that.chatList.list[1].friend_user.remark || that.chatList.list[1].friend_user.display_name
                 });
               } else {
                 that.state = 2;
@@ -630,7 +630,7 @@ export default {
               that.state = 1;
               that.getRecord({
                 id: that.chatList.list[0].friend_uid,
-                username: that.chatList.list[0].friend_user.display_name
+                username: that.chatList.list[0].friend_user.remark || that.chatList.list[0].friend_user.display_name
               });
               break;
           }
@@ -643,11 +643,7 @@ export default {
 
       let that = this,
         url = null,
-        params = {
-          page:
-            ++that.record.pagination.current_page ||
-            that.record.pagination.currentPage
-        },
+        params = { page: ++that.record.pagination.current_page },
         pcHeight = document.getElementById("chatMain").scrollHeight,
         moblieHeight = document.getElementsByClassName("chatMain")[0]
           .scrollHeight;
@@ -665,22 +661,13 @@ export default {
       that
         .$get(url, params)
         .then(response => {
-          if (response.status != 200) return false;
-          if (response.data.list.length) {
-            response.data.list.forEach(e => {
-              if (e.msg_type == 2 || e.type == 2) {
-                that.msgImgArr.push(e);
-                that.msgImgArr.forEach((item, k) => (e.msgImgKey = k));
-              }
-            });
-          }
-          if (
-            response.pagination.current_page == 1 ||
-            response.pagination.currentPage == 1
-          ) {
+          if (response.status != 200 || response.data.list.length == 0) return false;
+          
+          if ( response.pagination.current_page == 1 ) {
             that.record.list = response.data.list;
             that.fixLocation();
           } else {
+            response.data.list.reverse();
             response.data.list.forEach(e => that.record.list.unshift(e));
             setTimeout(() => {
               document.getElementById("chatMain").scrollTop =
@@ -690,9 +677,20 @@ export default {
                 moblieHeight;
             }, 100);
           }
+          that.finishingPictures();
           that.record.pagination = response.pagination;
         })
         .catch(error => console.error(error));
+    },
+    finishingPictures() {
+      this.msgImgArr = [];
+      this.record.list.forEach(e => {
+        // 赋值 msgImgKey
+        if (e.msg_type == 2 || e.type == 2) {
+          this.msgImgArr.push(e);
+          this.msgImgArr.forEach((item, k) => (e.msgImgKey = k));
+        }
+      });
     },
     delChat(id, key) {
       let that = this;
@@ -876,12 +874,16 @@ export default {
     uploadFile(file) {
       let form = new FormData(),
         that = this;
-      if (file.size / 1024 / 1024 > 500) {
+
+      if (file.size / 1024 / 1024 <= 100) {
+        form.append("file", file);
+        that.upload(form, 3);
+      } else if (file.size / 1024 / 1024 <= 500) {
+        this.$notify({ title: '文件太大暂时不能上传' ,message: '文件太大暂时无法上传' });
+      } else if (file.size / 1024 / 1024 > 500) {
         this.$message.error("上传文件大小不能超过 500MB!");
         return false;
       }
-      form.append("file", file);
-      that.upload(form, 3);
     },
     // 发图片
     uploadImg(file) {
@@ -929,7 +931,8 @@ export default {
 
           params.req.content = response.data.path;
           that.webSocketSend(params);
-          that.record.list.push({
+
+          let data = {
             from_user_id: that.user.user.id,
             from_user: {
               from_user_id: that.user.user.id,
@@ -939,7 +942,12 @@ export default {
             created_at: new Date().toLocaleString(),
             msg_type: type,
             content: response.data.path
-          });
+          }
+          if(type = 2){
+            that.msgImgArr.push(data);
+            data.msgImgKey = that.msgImgArr.length - 1;
+          }
+          that.record.list.push(data);
         })
         .catch(error => console.error(error));
     },
@@ -1122,7 +1130,7 @@ export default {
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
               from_user: {
-                last_name: result.resp.from_name
+                last_name: result.resp.from_name || ''
               },
               message: result.resp.content,
               type: result.resp.type,
@@ -1613,6 +1621,7 @@ export default {
         text-align: center;
         img {
           max-width: 100%;
+          height: 100%;
         }
       }
     }
