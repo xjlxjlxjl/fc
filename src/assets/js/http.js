@@ -115,7 +115,11 @@ export function upload(url, data = new Object()) {
         "Content-Type": "multipart/form-data",
         Authorization: "Bearer " + user.token,
         "Company-Code": user.slug || ""
-      }
+      },
+      onUploadProgress: progressEvent => {
+        if(progressEvent.lengthComputable)
+          console.log(progressEvent.loaded / progressEvent.total)
+      },
     }).then(response => resolve(response), err => reject(err));
   });
 }

@@ -1,6 +1,24 @@
 <template>
   <el-container id="produce">
-    <el-aside width="200px"></el-aside>
+    <el-aside width="200px">
+      <p class="lead">待完成任务
+        <el-button type="info" size="mini">新建</el-button>
+      </p>
+      <el-menu default-active="0">
+        <el-menu-item index="0">
+          <i class="el-icon-menu"></i>
+          <span slot="title">导航一</span>
+        </el-menu-item>
+        <el-menu-item index="1">
+          <i class="el-icon-menu"></i>
+          <span slot="title">导航二</span>
+        </el-menu-item>
+        <el-menu-item index="2">
+          <i class="el-icon-menu"></i>
+          <span slot="title">导航三</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
     <el-main>
       <div id="toolbar">
         <table>
@@ -12,52 +30,89 @@
           <el-button size="mini">转成品仓</el-button>
         </table>
       </div>
-      <table
-        id="table"
-        data-toolbar="#toolbar"
-        :data-ajax="tableAjaxData()"
-        :data-query-params="tableAjaxParams()"
-        data-search="true"
-        data-show-refresh="true"
-        data-side-pagination="server"
-        data-pagination="true"
-        data-striped="true"
-        data-click-to-select="true"
-        data-show-columns="true"
-        data-sort-name="createTime"
-        data-sort-order="desc"
-        data-id-field="orderId"
-        data-show-toggle="true"
-        data-show-export="true"
-        data-classes="table table-no-bordered"
-        data-page-list="[10, 25, 50, 100, All]"
-        exportDataType="all"
-      ></table>
-      <!-- data-card-view="true" -->
+      <table id="table"></table>
     </el-main>
   </el-container>
 </template>
 <script>
-import "bootstrap-table/dist/bootstrap-table.min.js";
-import "bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js";
 export default {
   name: "produce",
   methods: {
     tableAjaxData(params) {
-      return [
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 }
-      ];
+      let loading = this.$loading({
+        lock: true,
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      params.success({
+        total: 200,
+        rows: [
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 },
+          { ORDER_NO: 1 }
+        ]
+      });
+      loading.close();
     },
-    tableAjaxParams(params) {}
+    tableAjaxParams(params) {
+      console.log(params);
+      params.current_page = params.offset + 1;
+      return params;
+    }
   },
   mounted() {
     $("#table").bootstrapTable({
+      toolbar: "#toolbar",
+      ajax: this.tableAjaxData,
+      queryParams: this.tableAjaxParams,
+      search: true,
+      strictSearch: true,
+      showRefresh: true,
+      sidePagination: "server",
+      pagination: true,
+      striped: true,
+      clickToSelect: true,
+      showColumns: true,
+      sortName: "createTime",
+      sortOrder: "desc",
+      idField: "id",
+      showToggle: true,
+      showExport: true,
+      exportDataType: "all",
+      exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+      classes: "table",
+      pageList: [10, 25, 50, 100, "All"],
       data: [
         { ORDER_NO: 1 },
         { ORDER_NO: 1 },
@@ -150,7 +205,6 @@ export default {
         }
       ],
       onEditableSave: function(field, mrow, oldValue, $el) {
-        showLoading();
         $.post(
           "order/update",
           {
@@ -159,7 +213,6 @@ export default {
             value: mrow[field]
           },
           function(data) {
-            hideLoading();
             if (data.result != 1) {
               alert("修改失败");
             }
@@ -177,11 +230,24 @@ export default {
 #produce {
   .el-aside {
     border-right: @borderBlod;
+    padding: 1rem;
+    .lead {
+      button {
+        float: right;
+      }
+    }
+    .el-menu{
+      border-right: none;
+    }
   }
   .el-main {
-    #table {
-      width: 100%;
-      height: 100%;
+    .fixed-table-container {
+      height: 565px;
+      max-height: 100%;
+      #table {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

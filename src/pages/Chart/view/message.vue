@@ -294,7 +294,7 @@
                           </div>
                         </div>
                       </div>
-                      <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
+                      <img :src="user.user.avatar || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/头像xhdpi.png'">
                     </div>
                     <div v-else class="toMessage">
                       <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
@@ -362,6 +362,7 @@
         </el-container>
       </el-main>
     </el-container>
+    <!-- <el-progress type="circle" :percentage="parseFloat(98.38088016643208.toFixed(2))"></el-progress> -->
   </div>
 </template>
 <script>
