@@ -2675,7 +2675,7 @@ export default {
   max-width: 1280px;
   margin: 0 auto;
   // 保留底部颜色
-  height: 83%;
+  height: 87%;
   @media screen and (min-width: 820px) {
     > .el-container {
       height: 100%;

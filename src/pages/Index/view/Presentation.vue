@@ -99,7 +99,7 @@ export default {
 #Presentation {
   width: 1280px;
   max-width: 100%;
-  height: 83%;
+  height: 87%;
   background-color: @white;
   margin: 1.5rem auto;
   position: relative;

@@ -70,7 +70,7 @@ export default {
 #main {
   max-width: 1280px;
   margin: 0 auto;
-  height: 83%;
+  height: 87%;
   @media screen and (min-width: 820px) {
     > .el-container {
       height: 100%;

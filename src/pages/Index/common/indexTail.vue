@@ -2,9 +2,7 @@
   <footer>
     <span>联系电话：{{ tel }}</span>
     <a href="http://new.cnzz.com/v1/login.php?siteid=1275180003">
-      <div class="text-center">
-        站长统计
-      </div>
+      <div class="text-center">站长统计</div>
     </a>
     <a href="http://www.miit.gov.cn/">
       <div class="text-center">
@@ -67,7 +65,7 @@ export default {
   footer {
     display: flex;
     background-color: #353535;
-    height: 100px;
+    height: 70px;
     justify-content: space-around;
     align-items: center;
     color: #ffffff;

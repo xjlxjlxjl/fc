@@ -236,7 +236,7 @@ export default {
   @media screen and (min-width: 880px) {
     max-width: 1280px;
     margin: 0 auto;
-    height: 83%;
+    height: 87%;
     padding-top: 1.5rem;
     .main {
       height: 100%;

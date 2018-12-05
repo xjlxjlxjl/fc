@@ -141,7 +141,7 @@ export default {
   },
   computed: mapState(["joinModal"]),
   created() {
-    if (JSON.parse(localStorage.getItem('user')).slug) 
+    if (JSON.parse(localStorage.getItem('user')) && JSON.parse(localStorage.getItem('user')).slug) 
       this.getBranch();
   }
 }
