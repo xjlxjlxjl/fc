@@ -409,8 +409,7 @@ export default {
           .body {
             width: 100%;
             display: flex;
-            .goodsImg,
-            .qrCode {
+            .goodsImg {
               width: 1%;
               flex-grow: 1;
               box-sizing: border-box;
@@ -466,20 +465,20 @@ export default {
           .header {
             > p {
               font-size: 1.4rem;
-              margin-bottom: 0.5rem;
+              margin-bottom: 1rem;
             }
             .detail {
               width: 100%;
               display: flex;
               justify-content: space-between;
               white-space: nowrap;
-              margin-bottom: 0.5rem;
+              margin-bottom: 1rem;
             }
             .operation {
-              margin-bottom: 0.5rem;
+              margin-bottom: 1rem;
               > span {
                 display: block;
-                margin-bottom: 0.5rem;
+                margin-bottom: 1rem;
               }
             }
           }
