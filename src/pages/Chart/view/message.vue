@@ -3,26 +3,7 @@
     <!-- 踢出群聊，邀请群聊（ 0：邀请，1：添加 ） -->
     <groupUserCheckBox :groupId="groupId" :groupUser="groupUserList" :groupState="groupState"></groupUserCheckBox>
     <!-- 图片画廊 -->
-    <transition name="el-fade-in-linear">
-      <div v-if="Gallery">
-        <div class="Curtain" @click="Gallery = false;"></div>
-        <el-carousel
-          class="gallery"
-          :interval="0"
-          :autoplay="new Boolean(false)"
-          :loop="new Boolean(false)"
-          :initial-index="galleryIndex"
-        >
-          <el-carousel-item
-            v-for="(item,index) in record.list"
-            :key="index"
-            v-if="item.type == 2 || item.msg_type == 2"
-          >
-            <img :src="item.content">
-          </el-carousel-item>
-        </el-carousel>
-      </div>
-    </transition>
+    <gallery :record="record" :galleryIndex="galleryIndex"></gallery>
     <el-container>
       <el-aside class="pcShowImportant" width="60px" v-show="!mainDisplay">
         <ul class="function">
@@ -280,7 +261,7 @@
                           <img
                             v-else-if="item.msg_type == 2 || item.type == 2"
                             :src="item.content"
-                            @click="Gallery = true;galleryIndex = item.msgImgKey"
+                            @click="galleryShow();galleryIndex = item.msgImgKey"
                             class="messageImg"
                           >
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
@@ -309,7 +290,7 @@
                           <img
                             v-else-if="item.msg_type == 2 || item.type == 2"
                             :src="item.content"
-                            @click="Gallery = true;galleryIndex = item.msgImgKey"
+                            @click="galleryShow();galleryIndex = item.msgImgKey"
                             class="messageImg"
                           >
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
@@ -368,7 +349,7 @@
 <script>
 import fileImg from "@/assets/img/file.png";
 import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
-
+import gallery from "@/pages/Chart/common/gallery";
 export default {
   name: "message",
   data() {
@@ -463,7 +444,6 @@ export default {
       // 群聊变量
       checkBoxList: [],
       msgImgArr: [],
-      Gallery: false,
       galleryIndex: 0,
       groupId: 0,
       groupState: 0,
@@ -560,7 +540,7 @@ export default {
             })
             .catch(error => console.error(error));
         })
-        .catch(err => console.error(err));
+        .catch(err => console.log('添加取消'));
     },
     acceptFriend(noticeId) {
       let that = this;
@@ -682,6 +662,9 @@ export default {
           that.record.pagination = response.pagination;
         })
         .catch(error => console.error(error));
+    },
+    galleryShow() {
+      gallery.methods.close.call(this);
     },
     finishingPictures() {
       this.msgImgArr = [];
@@ -1196,7 +1179,8 @@ export default {
     }
   },
   components: {
-    groupUserCheckBox: groupUserCheckBox
+    groupUserCheckBox: groupUserCheckBox,
+    gallery: gallery
   },
   mounted() {
     this.$refs.uploadBox.ondragover = this.$refs.uploadBox.ondragleave = this.$refs.uploadBox.ondragenter = e => {

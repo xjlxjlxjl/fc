@@ -9,7 +9,8 @@ export default new Vuex.Store({
     joinModal: false,
     supplierModal: false,
     demandModal: false,
-    moveModal: false
+    moveModal: false,
+    galleryModal: false
   },
   mutations: {
     change(state) {
