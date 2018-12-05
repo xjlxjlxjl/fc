@@ -8,7 +8,6 @@ import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
 // 地址
 import VueAreaLinkage from "vue-area-linkage";
-
 // 响应式
 import "element-ui/lib/theme-chalk/display.css";
 // 过渡效果 缩放 淡入

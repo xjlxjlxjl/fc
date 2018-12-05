@@ -236,7 +236,7 @@ export default {
         float: right;
       }
     }
-    .el-menu{
+    .el-menu {
       border-right: none;
     }
   }

@@ -6,7 +6,6 @@ import store from "../../store";
 import elementUi from "element-ui";
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
-import "@/assets/icon/iconfont.css"; // 字体
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
 import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动

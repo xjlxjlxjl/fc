@@ -445,10 +445,10 @@ export default {
   .el-menu {
     .el-menu-item {
       background-color: @bBule !important;
-      color: @white;
+      color: @white !important;
       &:hover {
         background-color: @aBule !important;
-        color: @white;
+        color: @white !important;
       }
     }
   }
