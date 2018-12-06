@@ -15,7 +15,7 @@
                     <router-view></router-view>
                   </transition>
                 </el-container>
-                <index-chart></index-chart>
+                <!-- <index-chart></index-chart> -->
               </el-main>
             </el-container>
           </div>
@@ -31,13 +31,13 @@
 <script>
 import indexRise from "@/pages/Index/common/indexRise";
 import indexTail from "@/pages/Index/common/indexTail";
-import indexChart from "@/pages/Index/common/indexChart";
+// import indexChart from "@/pages/Index/common/indexChart";
 
 export default {
   name: "Index",
   components: {
     "index-rise": indexRise,
-    "index-chart": indexChart,
+    // "index-chart": indexChart,
     "index-tail": indexTail
   }
 };
@@ -89,7 +89,7 @@ export default {
       background: #ffffff;
       > section {
         height: 100%;
-        width: 94.3%;
+        width: 100%;
       }
     }
   }
@@ -137,6 +137,9 @@ export default {
   }
   .fixed-table-pagination {
     .pagination-detail {
+      padding: 0 1rem;
+    }
+    .pagination {
       padding: 0 1rem;
     }
   }

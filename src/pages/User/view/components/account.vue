@@ -32,7 +32,8 @@
                 class="avatar-uploader"
                 action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                 :show-file-list="false"
-                :before-upload="beforeAvatarUpload">
+                :before-upload="beforeAvatarUpload"
+              >
                 <img v-if="formData.avatar" :src="formData.avatar" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>

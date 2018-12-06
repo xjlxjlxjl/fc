@@ -6,58 +6,90 @@
           <el-col :span="24">
             <el-form-item label="所在区域 *" class="located">
               <el-select placeholder="请选择" v-model="options[0].label">
-                <el-option v-for="item in options"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value"></el-option>
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
               </el-select>
-              <area-cascader type="text"
-                            :data="pcaa"
-                            :aria-level="1"
-                            :level="1"
-                             placeholder="请选择地区"
-                             v-model="formData.province"></area-cascader>
+              <area-cascader
+                type="text"
+                :data="pcaa"
+                :aria-level="1"
+                :level="1"
+                placeholder="请选择地区"
+                v-model="formData.province"
+              ></area-cascader>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="详细地址 *">
-              <el-input placeholder="详细地址" size="mini" v-model="formData.detailed_address" :clearable="true"></el-input>
+              <el-input
+                placeholder="详细地址"
+                size="mini"
+                v-model="formData.detailed_address"
+                :clearable="true"
+              ></el-input>
               <!-- <el-input type="textarea" placeholder="详细地址" v-model="formData.detailed_address"></el-input> -->
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="邮政编码">
-              <el-input type="number" size="mini" maxlength="6" placeholder="邮政编码" v-model="formData.zip_code" :clearable="true"></el-input>
+              <el-input
+                type="number"
+                size="mini"
+                maxlength="6"
+                placeholder="邮政编码"
+                v-model="formData.zip_code"
+                :clearable="true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="收货人姓名 *">
-              <el-input v-model="formData.name" size="mini" maxlength="12" placeholder="收货人姓名" :clearable="true"></el-input>
+              <el-input
+                v-model="formData.name"
+                size="mini"
+                maxlength="12"
+                placeholder="收货人姓名"
+                :clearable="true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="手机号码">
               <el-select placeholder="请选择" size="mini" v-model="options[0].value">
-                <el-option v-for="item in options"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value"></el-option>
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
               </el-select>
-              <el-input type="number" size="mini" v-model="formData.contact_mobile" placeholder="手机号码" :clearable="true"></el-input>
+              <el-input
+                type="number"
+                size="mini"
+                v-model="formData.contact_mobile"
+                placeholder="手机号码"
+                :clearable="true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="电话号码" class="contact_phone">
               <el-select placeholder="请选择" size="mini" v-model="options[0].value">
-                <el-option v-for="item in options"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value"></el-option>
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
               </el-select>
               <el-input v-model="formData.contact_phone.region" size="mini" placeholder="区号"></el-input>
-              <span class="delimiter">　－　</span>
+              <span class="delimiter">－</span>
               <el-input v-model="formData.contact_phone.tel" size="mini" placeholder="电话号码"></el-input>
-              <span class="delimiter">　－　</span>
+              <span class="delimiter">－</span>
               <el-input v-model="formData.contact_phone.extension" size="mini" placeholder="分机号"></el-input>
             </el-form-item>
           </el-col>
@@ -77,32 +109,32 @@
       </el-table-column>
       <el-table-column prop="name" label="收货人姓名" width="120">
         <template slot-scope="{row,$index}">
-            <el-input v-if="row.isEdit" v-model="row.name"></el-input>
-            <span v-else>{{ row.name }}</span>
+          <el-input v-if="row.isEdit" v-model="row.name"></el-input>
+          <span v-else>{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="province" label="地区" width="120">
         <template slot-scope="{row,$index}">
-            <el-input v-if="row.isEdit" v-model="row.province"></el-input>
-            <span v-else>{{ row.province }}</span>
+          <el-input v-if="row.isEdit" v-model="row.province"></el-input>
+          <span v-else>{{ row.province }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="detailed_address" label="详细地址" width="120">
         <template slot-scope="{row,$index}">
-            <el-input v-if="row.isEdit" v-model="row.detailed_address"></el-input>
-            <span v-else>{{ row.detailed_address }}</span>
+          <el-input v-if="row.isEdit" v-model="row.detailed_address"></el-input>
+          <span v-else>{{ row.detailed_address }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="zip_code" label="邮编" width="120">
         <template slot-scope="{row,$index}">
-            <el-input v-if="row.isEdit" v-model="row.zip_code"></el-input>
-            <span v-else>{{ row.zip_code }}</span>
+          <el-input v-if="row.isEdit" v-model="row.zip_code"></el-input>
+          <span v-else>{{ row.zip_code }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="contact_mobile" label="手机号" width="120">
         <template slot-scope="{row,$index}">
-            <el-input v-if="row.isEdit" v-model="row.contact_mobile"></el-input>
-            <span v-else>{{ row.contact_mobile }}</span>
+          <el-input v-if="row.isEdit" v-model="row.contact_mobile"></el-input>
+          <span v-else>{{ row.contact_mobile }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="120">
@@ -171,7 +203,7 @@ export default {
       const that = this,
         loading = this.$loading({ lock: true });
       that
-        .$post("members/default-address/" + that.tableData.list[index].slug, {
+        .$post(`members/default-address/${that.tableData.list[index].slug}`, {
           default: 1
         })
         .then(response => {
@@ -190,7 +222,7 @@ export default {
       const that = this,
         loading = this.$loading({ lock: true });
       that
-        .$post("members/address/edit/" + row.slug, row)
+        .$post(`members/address/edit/${row.slug}`, row)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -204,7 +236,7 @@ export default {
       const loading = this.$loading({ lock: true });
       let that = this;
       that
-        .$post("members/address/delete/" + slug)
+        .$post(`members/address/delete/${slug}`)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -221,7 +253,6 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-
           response.data.list.forEach(e => {
             e.isEdit = false;
             if (e.default) that.defaultAddress = e.slug;

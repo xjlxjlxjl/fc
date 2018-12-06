@@ -35,9 +35,14 @@
             <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
           </el-menu-item>
           <el-menu-item index="6">
-            <!-- <el-badge :value="0" class="item"> -->
-            <i class="el-icon-bell"></i>
-            <!-- </el-badge> -->
+            <a href="/chart.html#/message">
+              <!-- <el-badge :value="0" class="item"> -->
+              <i class="el-icon-bell"></i>
+              <!-- </el-badge> -->
+            </a>
+          </el-menu-item>
+          <el-menu-item index="7">
+            <a href="https://company.factoryun.com/login" target="_blank">企业ERP</a>
           </el-menu-item>
         </el-menu>
       </div>
@@ -57,11 +62,11 @@
         <transition name="el-zoom-in-right">
           <div class="menuContent" v-show="menuShow">
             <el-menu background-color="transparent" text-color="#fff" active-text-color="#0064db">
-              <el-menu-item index="1">
+              <!-- <el-menu-item index="1">
                 <el-input placeholder="搜索输入型号/产品名/品牌名等关键字" v-model="searchText">
                   <i slot="prefix" class="el-input__icon el-icon-search" @click="search"></i>
                 </el-input>
-              </el-menu-item>
+              </el-menu-item>-->
               <el-menu-item index="2">
                 <div class="dearUserName">
                   <a
@@ -77,15 +82,27 @@
                 </div>
               </el-menu-item>
               <el-menu-item index="3">
-                <a :href="user ? user.user.qrcode : 'javascript:;'" target="_blank">我的名片</a>
+                <a href="/chart.html#/project">购物车</a>
               </el-menu-item>
               <el-menu-item index="4">
-                <a href target="_blank">俺的小金库</a>
+                <a href="/chart.html#/contrast">对比</a>
               </el-menu-item>
               <el-menu-item index="5">
-                <span @click="loginOut">退出登录</span>
+                <a href="/chart.html#/inquiry">询价</a>
               </el-menu-item>
               <el-menu-item index="6">
+                <a href="/chart.html#/message">消息</a>
+              </el-menu-item>
+              <el-menu-item index="7">
+                <a :href="user ? user.user.qrcode : 'javascript:;'" target="_blank">我的名片</a>
+              </el-menu-item>
+              <el-menu-item index="8">
+                <a href target="_blank">俺的小金库</a>
+              </el-menu-item>
+              <el-menu-item index="9">
+                <span @click="loginOut">退出登录</span>
+              </el-menu-item>
+              <el-menu-item index="10">
                 <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
               </el-menu-item>
             </el-menu>

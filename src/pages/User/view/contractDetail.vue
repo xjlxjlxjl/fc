@@ -79,16 +79,29 @@
             </p>
           </div>
         </div>
-        <el-button v-if="content.company_type == 'a'" class="edit" type="primary" size="mini" @click="isEdit.user = !isEdit.user;if(!isEdit.user) editContract()" plain>{{ isEdit.user ? '保存' : '编辑'}}</el-button>
+        <el-button
+          v-if="content.company_type == 'a'"
+          class="edit"
+          type="primary"
+          size="mini"
+          @click="isEdit.user = !isEdit.user;if(!isEdit.user) editContract()"
+          plain
+        >{{ isEdit.user ? '保存' : '编辑'}}</el-button>
       </div>
       <div class="table">
         <el-table border :data="content.orders">
-          <el-table-column prop="id" label="序号" width="50"><template slot-scope="{ row, $index }"><div align="center"><span>{{ $index + 1 }}</span></div></template></el-table-column>
+          <el-table-column prop="id" label="序号" width="50">
+            <template slot-scope="{ row, $index }">
+              <div align="center">
+                <span>{{ $index + 1 }}</span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="product_id" label="产品" width="400">
             <template slot-scope="{ row,$index }">
               <div class="goods">
                 <div>
-                  <img :src="row.product_image" alt="">
+                  <img :src="row.product_image" alt>
                 </div>
                 <div>
                   <p>名称：{{ row.product_name }}</p>
@@ -98,10 +111,26 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="quantity" label="数量"><template slot-scope="{ row, $index }"><span>{{ row.quantity }} 件</span></template></el-table-column>
-          <el-table-column prop="purchase_price" label="单价"><template slot-scope="{ row, $index }"><span>￥ {{ row.purchase_price }}</span></template></el-table-column>
-          <el-table-column prop="delivery_period" label="交货期"><template slot-scope="{ row, $index }"><span>{{ row.delivery_period }} 工作日</span></template></el-table-column>
-          <el-table-column prop="total_price" label="总价"><template slot-scope="{ row, $index }"><span>{{ row.total_price }}</span></template></el-table-column>
+          <el-table-column prop="quantity" label="数量">
+            <template slot-scope="{ row, $index }">
+              <span>{{ row.quantity }} 件</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="purchase_price" label="单价">
+            <template slot-scope="{ row, $index }">
+              <span>￥ {{ row.purchase_price }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="delivery_period" label="交货期">
+            <template slot-scope="{ row, $index }">
+              <span>{{ row.delivery_period }} 工作日</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="total_price" label="总价">
+            <template slot-scope="{ row, $index }">
+              <span>{{ row.total_price }}</span>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="total_price">
           <span>合计（大写）：{{ content.chinese_total_price }}</span>
@@ -111,15 +140,22 @@
       <div class="extend">
         <p>备注：{{ content.order_remark || '无' }}</p>
         <p>条款：</p>
-        <div v-html="content.contract_content" v-if='!isEdit.contract'></div>
+        <div v-html="content.contract_content" v-if="!isEdit.contract"></div>
         <el-input type="textarea" rows="3" v-else v-model="content.contract_content"></el-input>
-        <el-button v-if="content.company_type == 'a'" class="edit" type="primary" size="mini" @click="isEdit.contract = !isEdit.contract;if(!isEdit.contract) editContract()" plain>{{ isEdit.contract ? '保存' : '编辑'}}</el-button>
+        <el-button
+          v-if="content.company_type == 'a'"
+          class="edit"
+          type="primary"
+          size="mini"
+          @click="isEdit.contract = !isEdit.contract;if(!isEdit.contract) editContract()"
+          plain
+        >{{ isEdit.contract ? '保存' : '编辑'}}</el-button>
       </div>
       <div class="sign">
         <div>
           <span>甲方签章：</span>
           <div class="signBox">
-            <img :src="'data:image/svg+xml;base64, ' + content.a_signature" alt="">
+            <img :src="'data:image/svg+xml;base64, ' + content.a_signature" alt>
           </div>
           <div class="operation" v-if="content.company_type == 'a'">
             <el-button type="primary" size="mini" @click="modalShow = true">签字</el-button>
@@ -130,7 +166,7 @@
         <div>
           <span>乙方签章：</span>
           <div class="signBox">
-            <img :src="'data:image/svg+xml;base64, ' + content.b_signature" alt="">
+            <img :src="'data:image/svg+xml;base64, ' + content.b_signature" alt>
           </div>
           <div class="operation" v-if="content.company_type == 'b'">
             <el-button type="primary" size="mini" @click="modalShow = true">签字</el-button>
@@ -149,9 +185,7 @@
         <div class="modalBox">
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                签名
-              </div>
+              <div class="modalBoxMainHeaderTitle">签名</div>
               <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
                 <i class="el-message-box__close el-icon-close"></i>
               </div>
@@ -159,7 +193,9 @@
             <div class="modalBoxMainContent">
               <div id="jSignature">
                 <canvas id="canvas" style="width: 100%;height: 100%;">Canvas画板</canvas>
-                <div><el-button size="mini" type="primary" @click="saveSvg">保存签名</el-button></div>
+                <div>
+                  <el-button size="mini" type="primary" @click="saveSvg">保存签名</el-button>
+                </div>
               </div>
             </div>
           </div>
@@ -192,7 +228,7 @@ export default {
       let that = this,
         loading = this.$loading({ lock: true });
       that
-        .$get("orders/contract/" + that.slug)
+        .$get(`orders/contract/${that.slug}`)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -204,7 +240,7 @@ export default {
       let that = this,
         loading = this.$loading({ lock: true });
       that
-        .$post("orders/contract/update/" + that.slug, that.content)
+        .$post(`orders/contract/update/${that.slug}`, that.content)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -221,7 +257,7 @@ export default {
       const data = svg.split("data:image/svg+xml;base64,")[1],
         loading = this.$loading({ lock: true });
       that
-        .$post("orders/contract/signature/" + that.slug, {
+        .$post(`orders/contract/signature/${that.slug}`, {
           signature: data,
           ab: that.content.company_type
         })
@@ -242,7 +278,7 @@ export default {
     },
     seal() {
       let that = this;
-      that.$post("orders/contract/seal/" + that.slug).then(response => {
+      that.$post(`orders/contract/seal/${that.slug}`).then(response => {
         if (response.status != 200) return false;
         switch (that.content.company_type) {
           case a:
@@ -258,7 +294,7 @@ export default {
       let that = this,
         loading = that.$loading({ lock: true });
       that
-        .$post("orders/contract/confirm/" + that.slug, { slug: that.slug })
+        .$post(`orders/contract/confirm/${that.slug}`, { slug: that.slug })
         .then(response => loading.close())
         .catch(error => loading.close());
     }

@@ -1,7 +1,11 @@
 <template>
   <el-container id="project">
     <!-- 选择供应商 -->
-    <supplier :list="company.list" :slug="projectList.list[index].slug" :productId="company.id.toString()"></supplier>
+    <supplier
+      :list="company.list"
+      :slug="projectList.list[index].slug"
+      :productId="company.id.toString()"
+    ></supplier>
     <!-- 移入项目 -->
     <moveProject :multipleSelection="multipleSelection" :projectList="projectList"></moveProject>
     <!-- 创建项目 -->
@@ -221,7 +225,7 @@ export default {
         id: 0,
         projectList: [],
         projectSlug: "",
-        history: '',
+        history: "",
         status: 1,
         newProjectName: "",
         member: [],
@@ -299,26 +303,29 @@ export default {
     editProject(state) {
       let that = this,
         url = null;
-      switch(state){
-        case 'close':
-          url = `carts/close/${this.projectList.list[this.index].slug}`
+      switch (state) {
+        case "close":
+          url = `carts/close/${this.projectList.list[this.index].slug}`;
           break;
-        case 'del':
-          url = `carts/delete/${this.projectList.list[this.index].slug}`
+        case "del":
+          url = `carts/delete/${this.projectList.list[this.index].slug}`;
           break;
       }
-      that.$get(url).then(response => {
-        if(response.status != 200) return false;
-        if (state == 'del'){
-          that.projectList.list.splice(that.index, 1);
-          that.projectDetail.list = [];
-        }
-        that.$message({ message: response.message, type: 'success' });
-      }).catch(err => console.error(err));
+      that
+        .$get(url)
+        .then(response => {
+          if (response.status != 200) return false;
+          if (state == "del") {
+            that.projectList.list.splice(that.index, 1);
+            that.projectDetail.list = [];
+          }
+          that.$message({ message: response.message, type: "success" });
+        })
+        .catch(err => console.error(err));
     },
     getBranch() {
       let that = this;
-      if(that.options.length) return false;
+      if (that.options.length) return false;
       that
         .$get("members/company/branch")
         .then(response => {
@@ -336,9 +343,7 @@ export default {
       that.options.forEach(value => {
         value.member.forEach(item => {
           that.members.forEach(e => {
-            if (item.id == e) {
-              displayArr.push(item);
-            }
+            if (item.id == e) displayArr.push(item);
           });
         });
       });
@@ -349,7 +354,7 @@ export default {
         loading = that.$loading({ lock: true }),
         self = that.projectList.list[that.index];
       that
-        .$post("carts/edit/" + self.slug, {
+        .$post(`carts/edit/${self.slug}`, {
           name: self.name,
           members_ids: that.members.join(",")
         })
@@ -384,7 +389,7 @@ export default {
         arr.push(e.id);
       });
       that
-        .$post("carts/items/delete/" + that.projectList.list[that.index].slug, {
+        .$post(`carts/items/delete/${that.projectList.list[that.index].slug}`, {
           ids: arr.join(",")
         })
         .then(response => {
@@ -502,12 +507,10 @@ export default {
       that.setMembersCard();
     },
     moveModal(newValue, oldValue) {
-      if(!newValue)
-        this.showProjectChange(this.index);
+      if (!newValue) this.showProjectChange(this.index);
     },
     joinModal(newValue, oldValue) {
-      if(!newValue)
-        this.getProject()
+      if (!newValue) this.getProject();
     }
   },
   computed: mapState(["moveModal", "joinModal"]),

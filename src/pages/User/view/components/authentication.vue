@@ -9,7 +9,7 @@
       </el-form-item>
       <!-- <el-form-item label="用户邮箱 / 手机号">
         <el-input v-model="formData.member"></el-input>
-      </el-form-item> -->
+      </el-form-item>-->
       <el-container>
         <el-row>
           <el-col :span="12">
@@ -19,8 +19,13 @@
                 action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                 :show-file-list="false"
                 :disabled="isDisabled"
-                :before-upload="beforeAvatarUploadPositive">
-                <img v-if="formData.id_card_positive" :src="formData.id_card_positive" class="avatar">
+                :before-upload="beforeAvatarUploadPositive"
+              >
+                <img
+                  v-if="formData.id_card_positive"
+                  :src="formData.id_card_positive"
+                  class="avatar"
+                >
                 <i v-else class="font_family icon-shangchuan"></i>
               </el-upload>
             </el-form-item>
@@ -32,8 +37,13 @@
                 action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                 :show-file-list="false"
                 :disabled="isDisabled"
-                :before-upload="beforeAvatarUploadNegative">
-                <img v-if="formData.id_card_negative" :src="formData.id_card_negative" class="avatar">
+                :before-upload="beforeAvatarUploadNegative"
+              >
+                <img
+                  v-if="formData.id_card_negative"
+                  :src="formData.id_card_negative"
+                  class="avatar"
+                >
                 <i v-else class="font_family icon-shangchuan"></i>
               </el-upload>
             </el-form-item>

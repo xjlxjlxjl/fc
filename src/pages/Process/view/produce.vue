@@ -133,7 +133,16 @@ export default {
         },
         {
           field: "ORDER_NO",
-          title: "物料车"
+          title: "物料车",
+          sortable: true,
+          editable: {
+            type: "select",
+            title: "物料车",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          }
         },
         {
           field: "ORDER_NO",
@@ -153,7 +162,16 @@ export default {
         },
         {
           field: "ORDER_NO",
-          title: "转仓单号"
+          title: "转仓单号",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "收货人",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          }
         },
         {
           field: "ORDER_NO",
@@ -172,7 +190,7 @@ export default {
             type: "text",
             title: "收货人",
             emptytext: "空",
-            validate: function(v) {
+            validate: v => {
               if (!v) return "不能为空";
             }
           }
@@ -184,7 +202,10 @@ export default {
           editable: {
             type: "textarea",
             title: "备注",
-            emptytext: "空"
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
           }
         },
         {
@@ -204,22 +225,7 @@ export default {
           title: "操作"
         }
       ],
-      onEditableSave: function(field, mrow, oldValue, $el) {
-        $.post(
-          "order/update",
-          {
-            id: mrow.orderId,
-            key: field,
-            value: mrow[field]
-          },
-          function(data) {
-            if (data.result != 1) {
-              alert("修改失败");
-            }
-            $table.bootstrapTable("refresh");
-          }
-        );
-      }
+      onEditableSave: (field, mrow, oldValue, $el) => {}
     });
   }
 };

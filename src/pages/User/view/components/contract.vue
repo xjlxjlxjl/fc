@@ -1,9 +1,12 @@
 <template>
   <div id="contract">
     <div class="tabs-nav">
-      <div v-for="(item,index) in tabsNav" :key="index"
-          :class="state == item.state ? 'isActive' : ''" 
-          @click="getContract(item.state, item.contractStatus)">{{ item.name }}</div>
+      <div
+        v-for="(item,index) in tabsNav"
+        :key="index"
+        :class="state == item.state ? 'isActive' : ''"
+        @click="getContract(item.state, item.contractStatus)"
+      >{{ item.name }}</div>
     </div>
     <div id="contractList" class="contractList">
       <div class="contractDetail" v-for="(item,index) in tableData" :key="index">
@@ -21,7 +24,11 @@
           <div>甲方：{{ item.a_company }}</div>
           <div>乙方：{{ item.b_company }}</div>
           <div>
-            <a :href="`https://factoryun.com/orders/contract/pdf/${ item.slug }?download=1`" target="_blank" rel="noopener noreferrer">下载合同</a>
+            <a
+              :href="`https://factoryun.com/orders/contract/pdf/${ item.slug }?download=1`"
+              target="_blank"
+              rel="noopener noreferrer"
+            >下载合同</a>
             <router-link :to="'/contractDetail/' + item.slug" target="_blank">查看合同</router-link>
           </div>
         </div>
@@ -125,10 +132,10 @@ export default {
     }
   },
   mounted() {
-    document.getElementById('contractList').onscroll = e => {
-      if(e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight)
+    document.getElementById("contractList").onscroll = e => {
+      if (e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight)
         this.getContract(this.state, this.tabsNav[this.state].contractStatus);
-    }
+    };
   },
   created() {
     this.getContract(0, "");

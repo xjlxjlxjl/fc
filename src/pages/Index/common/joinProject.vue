@@ -5,9 +5,7 @@
       <div class="modalBox">
         <div class="modalBoxMain">
           <div class="modalBoxMainHeader">
-            <div class="modalBoxMainHeaderTitle">
-              加入项目
-            </div>
+            <div class="modalBoxMainHeaderTitle">加入项目</div>
             <div class="modalBoxMainHeaderBtn" @click="close">
               <i class="el-message-box__close el-icon-close"></i>
             </div>
@@ -20,8 +18,12 @@
               </p>
               <div>
                 <el-select v-model="joinProject.projectSlug">
-                  <el-option v-for="(item,key) in joinProject.projectList" 
-                            :key="key" :label="item.name" :value="item.slug"></el-option>
+                  <el-option
+                    v-for="(item,key) in joinProject.projectList"
+                    :key="key"
+                    :label="item.name"
+                    :value="item.slug"
+                  ></el-option>
                 </el-select>
               </div>
               <div>
@@ -33,10 +35,18 @@
               <el-input v-model="joinProject.newProjectName" placeholder="输入项目名称"></el-input>
               <div>
                 <el-select v-model="joinProject.memberId" size="mini" multiple>
-                  <el-option-group v-for="(item,key) in joinProject.member" 
-                                  :key="key" :label="item.branch_name" :value="item.branch_id">
-                    <el-option v-for="(val,el) in item.member" 
-                              :key="el" :label="val.display_name" :value="val.id"></el-option>
+                  <el-option-group
+                    v-for="(item,key) in joinProject.member"
+                    :key="key"
+                    :label="item.branch_name"
+                    :value="item.branch_id"
+                  >
+                    <el-option
+                      v-for="(val,el) in item.member"
+                      :key="el"
+                      :label="val.display_name"
+                      :value="val.id"
+                    ></el-option>
                   </el-option-group>
                 </el-select>
               </div>
@@ -56,9 +66,9 @@ import "@/assets/css/modal.css";
 import { mapState } from "vuex";
 
 export default {
-  name: 'joinProject',
+  name: "joinProject",
   data() {
-    return {}
+    return {};
   },
   props: {
     joinProject: Object,
@@ -115,9 +125,9 @@ export default {
         loading = this.$loading({ lock: true }),
         url = "";
       if (that.joinProject.projectSlug)
-        url = "carts/items/create/" + that.joinProject.projectSlug;
+        url = `carts/items/create/${that.joinProject.projectSlug}`;
       else url = "carts/items/create/cart_item";
-      
+
       that
         .$post(url, {
           product: that.joinProject.id,
@@ -133,47 +143,50 @@ export default {
         .catch(error => loading.close());
     },
     show() {
-      this.$store.commit("changeModal", 'joinModal');
+      this.$store.commit("changeModal", "joinModal");
     },
     close() {
-      this.$store.commit("changeModal", 'joinModal', false);
+      this.$store.commit("changeModal", "joinModal", false);
     }
   },
   computed: mapState(["joinModal"]),
   created() {
-    if (JSON.parse(localStorage.getItem('user')) && JSON.parse(localStorage.getItem('user')).slug) 
+    if (
+      JSON.parse(localStorage.getItem("user")) &&
+      JSON.parse(localStorage.getItem("user")).slug
+    )
       this.getBranch();
   }
-}
+};
 </script>
 <style lang="less">
-  .modalBoxMain {
-    width: 330px;
-    @media screen and (min-width: 500px) {
-      margin-top: 180px;
+.modalBoxMain {
+  width: 330px;
+  @media screen and (min-width: 500px) {
+    margin-top: 180px;
+  }
+  #joinProject {
+    p {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
     }
-    #joinProject {
-      p {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
+    .goBack {
+      float: right;
+      padding-top: 0;
+    }
+    > div {
+      text-align: center;
+      margin-bottom: 1rem;
+      .el-select {
+        width: 100%;
       }
-      .goBack {
-        float: right;
-        padding-top: 0;
-      }
-      > div {
-        text-align: center;
-        margin-bottom: 1rem;
-        .el-select {
-          width: 100%;
-        }
-        &:last-child {
-          margin-top: 2rem;
-          margin-bottom: 0;
-        }
+      &:last-child {
+        margin-top: 2rem;
+        margin-bottom: 0;
       }
     }
   }
+}
 </style>

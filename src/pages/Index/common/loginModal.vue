@@ -6,9 +6,7 @@
         <div class="modalBox">
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                用户登录
-              </div>
+              <div class="modalBoxMainHeaderTitle">用户登录</div>
               <div class="modalBoxMainHeaderBtn" @click="close">
                 <i class="el-message-box__close el-icon-close"></i>
               </div>
@@ -16,37 +14,61 @@
             <div class="modalBoxMainContent">
               <div id="login">
                 <el-row class="loginType" type="flex" justify="space-around">
-                  <el-col><el-radio v-model="loginDetail.login_type" label="0">个人登陆</el-radio></el-col>
-                  <el-col><el-radio v-model="loginDetail.login_type" label="1">团队登陆</el-radio></el-col>
-                  <el-col><el-radio v-model="loginDetail.login_type" label="2">公司登陆</el-radio></el-col>
+                  <el-col>
+                    <el-radio v-model="loginDetail.login_type" label="0">个人登陆</el-radio>
+                  </el-col>
+                  <el-col>
+                    <el-radio v-model="loginDetail.login_type" label="1">团队登陆</el-radio>
+                  </el-col>
+                  <el-col>
+                    <el-radio v-model="loginDetail.login_type" label="2">公司登陆</el-radio>
+                  </el-col>
                 </el-row>
-                <el-input placeholder="输入手机号" 
-                          v-model="loginDetail.mobile" 
-                          clearable>
+                <el-input placeholder="输入手机号" v-model="loginDetail.mobile" clearable></el-input>
+                <el-input
+                  placeholder="请输入密码"
+                  type="password"
+                  auto-complete="on"
+                  v-if="!isCodeLogin"
+                  @keyup.enter.native="login"
+                  v-model="loginDetail.password"
+                ></el-input>
+                <el-input
+                  placeholder="请输入验证码"
+                  auto-complete="on"
+                  v-else
+                  @keyup.enter.native="login"
+                  v-model="loginDetail.code"
+                >
+                  <el-button
+                    slot="suffix"
+                    type="info"
+                    @click="getCode"
+                    size="mini"
+                    round
+                  >{{ codeCacheTime }}</el-button>
                 </el-input>
-                <el-input placeholder="请输入密码" 
-                          type="password"
-                          auto-complete="on"
-                          v-if="!isCodeLogin"
-                          @keyup.enter.native="login"
-                          v-model="loginDetail.password"></el-input>
-                <el-input placeholder="请输入验证码" 
-                          auto-complete="on"
-                          v-else
-                          @keyup.enter.native="login"
-                          v-model="loginDetail.code">
-                  <el-button slot="suffix" type="info" @click="getCode" size="mini" round>{{ codeCacheTime }}</el-button>
-                </el-input>
-                <el-input placeholder="公司代码" 
-                          v-if="loginDetail.login_type != '0'"
-                          @keyup.enter.native="login"
-                          v-model="loginDetail.slug" 
-                          clearable></el-input>
+                <el-input
+                  placeholder="公司代码"
+                  v-if="loginDetail.login_type != '0'"
+                  @keyup.enter.native="login"
+                  v-model="loginDetail.slug"
+                  clearable
+                ></el-input>
                 <div class="btn-box">
-                  <el-button type="text" @click="isCodeLogin = !isCodeLogin">{{ isCodeLogin ? '使用密码登陆' : '使用短信验证登陆'  }}</el-button>
-                  <div><a href="/login.html#/sign"><el-button size="mini" type="text">没有账号，注册</el-button></a></div>
+                  <el-button
+                    type="text"
+                    @click="isCodeLogin = !isCodeLogin"
+                  >{{ isCodeLogin ? '使用密码登陆' : '使用短信验证登陆' }}</el-button>
+                  <div>
+                    <a href="/login.html#/sign">
+                      <el-button size="mini" type="text">没有账号，注册</el-button>
+                    </a>
+                  </div>
                 </div>
-                <div class="query"><el-button type="primary" size="mini" @click="login">登陆</el-button></div>
+                <div class="query">
+                  <el-button type="primary" size="mini" @click="login">登陆</el-button>
+                </div>
               </div>
             </div>
           </div>
@@ -147,12 +169,12 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           localStorage.setItem("user", JSON.stringify(response.data));
-          switch(window.location.pathname){
-            case '/login.html':
+          switch (window.location.pathname) {
+            case "/login.html":
               window.location.href = "./index.html";
               break;
-            case '/':
-            case '/index.html':
+            case "/":
+            case "/index.html":
               that.close();
               break;
           }
@@ -160,7 +182,7 @@ export default {
         .catch(error => loading.close());
     }
   },
-  computed: mapState(["ModalShow"]),
+  computed: mapState(["ModalShow"])
 };
 </script>
 <style lang="less" scoped>

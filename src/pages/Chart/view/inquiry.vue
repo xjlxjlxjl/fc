@@ -21,16 +21,16 @@
             <template slot-scope="{ row, $index }">
               <div class="imgBox">
                 <img
-                  :src="row.product ? row.product.image : fLOGO"
+                  :src="row.product ? row.product.image ? row.product.image : fLOGO : fLOGO"
                   width="100"
                 >
               </div>
               <div class="description">
-                <p>{{ row.product ? row.product.name : row.cart_slug ? '' : '非标商品' }}</p>
-                <p>{{ row.product ? row.product.model : row.product_model }}</p>
-                <p>{{ row.product ? row.product.description : row.requirements }}</p>
+                <p>{{ row.product ? row.product.name ? row.product.name: '非标商品' : '非标商品' }}</p>
+                <p>{{ row.product ? row.product.model ? row.product.model : row.demand : row.demand }}</p>
+                <p>{{ row.product ? row.product.description : '' }}</p>
                 <el-button
-                  v-if="!row.product"
+                  v-if="activeName == 'inquiry' && !row.cart"
                   type="primary"
                   size="mini"
                   @click="getDetail(row.id)"
@@ -52,16 +52,23 @@
                   @change="selectSupplier(row.cart_slug, row.supplier, row.str_id)"
                 >
                   <el-option
-                    v-for="item in (row.supplier_list || [] )"
+                    v-for="item in (typeof row.price == 'object' ? row.price : [])"
                     :key="item.id"
                     :label="item.name"
                     :value="item"
                   ></el-option>
                 </el-select>
                 <el-button
+                  v-if="row.cart && activeName == 'offer'"
                   type="primary"
                   size="mini"
-                  @click="againInquiry(row.price, row.cart_slug, row.product.id)"
+                  @click="againInquiry((typeof row.price == 'object' ? row.price : [row.supplier]), row.cart_slug, row.product.id)"
+                >再次询价</el-button>
+                <el-button
+                  v-if="!row.cart && activeName == 'inquiry'"
+                  type="primary"
+                  size="mini"
+                  @click="getDetail(row.id)"
                 >再次询价</el-button>
               </div>
             </template>
@@ -73,12 +80,12 @@
           </el-table-column>
           <el-table-column label="单价" width="85">
             <template slot-scope="{ row, $index }">
-              <span>{{ row.product ? row.product.sales_price : row.price }}</span>
+              <span>{{ typeof row.price == 'object' ? row.cart_item_price : row.price }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="delivery_period" label="交期" width="50">
             <template slot-scope="{ row, $index }">
-              <span>{{ row.delivery_period ? row.delivery_period : '' }}</span>
+              <span>{{ row.delivery_period }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="end_at" label="报价有效期至" width="100"></el-table-column>
@@ -92,7 +99,7 @@
         </el-table>
       </el-tab-pane>
     </el-tabs>
-    <div align="right" style="margin-top: 1rem;">
+    <div align="right" style="margin-top: 1rem;" v-if="activeName == 'inquiry'">
       <el-button type="primary" size="mini" @click="joinCart">加入购物车</el-button>
       <el-button type="danger" size="mini" @click="delInquiry">删除</el-button>
     </div>
@@ -125,13 +132,6 @@ export default {
           total: 0
         }
       },
-      demandList: {
-        list: [],
-        pagination: {
-          current_page: 0,
-          total: 0
-        }
-      },
       offerList: {
         list: [],
         pagination: {
@@ -156,17 +156,25 @@ export default {
           this.tableData = this.offerList.list;
           break;
         default:
-          this.tableData = this.inquiryList.list.concat(this.demandList.list);
+          this.tableData = this.inquiryList.list;
           break;
       }
+      document.getElementsByClassName("el-tabs__content")[0].scrollTop =
+        document.getElementsByClassName("el-tabs__content")[0].scrollTop - 1;
     },
     getInquiry() {
+      if (
+        this.inquiryList.pagination.current_page != 0 &&
+        this.inquiryList.pagination.total / 15 <=
+          this.inquiryList.pagination.current_page
+      )
+        return false;
       let that = this,
         loading = this.$loading({ lock: true });
       that
         .$get("orders/inquiry-price", {
-          // per_page: 15
-          // page: ++that.inquiryList.pagination.current_page
+          per_page: 15,
+          page: ++that.inquiryList.pagination.current_page
         })
         .then(response => {
           loading.close();
@@ -178,12 +186,18 @@ export default {
         .catch(err => loading.close());
     },
     getOffer() {
+      if (
+        this.offerList.pagination.current_page != 0 &&
+        this.offerList.pagination.total / 15 <=
+          this.offerList.pagination.current_page
+      )
+        return false;
       let that = this,
         loading = this.$loading({ lock: true });
       that
         .$get("orders/quoted-price", {
-          // per_page: 15,
-          // page: ++that.offerList.pagination.current_page
+          per_page: 15,
+          page: ++that.offerList.pagination.current_page
         })
         .then(response => {
           loading.close();
@@ -209,7 +223,7 @@ export default {
     getDetail(id) {
       let that = this;
       that
-        .$get(`products/demand/detail/${id}`)
+        .$get(`orders/inquiry-price/detail/${id}`)
         .then(response => {
           if (response.status != 200) return false;
           response.data.fileList = [];
@@ -221,7 +235,6 @@ export default {
             });
             response.data.images_ids.push(e.id);
           });
-          console.log(response.data);
           that.demandDetail = response.data;
           demand.methods.close.call(this);
         })
@@ -237,11 +250,11 @@ export default {
         return false;
       }
       this.multipleSelection.forEach(e => {
-        if (typeof e.product == "object") isDemand = false;
+        if (e.cart) isDemand = false;
         arr.push(e.id);
       });
 
-      if (isDemand) url = `products/demand/delete/${arr.join(",")}`;
+      if (isDemand) url = `orders/inquiry-price/delete/${arr.join(",")}`;
       else url = `carts/items/inquiry/close/${arr.join(",")}`;
 
       that
@@ -249,10 +262,14 @@ export default {
         .then(response => {
           if (response.status != 200) return false;
           if (that.activeName == "inquiry") {
-            that.inquiryList.list = [];
-            that.demandList.list = [];
+            that.inquiryList = {
+              list: [],
+              pagination: {
+                current_page: 0,
+                total: 0
+              }
+            };
             that.getInquiry();
-            that.getDemand();
           } else {
             that.offerList.list = [];
             that.getOffer();
@@ -263,7 +280,7 @@ export default {
     againInquiry(data, slug, id) {
       this.supplierList = data;
       this.projectSlug = slug;
-      this.productId = id;
+      this.productId = id.toString();
       supplier.methods.close.call(this);
     },
     joinCart() {
@@ -271,9 +288,12 @@ export default {
         arr = [];
       this.multipleSelection.forEach(e => arr.push(e.id));
       that
-        .$post("products/demand/cart", { demand_id: arr.join(",") })
+        .$post("orders/inquiry-price/cart", {
+          demand_id: arr.join(",")
+        })
         .then(response => {
           if (response.status != 200) return false;
+          that.getInquiry();
         })
         .catch(err => console.error(err));
     }
@@ -290,13 +310,18 @@ export default {
     this.getInquiry();
   },
   mounted() {
-    // document.getElementsByClassName("el-tabs__content")[0].onscroll = e => {
-    //   if (
-    //     e.target.scrollTop == e.target.scrollHeight &&
-    //     this.record.pagination.total > 15 &&
-    //     this.record.pagination.total / 15 > this.record.pagination.current_page
-    //   );
-    // };
+    document.getElementsByClassName("el-tabs__content")[0].onscroll = e => {
+      if (e.target.scrollTop == e.target.scrollHeight - e.target.clientHeight) {
+        switch (this.activeName) {
+          case "inquiry":
+            this.getInquiry();
+            break;
+          case "offer":
+            this.getOffer();
+            break;
+        }
+      }
+    };
   }
 };
 </script>

@@ -995,6 +995,17 @@
                   </div>
                 </li>
                 <li>
+                  <div>负载重量</div>
+                  <div>
+                    <el-radio v-model="params.load_weight" label="1">1</el-radio>
+                    <el-radio v-model="params.load_weight" label="3">3</el-radio>
+                    <el-radio v-model="params.load_weight" label="5">5</el-radio>
+                    <el-radio v-model="params.load_weight" label="10">10</el-radio>
+                    <el-input class="labelInput" v-model="params.load_weight" placeholder="其他"></el-input>
+                    <span>kg</span>
+                  </div>
+                </li>
+                <li>
                   <div>
                     <el-radio v-model="params.readswit" label="0">已知速度加速度</el-radio>
                     <el-radio v-model="params.readswit" label="1">三角曲线</el-radio>
@@ -2574,12 +2585,14 @@ export default {
     },
     createNon() {
       let that = this,
-        loading = this.$loading({ lock: true });
+        loading = this.$loading({ lock: true }),
+        params = {
+          demand: that.nonstandard.requirements
+        };
+      if (that.nonstandard.images_ids.length)
+        params.images_ids = that.nonstandard.images_ids.join(",");
       that
-        .$post("products/demand/create", {
-          requirements: that.nonstandard.requirements,
-          images_ids: that.nonstandard.images_ids.join(",")
-        })
+        .$post("orders/inquiry-price/create", params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;

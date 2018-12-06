@@ -20,7 +20,7 @@
         <template slot-scope="{ row, $index}">
           <el-button type="info" size="mini" @click="delCollect(row.products.id)">删除</el-button>
         </template>
-      </el-table-column>      
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -46,7 +46,6 @@ export default {
         .catch(error => loading.close());
     },
     delCollect(id) {
-      console.log(id);
       let that = this;
       that.$post("members/collects/delete", { products: id }).then(response => {
         if (response.status != 200) return false;

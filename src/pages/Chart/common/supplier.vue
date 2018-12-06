@@ -44,13 +44,10 @@ export default {
     inquiry() {
       let loading = this.$loading({ lock: true }),
         that = this;
-      this.$post(
-        `carts/items/price-inquiry/${that.slug}`,
-        {
-          ids: that.productId,
-          company_ids: that.company_ids.join(",")
-        }
-      )
+      this.$post(`carts/items/price-inquiry/${that.slug}`, {
+        ids: that.productId,
+        company_ids: that.company_ids.join(",")
+      })
         .then(response => {
           loading.close();
           if (response.status != 200) return false;

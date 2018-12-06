@@ -1,27 +1,31 @@
 <template>
   <div id="sign">
     <el-container class="loginContainer">
-      <el-header>
-        
-      </el-header>
+      <el-header></el-header>
       <el-main>
-        <el-input placeholder="输入手机号" 
-                  v-model="signDetail.mobile" 
-                  clearable></el-input>
-        <el-input placeholder="请输入密码" 
-                  type="password"
-                  v-model="signDetail.password"></el-input>
-        <el-input placeholder="请输入验证码" 
-                  v-if="signDetail.login_type != '0'"
-                  v-model="signDetail.code" 
-                  clearable>
+        <el-input placeholder="输入手机号" v-model="signDetail.mobile" clearable></el-input>
+        <el-input placeholder="请输入密码" type="password" v-model="signDetail.password"></el-input>
+        <el-input
+          placeholder="请输入验证码"
+          v-if="signDetail.login_type != '0'"
+          v-model="signDetail.code"
+          clearable
+        >
           <el-button slot="suffix" type="info" @click="getCode" round>{{ codeCacheTime }}</el-button>
         </el-input>
       </el-main>
       <el-footer>
-        <div><router-link to="/login"><el-button type="text" class="text-right">已有账户，登陆</el-button></router-link></div>
-        <div><el-button type="primary" @click="sign">注册</el-button></div>
-        <div @click="userProtocolModal"><el-checkbox v-model="userProtocol">用户协议</el-checkbox></div>
+        <div>
+          <router-link to="/login">
+            <el-button type="text" class="text-right">已有账户，登陆</el-button>
+          </router-link>
+        </div>
+        <div>
+          <el-button type="primary" @click="sign">注册</el-button>
+        </div>
+        <div @click="userProtocolModal">
+          <el-checkbox v-model="userProtocol">用户协议</el-checkbox>
+        </div>
       </el-footer>
     </el-container>
   </div>

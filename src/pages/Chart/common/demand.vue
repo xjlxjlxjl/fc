@@ -14,7 +14,7 @@
             <div id="demand">
               <el-form label-position="top" :model="demand">
                 <el-form-item label="非标产品需求描述">
-                  <el-input type="textarea" placeholder="请填写" v-model="demand.requirements"></el-input>
+                  <el-input type="textarea" placeholder="请填写" v-model="demand.demand"></el-input>
                 </el-form-item>
                 <el-form-item label="上传附件">
                   <el-upload
@@ -54,12 +54,14 @@ export default {
   methods: {
     edit() {
       let that = this,
-        loading = this.$loading({ lock: true });
+        loading = this.$loading({ lock: true }),
+        params = {
+          demand: that.demand.demand
+        };
+      if (that.demand.images_ids.length)
+        params.images_ids = that.demand.images_ids.join(",");
       that
-        .$post(`products/demand/update/${that.demand.id}`, {
-          requirements: that.demand.requirements
-          // images_ids: that.demand.images_ids
-        })
+        .$post(`orders/inquiry-price/update/${that.demand.id}`, params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -80,7 +82,7 @@ export default {
             name: file.name,
             url: response.data.url
           });
-          // that.demand.images_ids.push(response.data.upload.id);
+          that.demand.images_ids.push(response.data.upload.id);
         })
         .catch(err => console.error(err));
     },

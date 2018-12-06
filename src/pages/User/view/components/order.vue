@@ -6,9 +6,7 @@
         <div class="modalBox">
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                选择支付方式
-              </div>
+              <div class="modalBoxMainHeaderTitle">选择支付方式</div>
               <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
                 <i class="el-message-box__close el-icon-close"></i>
               </div>
@@ -28,7 +26,7 @@
                   <span>（公账，企业转账）</span>
                 </el-radio>
               </el-radio-group>
-              <div align='center'>
+              <div align="center">
                 <el-button type="primary" size="mini" @click="payment">确定</el-button>
               </div>
             </div>
@@ -37,9 +35,12 @@
       </div>
     </transition>
     <div class="tabs-nav">
-      <div v-for="(item,index) in tabsNav" :key="index"
-          :class="state == item.state ? 'isActive' : ''" 
-          @click="getOrderStatusData(item.state,item.order_status)">{{ item.name }}</div>
+      <div
+        v-for="(item,index) in tabsNav"
+        :key="index"
+        :class="state == item.state ? 'isActive' : ''"
+        @click="getOrderStatusData(item.state,item.order_status)"
+      >{{ item.name }}</div>
     </div>
     <div class="orderList" id="orderList">
       <div class="orderDetail" v-for="(item,index) in tableData" :key="index">
@@ -58,10 +59,14 @@
             <div>其他</div>
           </div>
         </div>
-        <div class="orderDetailContent" v-if="item.products.length > 0"> 
+        <div class="orderDetailContent" v-if="item.products.length > 0">
           <div class="productDetail" v-for="(val,key) in item.products" :key="key">
             <div>
-              <div><img :src="val.product_image? val.product_image : 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'"></div>
+              <div>
+                <img
+                  :src="val.product_image? val.product_image : 'https://factoryun.com/app/default/assets/applications//monster/default-theme/resources/hnimg/miss.jpg'"
+                >
+              </div>
               <div>
                 <p>{{ val.product_name }}</p>
                 <p>{{ val.product_model }}</p>
@@ -72,11 +77,19 @@
             <div>{{ val.delivery_period ? val.delivery_period + ' 天' : '未知' }}</div>
           </div>
           <div v-if="item.order_status == '待签合同'">
-            <router-link :to="'/contractDetail/' + item.contract_slug" target="_blank"><el-button type="primary" size="mini"> 签订合同 </el-button></router-link>
-            <el-button type="success" size="mini" @click="orderIdActive = item.numbering;modalShow = true;"> 立即支付 </el-button>
+            <router-link :to="'/contractDetail/' + item.contract_slug" target="_blank">
+              <el-button type="primary" size="mini">签订合同</el-button>
+            </router-link>
+            <el-button
+              type="success"
+              size="mini"
+              @click="orderIdActive = item.numbering;modalShow = true;"
+            >立即支付</el-button>
           </div>
           <div v-else>
-            <router-link :to="'/contractDetail/' + item.contract_slug" target="_blank"><el-button type="primary" size="mini"> 查看合同 </el-button></router-link>
+            <router-link :to="'/contractDetail/' + item.contract_slug" target="_blank">
+              <el-button type="primary" size="mini">查看合同</el-button>
+            </router-link>
             <el-button type="success" size="mini" @click="getLogistics(item.contract_slug)">查看物流</el-button>
           </div>
         </div>
@@ -256,10 +269,13 @@ export default {
     getLogistics(slug) {}
   },
   mounted() {
-    document.getElementById('orderList').onscroll = e => {
-      if(e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight)
-        this.getOrderStatusData(this.state, this.tabsNav[this.state].order_status);
-    }
+    document.getElementById("orderList").onscroll = e => {
+      if (e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight)
+        this.getOrderStatusData(
+          this.state,
+          this.tabsNav[this.state].order_status
+        );
+    };
   },
   created() {
     this.getOrderStatusData(0, "");

@@ -1,15 +1,12 @@
 <template>
   <div id="checkOrder">
-
     <transition name="el-fade-in-linear">
       <div v-show="modalShow">
         <div class="Curtain"></div>
         <div class="modalBox">
           <div class="modalBoxMain">
             <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">
-                地址
-              </div>
+              <div class="modalBoxMainHeaderTitle">地址</div>
               <div class="modalBoxMainHeaderBtn" @click="clearEditForm">
                 <i class="el-message-box__close el-icon-close"></i>
               </div>
@@ -17,27 +14,34 @@
             <div class="modalBoxMainContent">
               <div id="editAddress">
                 <div class="input-suffix">
-                  <label for="">省市区</label>
-                  <area-cascader type="text" :data="pcaa" :aria-level="1" :level="1" placeholder="请选择地区" v-model="editForm.province"></area-cascader>
+                  <label for>省市区</label>
+                  <area-cascader
+                    type="text"
+                    :data="pcaa"
+                    :aria-level="1"
+                    :level="1"
+                    placeholder="请选择地区"
+                    v-model="editForm.province"
+                  ></area-cascader>
                 </div>
                 <div class="input-suffix">
-                  <label for="">详细地址</label>
+                  <label for>详细地址</label>
                   <el-input size="mini" v-model="editForm.detailed_address"></el-input>
                 </div>
                 <div class="input-suffix">
-                  <label for="">邮政编码</label>
+                  <label for>邮政编码</label>
                   <el-input size="mini" v-model="editForm.zip_code"></el-input>
                 </div>
                 <div class="input-suffix">
-                  <label for="">收件人姓名</label>
+                  <label for>收件人姓名</label>
                   <el-input size="mini" v-model="editForm.name"></el-input>
                 </div>
                 <div class="input-suffix">
-                  <label for="">联系电话</label>
+                  <label for>联系电话</label>
                   <el-input size="mini" v-model="editForm.contact_mobile"></el-input>
                 </div>
                 <div class="input-suffix">
-                  <label for="">座机</label>
+                  <label for>座机</label>
                   <div class="contact_phone">
                     <el-input size="mini" v-model="editForm.contact_phone.region"></el-input>
                     <el-input size="mini" v-model="editForm.contact_phone.tel"></el-input>
@@ -58,7 +62,12 @@
 
     <h1>选择收货地址</h1>
     <div class="addressList">
-      <el-card class="addressDetail" shadow="hover" v-for="(item,index) in addressList.list" :key="index">
+      <el-card
+        class="addressDetail"
+        shadow="hover"
+        v-for="(item,index) in addressList.list"
+        :key="index"
+      >
         <header>
           <span>编号：{{ item.id }}</span>
           <div>
@@ -75,7 +84,9 @@
         </div>
       </el-card>
     </div>
-    <div class="addAddressBtn" align="right"><el-button type="primary" size='small' @click="modalShow = true">新增地址</el-button></div>
+    <div class="addAddressBtn" align="right">
+      <el-button type="primary" size="small" @click="modalShow = true">新增地址</el-button>
+    </div>
     <h1>确认订单信息</h1>
     <el-table ref="multipleTable" :data="projectDetail" tooltip-effect="dark">
       <el-table-column label="产品" width="500">
@@ -116,29 +127,41 @@
       <el-table-column label="操作" width="170">
         <template slot-scope="{ row,$index }">
           <div class="operation">
-            <el-select @change="cartsItem(0,row.str_id,row.supplier.slug)" v-model="row.supplier.slug" placeholder="选择供应商">
+            <el-select
+              @change="cartsItem(0,row.str_id,row.supplier.slug)"
+              v-model="row.supplier.slug"
+              placeholder="选择供应商"
+            >
               <el-option
                 v-for="item in row.all_supplier"
                 :key="item.slug"
                 :label="item.name"
-                :value="item.slug">
-              </el-option>
+                :value="item.slug"
+              ></el-option>
             </el-select>
-            <el-select @change="cartsItem(1,row.str_id,row.invoice_type.slug)" v-model="row.invoice_type.slug" placeholder="发票类型">
+            <el-select
+              @change="cartsItem(1,row.str_id,row.invoice_type.slug)"
+              v-model="row.invoice_type.slug"
+              placeholder="发票类型"
+            >
               <el-option
                 v-for="item in row.all_invoice_type"
                 :key="item.slug"
                 :label="item.name"
-                :value="item.slug">
-              </el-option>
+                :value="item.slug"
+              ></el-option>
             </el-select>
-            <el-select @change="cartsItem(2,row.str_id,row.payment_type.slug)" v-model="row.payment_type.slug" placeholder="付款方式">
+            <el-select
+              @change="cartsItem(2,row.str_id,row.payment_type.slug)"
+              v-model="row.payment_type.slug"
+              placeholder="付款方式"
+            >
               <el-option
                 v-for="item in row.all_payment_type"
                 :key="item.slug"
                 :label="item.name"
-                :value="item.slug">
-              </el-option>
+                :value="item.slug"
+              ></el-option>
             </el-select>
           </div>
         </template>
@@ -152,7 +175,7 @@
       <div class="selectForm">
         <label for="">优惠券</label>
         <el-select size="mini"> </el-select>
-      </div> -->
+      </div>-->
       <div class="sum">总计: ￥ {{ projectDetail.sum() }}</div>
       <el-button type="warning" size="mini" @click="checkout">确认订单</el-button>
     </div>
@@ -238,7 +261,7 @@ export default {
       const loading = this.$loading({ lock: true });
       let that = this,
         url = null;
-      if (slug) url = "members/address/edit/" + slug;
+      if (slug) url = `members/address/edit/${slug}`;
       else url = "members/address/create";
 
       that.editForm.area = that.editForm.province[2];
@@ -286,7 +309,7 @@ export default {
       };
     },
     changeDefault(slug) {
-      this.$get("members/default-address/" + slug)
+      this.$get(`members/default-address/${slug}`)
         .then(response => {
           if (response.status != 200) return false;
         })
@@ -297,31 +320,19 @@ export default {
         that = this;
       switch (key) {
         case 0:
-          url =
-            "carts/items/price-company/" +
-            that.projectSlug +
-            "/" +
-            str_id +
-            "/" +
-            slug;
+          url = `carts/items/price-company/${
+            that.projectSlug
+          }/${str_id}/${slug}`;
           break;
         case 1:
-          url =
-            "carts/items/price-invoice/" +
-            that.projectSlug +
-            "/" +
-            str_id +
-            "/" +
-            slug;
+          url = `carts/items/price-invoice/${
+            that.projectSlug
+          }/${str_id}/${slug}`;
           break;
         case 2:
-          url =
-            "carts/items/price-payment/" +
-            that.projectSlug +
-            "/" +
-            str_id +
-            "/" +
-            slug;
+          url = `carts/items/price-payment/${
+            that.projectSlug
+          }/${str_id}/${slug}`;
           break;
       }
       const loading = this.$loading({ lock: true });

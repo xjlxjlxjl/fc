@@ -36,7 +36,7 @@ import { mapState } from "vuex";
 import "@/assets/css/modal.css";
 
 export default {
-  name: 'moveProject',
+  name: "moveProject",
   data() {
     return {
       moveSlug: ""
@@ -44,7 +44,7 @@ export default {
   },
   props: {
     multipleSelection: Array,
-    projectList: Object,
+    projectList: Object
   },
   methods: {
     moveProject() {
@@ -56,7 +56,7 @@ export default {
       let that = this,
         loading = this.$loading({ lock: true }),
         ids = [];
-        
+
       this.multipleSelection.forEach(e => {
         that
           .$post("carts/move-item", {
@@ -77,21 +77,21 @@ export default {
         this.$message.error("你没有选择商品");
         return false;
       }
-      this.$store.commit('changeModal','moveModal')
+      this.$store.commit("changeModal", "moveModal");
     }
   },
   computed: mapState(["moveModal"])
-}
+};
 </script>
 <style lang="less">
-  #moveItem {
-    @media screen and (min-width: 500px) {
-      .modalBoxMain {
-        margin-top: 180px;
-      }
-    }
-    .el-select {
-      width: 100%;
+#moveItem {
+  @media screen and (min-width: 500px) {
+    .modalBoxMain {
+      margin-top: 180px;
     }
   }
+  .el-select {
+    width: 100%;
+  }
+}
 </style>

@@ -275,7 +275,9 @@
                           </div>
                         </div>
                       </div>
-                      <img :src="user.user.avatar || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/头像xhdpi.png'">
+                      <img
+                        :src="user.user.avatar || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/头像xhdpi.png'"
+                      >
                     </div>
                     <div v-else class="toMessage">
                       <img :src="item.from_user ? item.from_user.avatar : item.user.avatar">
@@ -519,8 +521,7 @@ export default {
           .then(response => {
             if (response.status != 200) return false;
             that.friendList.list[key].remark = value;
-            if(id == that.toUser)
-              that.userName = value;
+            if (id == that.toUser) that.userName = value;
           })
           .catch(err => console.error(err));
       });
@@ -540,7 +541,7 @@ export default {
             })
             .catch(error => console.error(error));
         })
-        .catch(err => console.log('添加取消'));
+        .catch(err => console.log("添加取消"));
     },
     acceptFriend(noticeId) {
       let that = this;
@@ -597,7 +598,9 @@ export default {
                 that.state = 1;
                 that.getRecord({
                   id: that.chatList.list[1].friend_uid,
-                  username: that.chatList.list[1].friend_user.remark || that.chatList.list[1].friend_user.display_name
+                  username:
+                    that.chatList.list[1].friend_user.remark ||
+                    that.chatList.list[1].friend_user.display_name
                 });
               } else {
                 that.state = 2;
@@ -611,7 +614,9 @@ export default {
               that.state = 1;
               that.getRecord({
                 id: that.chatList.list[0].friend_uid,
-                username: that.chatList.list[0].friend_user.remark || that.chatList.list[0].friend_user.display_name
+                username:
+                  that.chatList.list[0].friend_user.remark ||
+                  that.chatList.list[0].friend_user.display_name
               });
               break;
           }
@@ -642,9 +647,10 @@ export default {
       that
         .$get(url, params)
         .then(response => {
-          if (response.status != 200 || response.data.list.length == 0) return false;
-          
-          if ( response.pagination.current_page == 1 ) {
+          if (response.status != 200 || response.data.list.length == 0)
+            return false;
+
+          if (response.pagination.current_page == 1) {
             that.record.list = response.data.list;
             that.fixLocation();
           } else {
@@ -863,7 +869,10 @@ export default {
         form.append("file", file);
         that.upload(form, 3);
       } else if (file.size / 1024 / 1024 <= 500) {
-        this.$notify({ title: '文件太大暂时不能上传' ,message: '文件太大暂时无法上传' });
+        this.$notify({
+          title: "文件太大暂时不能上传",
+          message: "文件太大暂时无法上传"
+        });
       } else if (file.size / 1024 / 1024 > 500) {
         this.$message.error("上传文件大小不能超过 500MB!");
         return false;
@@ -926,8 +935,8 @@ export default {
             created_at: new Date().toLocaleString(),
             msg_type: type,
             content: response.data.path
-          }
-          if(type = 2){
+          };
+          if ((type = 2)) {
             that.msgImgArr.push(data);
             data.msgImgKey = that.msgImgArr.length - 1;
           }
@@ -1114,7 +1123,7 @@ export default {
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
               from_user: {
-                last_name: result.resp.from_name || ''
+                last_name: result.resp.from_name || ""
               },
               message: result.resp.content,
               type: result.resp.type,
@@ -1195,7 +1204,7 @@ export default {
         return false; // 检测是否有文件拖拽到页面
       }
       for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        this.uploadFile(e.dataTransfer.files[i])
+        this.uploadFile(e.dataTransfer.files[i]);
       }
     };
     // 粘贴上传
@@ -1230,7 +1239,6 @@ export default {
           index: this.key
         });
     };
-
 
     Notification.requestPermission(status => console.log(status));
   },
@@ -1369,6 +1377,12 @@ export default {
               }
               > span {
                 margin-left: 1rem;
+                &:last-child {
+                  display: block;
+                  width: 120px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
               }
               label {
                 display: block;

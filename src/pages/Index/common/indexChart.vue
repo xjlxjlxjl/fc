@@ -28,8 +28,7 @@ export default {
         {
           name: "询价",
           icon: "font_family icon-xunjia1",
-          // url: "/chart.html#/inquiry"
-          url: "#"
+          url: "/chart.html#/inquiry"
         },
         {
           name: "消息",
@@ -44,14 +43,14 @@ export default {
   },
   methods: {
     jump(url) {
-      if(!this.$ifLogin()) return false;
+      if (!this.$ifLogin()) return false;
       window.location.href = url;
     }
   }
 };
 </script>
 <style lang="less">
-@media screen and (max-width: 820px) {
+@media screen and (max-width: 991px) {
   .chart {
     display: flex;
     justify-content: space-around;
@@ -59,6 +58,7 @@ export default {
     margin-top: 1rem;
     margin-bottom: 11rem;
     a {
+      display: none;
       text-decoration: none;
       color: #ffffff;
       div {
@@ -75,7 +75,7 @@ export default {
     }
   }
 }
-@media screen and (min-width: 820px) {
+@media screen and (min-width: 991px) {
   .chart {
     position: absolute;
     right: 0;
