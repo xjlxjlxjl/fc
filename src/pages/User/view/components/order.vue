@@ -1,39 +1,6 @@
 <template>
   <div id="order">
-    <transition name="el-fade-in-linear">
-      <div v-show="modalShow">
-        <div class="Curtain"></div>
-        <div class="modalBox">
-          <div class="modalBoxMain">
-            <div class="modalBoxMainHeader">
-              <div class="modalBoxMainHeaderTitle">选择支付方式</div>
-              <div class="modalBoxMainHeaderBtn" @click="modalShow = false;">
-                <i class="el-message-box__close el-icon-close"></i>
-              </div>
-            </div>
-            <div class="modalBoxMainContent">
-              <el-radio-group id="payment" v-model="paymentMethods">
-                <el-radio label="alipay">
-                  <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-zhifubaozhifu"></use>
-                  </svg>
-                  <span>每日不限额</span>
-                </el-radio>
-                <el-radio label="unionpay">
-                  <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-yinlianzhifu"></use>
-                  </svg>
-                  <span>（公账，企业转账）</span>
-                </el-radio>
-              </el-radio-group>
-              <div align="center">
-                <el-button type="primary" size="mini" @click="payment">确定</el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
+    <payModal :orderIdActive="orderIdActive"></payModal>
     <div class="tabs-nav">
       <div
         v-for="(item,index) in tabsNav"
@@ -83,7 +50,7 @@
             <el-button
               type="success"
               size="mini"
-              @click="orderIdActive = item.numbering;modalShow = true;"
+              @click="orderIdActive = item.numbering;payment()"
             >立即支付</el-button>
           </div>
           <div v-else>
@@ -99,7 +66,7 @@
   </div>
 </template>
 <script>
-import icon from "@/assets/icon/iconfont.js";
+import payModal from "@/pages/User/common/payModal";
 
 export default {
   name: "order",
@@ -109,7 +76,6 @@ export default {
       state: 0,
       paymentMethods: "alipay",
       orderIdActive: "",
-      modalShow: false,
       tabsNav: [
         { name: "全部", state: 0, order_status: "" },
         { name: "待签合同", state: 1, order_status: "wait_contract" },
@@ -160,6 +126,9 @@ export default {
         }
       }
     };
+  },
+  components: {
+    payModal: payModal
   },
   methods: {
     changeOrderState(state, order_status) {
@@ -227,44 +196,7 @@ export default {
         });
     },
     payment() {
-      let that = this,
-        loading = this.$loading({ lock: true });
-      that
-        .$post("orders/order_pay", {
-          orderId: that.orderIdActive,
-          pay_method: that.paymentMethods
-        })
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          // 创建表单
-
-          let turnForm = document.createElement("form");
-          // turnForm.innerHTML = response.pay_html;
-          turnForm.method = "post";
-          turnForm.action = response.data.action;
-          // turnForm.target = "_blank";
-          document.body.appendChild(turnForm);
-
-          // 表单内容
-          let element = null,
-            keys = Object.keys(response.data),
-            values = Object.values(response.data);
-
-          keys.forEach((e, k) => {
-            if (e == "action") return false;
-            element = document.createElement("input");
-            element.setAttribute("name", e);
-            element.setAttribute("type", "hidden");
-            element.setAttribute("value", values[k]);
-            turnForm.appendChild(element);
-          });
-          // 表单提交
-          turnForm.submit();
-          document.body.removeChild(turnForm);
-          that.modalShow = false;
-        })
-        .catch(error => loading.close());
+      payModal.methods.close.call(this);
     },
     getLogistics(slug) {}
   },
@@ -411,26 +343,6 @@ export default {
             .flex-center;
           }
         }
-      }
-    }
-  }
-  #payment {
-    width: 100%;
-    .el-radio {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-left: 0;
-      margin-bottom: 1rem;
-    }
-    .el-radio__label {
-      width: 70%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      svg {
-        height: 5rem;
-        width: 10rem;
       }
     }
   }

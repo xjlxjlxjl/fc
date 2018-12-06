@@ -10,7 +10,8 @@ export default new Vuex.Store({
     supplierModal: false,
     demandModal: false,
     moveModal: false,
-    galleryModal: false
+    galleryModal: false,
+    payModal: false
   },
   mutations: {
     change(state) {
@@ -28,7 +29,7 @@ export default new Vuex.Store({
       if (status) state.demandModal = status;
       else state.demandModal = !state.demandModal;
     },
-    changeModal(state, name ,status) {
+    changeModal(state, name, status) {
       if (status) state[name] = status;
       else state[name] = !state[name];
     },

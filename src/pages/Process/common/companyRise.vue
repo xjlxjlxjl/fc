@@ -3,6 +3,7 @@
     <el-header class="hidden-sm-and-down">
       <div>
         <i class="font_family icon-logo1" onclick="window.location.href = '/'"></i>
+        <i class="font_family icon-gongsiban" onclick="window.location.href = '/'"></i>
         <div>
           <p>最简洁的界面需要最强大的算法，</p>
           <p>工厂云从来不简单！</p>
@@ -129,7 +130,7 @@ import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
 
 export default {
-  name: "indexRise",
+  name: "companyRise",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user")) || null,
@@ -289,7 +290,10 @@ export default {
       align-items: center;
       > i {
         font-size: 3.4rem;
-        margin-right: 1rem;
+        &:nth-child(2) {
+          margin-left: 0.5rem;
+          margin-top: 0.5rem;
+        }
       }
       .el-input {
         margin-left: 1rem;

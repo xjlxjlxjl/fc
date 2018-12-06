@@ -27,9 +27,8 @@
     </el-container>
   </div>
 </template>
-
 <script>
-import indexRise from "@/pages/Index/common/indexRise";
+import indexRise from "@/pages/Process/common/companyRise";
 import indexTail from "@/pages/Index/common/indexTail";
 // import indexChart from "@/pages/Index/common/indexChart";
 
