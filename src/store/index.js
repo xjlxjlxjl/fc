@@ -5,6 +5,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userInfo: {},
+    socketAddress: "wss://factoryun.com/wss",
+    // socketAddress: "ws://skyliu.cn/ws",
     ModalShow: false,
     joinModal: false,
     supplierModal: false,

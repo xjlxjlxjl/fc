@@ -999,8 +999,7 @@ export default {
       );
     },
     webSocket() {
-      let socketAddress = "wss://factoryun.com/wss";
-      // let socketAddress = "ws://skyliu.cn/ws";
+      let socketAddress = this.$store.state.socketAddress;
       this.ws = new WebSocket(socketAddress);
       this.ws.onmessage = event => {
         let result = JSON.parse(event.data);

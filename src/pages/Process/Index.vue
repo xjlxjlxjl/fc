@@ -8,7 +8,6 @@
         <el-main>
           <div id="main">
             <el-container>
-              <el-aside class="homeMainAside" width="0"></el-aside>
               <el-main class="homeMainContent">
                 <el-container>
                   <transition name="el-fade-in">
@@ -67,7 +66,7 @@ export default {
   height: 100% !important;
 }
 #main {
-  max-width: 1280px;
+  // max-width: 1280px;
   margin: 0 auto;
   height: 87%;
   @media screen and (min-width: 820px) {

@@ -17,9 +17,9 @@
           <el-submenu index="1">
             <template slot="title">
               <span v-if="user != null">欢迎您: 尊敬的 {{ user.user.display_name }}</span>
-              <span v-else>未登录，请登录</span>
+              <span v-else @click="loginOut">未登录，请登录</span>
             </template>
-            <el-menu-item index="1-1" @click="loginOut">退出登录</el-menu-item>
+            <el-menu-item index="1-1" @click="loginOut" v-if="user != null">退出登录</el-menu-item>
           </el-submenu>
           <el-menu-item index="2">
             <a :href="user ? user.user.qrcode : 'javascript:;'" target="_blank">我的名片</a>
@@ -36,9 +36,10 @@
           </el-menu-item>
           <el-menu-item index="6">
             <a href="/chart.html#/message">
-              <!-- <el-badge :value="0" class="item"> -->
-              <i class="el-icon-bell"></i>
-              <!-- </el-badge> -->
+              <el-badge :value="messageTips" v-if="messageTips > 0" class="item">
+                <i class="el-icon-bell"></i>
+              </el-badge>
+              <i class="el-icon-bell" v-else></i>
             </a>
           </el-menu-item>
           <el-menu-item index="7">
@@ -219,7 +220,8 @@ export default {
       progressHide: progressHide,
       progressLast: progressLast,
       menuShow: false,
-      searchText: ""
+      searchText: "",
+      messageTips: 0
     };
   },
   methods: {
@@ -240,7 +242,86 @@ export default {
           if (response.status != 200) return false;
         })
         .catch(error => loading.close());
+    },
+    webSocket() {
+      let socketAddress = this.$store.state.socketAddress;
+      this.ws = new WebSocket(socketAddress);
+      this.ws.onmessage = event => {
+        let result = JSON.parse(event.data);
+        switch (result.action) {
+          case "init":
+            this.webSocketLogin();
+            break;
+          case "login":
+            if (result.resp.code != 200) {
+              this.webSocketLogin();
+              return false;
+            } else {
+              this.connectNum = 0;
+              clearInterval(this.pong);
+              this.pong = setInterval(() => {
+                this.webSocketSend({
+                  action: "pong",
+                  req: {
+                    message: "hello"
+                  }
+                });
+              }, 5000);
+            }
+          case "pong":
+            break;
+          case "chat":
+            ++this.messageTips;
+            break;
+          case "group":
+            ++this.messageTips;
+            break;
+          case "notice":
+            ++this.messageTips;
+            break;
+          case "close":
+            this.webSocketClose();
+            break;
+          default:
+            console.log("抛出");
+            console.log(result);
+            break;
+        }
+      };
+      this.ws.onclose = this.ws.onerror = () => {
+        this.connectNum++;
+        this.reconnect(socketAddress);
+      };
+    },
+    reconnect(url) {
+      if (lockReconnect) return false;
+      this.lockReconnect = true;
+      //没连接上会一直重连，设置延迟避免请求过多
+      if (this.connectNum > 3) this.webSocketClose();
+      setTimeout(function() {
+        this.webSocket(url);
+        this.lockReconnect = false;
+      }, 2000);
+    },
+    webSocketLogin() {
+      this.webSocketSend({
+        action: "login",
+        req: {
+          token: this.user.token
+        }
+      });
+    },
+    webSocketSend(action) {
+      let that = this;
+      this.ws.send(JSON.stringify(action));
+    },
+    webSocketClose() {
+      clearInterval(this.pong);
+      this.ws.close();
     }
+  },
+  mounted() {
+    this.webSocket();
   },
   created() {
     let that = this,

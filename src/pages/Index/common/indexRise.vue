@@ -16,9 +16,9 @@
           <el-submenu index="1">
             <template slot="title">
               <span v-if="user != null">欢迎您: 尊敬的 {{ user.user.display_name }}</span>
-              <span v-else>未登录，请登录</span>
+              <span v-else @click="loginOut">未登录，请登录</span>
             </template>
-            <el-menu-item index="1-1" @click="loginOut">退出登录</el-menu-item>
+            <el-menu-item index="1-1" @click="loginOut" v-if="user != null">退出登录</el-menu-item>
           </el-submenu>
           <el-menu-item index="2">
             <a :href="user ? user.user.qrcode : 'javascript:;'" target="_blank">我的名片</a>

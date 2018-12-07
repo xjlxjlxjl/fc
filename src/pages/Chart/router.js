@@ -16,10 +16,10 @@ export default new Router({
       name: "project",
       component: project,
       children: [
-          {
-            path: "/project",
-            component: project,
-          }
+        {
+          path: "/project",
+          component: project
+        }
       ]
     },
     {
