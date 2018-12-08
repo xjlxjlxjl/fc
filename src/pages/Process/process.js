@@ -24,16 +24,14 @@ Vue.use(elementUi);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;
 Vue.prototype.$upload = upload;
-Vue.prototype.$ifLogin = () => {
-  if (!localStorage.getItem("user")) {
-    store.commit("change");
-    Vue.prototype.$notify({
-      title: "警告",
-      message: "请登陆后再作操作",
-      type: "warning"
-    });
-    return false;
-  } else return true;
+Vue.prototype.dateParse = date => {
+  return `${date.getFullYear()}-${
+    date.getMonth() + 1 < 9 ? "0" + date.getMonth() + 1 : date.getMonth()
+  }-${date.getDate() < 9 ? "0" + date.getDate() : date.getDate()} ${
+    date.getHours() < 9 ? "0" + date.getHours() : date.getHours()
+  }:${date.getMinutes() < 9 ? "0" + date.getMinutes() : date.getMinutes()}:${
+    date.getSeconds() < 9 ? "0" + date.getSeconds() : date.getSeconds()
+  }`;
 };
 
 /* eslint-disable no-new */

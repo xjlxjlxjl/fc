@@ -7,13 +7,17 @@ export default new Vuex.Store({
     userInfo: {},
     socketAddress: "wss://factoryun.com/wss",
     // socketAddress: "ws://skyliu.cn/ws",
+    userBranch: [],
+
     ModalShow: false,
     joinModal: false,
     supplierModal: false,
     demandModal: false,
     moveModal: false,
     galleryModal: false,
-    payModal: false
+    payModal: false,
+    createdWorkModal: false,
+    dateTimePickModal: false
   },
   mutations: {
     change(state) {
@@ -37,6 +41,9 @@ export default new Vuex.Store({
     },
     updateUserInfo(state, userInfo) {
       state.userInfo = userInfo;
+    },
+    getUserBranch(state, arr) {
+      state.userBranch = arr;
     }
   }
 });

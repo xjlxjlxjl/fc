@@ -1,24 +1,5 @@
 <template>
   <el-container id="produce">
-    <el-aside width="200px">
-      <p class="lead">待完成任务
-        <el-button type="info" size="mini">新建</el-button>
-      </p>
-      <el-menu default-active="0">
-        <el-menu-item index="0">
-          <i class="el-icon-menu"></i>
-          <span slot="title">导航一</span>
-        </el-menu-item>
-        <el-menu-item index="1">
-          <i class="el-icon-menu"></i>
-          <span slot="title">导航二</span>
-        </el-menu-item>
-        <el-menu-item index="2">
-          <i class="el-icon-menu"></i>
-          <span slot="title">导航三</span>
-        </el-menu-item>
-      </el-menu>
-    </el-aside>
     <el-main>
       <div id="toolbar">
         <table>
@@ -37,6 +18,9 @@
 <script>
 export default {
   name: "produce",
+  data() {
+    return {};
+  },
   methods: {
     tableAjaxData(params) {
       let loading = this.$loading({
@@ -113,15 +97,6 @@ export default {
       exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
       classes: "table",
       pageList: [10, 25, 50, 100, "All"],
-      data: [
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 },
-        { ORDER_NO: 1 }
-      ],
       columns: [
         {
           checkbox: true
@@ -232,23 +207,10 @@ export default {
 </script>
 <style lang="less">
 @background: #f2f2f2;
-@borderBlod: solid 1rem @background;
 #produce {
-  .el-aside {
-    border-right: @borderBlod;
-    padding: 1rem;
-    .lead {
-      button {
-        float: right;
-      }
-    }
-    .el-menu {
-      border-right: none;
-    }
-  }
   .el-main {
     .fixed-table-container {
-      height: 565px;
+      height: 610px;
       max-height: 100%;
       #table {
         width: 100%;

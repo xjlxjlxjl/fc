@@ -5,6 +5,9 @@
         <index-rise></index-rise>
       </el-header>
       <el-container class="homeContainer">
+        <div id="aside">
+          <companyAside></companyAside>
+        </div>
         <el-main>
           <div id="main">
             <el-container>
@@ -30,13 +33,18 @@
 import indexRise from "@/pages/Process/common/companyRise";
 import indexTail from "@/pages/Index/common/indexTail";
 // import indexChart from "@/pages/Index/common/indexChart";
+import companyAside from "@/pages/Process/common/companyAside";
 
 export default {
   name: "Index",
+  data() {
+    return {};
+  },
   components: {
     "index-rise": indexRise,
     // "index-chart": indexChart,
-    "index-tail": indexTail
+    "index-tail": indexTail,
+    companyAside: companyAside
   }
 };
 </script>
@@ -48,6 +56,11 @@ export default {
 }
 .homeContainer {
   background-color: #f2f2f2;
+  #aside {
+    #companyAside {
+      height: 87%;
+    }
+  }
 }
 .homeFooter {
   position: fixed;
@@ -66,7 +79,6 @@ export default {
   height: 100% !important;
 }
 #main {
-  // max-width: 1280px;
   margin: 0 auto;
   height: 87%;
   @media screen and (min-width: 820px) {

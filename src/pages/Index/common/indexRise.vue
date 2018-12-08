@@ -35,9 +35,10 @@
           </el-menu-item>
           <el-menu-item index="6">
             <a href="/chart.html#/message">
-              <!-- <el-badge :value="0" class="item"> -->
-              <i class="el-icon-bell"></i>
-              <!-- </el-badge> -->
+              <el-badge :value="messageTips" v-if="messageTips > 0" class="item">
+                <i class="el-icon-bell"></i>
+              </el-badge>
+              <i class="el-icon-bell" v-else></i>
             </a>
           </el-menu-item>
           <el-menu-item index="7">
@@ -218,7 +219,8 @@ export default {
       progressHide: progressHide,
       progressLast: progressLast,
       menuShow: false,
-      searchText: ""
+      searchText: "",
+      messageTips: 0
     };
   },
   methods: {
