@@ -1,19 +1,23 @@
 <template>
-  <el-main>
-    <dateTimePick title="选择任务完成时间" @refresh="refresh" :activeId="activeId"></dateTimePick>
-    <createdCustomer @refresh="refresh"></createdCustomer>
+  <div id="customerServiceApplication">
+    <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
+    <createdCustomer @refresh="refreshed"></createdCustomer>
+    <!-- <applyService></applyService> -->
     <div id="toolbar">
+      <span class="lead">客服申请表</span>
       <el-button size="mini" @click="addApplication">新建</el-button>
+      <el-button size="mini" @click="readyToService">发送客服</el-button>
     </div>
     <table id="table"></table>
-  </el-main>
+  </div>
 </template>
 <script>
 import dateTimePick from "@/pages/Process/common/dateTimePick";
 import createdCustomer from "@/pages/Process/common/createdCustomer";
+// import applyService from "@/pages/Process/common/applyService";
 
 export default {
-  name: "tasks",
+  name: "customerServiceApplication",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
@@ -23,6 +27,7 @@ export default {
   components: {
     dateTimePick: dateTimePick,
     createdCustomer: createdCustomer
+    // applyService: applyService
   },
   methods: {
     tableAjaxData(params) {
@@ -44,14 +49,31 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset + 1;
-      return params;
+      return {
+        per_page: params.offset + 1,
+        page: params.limit
+      };
     },
     addApplication() {
       createdCustomer.methods.close.call(this);
     },
-    refresh() {
-      $("#table").bootstrapTable("refresh");
+    readyToService() {
+      this.sendToService(this.getTableAttr($("#table"), "id"));
+    },
+    sendToService(arr) {
+      let that = this;
+      arr.forEach(value => {
+        that
+          .$post(`service/send/customer/service/${value}`)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.refreshed();
+          })
+          .catch(err => {});
+      });
+    },
+    refreshed() {
+      this.refresh($("#table"));
     }
   },
   mounted() {
@@ -79,28 +101,7 @@ export default {
       pageList: [10, 25, 50, 100, "All"],
       columns: [
         {
-          field: "id",
-          title: "",
-          // checkbox: true,
-          formatter: (value, row, index) => {
-            let del = ['<button class="btn btn-danger del">删除</button>'];
-            return del;
-          },
-          events: {
-            "click .del": ($el, value, row, index) => {
-              that.delTable($("#table"), "id", [value]);
-              return false;
-              that
-                .$post(`/service/delete/${value}`)
-                .then(response => {
-                  $("#table").bootstrapTable("remove", {
-                    field: "id",
-                    values: row
-                  });
-                })
-                .catch(err => {});
-            }
-          }
+          checkbox: true
         },
         {
           field: "number",
@@ -167,6 +168,10 @@ export default {
               if (!v) return "不能为空";
             }
           }
+        },
+        {
+          field: "process_name",
+          title: "订单处理状态"
         },
         {
           field: "reason_analysis",
@@ -236,6 +241,41 @@ export default {
             title: "备注",
             emptytext: "空"
           }
+        },
+        {
+          field: "id",
+          title: "",
+          formatter: (value, row, index) => {
+            let del = [
+              '<button class="btn btn-danger del btn-sm">　删除　</button>'
+            ];
+            let service = [
+              '<button class="btn btn-success service btn-sm">提交客服</button>'
+            ];
+            switch (row.process) {
+              case 0:
+                return service + del;
+                break;
+              case 2:
+                return del;
+              default:
+                break;
+            }
+          },
+          events: {
+            "click .del": ($el, value, row, index) => {
+              that
+                .$post(`/service/delete/${value}`)
+                .then(response => {
+                  that.delTable($("#table"), "id", [value]);
+                })
+                .catch(err => {});
+            },
+            "click .service": ($el, value, row, index) => {
+              // applyService.methods.close.call(this);
+              that.sendToService([value]);
+            }
+          }
         }
       ],
       onEditableSave(field, mrow, oldValue, $el) {
@@ -243,15 +283,13 @@ export default {
           .$post(`/service/edit/${mrow.id}`, mrow)
           .then(response => {
             if (response.status != 200) return false;
-            this.refresh();
+            this.refreshed();
           })
           .catch(err => {});
       },
       detailFormatter(field, mrow, oldValue, $el) {}
     });
   },
-  created() {
-    console.log();
-  }
+  created() {}
 };
 </script>

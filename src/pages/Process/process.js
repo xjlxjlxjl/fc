@@ -44,6 +44,14 @@ Vue.prototype.dateParse = date => {
     date.getSeconds() < 9 ? "0" + date.getSeconds() : date.getSeconds()
   }`;
 };
+Vue.prototype.getTableAttr = ($el, attr) => {
+  let arr = [],
+    selected = $el.bootstrapTable("getAllSelections");
+  selected.forEach(e => {
+    arr.push(e[attr]);
+  });
+  return arr;
+};
 Vue.prototype.addTable = ($el, index, data) => {
   $el.bootstrapTable("insertRow", {
     index: index,
@@ -55,6 +63,12 @@ Vue.prototype.delTable = ($el, type, data) => {
     field: type,
     values: data
   });
+};
+Vue.prototype.ediTable = ($el, index, data) => {
+  $el.bootstrapTable("updateRow", { index: index, row: data });
+};
+Vue.prototype.refresh = $el => {
+  $el.bootstrapTable("refresh");
 };
 
 /* eslint-disable no-new */

@@ -44,7 +44,8 @@ export default new Vuex.Store({
     payModal: false,
     createdWorkModal: false,
     createdCustomerModal: false,
-    dateTimePickModal: false
+    dateTimePickModal: false,
+    customerService: false
   },
   mutations: {
     change(state) {

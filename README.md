@@ -24,8 +24,12 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 # modify package.json "module": "dist/signature_pad.min.m.js" => "module": "dist/signature_pad.min.js",
 
-# x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js
+###
 
-# import 'jquery/dist/jquery.min.js'
+x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js
+import 'jquery/dist/jquery.min.js'
+window.jQuery = \$
+x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css
+background-image: linear-gradient(top, #0088cc, #0044cc) to => background-image: linear-gradient(`to top`, #0088cc, #0044cc)
 
-# window.jQuery = \$
+###

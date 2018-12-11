@@ -2,6 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 // 销售
 import Sale from "@/pages/Process/view/sale/sale";
+import saleTasks from "@/pages/Process/view/sale/tasks";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 // 工程
 import Engineer from "@/pages/Process/view/engineer/engineer";
@@ -24,7 +25,6 @@ import Finance from "@/pages/Process/view/finance/finance";
 // 人事
 import Matters from "@/pages/Process/view/matters/matters";
 // 未完成任务
-import tasks from "@/pages/Process/view/tasks";
 Vue.use(Router);
 
 export default new Router({
@@ -37,7 +37,7 @@ export default new Router({
       children: [
         {
           path: "/Sale",
-          component: tasks
+          component: saleTasks
         },
         {
           path: "/Sale/customerServiceApplication",

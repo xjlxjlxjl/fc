@@ -58,6 +58,7 @@ export default {
 }
 .homeContainer {
   background-color: #f2f2f2;
+  height: 86%;
   #aside {
     #companyAside {
       height: 87%;
@@ -131,7 +132,7 @@ export default {
     .fixed-table-body {
       width: 100%;
       overflow: auto;
-      #table {
+      > table {
         color: #666666;
         > thead {
           background-color: #f2f2f2;

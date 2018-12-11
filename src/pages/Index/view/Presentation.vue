@@ -1,8 +1,10 @@
 <template>
   <div id="Presentation">
     <!-- <el-aside width="200px"></el-aside> -->
+    <createdCustomer @refresh="refresh"></createdCustomer>
     <el-main>
       <div class="main">
+        <el-button type="primary" class="createdService" @click="createdService">创建客服申请</el-button>
         <div id="canvasBox"></div>
         <img v-for="(item,index) in data.image" :key="index" :src="item" width="100">
       </div>
@@ -12,6 +14,7 @@
 </template>
 <script>
 import indexChart from "@/pages/Index/common/indexChart";
+import createdCustomer from "@/pages/Process/common/createdCustomer";
 import PDFJS from "pdfjs-dist";
 
 export default {
@@ -27,7 +30,8 @@ export default {
     };
   },
   components: {
-    "index-chart": indexChart
+    "index-chart": indexChart,
+    createdCustomer: createdCustomer
   },
   methods: {
     getReprot(code) {
@@ -83,6 +87,12 @@ export default {
           }
         });
       });
+    },
+    createdService() {
+      createdCustomer.methods.close.call(this);
+    },
+    refresh() {
+      console.log("假装刷新");
     }
   },
   created() {
@@ -115,6 +125,9 @@ export default {
     .el-main {
       height: 100%;
       padding: 0;
+      .createdService {
+        display: none;
+      }
       .main {
         width: 93.2%;
         height: 100%;
@@ -134,6 +147,10 @@ export default {
     }
     .el-main {
       padding: 0;
+      .createdService {
+        position: fixed;
+        right: 0;
+      }
       canvas {
         width: 100%;
       }
