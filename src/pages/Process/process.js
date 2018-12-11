@@ -1,4 +1,10 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+if (
+  JSON.parse(localStorage.getItem("user") || "{}") &&
+  !JSON.parse(localStorage.getItem("user") || "{}").slug
+)
+  location.href = "/";
+
 import Vue from "vue";
 import Index from "./Index";
 import router from "./router";
@@ -12,10 +18,15 @@ import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 
 import "jquery/dist/jquery.min.js";
 
-import "bootstrap/dist/js/bootstrap.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-table/dist/bootstrap-table.min.js";
+import "bootstrap/dist/js/bootstrap.min.js";
 import "bootstrap-table/dist/bootstrap-table.min.css";
+import "bootstrap-table/dist/bootstrap-table.min.js";
+
+import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
+import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js";
+import "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js";
+
 import "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js";
 import "bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js";
 
@@ -32,6 +43,18 @@ Vue.prototype.dateParse = date => {
   }:${date.getMinutes() < 9 ? "0" + date.getMinutes() : date.getMinutes()}:${
     date.getSeconds() < 9 ? "0" + date.getSeconds() : date.getSeconds()
   }`;
+};
+Vue.prototype.addTable = ($el, index, data) => {
+  $el.bootstrapTable("insertRow", {
+    index: index,
+    row: data
+  });
+};
+Vue.prototype.delTable = ($el, type, data) => {
+  $el.bootstrapTable("remove", {
+    field: type,
+    values: data
+  });
 };
 
 /* eslint-disable no-new */

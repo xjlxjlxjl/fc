@@ -1,17 +1,30 @@
 import Vue from "vue";
 import Router from "vue-router";
-
-import Sale from "@/pages/Process/view/sale";
-import Engineer from "@/pages/Process/view/engineer";
-import Purchase from "@/pages/Process/view/purchase";
-import IQC from "@/pages/Process/view/IQC";
-import WareHouse from "@/pages/Process/view/wareHouse";
-import Produce from "@/pages/Process/view/produce";
-import OQC from "@/pages/Process/view/OQC";
-import Logistics from "@/pages/Process/view/logistics";
-import AfterSale from "@/pages/Process/view/afterSale";
-import Finance from "@/pages/Process/view/finance";
-import Matters from "@/pages/Process/view/matters";
+// 销售
+import Sale from "@/pages/Process/view/sale/sale";
+import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
+// 工程
+import Engineer from "@/pages/Process/view/engineer/engineer";
+// 采购
+import Purchase from "@/pages/Process/view/purchase/purchase";
+// IQC
+import IQC from "@/pages/Process/view/IQC/IQC";
+// 仓库
+import WareHouse from "@/pages/Process/view/wareHouse/wareHouse";
+// 生产
+import Produce from "@/pages/Process/view/produce/produce";
+// OQC
+import OQC from "@/pages/Process/view/OQC/OQC";
+// 物流
+import Logistics from "@/pages/Process/view/logistics/logistics";
+// 售后
+import AfterSale from "@/pages/Process/view/afterSale/afterSale";
+// 财务
+import Finance from "@/pages/Process/view/finance/finance";
+// 人事
+import Matters from "@/pages/Process/view/matters/matters";
+// 未完成任务
+import tasks from "@/pages/Process/view/tasks";
 Vue.use(Router);
 
 export default new Router({
@@ -24,7 +37,11 @@ export default new Router({
       children: [
         {
           path: "/Sale",
-          component: Sale
+          component: tasks
+        },
+        {
+          path: "/Sale/customerServiceApplication",
+          component: customerServiceApplication
         }
       ]
     },

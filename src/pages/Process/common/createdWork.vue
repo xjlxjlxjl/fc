@@ -138,15 +138,20 @@ export default {
 </script>
 <style lang="less">
 #createdWork {
-  #work {
-    .el-date-editor {
-      width: 100%;
+  .modalBox {
+    @media screen and (min-width: 800px) {
+      margin-top: 150px;
     }
-    > .el-input {
-      margin: 1rem 0;
-    }
-    .el-select {
-      width: 100%;
+    #work {
+      .el-date-editor {
+        width: 100%;
+      }
+      > .el-input {
+        margin: 1rem 0;
+      }
+      .el-select {
+        width: 100%;
+      }
     }
   }
 }

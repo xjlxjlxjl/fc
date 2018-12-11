@@ -114,7 +114,7 @@
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
           <div class="whiteRoundBox">
-            <router-link :to="val.url">{{ val.name }}</router-link>
+            <a href="javascript:;" @click="locationTo(val.url)">{{ val.name }}</a>
             <img :src="progress" v-if="key < process.length - 3">
             <img :src="progressLast" v-else-if="key == process.length - 1">
             <img :src="progressHide" v-else>
@@ -230,6 +230,15 @@ export default {
     },
     getUserInfo() {
       this.user = JSON.parse(localStorage.getItem("user")) || null;
+    },
+    locationTo(url) {
+      if (!this.$ifLogin()) return false;
+      if (this.user && !this.user.slug)
+        this.$message({
+          message: "需要公司登陆才能使用ERP功能",
+          type: "warning"
+        });
+      else if (this.user.slug) location.href = url;
     },
     search() {
       let that = this,
@@ -440,6 +449,7 @@ export default {
           img {
             position: absolute;
             right: -26px;
+            top: -1px;
             z-index: 2;
             height: 35px;
           }

@@ -113,10 +113,7 @@ export default {
           editable: {
             type: "select",
             title: "物料车",
-            emptytext: "空",
-            validate: v => {
-              if (!v) return "不能为空";
-            }
+            emptytext: "空"
           }
         },
         {

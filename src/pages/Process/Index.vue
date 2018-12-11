@@ -5,9 +5,9 @@
         <index-rise></index-rise>
       </el-header>
       <el-container class="homeContainer">
-        <div id="aside">
+        <!-- <div id="aside">
           <companyAside></companyAside>
-        </div>
+        </div>-->
         <el-main>
           <div id="main">
             <el-container>
@@ -33,7 +33,7 @@
 import indexRise from "@/pages/Process/common/companyRise";
 import indexTail from "@/pages/Index/common/indexTail";
 // import indexChart from "@/pages/Index/common/indexChart";
-import companyAside from "@/pages/Process/common/companyAside";
+// import companyAside from "@/pages/Process/common/companyAside";
 
 export default {
   name: "Index",
@@ -43,9 +43,11 @@ export default {
   components: {
     "index-rise": indexRise,
     // "index-chart": indexChart,
-    "index-tail": indexTail,
-    companyAside: companyAside
-  }
+    // companyAside: companyAside,
+    "index-tail": indexTail
+  },
+  methods: {},
+  created() {}
 };
 </script>
 <style lang="less">
@@ -81,6 +83,7 @@ export default {
 #main {
   margin: 0 auto;
   height: 87%;
+  font-size: 14px;
   @media screen and (min-width: 820px) {
     > .el-container {
       height: 100%;
@@ -139,6 +142,13 @@ export default {
                 max-width: 50px;
                 width: 50px;
               }
+            }
+          }
+        }
+        > tbody {
+          tr {
+            td {
+              font-size: 14px;
             }
           }
         }

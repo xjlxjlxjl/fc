@@ -1,40 +1,45 @@
 <template>
   <el-aside id="companyAside" width="200px">
     <createdWork @refresh="getWorkList"></createdWork>
-    <p class="lead">待完成任务
-      <el-button type="info" size="mini" @click="created">新建</el-button>
-    </p>
-    <el-menu default-active="0" @select="handleSelect">
-      <el-menu-item
+    <el-menu default-active="0" @select="menuSelect">
+      <router-link
         v-for="(item,index) in aside"
         v-if="item.status != 4"
         :key="index"
-        :index="index.toString()"
+        :to="item.url"
       >
-        <span slot="title">{{ item.content }}</span>
-      </el-menu-item>
+        <el-menu-item :index="index.toString()">
+          <span slot="title">{{ item.name }}</span>
+          <el-button v-if="!index" slot="title" type="info" size="mini" @click="created">新建</el-button>
+        </el-menu-item>
+      </router-link>
     </el-menu>
   </el-aside>
 </template>
 <script>
 import { mapState } from "vuex";
 import createdWork from "@/pages/Process/common/createdWork";
-import dateTimePick from "@/pages/Process/common/dateTimePick";
 
 export default {
   name: "companyAside",
   data() {
     return {
-      user: JSON.parse(localStorage.getItem("user")) || null,
-      aside: []
+      user: JSON.parse(localStorage.getItem("user")) || null
     };
   },
+  props: {
+    aside: Array
+  },
   components: {
-    createdWork: createdWork,
-    dateTimePick: dateTimePick
+    createdWork: createdWork
   },
   methods: {
+    menuSelect(key) {
+      console.log(this.aside[key].url);
+      // this.$route.path = this.aside[key].url;
+    },
     handleSelect(key) {
+      if (key == "-1") return false;
       let that = this,
         self = that.aside[key],
         members = "",
@@ -54,7 +59,6 @@ export default {
           <p>任务状态：${self.status_text}</p>
         </div>
       `;
-
       switch (taskState) {
         case 0:
         case 1:
@@ -131,7 +135,7 @@ export default {
   },
   computed: mapState(["createdWorkModal"]),
   created() {
-    this.getWorkList();
+    // this.getWorkList();
   }
 };
 </script>
@@ -142,10 +146,12 @@ export default {
 @white: #ffffff;
 @gery: #666666;
 @sky: #2288ff;
+@orange: #ff9900;
+@orgBorder: solid 1px @orange;
 #companyAside {
-  margin-top: 1.5rem;
+  // margin-top: 1.5rem;
   border-right: @borderBlod;
-  padding: 1rem;
+  // padding: 1rem;
   background: @white;
   .lead {
     font-size: 20px;
@@ -156,6 +162,9 @@ export default {
   }
   .el-menu {
     border-right: none;
+    a {
+      text-decoration: none;
+    }
     .el-menu-item {
       padding: 0.5rem 1rem !important;
       color: @gery;
@@ -164,8 +173,19 @@ export default {
       line-height: 1.4;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       word-break: break-all;
       white-space: normal;
+      span {
+        font-size: 1.4rem;
+      }
+      button {
+        padding: 3px 15px;
+      }
+    }
+    .is-active {
+      color: #ff9900;
+      border-bottom: @orgBorder;
     }
   }
 }

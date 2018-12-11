@@ -1,6 +1,6 @@
 <template>
-  <transition>
-    <div id="dateTimePick">
+  <transition name="el-fade-in-linear">
+    <div id="dateTimePick" v-show="dateTimePickModal">
       <div class="Curtain"></div>
       <div class="modalBox">
         <div class="modalBoxMain">
@@ -34,9 +34,26 @@ export default {
     };
   },
   props: {
-    title: String
+    title: String,
+    activeId: Number
   },
   methods: {
+    commit() {
+      if (!this.datetime) {
+        this.$message({ message: "请选择任务时间", type: "error" });
+        return false;
+      }
+      let that = this;
+      this.$post(`job/accept/${that.activeId}`, {
+        estimate_complete_time: that.dateParse(that.datetime)
+      })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.$emit("refresh");
+          that.close();
+        })
+        .catch(err => console.error(err));
+    },
     close() {
       this.$store.commit("changeModal", "dateTimePickModal");
     }
