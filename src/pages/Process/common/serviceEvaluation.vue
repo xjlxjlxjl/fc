@@ -20,12 +20,7 @@
                   <el-input type="textarea" v-model="form.advice"></el-input>
                 </el-form-item>
                 <el-form-item label="服务">
-                  <el-rate
-                    v-model="form.score"
-                    :icon-classes="['icon-rate-face-1', 'icon-rate-face-2', 'icon-rate-face-3']"
-                    void-icon-class="icon-rate-face-off"
-                    :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                  ></el-rate>
+                  <el-rate v-model="form.score" :colors="['#99A9BF', '#F7BA2A', '#FF9900']"></el-rate>
                 </el-form-item>
               </el-form>
             </div>
@@ -55,11 +50,9 @@ export default {
   methods: {
     ...mapMutations([""]),
     commit() {
-      console.log(form);
-      return false;
       let that = this;
       that
-        .$(`/service/score/create`, form)
+        .$(`/service/score/create`, this.form)
         .then(response => {
           if (response.status != 200) return false;
           that.close();
@@ -78,6 +71,19 @@ export default {
 <style lang="less">
 #serviceEvaluation {
   #evaluation {
+    .el-form {
+      .el-form-item {
+        &:last-child {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0px;
+          .el-form-item__content {
+            margin-left: 5px !important;
+            margin-bottom: 5px;
+          }
+        }
+      }
+    }
   }
 }
 </style>

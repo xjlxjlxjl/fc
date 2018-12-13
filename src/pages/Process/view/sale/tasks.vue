@@ -38,7 +38,7 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("job/list")
+        .$get("job/list", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -50,7 +50,8 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset + 1;
+      params.page = params.offset / 10 + 1;
+      params.current_page = params.limit;
       return params;
     },
     refreshed() {

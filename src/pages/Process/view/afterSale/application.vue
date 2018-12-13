@@ -1,8 +1,8 @@
 <template>
   <div id="application">
     <applyService :active="active" @refresh="refreshed"></applyService>
-    <delegateUser :active="active" @refresh="refreshed"></delegateUser>
-    <!-- <serviceEvaluation :active="active" @refresh="refreshed"></serviceEvaluation> -->
+    <delegateUser :active="active" title="选择委派人员" @refresh="refreshed"></delegateUser>
+    <createdReport :active="active" @refresh="refreshed"></createdReport>
     <div id="afterSaleToolbar">
       <span class="lead">客服申请表</span>
     </div>
@@ -12,7 +12,7 @@
 <script>
 import applyService from "@/pages/Process/common/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
-import serviceEvaluation from "@/pages/Process/common/serviceEvaluation";
+import createdReport from "@/pages/Process/common/createdReport";
 
 export default {
   name: "application",
@@ -26,7 +26,7 @@ export default {
   components: {
     applyService: applyService,
     delegateUser: delegateUser,
-    serviceEvaluation: serviceEvaluation
+    createdReport: createdReport
   },
   methods: {
     tableAjaxData(params) {
@@ -36,13 +36,13 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("service")
+        .$get("service", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
           that.tableData = response.data.list;
           params.success({
-            total: response.data.list.length,
+            total: response.data.pagination.total,
             rows: response.data.list
           });
         })
@@ -50,8 +50,9 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        per_page: params.offset + 1,
-        page: params.limit
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        search: params.search
       };
     },
     refreshed() {
@@ -251,11 +252,17 @@ export default {
             let delegate = [
               '<button class="btn btn-warning delegate btn-sm">委派人员</button>'
             ];
+            let report = [
+              '<button class="btn btn-warning report btn-sm">生成报告</button>'
+            ];
+
             switch (row.process) {
               case 2:
                 if (!row.price) return del + apply;
                 else if (row.price && !row.deal_mans.length)
                   return del + delegate;
+                else if (row.price && row.deal_mans.length && !row.deal_result)
+                  return report + del;
                 else return del;
               default:
                 return del;
@@ -278,6 +285,10 @@ export default {
             "click .delegate": ($el, value, row, index) => {
               that.active = row;
               delegateUser.methods.close.call(this);
+            },
+            "click .report": ($el, value, row, index) => {
+              that.active = row;
+              createdReport.methods.close.call(this);
             }
           }
         }

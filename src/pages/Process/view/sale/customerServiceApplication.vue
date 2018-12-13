@@ -1,11 +1,12 @@
 <template>
   <div id="customerServiceApplication">
-    <createdCustomer @refresh="refreshed"></createdCustomer>
+    <createdCustomer @refresh="refreshed" number></createdCustomer>
     <applyService :active="active"></applyService>
+    <delegateUser :active="active" title="选择通知客服" @refresh="refreshed"></delegateUser>
     <div id="toolbar">
       <span class="lead">客服申请表</span>
       <el-button size="mini" @click="addApplication">新建</el-button>
-      <el-button size="mini" @click="readyToService">发送客服</el-button>
+      <!-- <el-button size="mini" @click="readyToService">发送客服</el-button> -->
     </div>
     <table id="table"></table>
   </div>
@@ -13,6 +14,7 @@
 <script>
 import createdCustomer from "@/pages/Process/common/createdCustomer";
 import applyService from "@/pages/Process/common/applyService";
+import delegateUser from "@/pages/Process/common/delegateUser";
 
 export default {
   name: "customerServiceApplication",
@@ -25,7 +27,8 @@ export default {
   },
   components: {
     createdCustomer: createdCustomer,
-    applyService: applyService
+    applyService: applyService,
+    delegateUser: delegateUser
   },
   methods: {
     tableAjaxData(params) {
@@ -35,13 +38,13 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("service")
+        .$get("service", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
           that.tableData = response.data.list;
           params.success({
-            total: response.data.list.length,
+            total: response.data.pagination.total,
             rows: response.data.list
           });
         })
@@ -49,8 +52,9 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        per_page: params.offset + 1,
-        page: params.limit
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        search: params.search
       };
     },
     addApplication() {
@@ -203,21 +207,36 @@ export default {
           title: "处理结果",
           sortable: true
         },
-        // {
-        //   field: "repair_quoted_price",
-        //   title: "维修报价",
-        //   editable: {
-        //     type: "number",
-        //     title: "维修报价",
-        //     emptytext: "空",
-        //     validate: v => {
-        //       if (!v) return "不能为空";
-        //     }
-        //   },
-        //   formatter: (value, row, index) => {
-        //     return `${value || "未报价"}`;
-        //   }
-        // },
+        {
+          field: "price",
+          title: "维修报价",
+          editable: {
+            type: "number",
+            title: "维修报价",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          },
+          formatter: (value, row, index) => {
+            return `${value || "未报价"}`;
+          }
+        },
+        {
+          field: "discount_price",
+          title: "折扣价",
+          editable: {
+            type: "number",
+            title: "维修报价",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          },
+          formatter: (value, row, index) => {
+            return `${value || "未报价"}`;
+          }
+        },
         {
           field: "deal_advice",
           title: "处理建议",
@@ -250,16 +269,22 @@ export default {
             let service = [
               '<button class="btn btn-success service btn-sm">提交客服</button>'
             ];
-            let apply = [
-              '<button class="btn btn-primary apply btn-sm">　报价　</button>'
+            let discountPrice = [
+              '<button class="btn btn-success discountPrice btn-sm">优惠价　</button>'
             ];
             switch (row.process) {
               case 0:
                 return service + del;
                 break;
               case 2:
-                return del + apply;
+                if (row.price) {
+                  if (row.discount_price) return del;
+                  else return discountPrice + del;
+                } else return del;
+
+                break;
               default:
+                return del;
                 break;
             }
           },
@@ -274,11 +299,32 @@ export default {
             },
             "click .service": ($el, value, row, index) => {
               // applyService.methods.close.call(this);
-              that.sendToService([value]);
+              // that.sendToService([value]);
+              that.active = row;
+              delegateUser.methods.close.call(this);
             },
             "click .apply": ($el, value, row, index) => {
               that.active = row;
               applyService.methods.close.call(this);
+            },
+            "click .discountPrice": ($el, value, row, index) => {
+              that
+                .$prompt("请输入优惠价", "提示", {
+                  confirmButtonText: "确定",
+                  cancelButtonText: "取消"
+                })
+                .then(({ price }) => {
+                  that
+                    .$post(`service/set/discount/price/${value}`, {
+                      discount_price: value
+                    })
+                    .then(response => {
+                      if (response.status != 200) return false;
+                      that.refreshed();
+                    })
+                    .catch(err => {});
+                })
+                .catch(err => {});
             }
           }
         }

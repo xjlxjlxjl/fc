@@ -221,7 +221,8 @@ export default {
       progressLast: progressLast,
       menuShow: false,
       searchText: "",
-      messageTips: 0
+      messageTips: 0,
+      lockReconnect: false
     };
   },
   methods: {
@@ -294,7 +295,7 @@ export default {
       };
     },
     reconnect(url) {
-      if (lockReconnect) return false;
+      if (this.lockReconnect) return false;
       this.lockReconnect = true;
       //没连接上会一直重连，设置延迟避免请求过多
       if (this.connectNum > 3) this.webSocketClose();

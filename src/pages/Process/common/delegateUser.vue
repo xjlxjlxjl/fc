@@ -5,7 +5,7 @@
       <div class="modalBox">
         <div class="modalBoxMain">
           <div class="modalBoxMainHeader">
-            <div class="modalBoxMainHeaderTitle">选择委派人员</div>
+            <div class="modalBoxMainHeaderTitle">{{ title }}</div>
             <div class="modalBoxMainHeaderBtn" @click="close">
               <i class="el-message-box__close el-icon-close"></i>
             </div>
@@ -40,7 +40,8 @@ export default {
     };
   },
   props: {
-    active: Object
+    active: Object,
+    title: String
   },
   methods: {
     ...mapMutations(["getUserBranch"]),
@@ -64,9 +65,18 @@ export default {
       }
     },
     commit() {
-      let that = this;
+      let that = this,
+        url = null;
+      switch (that.active.process) {
+        case 0:
+          url = `service/send/customer/service/${that.active.id}`;
+          break;
+        case 2:
+          url = `service/delegate/customer/service/${that.active.id}`;
+          break;
+      }
       that
-        .$post(`service/delegate/customer/service/${that.active.id}`, {
+        .$post(url, {
           user_ids: that.checkedUser.join(",")
         })
         .then(response => {

@@ -13,16 +13,16 @@
           <div class="modalBoxMainContent">
             <div id="quotation">
               <el-form :model="form" ref="form" label-position="left" label-width="80px">
-                <el-form-item label="联系人">
+                <el-form-item label="联系人" size="mini">
                   <el-input v-model="form.linkman"></el-input>
                 </el-form-item>
-                <el-form-item label="客户公司">
+                <el-form-item label="客户公司" size="mini">
                   <el-input v-model="form.customer_company_name"></el-input>
                 </el-form-item>
-                <el-form-item label="价格">
+                <el-form-item label="价格" size="mini">
                   <el-input v-model="form.price"></el-input>
                 </el-form-item>
-                <el-form-item label="明细">
+                <el-form-item label="明细" size="mini" style="margin-left: 0;">
                   <el-table :data="form.tableData" size="mini" height="250">
                     <el-table-column
                       v-for="(item,index) in tableLabel"
@@ -69,6 +69,8 @@ export default {
       },
       tableLabel: [
         { label: "产品", prop: "name" },
+        { label: "规格", prop: "info" },
+        { label: "单位", prop: "unit" },
         { label: "数量", prop: "number" },
         { label: "价格", prop: "price" }
       ]
@@ -81,7 +83,13 @@ export default {
     commit() {
       let that = this,
         lastData = that.form.tableData[that.form.tableData.length - 1];
-      if (!lastData.name && !lastData.number && !lastData.price)
+      if (
+        !lastData.name &&
+        !lastData.info &&
+        !lastData.unit &&
+        !lastData.number &&
+        !lastData.price
+      )
         that.form.tableData.pop();
 
       if (!that.form.linkman) {
@@ -124,9 +132,11 @@ export default {
       handler(val, oldVal) {
         // 处理表格数据
         let e = val.tableData[val.tableData.length - 1];
-        if (e.name && e.number && e.price)
+        if (e.name && e.info && e.unit && e.number && e.price)
           this.form.tableData.push({
             name: "",
+            info: "",
+            unit: "",
             number: "",
             price: ""
           });
@@ -140,5 +150,19 @@ export default {
 </script>
 <style lang="less">
 #applyService {
+  #quotation {
+    .el-form {
+      .el-form-item {
+        &:last-child {
+          .el-form-item__content {
+            margin-left: 0 !important;
+            table {
+              width: auto !important;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 </style>

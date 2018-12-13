@@ -47,6 +47,9 @@
             </div>
             <div id="createdCustomerForm" v-else-if="state == 0">
               <el-form :inline="true" :model="form" label-position="left" label-width="100px">
+                <el-form-item label="订单号">
+                  <el-input v-model="form.number" placeholder="订单号"></el-input>
+                </el-form-item>
                 <el-form-item label="申请人">
                   <el-input v-model="form.apply_linkman" placeholder="申请人"></el-input>
                 </el-form-item>
@@ -56,9 +59,9 @@
                 <el-form-item label="联系人号码">
                   <el-input v-model="form.customer_contact" placeholder="联系人号码"></el-input>
                 </el-form-item>
-                <el-form-item label="出货日期">
+                <!-- <el-form-item label="出货日期">
                   <el-date-picker v-model="form.date" type="datetime" placeholder="出货日期"></el-date-picker>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item label="客户需求">
                   <el-input v-model="form.customer_demand" placeholder="客户需求"></el-input>
                 </el-form-item>
@@ -95,6 +98,7 @@ export default {
   data() {
     return {
       form: {
+        number: "",
         apply_linkman: "",
         customer_linkman: "",
         customer_contact: "",
@@ -118,6 +122,9 @@ export default {
         }
       ]
     };
+  },
+  props: {
+    number: String
   },
   methods: {
     sendCode() {
@@ -166,6 +173,7 @@ export default {
     commit() {
       let that = this,
         params = {
+          number: this.form.number,
           customer_linkman: this.form.customer_linkman,
           customer_contact: this.form.customer_contact,
           customer_demand: this.form.customer_demand
@@ -203,6 +211,7 @@ export default {
   },
   computed: mapState(["createdCustomerModal"]),
   created() {
+    this.form.number = this.number;
     switch (location.pathname) {
       case "/":
       case "/index.html":
@@ -259,6 +268,7 @@ export default {
             line-height: 102px;
             .el-upload__input {
               opacity: 0;
+              display: none;
             }
           }
           .el-upload-list {

@@ -5,8 +5,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userInfo: {},
-    socketAddress: "wss://factoryun.com/wss",
-    // socketAddress: "ws://skyliu.cn/ws",
+    // socketAddress: "wss://factoryun.com/wss",
+    socketAddress: "ws://skyliu.cn/ws",
     userBranch: [],
     process: {
       sale: [
@@ -66,7 +66,8 @@ export default new Vuex.Store({
     createdCustomerModal: false,
     dateTimePickModal: false,
     customerService: false,
-    delegateUser: false
+    delegateUser: false,
+    createdReportModal: false
   },
   mutations: {
     change(state) {

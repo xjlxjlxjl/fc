@@ -1,7 +1,7 @@
 <template>
   <div id="Presentation">
     <!-- <el-aside width="200px"></el-aside> -->
-    <createdCustomer @refresh="refresh"></createdCustomer>
+    <createdCustomer @refresh="refresh" :number="$route.params.modal"></createdCustomer>
     <el-main>
       <div class="main">
         <el-button type="primary" class="createdService" @click="createdService">创建客服申请</el-button>

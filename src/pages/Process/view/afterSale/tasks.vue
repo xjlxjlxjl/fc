@@ -1,11 +1,24 @@
 <template>
-  <div id="tasks"></div>
+  <div id="tasks">
+    <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
+    <div id="afterSaleToolbar">
+      <span class="lead">未完成任务</span>
+    </div>
+    <table id="afterSaleTable"></table>
+  </div>
 </template>
 <script>
+import dateTimePick from "@/pages/Process/common/dateTimePick";
 export default {
   name: "tasks",
   data() {
-    return {};
+    return {
+      user: JSON.parse(localStorage.getItem("user") || "{}"),
+      activeId: 0
+    };
+  },
+  components: {
+    dateTimePick: dateTimePick
   },
   methods: {
     tableAjaxData(params) {
@@ -15,7 +28,7 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("job/list")
+        .$get("job/list", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -27,17 +40,18 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset + 1;
+      params.current_page = params.offset / 10 + 1;
+      params.page = params.limit;
       return params;
     },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#afterSaleTable"));
     }
   },
   mounted() {
     let that = this;
-    $("#table").bootstrapTable({
-      toolbar: "#toolbar",
+    $("#afterSaleTable").bootstrapTable({
+      toolbar: "#afterSaleToolbar",
       ajax: this.tableAjaxData,
       queryParams: this.tableAjaxParams,
       search: true,
@@ -137,7 +151,7 @@ export default {
               this.$post(`job/complete/${row.id}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  that.refresh($("#table"));
+                  that.refresh($("#afterSaleTable"));
                 })
                 .catch(err => console.error(err));
             },
@@ -146,7 +160,7 @@ export default {
                 .then(response => {
                   if (response.status != 200) return false;
                   row.status = 4;
-                  that.ediTable($("#table"), index, row);
+                  that.ediTable($("#afterSaleTable"), index, row);
                 })
                 .catch(err => console.error(err));
             }
