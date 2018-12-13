@@ -1,21 +1,21 @@
 <template>
-  <div id="customerServiceApplication">
-    <createdCustomer @refresh="refreshed"></createdCustomer>
-    <applyService :active="active"></applyService>
-    <div id="toolbar">
+  <div id="application">
+    <applyService :active="active" @refresh="refreshed"></applyService>
+    <delegateUser :active="active" @refresh="refreshed"></delegateUser>
+    <!-- <serviceEvaluation :active="active" @refresh="refreshed"></serviceEvaluation> -->
+    <div id="afterSaleToolbar">
       <span class="lead">客服申请表</span>
-      <el-button size="mini" @click="addApplication">新建</el-button>
-      <el-button size="mini" @click="readyToService">发送客服</el-button>
     </div>
-    <table id="table"></table>
+    <table id="afterSaleTable"></table>
   </div>
 </template>
 <script>
-import createdCustomer from "@/pages/Process/common/createdCustomer";
 import applyService from "@/pages/Process/common/applyService";
+import delegateUser from "@/pages/Process/common/delegateUser";
+import serviceEvaluation from "@/pages/Process/common/serviceEvaluation";
 
 export default {
-  name: "customerServiceApplication",
+  name: "application",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
@@ -24,8 +24,9 @@ export default {
     };
   },
   components: {
-    createdCustomer: createdCustomer,
-    applyService: applyService
+    applyService: applyService,
+    delegateUser: delegateUser,
+    serviceEvaluation: serviceEvaluation
   },
   methods: {
     tableAjaxData(params) {
@@ -53,32 +54,14 @@ export default {
         page: params.limit
       };
     },
-    addApplication() {
-      createdCustomer.methods.close.call(this);
-    },
-    readyToService() {
-      this.sendToService(this.getTableAttr($("#table"), "id"));
-    },
-    sendToService(arr) {
-      let that = this;
-      arr.forEach(value => {
-        that
-          .$post(`service/send/customer/service/${value}`)
-          .then(response => {
-            if (response.status != 200) return false;
-            that.refreshed();
-          })
-          .catch(err => {});
-      });
-    },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#afterSaleTable"));
     }
   },
   mounted() {
     let that = this;
-    $("#table").bootstrapTable({
-      toolbar: "#toolbar",
+    $("#afterSaleTable").bootstrapTable({
+      toolbar: "#afterSaleToolbar",
       ajax: this.tableAjaxData,
       queryParams: this.tableAjaxParams,
       search: true,
@@ -203,21 +186,36 @@ export default {
           title: "处理结果",
           sortable: true
         },
-        // {
-        //   field: "repair_quoted_price",
-        //   title: "维修报价",
-        //   editable: {
-        //     type: "number",
-        //     title: "维修报价",
-        //     emptytext: "空",
-        //     validate: v => {
-        //       if (!v) return "不能为空";
-        //     }
-        //   },
-        //   formatter: (value, row, index) => {
-        //     return `${value || "未报价"}`;
-        //   }
-        // },
+        {
+          field: "price",
+          title: "维修报价",
+          editable: {
+            type: "number",
+            title: "维修报价",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          },
+          formatter: (value, row, index) => {
+            return `${value || "未报价"}`;
+          }
+        },
+        {
+          field: "discount_price",
+          title: "维修报价",
+          editable: {
+            type: "number",
+            title: "维修报价",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          },
+          formatter: (value, row, index) => {
+            return `${value || "未报价"}`;
+          }
+        },
         {
           field: "deal_advice",
           title: "处理建议",
@@ -247,19 +245,20 @@ export default {
             let del = [
               '<button class="btn btn-danger del btn-sm">　删除　</button>'
             ];
-            let service = [
-              '<button class="btn btn-success service btn-sm">提交客服</button>'
-            ];
             let apply = [
               '<button class="btn btn-primary apply btn-sm">　报价　</button>'
             ];
+            let delegate = [
+              '<button class="btn btn-warning delegate btn-sm">委派人员</button>'
+            ];
             switch (row.process) {
-              case 0:
-                return service + del;
-                break;
               case 2:
-                return del + apply;
+                if (!row.price) return del + apply;
+                else if (row.price && !row.deal_mans.length)
+                  return del + delegate;
+                else return del;
               default:
+                return del;
                 break;
             }
           },
@@ -268,17 +267,17 @@ export default {
               that
                 .$post(`/service/delete/${value}`)
                 .then(response => {
-                  that.delTable($("#table"), "id", [value]);
+                  that.delTable($("#afterSaleTable"), "id", [value]);
                 })
                 .catch(err => {});
-            },
-            "click .service": ($el, value, row, index) => {
-              // applyService.methods.close.call(this);
-              that.sendToService([value]);
             },
             "click .apply": ($el, value, row, index) => {
               that.active = row;
               applyService.methods.close.call(this);
+            },
+            "click .delegate": ($el, value, row, index) => {
+              that.active = row;
+              delegateUser.methods.close.call(this);
             }
           }
         }
@@ -298,3 +297,7 @@ export default {
   created() {}
 };
 </script>
+<style lang="less">
+#application {
+}
+</style>

@@ -28,7 +28,7 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item label="验证码">
-                  <el-input v-model="form.customer_contact" placeholder="验证码"></el-input>
+                  <el-input v-model="form.code" placeholder="验证码"></el-input>
                 </el-form-item>
                 <el-form-item label="问题描述">
                   <el-input v-model="form.customer_demand" placeholder="问题描述"></el-input>
@@ -100,12 +100,11 @@ export default {
         customer_contact: "",
         date: "",
         customer_demand: "",
+        code: "",
         customer_file_ids: [],
         business_file_ids: [],
         fileUrl: [],
-        remark: "",
-        company: "",
-        ok: 0
+        remark: ""
       },
       sendCodeTips: "发送验证码",
       isClick: false,
@@ -122,23 +121,36 @@ export default {
   },
   methods: {
     sendCode() {
-      if (this.isClick) return false;
-      this.sendCodeTips = 60;
-      this.isClick = true;
-      this.lock = setInterval(() => {
-        if (this.sendCodeTips > 1) --this.sendCodeTips;
-        else {
-          clearInterval(this.lock);
-          this.isClick = false;
-          this.sendCodeTips = "重新发送";
-        }
-      }, 1000);
+      if (!this.form.customer_contact) {
+        this.$message({ message: "请填写联系人手机号", type: "error" });
+        return false;
+      }
+      let that = this;
+      if (that.isClick) return false;
+      that.isClick = true;
+      that
+        .$get(`service/send/mobile/code`, {
+          mobile: that.form.customer_contact
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.sendCodeTips = 60;
+          that.lock = setInterval(() => {
+            if (that.sendCodeTips > 1) --that.sendCodeTips;
+            else {
+              clearInterval(that.lock);
+              that.isClick = false;
+              that.sendCodeTips = "重新发送";
+            }
+          }, 1000);
+        })
+        .catch(err => (that.isClick = false));
     },
     upload(file) {
       let form = new FormData(),
         that = this;
       form.append("slug", "customer_service");
-      form.append("file", file);
+      form.append("upload", file);
       that
         .$upload("files/upload", form)
         .then(response => {
@@ -153,16 +165,29 @@ export default {
     },
     commit() {
       let that = this,
-        loading = this.$loading({ lock: true });
-      this.$post("/service/create", {
-        apply_linkman: this.form.apply_linkman,
-        customer_linkman: this.form.customer_linkman,
-        customer_contact: this.form.customer_contact,
-        date: this.form.date,
-        customer_demand: this.form.customer_demand,
-        customer_file_ids: this.form.customer_file_ids.join(","),
-        business_file_ids: this.form.business_file_ids.join(",")
-      })
+        params = {
+          customer_linkman: this.form.customer_linkman,
+          customer_contact: this.form.customer_contact,
+          customer_demand: this.form.customer_demand
+        };
+
+      switch (this.state) {
+        case 0:
+          params.business_file_ids = this.form.business_file_ids.join(",");
+          break;
+        case 1:
+          if (!this.form.code) {
+            this.$message({ message: "验证码为必填选项", type: "error" });
+            return false;
+          }
+          params.code = this.form.code;
+          params.customer_file_ids = this.form.business_file_ids.join(",");
+          break;
+        default:
+          break;
+      }
+      let loading = this.$loading({ lock: true });
+      this.$post("/service/create", params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;

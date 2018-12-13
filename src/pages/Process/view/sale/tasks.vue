@@ -1,6 +1,6 @@
 <template>
   <div id="tasks">
-    <dateTimePick title="选择任务完成时间" @refresh="refresh" :activeId="activeId"></dateTimePick>
+    <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
     <div id="toolbar">
       <span class="lead">未完成任务</span>
     </div>
@@ -53,7 +53,7 @@ export default {
       params.current_page = params.offset + 1;
       return params;
     },
-    refresh() {
+    refreshed() {
       this.refresh($("#table"));
     }
   },
@@ -80,6 +80,7 @@ export default {
       exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
       classes: "table",
       pageList: [10, 25, 50, 100, "All"],
+      detailView: true,
       columns: [
         {
           checkbox: true
@@ -106,19 +107,19 @@ export default {
           field: "content",
           title: "工作内容"
         },
-        {
-          field: "members",
-          title: "工作成员",
-          formatter: event => {
-            let html = "";
-            event.forEach(e => {
-              html += `<p>姓名：${e.user.display_name}　进度：${
-                e.status_text
-              }</p>`;
-            });
-            return html;
-          }
-        },
+        // {
+        //   field: "members",
+        //   title: "工作成员",
+        //   formatter: event => {
+        //     let html = "";
+        //     event.forEach(e => {
+        //       html += `<p>姓名：${e.user.display_name}　进度：${
+        //         e.status_text
+        //       }</p>`;
+        //     });
+        //     return html;
+        //   }
+        // },
         {
           field: "status_text",
           title: "任务状态"
@@ -140,13 +141,15 @@ export default {
               invalid = [
                 '<button class="btn btn-danger invalid">作废</button>'
               ].join(""),
-              taskState = 0;
+              taskState = null;
             row.members.forEach(e => {
               if (e.user.id == this.user.user.id) taskState = e.status;
             });
-            if (row.created_by_id == this.user.user.id) return invalid;
+            if (row.created_by_id == this.user.user.id && row.status == 0)
+              return invalid;
             else if (taskState == 1) return complete;
             else if (taskState == 0) return accept;
+            else return "";
           },
           events: {
             "click .accept": (e, value, row, index) => {
@@ -157,7 +160,7 @@ export default {
               this.$post(`job/complete/${row.id}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  $("#table").bootstrapTable("refresh");
+                  that.refresh($("#table"));
                 })
                 .catch(err => console.error(err));
             },
@@ -165,13 +168,27 @@ export default {
               this.$post(`job/invalid/${row.id}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  $("#table").bootstrapTable("refresh");
+                  row.status = 4;
+                  that.ediTable($("#table"), index, row);
                 })
                 .catch(err => console.error(err));
             }
           }
         }
       ],
+      detailFormatter: (index, row, $el) => {
+        let html = [
+          "<table class='table'>",
+          "<tr><th>成员姓名</th><th>完成状态</th></tr>"
+        ];
+        row.members.forEach(e =>
+          html.push(
+            `<tr><td>${e.user.display_name}</td><td>${e.status_text}</td></tr>`
+          )
+        );
+        html.push("</table>");
+        return html.join("");
+      },
       onEditableSave: (field, mrow, oldValue, $el) => {}
     });
 
@@ -281,7 +298,8 @@ export default {
               this.$post(`job/invalid/${row.id}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  $("#table").bootstrapTable("refresh");
+                  row.status = 1;
+                  that.ediTable($("#table"), index, row);
                 })
                 .catch(err => console.error(err));
             }

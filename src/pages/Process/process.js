@@ -71,6 +71,13 @@ Vue.prototype.refresh = $el => {
   $el.bootstrapTable("refresh");
 };
 
+Array.prototype.sum = function() {
+  return this.reduce(reducer, 0);
+};
+var reducer = function add(sumSoFar, item) {
+  return sumSoFar + parseInt(item.number || 0) * parseFloat(item.price || 0);
+};
+
 /* eslint-disable no-new */
 new Vue({
   el: "#app",

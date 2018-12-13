@@ -99,7 +99,7 @@
               <el-menu-item index="8">
                 <a href target="_blank">俺的小金库</a>
               </el-menu-item>
-              <el-menu-item index="9">
+              <el-menu-item index="9" v-if="user != null">
                 <span @click="loginOut">退出登录</span>
               </el-menu-item>
               <el-menu-item index="10">

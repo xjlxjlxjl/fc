@@ -33,6 +33,26 @@ export default new Vuex.Store({
         { name: "入库申请单", url: "/Sale/warehouseApplication" },
         { name: "历史出货汇总表", url: "/Sale/historyShipment" },
         { name: "历史汇款汇总表", url: "/Sale/historyRemittance" }
+      ],
+      matters: [
+        { name: "员工列表", url: "/Matters" },
+        { name: "加班申请记录", url: "/Matters/overtime" },
+        { name: "请假记录", url: "/Matters/leave" },
+        { name: "出差申请记录", url: "/Matters/outsite" },
+        { name: "签到列表", url: "/Matters/sign" },
+        { name: "备忘录列表", url: "/Matters/remember" },
+        { name: "调休列表", url: "/Matters/break" },
+        { name: "用户入职申请审核列表", url: "/Matters/entry" }
+      ],
+      afterSale: [
+        { name: "待完成任务", url: "/AfterSale" },
+        { name: "客服申请表", url: "/AfterSale/application" },
+        { name: "客服领料申请表", url: "/AfterSale/picking" },
+        { name: "历史客服报告", url: "/AfterSale/history" },
+        { name: "客服总类分析", url: "/AfterSale/analysis" },
+        { name: "不良产品问题归类", url: "/AfterSale/badProblem" },
+        { name: "客户好评系统汇总", url: "/AfterSale/praise" },
+        { name: "客服部共享文件汇总", url: "/AfterSale/sharedFiles" }
       ]
     },
     ModalShow: false,
@@ -45,7 +65,8 @@ export default new Vuex.Store({
     createdWorkModal: false,
     createdCustomerModal: false,
     dateTimePickModal: false,
-    customerService: false
+    customerService: false,
+    delegateUser: false
   },
   mutations: {
     change(state) {

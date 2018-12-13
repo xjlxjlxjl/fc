@@ -3,10 +3,10 @@
     <companyAside :aside="aside"></companyAside>
     <el-main>
       <div class="global">
+        <!-- <el-button size="mini">创建生产看板</el-button>
         <el-button size="mini">创建生产看板</el-button>
         <el-button size="mini">创建生产看板</el-button>
-        <el-button size="mini">创建生产看板</el-button>
-        <el-button size="mini">创建生产看板</el-button>
+        <el-button size="mini">创建生产看板</el-button>-->
       </div>
       <router-view></router-view>
     </el-main>
