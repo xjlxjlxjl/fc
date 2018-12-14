@@ -279,6 +279,7 @@ export default {
             break;
           case "notice":
             ++this.messageTips;
+            this.$notify({ title: "消息通知", message: result.resp.content });
             break;
           case "close":
             this.webSocketClose();

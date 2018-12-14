@@ -33,6 +33,9 @@
                 <el-form-item label="问题描述">
                   <el-input v-model="form.customer_demand" placeholder="问题描述"></el-input>
                 </el-form-item>
+                <el-form-item label="规格">
+                  <el-input v-model="form.specification" placeholder="规格"></el-input>
+                </el-form-item>
                 <el-form-item label="上传图片" class="fileList">
                   <el-upload
                     action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
@@ -65,8 +68,14 @@
                 <el-form-item label="客户需求">
                   <el-input v-model="form.customer_demand" placeholder="客户需求"></el-input>
                 </el-form-item>
+                <el-form-item label="规格">
+                  <el-input v-model="form.specification" placeholder="规格"></el-input>
+                </el-form-item>
                 <el-form-item label="备注">
                   <el-input v-model="form.remark" placeholder="备注"></el-input>
+                </el-form-item>
+                <el-form-item label="　" style="opacity: 0;">
+                  <el-input></el-input>
                 </el-form-item>
                 <el-form-item label="图片" class="fileList">
                   <el-upload
@@ -104,11 +113,13 @@ export default {
         customer_contact: "",
         date: "",
         customer_demand: "",
+        specification: "",
         code: "",
         customer_file_ids: [],
         business_file_ids: [],
         fileUrl: [],
-        remark: ""
+        remark: "",
+        token: ""
       },
       sendCodeTips: "发送验证码",
       isClick: false,
@@ -141,6 +152,7 @@ export default {
         })
         .then(response => {
           if (response.status != 200) return false;
+          that.form.token = response.data.token;
           that.sendCodeTips = 60;
           that.lock = setInterval(() => {
             if (that.sendCodeTips > 1) --that.sendCodeTips;
@@ -176,7 +188,8 @@ export default {
           number: this.form.number,
           customer_linkman: this.form.customer_linkman,
           customer_contact: this.form.customer_contact,
-          customer_demand: this.form.customer_demand
+          customer_demand: this.form.customer_demand,
+          specification: this.form.specification
         };
 
       switch (this.state) {
@@ -189,6 +202,7 @@ export default {
             return false;
           }
           params.code = this.form.code;
+          params.token = this.form.token;
           params.customer_file_ids = this.form.business_file_ids.join(",");
           break;
         default:

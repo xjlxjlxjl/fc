@@ -6,10 +6,17 @@
         <span>{{ item.name }}</span>
       </div>
     </a>
+    <!-- <a href="javascript:;" @click="awaken">
+      <div>
+        <i class="el-icon-service"></i>
+        <span>咨询</span>
+      </div>
+    </a>-->
   </div>
 </template>
 <script>
 import loginModal from "@/pages/Index/common/loginModal";
+
 export default {
   name: "indexChart",
   data() {
@@ -45,6 +52,10 @@ export default {
     jump(url) {
       if (!this.$ifLogin()) return false;
       window.location.href = url;
+    },
+    awaken() {
+      if (!this.$ifLogin()) return false;
+      chatModal.methods.close.call(this);
     }
   }
 };

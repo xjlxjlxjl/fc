@@ -2,6 +2,7 @@
   <div id="inquiry">
     <supplier :list="supplierList" :slug="projectSlug" :productId="productId"></supplier>
     <demand :demand="demandDetail"></demand>
+    <chatModal :companyId="parseInt(companyId)" :companyName="companyName"></chatModal>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
       <el-tab-pane
         v-for="(item, index) in typeSelection"
@@ -91,7 +92,11 @@
           <el-table-column prop="end_at" label="报价有效期至" width="100"></el-table-column>
           <el-table-column prop="name" label="在线咨询" width="80">
             <template slot-scope="{ row,$index }">
-              <a href="/chart.html#/message" target="_blank">
+              <a
+                href="javascript:;"
+                @click="awaken(row.company_id,row.company_name)"
+                target="_blank"
+              >
                 <i class="font_family icon-xiaoxi"></i>
               </a>
             </template>
@@ -108,6 +113,7 @@
 <script>
 import supplier from "@/pages/Chart/common/supplier";
 import demand from "@/pages/Chart/common/demand";
+import chatModal from "@/pages/chart/common/customerChat";
 
 export default {
   name: "inquiry",
@@ -142,12 +148,15 @@ export default {
       demandDetail: {},
       supplierList: [],
       projectSlug: "",
-      productId: ""
+      productId: "",
+      companyId: 0,
+      companyName: ""
     };
   },
   components: {
     supplier: supplier,
-    demand: demand
+    demand: demand,
+    chatModal: chatModal
   },
   methods: {
     handleClick() {
@@ -209,6 +218,7 @@ export default {
         .catch(err => loading.close());
     },
     selectSupplier(slug, supplier, id) {
+      if (!slug || !supplier || !id) return false;
       let that = this;
       that
         .$post(`carts/items/price-company/${slug}/${id}/${supplier.slug}`)
@@ -296,6 +306,12 @@ export default {
           that.getInquiry();
         })
         .catch(err => console.error(err));
+    },
+    awaken(id, name) {
+      if (!this.$ifLogin()) return false;
+      this.companyId = id;
+      this.companyName = name;
+      chatModal.methods.close.call(this);
     }
   },
   created() {

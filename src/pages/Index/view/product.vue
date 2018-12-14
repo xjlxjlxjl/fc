@@ -2,6 +2,7 @@
   <div id="product">
     <join-project :join-project="joinProject" :quantity="assigned.quantitative"></join-project>
     <login-modal></login-modal>
+    <customerChat :companyId="assigned.company_id" :companyName="assigned.company_name"></customerChat>
     <div class="main">
       <el-aside width="298px">
         <div class="typeSelector">
@@ -55,6 +56,7 @@
               <el-button type="primary" size="mini" v-else @click="delCollect(assigned.id)">取消收藏</el-button>
               <el-button type="primary" size="mini" @click="joinContrast">加入对比</el-button>
               <el-button type="primary" size="mini" @click="getProject">加入项目</el-button>
+              <el-button type="primary" size="mini" @click="awaken">咨询</el-button>
             </div>
           </div>
           <div class="card">
@@ -119,6 +121,7 @@
 import indexChart from "@/pages/Index/common/indexChart";
 import joinProjectModel from "@/pages/Index/common/joinProject";
 import loginModal from "@/pages/Index/common/loginModal";
+import customerChat from "@/pages/Chart/common/customerChat";
 
 export default {
   name: "product",
@@ -154,13 +157,15 @@ export default {
         member: [],
         memberId: [],
         description: ""
-      }
+      },
+      companyId: 0
     };
   },
   components: {
     "index-chart": indexChart,
     "join-project": joinProjectModel,
-    "login-modal": loginModal
+    "login-modal": loginModal,
+    customerChat: customerChat
   },
   methods: {
     joinCollect() {
@@ -196,25 +201,32 @@ export default {
       if (!inArr) arr[this.assigned.parent_category.name].push(this.assigned);
       localStorage.setItem("contrast", JSON.stringify(arr));
     },
+    awaken() {
+      if (!this.$ifLogin()) return false;
+      customerChat.methods.close.call(this);
+    },
     getProject() {
       if (!this.$ifLogin()) return false;
       joinProjectModel.methods.getProject.call(this);
+    },
+    getDetail() {
+      const that = this,
+        loading = this.$loading({ lock: true });
+      that.params = that.$route.params;
+      that
+        .$post(`products/product-details/${that.params.slug}`, {
+          selling_price_slug: that.params.code
+        })
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          that.assigned = response.data;
+        })
+        .catch(error => loading.close());
     }
   },
   created() {
-    const that = this,
-      loading = this.$loading({ lock: true });
-    that.params = that.$route.params;
-    that
-      .$post("products/product-details/" + that.params.slug, {
-        selling_price_slug: that.params.code
-      })
-      .then(response => {
-        loading.close();
-        if (response.status != 200) return false;
-        that.assigned = response.data;
-      })
-      .catch(error => loading.close());
+    this.getDetail();
   }
 };
 </script>
