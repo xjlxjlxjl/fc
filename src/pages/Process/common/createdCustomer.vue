@@ -240,55 +240,57 @@ export default {
 </script>
 <style lang="less">
 #createdCustomer {
-  .modalBoxMain {
-    width: 800px;
-    #createdCustomerForm {
-      .el-form {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        .el-form-item {
-          margin-bottom: 0;
-          flex-grow: 1;
-          max-width: 374px;
-          .el-form-item__content {
-            box-sizing: border-box;
-            width: 220px;
-            &:last-child {
-              width: auto;
-            }
-            .el-input {
-              .el-input__inner {
-                padding-right: 15px;
+  .modalBox {
+    .modalBoxMain {
+      width: 800px;
+      #createdCustomerForm {
+        .el-form {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          .el-form-item {
+            margin-bottom: 0;
+            flex-grow: 1;
+            max-width: 374px;
+            .el-form-item__content {
+              box-sizing: border-box;
+              width: 220px;
+              &:last-child {
+                width: auto;
               }
-              .el-input__suffix {
-                button {
-                  padding: 5px;
-                  font-size: 12px;
+              .el-input {
+                .el-input__inner {
+                  padding-right: 15px;
+                }
+                .el-input__suffix {
+                  button {
+                    padding: 5px;
+                    font-size: 12px;
+                  }
                 }
               }
-            }
-            .el-date-editor {
-              width: 202px;
-            }
-          }
-        }
-        .fileList {
-          padding-bottom: 0.5rem;
-          max-width: none;
-          .el-upload--picture-card {
-            width: 90px;
-            height: 90px;
-            line-height: 102px;
-            .el-upload__input {
-              opacity: 0;
-              display: none;
+              .el-date-editor {
+                width: 202px;
+              }
             }
           }
-          .el-upload-list {
-            .el-upload-list__item {
+          .fileList {
+            padding-bottom: 0.5rem;
+            max-width: none;
+            .el-upload--picture-card {
               width: 90px;
               height: 90px;
+              line-height: 102px;
+              .el-upload__input {
+                opacity: 0;
+                display: none;
+              }
+            }
+            .el-upload-list {
+              .el-upload-list__item {
+                width: 90px;
+                height: 90px;
+              }
             }
           }
         }

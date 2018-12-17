@@ -114,7 +114,7 @@ import { mapState, mapMutations } from "vuex";
 import fileImg from "@/assets/img/file.png";
 
 export default {
-  name: "customerChat",
+  name: "chatModal",
   data() {
     return {
       fileImg: fileImg,
@@ -547,7 +547,7 @@ export default {
   .modalBox {
     top: 180px;
     @media screen and (max-width: 510px) {
-      top: 0px;
+      top: 80px;
     }
     .modalBoxMain {
       width: 500px;
@@ -559,11 +559,10 @@ export default {
       #customer {
         overflow-y: auto;
         border-bottom: @chatBorder;
-        height: 350px !important;
         .chatMain {
           padding: 2rem 1.5rem 1rem 1.5rem;
           @media screen and (max-width: 820px) {
-            height: 20rem;
+            height: 15rem;
             overflow-y: auto;
           }
           .chatMessage {

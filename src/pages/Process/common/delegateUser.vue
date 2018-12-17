@@ -68,7 +68,7 @@ export default {
       let that = this,
         url = null;
       switch (that.active.process) {
-        case 0:
+        case 1:
           url = `service/send/customer/service/${that.active.id}`;
           break;
         case 2:

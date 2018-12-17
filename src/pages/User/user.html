@@ -59,12 +59,22 @@
     .el-message-box {
       width: auto;
     }
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 500px) {
       .el-message-box {
         max-width: 320px;
       }
+
+      .el-tabs
+        > .el-tabs__header
+        > .el-tabs__nav-wrap
+        > .el-tabs__nav-scroll
+        > .el-tabs__nav,
+      .el-table__fixed-right .el-table__fixed-header-wrapper,
+      .el-table__fixed-right .el-table__fixed-body-wrapper {
+        z-index: 0 !important;
+      }
     }
-    @media screen and (min-width: 400px) {
+    @media screen and (min-width: 500px) {
       .el-message-box {
         max-width: 480px;
       }

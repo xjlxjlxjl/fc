@@ -188,7 +188,7 @@ export default {
 <style lang="less" scoped>
 #loginModal {
   .modalBox {
-    top: 0 !important;
+    top: 80px !important;
     .modalBoxMain {
       width: 330px;
       #login {

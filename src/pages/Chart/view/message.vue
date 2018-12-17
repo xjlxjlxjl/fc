@@ -1579,7 +1579,7 @@ export default {
             }
           }
           #chatMain {
-            height: 100px !important;
+            height: 260px !important;
           }
           ::-webkit-scrollbar {
             display: none !important;

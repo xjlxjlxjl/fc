@@ -2,7 +2,7 @@
   <div id="product">
     <join-project :join-project="joinProject" :quantity="assigned.quantitative"></join-project>
     <login-modal></login-modal>
-    <customerChat :companyId="assigned.company_id" :companyName="assigned.company_name"></customerChat>
+    <chatModal :companyId="assigned.company_id" :companyName="assigned.company_name"></chatModal>
     <div class="main">
       <el-aside width="298px">
         <div class="typeSelector">
@@ -121,7 +121,7 @@
 import indexChart from "@/pages/Index/common/indexChart";
 import joinProjectModel from "@/pages/Index/common/joinProject";
 import loginModal from "@/pages/Index/common/loginModal";
-import customerChat from "@/pages/Chart/common/customerChat";
+import chatModal from "@/pages/Chart/common/chatModal";
 
 export default {
   name: "product",
@@ -165,7 +165,7 @@ export default {
     "index-chart": indexChart,
     "join-project": joinProjectModel,
     "login-modal": loginModal,
-    customerChat: customerChat
+    chatModal: chatModal
   },
   methods: {
     joinCollect() {
@@ -203,7 +203,7 @@ export default {
     },
     awaken() {
       if (!this.$ifLogin()) return false;
-      customerChat.methods.close.call(this);
+      chatModal.methods.close.call(this);
     },
     getProject() {
       if (!this.$ifLogin()) return false;

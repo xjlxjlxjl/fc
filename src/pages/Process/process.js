@@ -52,6 +52,9 @@ Vue.prototype.getTableAttr = ($el, attr) => {
   });
   return arr;
 };
+Vue.prototype.getData = $el => {
+  return $el.bootstrapTable("getSelections");
+};
 Vue.prototype.addTable = ($el, index, data) => {
   $el.bootstrapTable("insertRow", {
     index: index,

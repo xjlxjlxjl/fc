@@ -38,7 +38,7 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("service", params.data)
+        .$get("service/list", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -52,9 +52,10 @@ export default {
     },
     tableAjaxParams(params) {
       return {
+        search: params.search,
         page: params.offset / 10 + 1,
         per_page: params.limit,
-        search: params.search
+        service_status: 0
       };
     },
     addApplication() {
@@ -102,6 +103,7 @@ export default {
       exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
       classes: "table",
       pageList: [10, 25, 50, 100, "All"],
+      detailView: true,
       columns: [
         {
           checkbox: true
@@ -117,7 +119,7 @@ export default {
           sortable: true
         },
         {
-          field: "apply_linkman",
+          field: "business_man_name",
           title: "申请联系人",
           editable: {
             type: "text",
@@ -173,8 +175,29 @@ export default {
           }
         },
         {
+          field: "specification",
+          title: "规格",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "规格",
+            emptytext: "空",
+            validate: v => {
+              if (!v) return "不能为空";
+            }
+          }
+        },
+        {
           field: "process_name",
           title: "订单处理状态"
+        },
+        {
+          field: "deal_mans",
+          title: "委派人员",
+          sortable: true,
+          formatter: (value, row, index) => {
+            return row.deal_mans.join(",");
+          }
         },
         {
           field: "reason_analysis",
@@ -238,6 +261,13 @@ export default {
           }
         },
         {
+          field: "yingshou",
+          title: "应收价",
+          formatter: (value, row, index) => {
+            return `${row.price ? row.price - row.discount_price : "未报价"}`;
+          }
+        },
+        {
           field: "deal_advice",
           title: "处理建议",
           editable: {
@@ -274,6 +304,9 @@ export default {
             ];
             switch (row.process) {
               case 0:
+                return del;
+                break;
+              case 1:
                 return service + del;
                 break;
               case 2:
@@ -316,7 +349,7 @@ export default {
                 .then(({ price }) => {
                   that
                     .$post(`service/set/discount/price/${value}`, {
-                      discount_price: value
+                      discount_price: price
                     })
                     .then(response => {
                       if (response.status != 200) return false;
@@ -338,7 +371,79 @@ export default {
           })
           .catch(err => {});
       },
-      detailFormatter(field, mrow, oldValue, $el) {}
+      detailFormatter(field, mrow, oldValue, $el) {
+        let html = [];
+        if (mrow.customer_files.length) {
+          html.push(
+            `<p class="lead" align="left">客户上传文件</p><ul class="list-inline" align="left">`
+          );
+          mrow.customer_files.forEach(e => {
+            let ess = e.url.split(".").pop();
+            switch (ess) {
+              case "jpg":
+              case "png":
+              case "jpeg":
+                html.push(
+                  `<li><img src="${
+                    e.url
+                  }" class="img-rounded" style="width: 100px;"></li>`
+                );
+                break;
+              default:
+                html.push(`<li><a href="${e.url}" target="_blank"></a></li>`);
+                break;
+            }
+          });
+          html.push(`</ul>`);
+        }
+        if (mrow.business_files.length) {
+          html.push(
+            `<p class="lead" align="left">业务上传文件</p><ul class="list-inline" align="left">`
+          );
+          mrow.business_files.forEach(e => {
+            let ess = e.url.split(".").pop();
+            switch (ess) {
+              case "jpg":
+              case "png":
+              case "jpeg":
+                html.push(
+                  `<li><img src="${
+                    e.url
+                  }" class="img-rounded" style="width: 100px;"></li>`
+                );
+                break;
+              default:
+                html.push(`<li><a href="${e.url}" target="_blank"></a></li>`);
+                break;
+            }
+          });
+          html.push(`</ul>`);
+        }
+        if (mrow.service_files.length) {
+          html.push(
+            `<p class="lead" align="left">客服上传文件</p><ul class="list-inline" align="left">`
+          );
+          mrow.service_files.forEach(e => {
+            let ess = e.url.split(".").pop();
+            switch (ess) {
+              case "jpg":
+              case "png":
+              case "jpeg":
+                html.push(
+                  `<li><img src="${
+                    e.url
+                  }" class="img-rounded" style="width: 100px;"></li>`
+                );
+                break;
+              default:
+                html.push(`<li><a href="${e.url}" target="_blank"></a></li>`);
+                break;
+            }
+          });
+          html.push(`</ul>`);
+        }
+        return html.join("");
+      }
     });
   },
   created() {}
