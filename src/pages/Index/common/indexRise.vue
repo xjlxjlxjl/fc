@@ -113,12 +113,14 @@
     <el-main class="headerProcess hidden-md-and-down">
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
-          <div class="whiteRoundBox">
-            <a href="javascript:;" @click="locationTo(val.url)">{{ val.name }}</a>
-            <img :src="progress" v-if="key < process.length - 3">
-            <img :src="progressLast" v-else-if="key == process.length - 1">
-            <img :src="progressHide" v-else>
-          </div>
+          <a href="javascript:;" @click="locationTo(val.url)">
+            <div class="whiteRoundBox">
+              <a href="javascript:;">{{ val.name }}</a>
+              <img :src="progress" v-if="key < process.length - 3">
+              <img :src="progressLast" v-else-if="key == process.length - 1">
+              <img :src="progressHide" v-else>
+            </div>
+          </a>
         </el-menu-item>
       </el-menu>
     </el-main>
@@ -431,6 +433,9 @@ export default {
         padding: 0 0.5rem;
         border-bottom: none;
         height: auto;
+        a {
+          text-decoration: none;
+        }
         .whiteRoundBox {
           color: @white;
           a {

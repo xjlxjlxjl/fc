@@ -12,7 +12,7 @@
           </div>
           <div class="modalBoxMainContent">
             <div id="createdCustomerForm" v-if="state == 1">
-              <el-form :inline="true" :model="form" label-position="left" label-width="100px">
+              <el-form :inline="true" :model="form" label-position="left" label-width="70px">
                 <el-form-item label="姓名">
                   <el-input v-model="form.customer_linkman" placeholder="姓名"></el-input>
                 </el-form-item>
@@ -22,10 +22,14 @@
                       slot="suffix"
                       type="info"
                       size="mini"
+                      class="pcCode"
                       round
                       @click="sendCode"
                     >{{ sendCodeTips }}</el-button>
                   </el-input>
+                </el-form-item>
+                <el-form-item class="moblieCode" style="text-align: right;">
+                  <el-button type="info" size="mini" round @click="sendCode">{{ sendCodeTips }}</el-button>
                 </el-form-item>
                 <el-form-item label="验证码">
                   <el-input v-model="form.code" placeholder="验证码"></el-input>
@@ -74,9 +78,9 @@
                 <el-form-item label="备注">
                   <el-input v-model="form.remark" placeholder="备注"></el-input>
                 </el-form-item>
-                <el-form-item label="　" style="opacity: 0;">
+                <!-- <el-form-item label="　" style="opacity: 0;">
                   <el-input></el-input>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item label="图片" class="fileList">
                   <el-upload
                     action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
@@ -243,18 +247,36 @@ export default {
   .modalBox {
     .modalBoxMain {
       width: 800px;
+      max-height: 70%;
+      overflow: auto;
       #createdCustomerForm {
         .el-form {
           display: flex;
           flex-wrap: wrap;
-          justify-content: center;
+          @media screen and (max-width: 500px) {
+            .pcCode {
+              display: none !important;
+            }
+          }
+          @media screen and (min-width: 501px) {
+            .moblieCode {
+              display: none !important;
+            }
+          }
           .el-form-item {
             margin-bottom: 0;
-            flex-grow: 1;
-            max-width: 374px;
+            @media screen and (max-width: 500px) {
+              margin-right: 0;
+              width: 100%;
+            }
+            @media screen and (min-width: 501px) {
+              width: 48%;
+            }
+            display: flex;
             .el-form-item__content {
               box-sizing: border-box;
-              width: 220px;
+              flex-grow: 1;
+              flex-basis: auto;
               &:last-child {
                 width: auto;
               }
@@ -275,8 +297,26 @@ export default {
             }
           }
           .fileList {
+            width: 100% !important;
             padding-bottom: 0.5rem;
-            max-width: none;
+            .el-form-item__content {
+              max-height: 130px;
+              overflow-y: auto;
+              overflow-x: hidden;
+              > div {
+                display: flex;
+                flex-direction: column-reverse;
+                > ul {
+                  width: 100%;
+                  max-width: 100%;
+                  @media screen and (max-width: 400px) {
+                    width: 275px;
+                  }
+                  display: flex;
+                  flex-wrap: wrap;
+                }
+              }
+            }
             .el-upload--picture-card {
               width: 90px;
               height: 90px;

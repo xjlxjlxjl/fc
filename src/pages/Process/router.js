@@ -5,6 +5,12 @@ import Sale from "@/pages/Process/view/sale/sale";
 import saleTasks from "@/pages/Process/view/sale/tasks";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
+import customerProduct from "@/pages/Process/view/sale/product";
+import customer from "@/pages/Process/view/sale/customer";
+import saleOrder from "@/pages/Process/view/sale/order";
+import saleOffer from "@/pages/Process/view/sale/offer";
+import saleShipment from "@/pages/Process/view/sale/shipment";
+import customerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
 // 工程
 import Engineer from "@/pages/Process/view/engineer/engineer";
 // 采购
@@ -13,10 +19,26 @@ import Purchase from "@/pages/Process/view/purchase/purchase";
 import IQC from "@/pages/Process/view/IQC/IQC";
 // 仓库
 import WareHouse from "@/pages/Process/view/wareHouse/wareHouse";
+import wareTasks from "@/pages/Process/view/wareHouse/tasks";
+import wareProduct from "@/pages/Process/view/wareHouse/product";
+import wareMaterial from "@/pages/Process/view/wareHouse/material";
+import wareOutStock from "@/pages/Process/view/wareHouse/outStock";
+import wareShipment from "@/pages/Process/view/wareHouse/shipment";
+import warehousing from "@/pages/Process/view/wareHouse/warehousing";
+import wareTemporary from "@/pages/Process/view/wareHouse/temporary";
+import wareCombination from "@/pages/Process/view/wareHouse/combination";
+import wareSplit from "@/pages/Process/view/wareHouse/split";
+import wareSparePart from "@/pages/Process/view/wareHouse/spareParts";
 // 生产
 import Produce from "@/pages/Process/view/produce/produce";
 // OQC
 import OQC from "@/pages/Process/view/OQC/OQC";
+import OQCTasks from "@/pages/Process/view/OQC/tasks";
+import OQCProduct from "@/pages/Process/view/OQC/product";
+import OQCInspection from "@/pages/Process/view/OQC/inspection";
+import OQCRules from "@/pages/Process/view/OQC/rules";
+import OQCTime from "@/pages/Process/view/OQC/time";
+import OQCHistory from "@/pages/Process/view/OQC/history";
 // 物流
 import Logistics from "@/pages/Process/view/logistics/logistics";
 // 售后
@@ -67,6 +89,30 @@ export default new Router({
         {
           path: "/Sale/customerServiceQuotation",
           component: customerServiceQuotation
+        },
+        {
+          path: "/Sale/product",
+          component: customerProduct
+        },
+        {
+          path: "/Sale/customer",
+          component: customer
+        },
+        {
+          path: "/Sale/order",
+          component: saleOrder
+        },
+        {
+          path: "/Sale/offer",
+          component: saleOffer
+        },
+        {
+          path: "/Sale/shipment",
+          component: saleShipment
+        },
+        {
+          path: "/Sale/customerServiceMaterial",
+          component: customerServiceMaterial
         }
       ]
     },
@@ -88,7 +134,49 @@ export default new Router({
     {
       path: "/WareHouse",
       name: "WareHouse",
-      component: WareHouse
+      component: WareHouse,
+      children: [
+        {
+          path: "/WareHouse",
+          component: wareTasks
+        },
+        {
+          path: "/WareHouse/product",
+          component: wareProduct
+        },
+        {
+          path: "/WareHouse/material",
+          component: wareMaterial
+        },
+        {
+          path: "/WareHouse/outStock",
+          component: wareOutStock
+        },
+        {
+          path: "/WareHouse/shipment",
+          component: wareShipment
+        },
+        {
+          path: "/WareHouse/warehousing",
+          component: warehousing
+        },
+        {
+          path: "/WareHouse/temporary",
+          component: wareTemporary
+        },
+        {
+          path: "/WareHouse/combination",
+          component: wareCombination
+        },
+        {
+          path: "/WareHouse/split",
+          component: wareSplit
+        },
+        {
+          path: "/WareHouse/spareParts",
+          component: wareSparePart
+        }
+      ]
     },
     {
       path: "/Produce",
@@ -98,7 +186,33 @@ export default new Router({
     {
       path: "/OQC",
       name: "OQC",
-      component: OQC
+      component: OQC,
+      children: [
+        {
+          path: "/OQC",
+          component: OQCTasks
+        },
+        {
+          path: "/OQC/product",
+          component: OQCProduct
+        },
+        {
+          path: "/OQC/inspection",
+          component: OQCInspection
+        },
+        {
+          path: "/OQC/rules",
+          component: OQCRules
+        },
+        {
+          path: "/OQC/time",
+          component: OQCTime
+        },
+        {
+          path: "/OQC/history",
+          component: OQCHistory
+        }
+      ]
     },
     {
       path: "/Logistics",

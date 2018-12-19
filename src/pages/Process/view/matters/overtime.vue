@@ -1,21 +1,27 @@
 <template>
-  <div id="tasks">
-    <div id="toolbar">
-      <span class="lead">未完成任务</span>
+  <div id="overtime">
+    <overTimeModal @refresh="refreshed"></overTimeModal>
+    <div id="mattersToolbar">
+      <span class="lead">加班申请记录</span>
+      <el-button @click="create" size="mini">新建</el-button>
     </div>
-    <table id="table"></table>
+    <table id="mattersTable"></table>
   </div>
 </template>
 <script>
+import addOvertime from "@/pages/Process/common/addOvertime";
+
 export default {
-  name: "tasks",
+  name: "overtime",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       activeId: 0
     };
   },
-  components: {},
+  components: {
+    overTimeModal: addOvertime
+  },
   methods: {
     tableAjaxData(params) {
       let that = this,
@@ -24,29 +30,34 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("job/list")
+        .$get("personnels/overtimes", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
           params.success({
-            total: response.data.list.length,
+            total: response.data.pagination.total,
             rows: response.data.list
           });
         })
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset + 1;
+      params.page = params.offset / 10 + 1;
+      params.current_page = params.limit;
+      params.d = params.search;
       return params;
     },
+    create() {
+      addOvertime.methods.close.call(this);
+    },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#mattersTable"));
     }
   },
   mounted() {
     let that = this;
-    $("#table").bootstrapTable({
-      toolbar: "#toolbar",
+    $("#mattersTable").bootstrapTable({
+      toolbar: "#mattersToolbar",
       ajax: this.tableAjaxData,
       queryParams: this.tableAjaxParams,
       search: true,
@@ -72,112 +83,155 @@ export default {
           checkbox: true
         },
         {
-          field: "work_no",
-          title: "任务编号",
-          sortable: true
-        },
-        {
-          field: "creator",
-          title: "创建人",
-          sortable: true
-        },
-        {
           field: "created_at",
-          title: "创建日期"
+          title: "申请时间（创建时间）",
+          sortable: true
         },
         {
-          field: "end_time",
-          title: "截止日期"
+          field: "full_name",
+          title: "操作者",
+          sortable: true
         },
         {
-          field: "content",
-          title: "工作内容"
-        },
-        // {
-        //   field: "members",
-        //   title: "工作成员",
-        //   formatter: event => {
-        //     let html = "";
-        //     event.forEach(e => {
-        //       html += `<p>姓名：${e.user.display_name}　进度：${
-        //         e.status_text
-        //       }</p>`;
-        //     });
-        //     return html;
-        //   }
-        // },
-        {
-          field: "status_text",
-          title: "任务状态"
+          field: "branch",
+          title: "部门",
+          sortable: true
         },
         {
-          field: "status_text",
-          title: "奖惩情况"
+          field: "position",
+          title: "岗位",
+          sortable: true
         },
         {
-          field: "#",
+          field: "start_at",
+          title: "开始时间",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "开始时间",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "end_at",
+          title: "结束时间",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "结束时间",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "total_time",
+          title: "总时间",
+          sortable: true
+        },
+        {
+          field: "total_cost",
+          title: "总费用",
+          sortable: true
+        },
+        {
+          field: "sigin_in_method",
+          title: "是否有打卡记录",
+          sortable: true,
+          editable: {
+            type: "select",
+            source: [{ value: "1", text: "是" }, { value: "0", text: "否" }],
+            title: "是否有打卡记录",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "working_days_off",
+          title: "是否调休",
+          sortable: true,
+          editable: {
+            type: "select",
+            source: [{ value: 1, text: "是" }, { value: 0, text: "否" }],
+            title: "是否调休",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "details",
+          title: "加班说明（详情）",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "加班说明",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "slug",
           title: "操作",
           formatter: (value, row, index) => {
-            let accept = [
-                '<button class="btn btn-info accept">接受</button>'
-              ].join(""),
-              complete = [
-                '<button class="btn btn-success complete">完成</button>'
-              ].join(""),
-              invalid = [
-                '<button class="btn btn-danger invalid">作废</button>'
-              ].join(""),
-              taskState = null;
-            row.members.forEach(e => {
-              if (e.user.id == this.user.user.id) taskState = e.status;
-            });
-            if (row.created_by_id == this.user.user.id && row.status == 0)
-              return invalid;
-            else if (taskState == 1) return complete;
-            else if (taskState == 0) return accept;
-            else return "";
+            let del = [
+              `<button class="btn btn-danger btn-sm del">删除</button>`
+            ];
+            return del;
           },
           events: {
-            "click .accept": (e, value, row, index) => {
-              this.activeId = row.id;
-              dateTimePick.methods.close.call(this);
-            },
-            "click .complete": (e, value, row, index) => {
-              this.$post(`job/complete/${row.id}`)
+            "click .del": ($el, value, row, index) => {
+              that
+                .$post(`personnels/overtimes/delete/${value}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  that.refresh($("#table"));
+                  that.delTable($("#mattersTable"), "id", [row.id]);
                 })
-                .catch(err => console.error(err));
-            },
-            "click .invalid": (e, value, row, index) => {
-              this.$post(`job/invalid/${row.id}`)
-                .then(response => {
-                  if (response.status != 200) return false;
-                  row.status = 4;
-                  that.ediTable($("#table"), index, row);
-                })
-                .catch(err => console.error(err));
+                .catch(err => {});
             }
           }
         }
       ],
       detailFormatter: (index, row, $el) => {
+        let self = row.overtimes;
         let html = [
-          "<table class='table'>",
-          "<tr><th>成员姓名</th><th>完成状态</th></tr>"
+          `<table class="table">
+          <tr><th>审批人</th><th>审批状态</th><th>原因</th><th>审批时间</th></tr>`
         ];
-        row.members.forEach(e =>
+        self.forEach(e =>
           html.push(
-            `<tr><td>${e.user.display_name}</td><td>${e.status_text}</td></tr>`
+            `<tr><td>${e.name}</td><td>${
+              e.status == "success"
+                ? "成功"
+                : e.status == "fail"
+                ? "拒绝"
+                : "待审批"
+            }</td><td>${e.reason || "无"}</td><td>${e.created_at}</td></tr>`
           )
         );
         html.push("</table>");
         return html.join("");
       },
-      onEditableSave: (field, mrow, oldValue, $el) => {}
+      onEditableSave: (field, mrow, oldValue, $el) => {
+        mrow.total_time =
+          (new Date(mrow.end_at) - new Date(mrow.start_at)) / 3600 / 1000;
+
+        mrow.start_at = mrow.start_at.split(":");
+        mrow.start_at.pop();
+        mrow.start_at = mrow.start_at.join(":");
+
+        mrow.end_at = mrow.end_at.split(":");
+        mrow.end_at.pop();
+        mrow.end_at = mrow.end_at.join(":");
+
+        that
+          .$post(`/personnels/overtimes/edit/${mrow.slug}`, mrow)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.$message({ message: "修改成功", type: "success" });
+          })
+          .catch(err => {});
+      }
     });
   },
   created() {}
 };
 </script>
+<style lang="less">
+#overtime {
+}
+</style>

@@ -33,7 +33,7 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           params.success({
-            total: response.data.list.length,
+            total: response.data.total_page,
             rows: response.data.list
           });
         })

@@ -126,7 +126,11 @@ export default {
       height: 100%;
       padding: 0;
       .createdService {
-        display: none;
+        position: absolute;
+        right: 0;
+      }
+      canvas {
+        width: 100%;
       }
       .main {
         width: 93.2%;

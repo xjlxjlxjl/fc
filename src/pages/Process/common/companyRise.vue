@@ -114,12 +114,14 @@
     <el-main class="headerProcess hidden-md-and-down">
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
-          <div class="whiteRoundBox">
-            <router-link :to="val.url">{{ val.name }}</router-link>
-            <img :src="progress" v-if="key < process.length - 3">
-            <img :src="progressLast" v-else-if="key == process.length - 1">
-            <img :src="progressHide" v-else>
-          </div>
+          <router-link :to="val.url">
+            <div class="whiteRoundBox">
+              <router-link :to="val.url">{{ val.name }}</router-link>
+              <img :src="progress" v-if="key < process.length - 3">
+              <img :src="progressLast" v-else-if="key == process.length - 1">
+              <img :src="progressHide" v-else>
+            </div>
+          </router-link>
         </el-menu-item>
       </el-menu>
     </el-main>
@@ -300,9 +302,10 @@ export default {
       this.lockReconnect = true;
       //没连接上会一直重连，设置延迟避免请求过多
       if (this.connectNum > 3) this.webSocketClose();
+      let that = this;
       setTimeout(function() {
-        this.webSocket(url);
-        this.lockReconnect = false;
+        that.webSocket();
+        that.lockReconnect = false;
       }, 2000);
     },
     webSocketLogin() {
@@ -507,12 +510,17 @@ export default {
         padding: 0 0.5rem;
         border-bottom: none;
         height: auto;
+        a {
+          &:hover {
+            text-decoration: none;
+          }
+        }
         .whiteRoundBox {
-          color: @white;
           a {
             line-height: 1.8;
             .whiteLink;
           }
+          color: @white;
           &:hover {
             background-color: @white !important;
             > a {

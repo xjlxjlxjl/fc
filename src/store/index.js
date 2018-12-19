@@ -8,6 +8,7 @@ export default new Vuex.Store({
     socketAddress: "wss://factoryun.com/wss",
     // socketAddress: "ws://skyliu.cn/ws",
     userBranch: [],
+    leaveType: [],
     process: {
       sale: [
         { name: "未完成任务", url: "/Sale" },
@@ -53,6 +54,36 @@ export default new Vuex.Store({
         { name: "不良产品问题归类", url: "/AfterSale/badProblem" },
         { name: "客户好评系统汇总", url: "/AfterSale/praise" },
         { name: "客服部共享文件汇总", url: "/AfterSale/sharedFiles" }
+      ],
+      WareHouse: [
+        { name: "待完成任务", url: "/WareHouse" },
+        { name: "生产看板", url: "/WareHouse/product" },
+        { name: "备料需求表", url: "/WareHouse/spareParts" },
+        { name: "拆分需求表", url: "/WareHouse/split" },
+        { name: "组合需求表", url: "/WareHouse/combination" },
+        { name: "来料暂收表", url: "/WareHouse/temporary" },
+        { name: "入库申请表", url: "/WareHouse/warehousing" },
+        { name: "出货申请表", url: "/WareHouse/shipment" },
+        { name: "出库申请表", url: "/WareHouse/outStock" },
+        { name: "原材料库存", url: "/WareHouse/material" },
+        { name: "物料备货周期表", url: "" },
+        { name: "库存金额表", url: "" },
+        { name: "最优库存量表", url: "" },
+        { name: "差异仓列表", url: "" },
+        { name: "展品仓列表", url: "" },
+        { name: "库存金额表", url: "" },
+        { name: "固定资产仓列表", url: "" },
+        { name: "退换货仓列表", url: "" },
+        { name: "打包仓列表", url: "" },
+        { name: "各仓历史盘点记录", url: "" }
+      ],
+      OQC: [
+        { name: "待完成任务", url: "/OQC" },
+        { name: "生产看板", url: "/OQC/product" },
+        { name: "生产送检表", url: "/OQC/inspection" },
+        { name: "出货检标准规定", url: "/OQC/rules" },
+        { name: "工时", url: "/OQC/time" },
+        { name: "历史出货报告", url: "/OQC/history" }
       ]
     },
     ModalShow: false,
@@ -63,12 +94,21 @@ export default new Vuex.Store({
     galleryModal: false,
     chatModal: false,
     payModal: false,
+    //
     createdWorkModal: false,
     createdCustomerModal: false,
     dateTimePickModal: false,
     customerService: false,
     delegateUser: false,
-    createdReportModal: false
+    createdReportModal: false,
+    //
+    entryWorkModal: false,
+    changePositionsModal: false,
+    addOverTimeModal: false,
+    addLeaveModal: false,
+    addOutsiteModal: false,
+    addNoteModal: false,
+    editOqcModal: false
   },
   mutations: {
     change(state) {
@@ -95,6 +135,9 @@ export default new Vuex.Store({
     },
     getUserBranch(state, arr) {
       state.userBranch = arr;
+    },
+    setStateData(state, name, arr) {
+      state[name] = arr;
     }
   }
 });

@@ -304,8 +304,6 @@ export default {
             ];
             switch (row.process) {
               case 0:
-                return del;
-                break;
               case 1:
                 return service + del;
                 break;

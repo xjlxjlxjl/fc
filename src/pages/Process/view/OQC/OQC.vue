@@ -1,12 +1,60 @@
 <template>
-  <div id="OQC"></div>
+  <el-container id="OQC">
+    <companyAside :aside="aside"></companyAside>
+    <el-main>
+      <div class="global"></div>
+      <router-view></router-view>
+    </el-main>
+  </el-container>
 </template>
 <script>
+import companyAside from "@/pages/Process/common/companyAside";
 export default {
-  name: "OQC"
+  name: "OQC",
+  data() {
+    return {
+      aside: this.$store.state.process.OQC
+    };
+  },
+  components: {
+    companyAside: companyAside
+  },
+  methods: {}
 };
 </script>
 <style lang="less">
+@background: #f2f2f2;
+@borderBlod: solid 1rem @background;
+@border: solid 1px @background;
+@white: #ffffff;
+@gery: #666666;
 #OQC {
+  .global {
+    padding: 11px 0 0 11px;
+  }
+  #OQCtoolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .lead {
+      margin-right: 20px;
+      margin-bottom: 0;
+    }
+  }
+  .table th,
+  .table td {
+    text-align: center;
+    vertical-align: middle !important;
+  }
+  .el-main
+    .bootstrap-table
+    > .fixed-table-container
+    > .fixed-table-body
+    > .table
+    > thead
+    > tr
+    > .bs-checkbox {
+    min-width: auto;
+  }
 }
 </style>

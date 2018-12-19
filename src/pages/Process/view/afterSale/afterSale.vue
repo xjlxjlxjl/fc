@@ -33,7 +33,7 @@ export default {
   .global {
     padding: 11px 0 0 11px;
   }
-  #toolbar {
+  #afterSaleToolbar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;

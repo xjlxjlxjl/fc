@@ -11,6 +11,7 @@ import router from "./router";
 import store from "../../store";
 import elementUi from "element-ui";
 import { post, get, upload, patch, put } from "../../assets/js/http";
+import Print from "../../assets/js/print";
 import "element-ui/lib/theme-chalk/index.css";
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
@@ -32,12 +33,13 @@ import "bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js";
 
 Vue.config.productionTip = false;
 Vue.use(elementUi);
+Vue.use(Print);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;
 Vue.prototype.$upload = upload;
 Vue.prototype.dateParse = date => {
   return `${date.getFullYear()}-${
-    date.getMonth() + 1 < 9 ? "0" + date.getMonth() + 1 : date.getMonth()
+    date.getMonth() + 1 < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
   }-${date.getDate() < 9 ? "0" + date.getDate() : date.getDate()} ${
     date.getHours() < 9 ? "0" + date.getHours() : date.getHours()
   }:${date.getMinutes() < 9 ? "0" + date.getMinutes() : date.getMinutes()}:${
@@ -61,6 +63,10 @@ Vue.prototype.addTable = ($el, index, data) => {
     row: data
   });
 };
+/**
+ * data String 'id'
+ * data Array [ id, id, id ]
+ */
 Vue.prototype.delTable = ($el, type, data) => {
   $el.bootstrapTable("remove", {
     field: type,

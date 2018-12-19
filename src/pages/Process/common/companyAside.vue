@@ -128,7 +128,8 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          that.aside = response.data.list;
+          that.refresh($("#table"));
+          // that.aside = response.data.list;
         })
         .catch(err => loading.close());
     }

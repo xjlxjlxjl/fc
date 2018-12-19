@@ -1,21 +1,31 @@
 <template>
   <div id="tasks">
-    <div id="toolbar">
+    <entryWork></entryWork>
+    <changePositions :userArr="arr"></changePositions>
+    <div id="mattersToolbar">
       <span class="lead">员工列表</span>
+      <el-button size="mini" @click="entry">邀请入职</el-button>
+      <el-button size="mini" @click="changePost">调整岗位</el-button>
     </div>
-    <table id="table"></table>
+    <table id="mattersTable"></table>
   </div>
 </template>
 <script>
+import entryWork from "@/pages/Process/common/entryWork";
+import changePositions from "@/pages/Process/common/changePositions";
 export default {
   name: "tasks",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
-      activeId: 0
+      activeId: 0,
+      arr: []
     };
   },
-  components: {},
+  components: {
+    entryWork: entryWork,
+    changePositions: changePositions
+  },
   methods: {
     tableAjaxData(params) {
       let that = this,
@@ -24,29 +34,44 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("job/list")
+        .$get("personnels/list", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
           params.success({
-            total: response.data.list.length,
+            total: response.data.pagination.total,
             rows: response.data.list
           });
         })
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset + 1;
+      params.page = params.offset / 10 + 1;
+      params.per_page = params.limit;
+      params.q = params.search;
+      params.i = params.search;
+      params.p = params.search;
       return params;
     },
+    entry() {
+      entryWork.methods.close.call(this);
+    },
+    changePost() {
+      this.arr = this.getTableAttr($("#mattersTable"), "member_id");
+      if (!this.arr.length) {
+        this.$message({ message: "请勾选要调岗的员工", type: "error" });
+        return false;
+      }
+      changePositions.methods.close.call(this);
+    },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#mattersTable"));
     }
   },
   mounted() {
     let that = this;
-    $("#table").bootstrapTable({
-      toolbar: "#toolbar",
+    $("#mattersTable").bootstrapTable({
+      toolbar: "#mattersToolbar",
       ajax: this.tableAjaxData,
       queryParams: this.tableAjaxParams,
       search: true,
@@ -66,115 +91,65 @@ export default {
       exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
       classes: "table",
       pageList: [10, 25, 50, 100, "All"],
-      detailView: true,
+      // detailView: true,
       columns: [
         {
           checkbox: true
         },
         {
-          field: "work_no",
-          title: "任务编号",
+          field: "employee_id",
+          title: "员工编号",
           sortable: true
         },
         {
-          field: "creator",
-          title: "创建人",
+          field: "name",
+          title: "姓名",
           sortable: true
         },
         {
-          field: "created_at",
-          title: "创建日期"
+          field: "display_name",
+          title: "昵称",
+          sortable: true
         },
         {
-          field: "end_time",
-          title: "截止日期"
+          field: "native_place",
+          title: "老家",
+          sortable: true
         },
         {
-          field: "content",
-          title: "工作内容"
-        },
-        // {
-        //   field: "members",
-        //   title: "工作成员",
-        //   formatter: event => {
-        //     let html = "";
-        //     event.forEach(e => {
-        //       html += `<p>姓名：${e.user.display_name}　进度：${
-        //         e.status_text
-        //       }</p>`;
-        //     });
-        //     return html;
-        //   }
-        // },
-        {
-          field: "status_text",
-          title: "任务状态"
+          field: "entry_at",
+          title: "入职时间",
+          sortable: true
         },
         {
-          field: "status_text",
-          title: "奖惩情况"
+          field: "zodiac",
+          title: "属相",
+          sortable: true
         },
         {
-          field: "#",
-          title: "操作",
+          field: "birthday",
+          title: "生日",
+          sortable: true
+        },
+        {
+          field: "department",
+          title: "职位",
+          sortable: true
+        },
+        {
+          field: "gender",
+          title: "性别",
           formatter: (value, row, index) => {
-            let accept = [
-                '<button class="btn btn-info accept">接受</button>'
-              ].join(""),
-              complete = [
-                '<button class="btn btn-success complete">完成</button>'
-              ].join(""),
-              invalid = [
-                '<button class="btn btn-danger invalid">作废</button>'
-              ].join(""),
-              taskState = null;
-            row.members.forEach(e => {
-              if (e.user.id == this.user.user.id) taskState = e.status;
-            });
-            if (row.created_by_id == this.user.user.id && row.status == 0)
-              return invalid;
-            else if (taskState == 1) return complete;
-            else if (taskState == 0) return accept;
-            else return "";
-          },
-          events: {
-            "click .accept": (e, value, row, index) => {
-              this.activeId = row.id;
-              dateTimePick.methods.close.call(this);
-            },
-            "click .complete": (e, value, row, index) => {
-              this.$post(`job/complete/${row.id}`)
-                .then(response => {
-                  if (response.status != 200) return false;
-                  that.refresh($("#table"));
-                })
-                .catch(err => console.error(err));
-            },
-            "click .invalid": (e, value, row, index) => {
-              this.$post(`job/invalid/${row.id}`)
-                .then(response => {
-                  if (response.status != 200) return false;
-                  row.status = 4;
-                  that.ediTable($("#table"), index, row);
-                })
-                .catch(err => console.error(err));
-            }
+            return `${value == "male" ? "男" : "女"}`;
           }
+        },
+        {
+          field: "contact_phone",
+          title: "联系电话",
+          sortable: true
         }
       ],
-      detailFormatter: (index, row, $el) => {
-        let html = [
-          "<table class='table'>",
-          "<tr><th>成员姓名</th><th>完成状态</th></tr>"
-        ];
-        row.members.forEach(e =>
-          html.push(
-            `<tr><td>${e.user.display_name}</td><td>${e.status_text}</td></tr>`
-          )
-        );
-        html.push("</table>");
-        return html.join("");
-      },
+      detailFormatter: (index, row, $el) => {},
       onEditableSave: (field, mrow, oldValue, $el) => {}
     });
   },

@@ -87,14 +87,34 @@ export default {
             })
             .then(res => {
               if (res.status != 200) return false;
-              that.$alert(`<div id="canvasBox"></div>`, "报价模板", {
-                dangerouslyUseHTMLString: true
-              });
+              that
+                .$alert(`<div id="canvasBox"></div>`, "报价模板", {
+                  dangerouslyUseHTMLString: true
+                })
+                .then(() => that.sendEmail(res.data.url));
               that.showPDF(res.data.url);
             })
             .catch(erro => {});
         })
         .catch(err => {});
+    },
+    sendEmail(url) {
+      this.$prompt("请输入邮箱", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: "邮箱格式不正确"
+      }).then(({ value }) => {
+        this.$post(`service/quoted_price/pdf/email`, {
+          email: value,
+          url: url
+        })
+          .then(response => {
+            if (response.status != 200) return false;
+            this.$message({ message: "发送成功", type: "success" });
+          })
+          .catch(err => {});
+      });
     },
     showPDF(url) {
       let _this = this;

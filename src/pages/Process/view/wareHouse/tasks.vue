@@ -1,16 +1,15 @@
 <template>
   <div id="tasks">
-    <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
-    <div id="afterSaleToolbar">
+    <div id="wareHouseToolbar">
       <span class="lead">未完成任务</span>
     </div>
-    <table id="afterSaleTable"></table>
+    <table id="wareHouseTable"></table>
   </div>
 </template>
 <script>
 import dateTimePick from "@/pages/Process/common/dateTimePick";
 export default {
-  name: "tasks",
+  name: "wareTasks",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
@@ -40,18 +39,18 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset / 10 + 1;
-      params.page = params.limit;
+      params.page = params.offset / 10 + 1;
+      params.current_page = params.limit;
       return params;
     },
     refreshed() {
-      this.refresh($("#afterSaleTable"));
+      this.refresh($("#table"));
     }
   },
   mounted() {
     let that = this;
-    $("#afterSaleTable").bootstrapTable({
-      toolbar: "#afterSaleToolbar",
+    $("#wareHouseTable").bootstrapTable({
+      toolbar: "#wareHouseToolbar",
       ajax: this.tableAjaxData,
       queryParams: this.tableAjaxParams,
       search: true,
@@ -151,7 +150,7 @@ export default {
               this.$post(`job/complete/${row.id}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  that.refresh($("#afterSaleTable"));
+                  that.refresh($("#table"));
                 })
                 .catch(err => console.error(err));
             },
@@ -160,7 +159,7 @@ export default {
                 .then(response => {
                   if (response.status != 200) return false;
                   row.status = 4;
-                  that.ediTable($("#afterSaleTable"), index, row);
+                  that.ediTable($("#table"), index, row);
                 })
                 .catch(err => console.error(err));
             }
@@ -182,7 +181,6 @@ export default {
       },
       onEditableSave: (field, mrow, oldValue, $el) => {}
     });
-  },
-  created() {}
+  }
 };
 </script>
