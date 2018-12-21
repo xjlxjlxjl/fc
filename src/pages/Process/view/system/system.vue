@@ -1,5 +1,5 @@
 <template>
-  <el-container id="wareHouse">
+  <el-container id="system">
     <companyAside :aside="aside"></companyAside>
     <el-main>
       <div class="global"></div>
@@ -10,23 +10,29 @@
 <script>
 import companyAside from "@/pages/Process/common/companyAside";
 export default {
-  name: "wareHouse",
+  name: "system",
   data() {
     return {
-      aside: this.$store.state.process.WareHouse
+      aside: this.$store.state.process.system
     };
   },
   components: {
     companyAside: companyAside
-  }
+  },
+  methods: {}
 };
 </script>
 <style lang="less">
-#wareHouse {
+@background: #f2f2f2;
+@borderBlod: solid 1rem @background;
+@border: solid 1px @background;
+@white: #ffffff;
+@gery: #666666;
+#system {
   .global {
     padding: 11px 0 0 11px;
   }
-  #wareHouseToolbar {
+  #systemToolbar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;

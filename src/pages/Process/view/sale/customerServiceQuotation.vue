@@ -248,6 +248,7 @@ export default {
         let html = [
           `<table class="table">
               <tr>
+                <th>物料编码</th>
                 <th>物料名称</th>
                 <th>规格</th>
                 <th>单位</th>
@@ -258,6 +259,7 @@ export default {
         mrow.detail.forEach(e =>
           html.push(`
                 <tr>
+                  <td>${e.code || "无"}</td>
                   <td>${e.name}</td>
                   <td>${e.info}</td>
                   <td>${e.unit}</td>

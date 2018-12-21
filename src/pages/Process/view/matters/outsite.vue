@@ -15,10 +15,22 @@ export default {
   components: {},
   methods: {
     tableAjaxData(params) {
-      params.success({
-        total: 10,
-        rows: []
-      });
+      let that = this,
+        loading = this.$loading({
+          lock: true,
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+      that
+        .$get(`personnels/evections`, params.data)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => loading.close());
     },
     tableAjaxParams(params) {
       params.page = params.offset / 10 + 1;
@@ -62,34 +74,126 @@ export default {
           checkbox: true
         },
         {
+          field: "full_name",
+          title: "申请人",
+          sortable: true
+        },
+        {
           field: "created_at",
           title: "申请时间（创建时间）",
           sortable: true
         },
         {
-          field: "working_days_off",
-          title: "是否调休",
+          field: "branch",
+          title: "所在部门",
+          sortable: true
+        },
+        {
+          field: "position",
+          title: "岗位",
+          sortable: true
+        },
+        {
+          field: "customer",
+          title: "客户",
           sortable: true,
           editable: {
-            type: "select",
-            source: [{ value: 1, text: "是" }, { value: 0, text: "否" }],
-            title: "是否调休",
+            type: "text",
+            title: "客户",
             emptytext: "空"
+          }
+        },
+        {
+          field: "address",
+          title: "地址",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "地址",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "transportation",
+          title: "交通方式",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "交通方式",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "total_time",
+          title: "出差時长",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "出差時长",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "details",
+          title: "出差说明（详情）",
+          sortable: true,
+          editable: {
+            type: "text",
+            title: "出差说明（详情）",
+            emptytext: "空"
+          }
+        },
+        {
+          field: "evections",
+          title: "出差审批",
+          sortable: true,
+          formatter: (value, row, index) => {
+            let str = [];
+            value.forEach(e => str.push(e.name));
+            return str.join(",");
           }
         },
         {
           field: "slug",
           title: "操作",
           formatter: (value, row, index) => {
-            let del = [];
+            let del = [
+              `<button class="btn btn-danger btn-sm del">删除</button>`
+            ];
             return del;
           },
           events: {
-            "click .del": ($el, value, row, index) => {}
+            "click .del": ($el, value, row, index) => {
+              that
+                .$post(`personnels/evections/delete/${value}`)
+                .then(response => {
+                  if (response.status != 200) return false;
+                  that.delTable($("#mattersTable"), "id", [row.id]);
+                })
+                .catch(err => {});
+            }
           }
         }
       ],
-      detailFormatter: (index, row, $el) => {},
+      detailFormatter: (index, row, $el) => {
+        let content = [`<table class="table">`];
+        content.push(
+          `<tr><th>审批人</th><th>审批状态</th><th>审批时间</th></tr>`
+        );
+        row.evections.forEach(e =>
+          content.push(
+            `<tr><td>${e.name}</td><td>${
+              e.status == "success"
+                ? "同意"
+                : e.status == "fail"
+                ? "拒绝"
+                : "等待审核"
+            }</td><td>${e.created_at}</td></tr>`
+          )
+        );
+        content.push(`</table>`);
+        return content.join("");
+      },
       onEditableSave: (field, mrow, oldValue, $el) => {}
     });
   },

@@ -68,6 +68,7 @@ export default {
         ]
       },
       tableLabel: [
+        { label: "料品编号", prop: "Code" },
         { label: "产品", prop: "name" },
         { label: "规格", prop: "info" },
         { label: "单位", prop: "unit" },
@@ -150,6 +151,10 @@ export default {
 </script>
 <style lang="less">
 #applyService {
+  .modalBoxMain{
+    width: 800px;
+    max-width: 100%;
+  }
   #quotation {
     .el-form {
       .el-form-item {

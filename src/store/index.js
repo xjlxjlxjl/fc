@@ -5,10 +5,16 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userInfo: {},
+    companyDetail: {},
     socketAddress: "wss://factoryun.com/wss",
     // socketAddress: "ws://skyliu.cn/ws",
     userBranch: [],
     leaveType: [],
+    WareHouseList: [],
+    WareHouseType: [],
+    materialAttr: [],
+    materialType: [],
+    brandList: [],
     process: {
       sale: [
         { name: "未完成任务", url: "/Sale" },
@@ -84,6 +90,11 @@ export default new Vuex.Store({
         { name: "出货检标准规定", url: "/OQC/rules" },
         { name: "工时", url: "/OQC/time" },
         { name: "历史出货报告", url: "/OQC/history" }
+      ],
+      system: [
+        { name: "基本信息", url: "/System" },
+        { name: "社会信息", url: "/System/sociology" },
+        { name: "企业电子章", url: "/System/enterprise" }
       ]
     },
     ModalShow: false,
@@ -108,7 +119,10 @@ export default new Vuex.Store({
     addLeaveModal: false,
     addOutsiteModal: false,
     addNoteModal: false,
-    editOqcModal: false
+    editOqcModal: false,
+    //
+    addWareHouseModal: false,
+    addMaterials: false
   },
   mutations: {
     change(state) {
@@ -136,7 +150,13 @@ export default new Vuex.Store({
     getUserBranch(state, arr) {
       state.userBranch = arr;
     },
-    setStateData(state, name, arr) {
+    /**
+     * @param {*} state
+     * @param {*} name
+     * @param {*} arr
+     * vuex用的是apply()
+     */
+    setStateData(state, { name, arr }) {
       state[name] = arr;
     }
   }

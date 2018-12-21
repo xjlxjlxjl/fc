@@ -185,6 +185,8 @@ export default {
     },
     printing() {
       this.$print(this.$refs.print);
+      this.activeSlug = "";
+      $("#myModal").modal("hide");
     },
     refreshed() {
       this.refresh($("#OQCtable"));

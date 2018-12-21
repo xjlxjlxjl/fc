@@ -102,7 +102,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["setStateData"]),
+    ...mapMutations([""]),
     onSubmit() {
       let that = this;
       that

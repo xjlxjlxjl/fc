@@ -63,6 +63,11 @@ import sign from "@/pages/Process/view/matters/sign";
 import remember from "@/pages/Process/view/matters/remember";
 import mattersBreak from "@/pages/Process/view/matters/mattersBreak";
 import entry from "@/pages/Process/view/matters/entry";
+// 系统设置
+import System from "@/pages/Process/view/system/system";
+import basic from "@/pages/Process/view/system/basic";
+import sociology from "@/pages/Process/view/system/sociology";
+import enterprise from "@/pages/Process/view/system/enterprise";
 // 未完成任务
 Vue.use(Router);
 
@@ -299,6 +304,25 @@ export default new Router({
         {
           path: "/Matters/entry",
           component: entry
+        }
+      ]
+    },
+    {
+      path: "/System",
+      name: "System",
+      component: System,
+      children: [
+        {
+          path: "/System",
+          component: basic
+        },
+        {
+          path: "/System/sociology",
+          component: sociology
+        },
+        {
+          path: "/System/enterprise",
+          component: enterprise
         }
       ]
     }

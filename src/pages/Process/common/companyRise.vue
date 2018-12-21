@@ -24,9 +24,12 @@
           <el-menu-item index="2">
             <a :href="user ? user.user.qrcode : 'javascript:;'" target="_blank">我的名片</a>
           </el-menu-item>
-          <el-menu-item index="3">
-            <!-- 工资条界面 -->
+          <!-- 工资条界面 -->
+          <!-- <el-menu-item index="3">
             <a href target="_blank">俺的小金库</a>
+          </el-menu-item>-->
+          <el-menu-item index="3">
+            <a href="https://factoryun.com/firm/register" target="_blank">认证公司</a>
           </el-menu-item>
           <el-menu-item index="4">
             <a onclick="window.location.href = './user.html#/order'" href="javascript:;">个人中心</a>
@@ -112,10 +115,17 @@
       </section>
     </el-header>
     <el-main class="headerProcess hidden-md-and-down">
+      <router-link class="systemLink" to="/System">
+        <i class="font_family icon-xitongshezhi"></i>
+        <span>系统设置</span>
+      </router-link>
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
           <router-link :to="val.url">
-            <div class="whiteRoundBox">
+            <div
+              :class="val.active ? 'whiteRoundBox activeMenu' : 'whiteRoundBox'"
+              @click="setActive(val.url)"
+            >
               <router-link :to="val.url">{{ val.name }}</router-link>
               <img :src="progress" v-if="key < process.length - 3">
               <img :src="progressLast" v-else-if="key == process.length - 1">
@@ -141,6 +151,7 @@ export default {
         {
           name: "销售",
           url: "/Sale",
+          active: false,
           child: [
             { name: "客户管理", url: "customers" },
             { name: "销售订单", url: "orders" },
@@ -150,6 +161,7 @@ export default {
         {
           name: "工程",
           url: "/Engineer",
+          active: false,
           child: [
             { name: "Bom", url: "project" },
             { name: "料品", url: "materials" }
@@ -158,6 +170,7 @@ export default {
         {
           name: "采购",
           url: "/Purchase",
+          active: false,
           child: [
             { name: "采购计划", url: "project" },
             { name: "采购单", url: "project" }
@@ -166,11 +179,13 @@ export default {
         {
           name: "IQC",
           url: "/IQC",
+          active: false,
           child: [{ name: "来料检测", url: "project" }]
         },
         {
           name: "仓库",
           url: "/WareHouse",
+          active: false,
           child: [
             { name: "料品管理", url: "project" },
             { name: "出库", url: "project" },
@@ -180,6 +195,7 @@ export default {
         {
           name: "生产",
           url: "/Produce",
+          active: false,
           child: [
             { name: "生产计划", url: "project" },
             { name: "生产领料", url: "project" },
@@ -189,6 +205,7 @@ export default {
         {
           name: "OQC",
           url: "/OQC",
+          active: false,
           child: [
             { name: "成品检测", url: "project" },
             { name: "质检报告", url: "project" }
@@ -197,11 +214,13 @@ export default {
         {
           name: "物流",
           url: "/Logistics",
+          active: false,
           child: [{ name: "物流管理", url: "project" }]
         },
         {
           name: "售后",
           url: "/AfterSale",
+          active: false,
           child: [
             { name: "售后计划", url: "project" },
             { name: "售后维修", url: "project" }
@@ -210,11 +229,13 @@ export default {
         {
           name: "财务",
           url: "/Finance",
+          active: false,
           child: [{ name: "财务", url: "project" }]
         },
         {
           name: "人事",
           url: "/Matters",
+          active: false,
           child: [{ name: "人事", url: "Matters" }]
         }
       ],
@@ -245,6 +266,12 @@ export default {
           if (response.status != 200) return false;
         })
         .catch(error => loading.close());
+    },
+    setActive(route) {
+      this.process.forEach(e => {
+        if (e.url == route) e.active = true;
+        else e.active = false;
+      });
     },
     webSocket() {
       let socketAddress = this.$store.state.socketAddress;
@@ -327,6 +354,10 @@ export default {
   },
   mounted() {
     this.webSocket();
+    let route = this.$route.path.split("/")[1];
+    this.process.forEach(e => {
+      if (e.url == `/${route}`) e.active = true;
+    });
   },
   created() {
     let that = this,
@@ -499,6 +530,20 @@ export default {
   .el-main {
     background-color: @aBule;
     padding: 0rem;
+    position: relative;
+    .systemLink {
+      position: absolute;
+      right: 20px;
+      color: @white;
+      line-height: 60px;
+      &:hover {
+        text-decoration: none;
+      }
+      i,
+      span {
+        font-size: 1.5rem;
+      }
+    }
     .el-menu {
       border-bottom: none;
       box-sizing: border-box;
@@ -538,6 +583,12 @@ export default {
             height: 35px;
           }
           .whiteRound;
+        }
+        .activeMenu {
+          background-color: @white !important;
+          > a {
+            color: @aBule !important;
+          }
         }
         &:hover {
           background-color: transparent !important;

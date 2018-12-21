@@ -125,7 +125,7 @@ export default {
         .$get(`personnels/vacations_type`)
         .then(response => {
           if (response.status != 200) return false;
-          that.setStateData("leaveType", response.data.list);
+          that.setStateData({ name: "leaveType", arr: response.data.list });
           that.leaveType = response.data.list;
         })
         .catch(err => {});
@@ -149,15 +149,8 @@ export default {
   computed: mapState(["addLeaveModal"]),
   watch: {
     date(newVal, oldVal) {
-      this.form.start_at = this.dateParse(newVal[0]);
-      this.form.start_at = this.form.start_at.split(":");
-      this.form.start_at.pop();
-      this.form.start_at = this.form.start_at.join(":");
-
-      this.form.end_at = this.dateParse(newVal[1]);
-      this.form.end_at = this.form.end_at.split(":");
-      this.form.end_at.pop();
-      this.form.end_at = this.form.end_at.join(":");
+      this.form.start_at = this.miniDateParse(newVal[0]);
+      this.form.end_at = this.miniDateParse(newVal[1]);
 
       this.form.total_time = (newVal[1] - newVal[0]) / 3600 / 1000;
     }

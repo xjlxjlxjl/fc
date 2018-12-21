@@ -1,16 +1,12 @@
 <template>
   <div id="overtime">
-    <overTimeModal @refresh="refreshed"></overTimeModal>
     <div id="mattersToolbar">
       <span class="lead">加班申请记录</span>
-      <el-button @click="create" size="mini">新建</el-button>
     </div>
     <table id="mattersTable"></table>
   </div>
 </template>
 <script>
-import addOvertime from "@/pages/Process/common/addOvertime";
-
 export default {
   name: "overtime",
   data() {
@@ -18,9 +14,6 @@ export default {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       activeId: 0
     };
-  },
-  components: {
-    overTimeModal: addOvertime
   },
   methods: {
     tableAjaxData(params) {
@@ -46,9 +39,6 @@ export default {
       params.current_page = params.limit;
       params.d = params.search;
       return params;
-    },
-    create() {
-      addOvertime.methods.close.call(this);
     },
     refreshed() {
       this.refresh($("#mattersTable"));
