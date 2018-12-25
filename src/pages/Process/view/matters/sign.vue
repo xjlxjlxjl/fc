@@ -15,10 +15,17 @@ export default {
   components: {},
   methods: {
     tableAjaxData(params) {
-      params.success({
-        total: 10,
-        rows: []
-      });
+      let that = this;
+      that
+        .$get(`personnels/siginin`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => {});
     },
     tableAjaxParams(params) {
       params.page = params.offset / 10 + 1;
@@ -63,29 +70,46 @@ export default {
         },
         {
           field: "created_at",
-          title: "申请时间（创建时间）",
+          title: "打卡时间",
           sortable: true
         },
         {
-          field: "working_days_off",
-          title: "是否调休",
+          field: "full_name",
+          title: "打卡人",
+          sortable: true
+        },
+        {
+          field: "address",
+          title: "打卡地址",
+          sortable: true
+        },
+        {
+          field: "lnglat",
+          title: "打卡人",
           sortable: true,
-          editable: {
-            type: "select",
-            source: [{ value: 1, text: "是" }, { value: 0, text: "否" }],
-            title: "是否调休",
-            emptytext: "空"
+          formatter: (value, row, index) => {
+            return `${row.address_x},${row.address_y}`;
           }
         },
         {
           field: "slug",
           title: "操作",
           formatter: (value, row, index) => {
-            let del = [];
+            let del = [
+              `<button class="btn btn-danger btn-sm del">删除</button>`
+            ];
             return del;
           },
           events: {
-            "click .del": ($el, value, row, index) => {}
+            "click .del": ($el, value, row, index) => {
+              that
+                .$get(`personnels/siginin/delete/${value}`)
+                .then(response => {
+                  if (response.status != 200) return false;
+                  that.delTable($("#mattersTable"), "id", [row.id]);
+                })
+                .catch(err => {});
+            }
           }
         }
       ],

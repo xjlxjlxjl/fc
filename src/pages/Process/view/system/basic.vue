@@ -14,7 +14,7 @@
           :before-upload="upload"
           :show-file-list="false"
         >
-          <img v-if="companyDetail.logo" :src="imgUrl || companyDetail.logo" class="avatar">
+          <img v-if="companyDetail.logo" :src="companyDetail.logo" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
@@ -47,7 +47,6 @@ export default {
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user")),
-      imgUrl: "",
       rules: {
         logo: [
           { required: true, message: "请上传企业LOGO", trigger: "change" }
@@ -73,13 +72,13 @@ export default {
       let that = this,
         form = new FormData();
       form.append("upload", file);
-      form.append("slug", "company_log");
+      form.append("slug", "company_logo");
       that
         .$upload(`files/upload`, form)
         .then(response => {
           if (response.status != 200) return false;
-          that.companyDetail.logo = response.data.upload.id;
-          that.imgUrl = response.data.url;
+          that.companyDetail.logo = response.data.url;
+          that.companyDetail.logo_id = response.data.upload.id;
         })
         .catch(err => {});
     },

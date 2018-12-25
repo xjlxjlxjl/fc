@@ -5,42 +5,42 @@
     <!--startprint-->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <div class="modal-content" style="width: 630px;">
+        <div class="modal-content" style="width: 700px;">
           <div id="print" ref="print" class="modal-body" style="box-sizing:box-sizing;">
-            <div style="border:1px solid #000;width: 600px;">
+            <div :style="`border:1px solid #000;width: ${width}px;height: ${height}px;`">
               <div style="display: flex;flex-wrap: wrap;">
-                <div id="qrcode" style="border:1px solid #000;width: 142px;height: 142px;"></div>
-                <div style="width: 456px">
+                <div id="qrcode" style="border:1px solid #000;width: 160px;height: 160px;"></div>
+                <div :style="`width: ${parseInt(width)-162}px`">
                   <div style="border: 1px solid #000;padding: 10px;display:flex;">
                     <div style="flex-grow: 3;text-align: center;">
                       <img :src="print.company.logo.location" width="50px" height="50px">
                     </div>
                     <div style="flex-grow: 9;">
                       <p
-                        style="font-size:18px;margin: 0 0 7px;font-weight: bold;"
+                        style="font-size:24px;margin: 0 0 7px;font-weight: bold;"
                       >{{ print.company.name }}</p>
                       <p style="margin-bottom: 0;">
-                        <span style="font-size:16px;font-weight: bold;">{{ print.company.website }}</span>
+                        <span style="font-size:22px;font-weight: bold;">{{ print.company.website }}</span>
                         <span
-                          style="font-size:16px;font-weight: bold;"
+                          style="font-size:22px;font-weight: bold;"
                         >{{ print.company.contact_phone }}</span>
                       </p>
                     </div>
                   </div>
                   <div style="display: flex;">
                     <div
-                      style="border: 1px solid #000;width: 135px;font-weight: bold;text-align: center;font-size: 16px;line-height: 30px;"
+                      :style="`border: 1px solid #000;width: 150px;font-weight: bold;text-align: center;font-size: 22px;line-height: 30px;`"
                     >型号</div>
                     <div
-                      style="border: 1px solid #000;width: 325px;height: 33px;font-weight: bold;line-height: 30px;font-size: 16px;padding-left: 5px;"
+                      :style="`border: 1px solid #000;width: ${parseInt(width) - 312}px;height: 33px;font-weight: bold;line-height: 30px;font-size: 22px;padding-left: 5px;`"
                     >{{ print.model }}</div>
                   </div>
                   <div style="display: flex;">
                     <div
-                      style="border: 1px solid #000;width: 135px;font-weight: bold;text-align: center;font-size: 16px;line-height: 30px;"
+                      :style="`border: 1px solid #000;width: 150px;font-weight: bold;text-align: center;font-size: 22px;line-height: 30px;`"
                     >SN</div>
                     <div
-                      style="border: 1px solid #000;width: 325px;height: 33px;font-weight: bold;line-height: 30px;font-size: 16px;padding-left: 5px;"
+                      :style="`border: 1px solid #000;width: ${parseInt(width) - 312}px;height: 33px;font-weight: bold;line-height: 30px;font-size: 22px;padding-left: 5px;`"
                     >{{ print.sn }}</div>
                   </div>
                 </div>
@@ -52,7 +52,7 @@
                   :key="index"
                 >
                   <div
-                    style="width: 50%;box-sizing: box-border;border: 1px solid #000;padding: 5px;font-size: 14px;display: flex;align-item: center;"
+                    style="width: 50%;box-sizing: box-border;border: 1px solid #000;padding: 5px;font-size: 21px;display: flex;align-item: center;"
                   >
                     <input
                       type="text"
@@ -62,7 +62,7 @@
                     >
                   </div>
                   <div
-                    style="width: 50%;box-sizing: box-border;border: 1px solid #000;padding: 5px;font-size: 14px;display: flex;align-item: center;"
+                    style="width: 50%;box-sizing: box-border;border: 1px solid #000;padding: 5px;font-size: 21px;display: flex;align-item: center;"
                   >
                     <input
                       type="text"
@@ -76,6 +76,18 @@
             </div>
           </div>
           <div class="modal-footer">
+            <!-- <div>
+              <label for>
+                <el-input size="mini" v-model="width">
+                  <span slot="prefix">宽</span>
+                </el-input>
+              </label>
+              <label for>
+                <el-input size="mini" v-model="height">
+                  <span slot="prefix">高</span>
+                </el-input>
+              </label>
+            </div>-->
             <button type="button" class="btn btn-success btn-small" @click="addlist">添加属性</button>
             <button type="button" class="btn btn-danger btn-small" @click="dellist">删除列尾属性</button>
             <button type="button" class="btn btn-info btn-small" @click="printing">打印</button>
@@ -135,7 +147,9 @@ export default {
         model: "",
         qrcode: "",
         sn: ""
-      }
+      },
+      width: 670,
+      height: 462
     };
   },
   components: {

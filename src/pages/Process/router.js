@@ -76,7 +76,7 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "Sale",
+      // name: "Sale",
       component: Sale,
       children: [
         {

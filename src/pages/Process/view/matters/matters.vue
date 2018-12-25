@@ -12,7 +12,7 @@
         <el-button size="mini" @click="addOutsite">新建出差申请</el-button>
         <el-button size="mini" @click="addNote">添加备忘录</el-button>
         <!-- <el-button size="mini">申请年假</el-button> -->
-        <!-- <el-button size="mini">签到</el-button> -->
+        <el-button size="mini" @click="addSign">签到</el-button>
       </div>
       <router-view></router-view>
     </el-main>
@@ -24,11 +24,13 @@ import addOvertime from "@/pages/Process/common/addOvertime";
 import addLeave from "@/pages/Process/common/addLeave";
 import addOutsite from "@/pages/Process/common/addOutsite";
 import addNote from "@/pages/Process/common/addNote";
+
 export default {
   name: "matters",
   data() {
     return {
-      aside: this.$store.state.process.matters
+      aside: this.$store.state.process.matters,
+      geolocation: new BMap.Geolocation()
     };
   },
   components: {
@@ -50,6 +52,37 @@ export default {
     },
     addNote() {
       addNote.methods.close.call(this);
+    },
+    addSign() {
+      let that = this;
+      this.geolocation.getCurrentPosition(
+        function(r) {
+          if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+            that
+              .$post(`personnels/siginin/create`, {
+                work: "on",
+                signin_address: {
+                  address:
+                    r.address.province +
+                    r.address.city +
+                    r.address.district +
+                    r.address.street,
+                  x: r.longitude,
+                  y: r.latitude
+                }
+              })
+              .then(response => {
+                if (response.status != 200) return false;
+                that.$message({ message: "打卡成功", type: "success" });
+                if (that.$route.fullPath == "/Matters/sign")
+                  that.refresh($("#mattersTable"));
+              })
+              .catch(err => {});
+          } else
+            that.$message({ message: "浏览器不支持获取定位", type: "error" });
+        },
+        { enableHighAccuracy: true }
+      );
     },
     refreshed() {
       this.refresh($("#mattersTable"));

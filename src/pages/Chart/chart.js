@@ -4,6 +4,7 @@ import Index from "./Index";
 import router from "./router";
 import store from "../../store";
 import elementUi from "element-ui";
+import mouseMenu from 'vue-mouse-menu';
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
 // 地址
@@ -18,6 +19,7 @@ import "@/assets/css/transform.css";
 
 Vue.config.productionTip = false;
 Vue.use(VueAreaLinkage);
+Vue.use(mouseMenu)
 Vue.use(elementUi);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;

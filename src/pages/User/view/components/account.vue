@@ -52,7 +52,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-button type="primary" @click="save">提交</el-button>
+            <el-button type="primary" @click="save('display_name', {display_name: formData.display_name})">提交</el-button>
           </el-col>
         </el-row>
       </el-container>
@@ -81,26 +81,19 @@ export default {
       form.append("type", "avatar");
       that.$upload("members/user/file-upload", form).then(response => {
         if (response.status != 200) return false;
-        that
-          .$post("members/user/edit-info", { avatar: response.data.url })
-          .then(result => {
-            if (result.status != 200) return false;
-            that.formData.avatar = response.data.url;
-            that.$message({ message: response.message, type: "success" });
-          })
-          .catch(err => console.error(err));
+        that.save('avatar',{ avatar: response.data.url })
       });
     },
-    save() {
+    save(type, params) {
       let that = this,
         loading = this.$loading({ lock: true });
-      this.$post("members/user/edit-info", {
-        display_name: that.formData.display_name,
-        avatar: that.formData.avatar
-      })
+      this.$post("members/user/edit-info", params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
+          that.user.user[type] = params[type];
+          that.formData[type] = params[type];
+          localStorage.setItem("user", JSON.stringify(that.user));
           that.$message({ message: response.message, type: "success" });
         })
         .catch(error => loading.close());

@@ -76,12 +76,13 @@ export default {
       let that = this,
         form = new FormData();
       form.append("upload", file);
-      form.append("slug", "company_log");
+      form.append("slug", "company_logo");
       that
         .$upload(`files/upload`, form)
         .then(response => {
           if (response.status != 200) return false;
           that.companyDetail[name] = response.data.url;
+          that.companyDetail[`${name}_id`] = response.data.upload.id;
           that.onSubmit();
         })
         .catch(err => {});

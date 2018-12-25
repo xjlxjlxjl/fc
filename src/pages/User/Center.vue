@@ -65,6 +65,9 @@ export default {
     changeState(item) {
       this.content = item;
     }
+  },
+  created() {
+    if (!this.$ifLogin()) location.href = '/';
   }
 };
 </script>

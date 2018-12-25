@@ -9,11 +9,21 @@ export default new Vuex.Store({
     socketAddress: "wss://factoryun.com/wss",
     // socketAddress: "ws://skyliu.cn/ws",
     userBranch: [],
+    // 发票类型
+    invoiceType: [],
+    // 付款类型
+    paymenType: [],
+    // 请假类型
     leaveType: [],
+    // 仓库列表
     WareHouseList: [],
+    // 仓库类型
     WareHouseType: [],
+    // 材料属性
     materialAttr: [],
+    // 材料类型
     materialType: [],
+    // 品牌
     brandList: [],
     process: {
       sale: [
@@ -97,6 +107,10 @@ export default new Vuex.Store({
         { name: "企业电子章", url: "/System/enterprise" }
       ]
     },
+    apiKeys: {
+      // baiduMap: "IjVLfQ6Tudo7LK8wCBeCPESmHl8doh61"
+      baiduMap: "davD7QtGgnBgqrfET20iwKHlWTL5g8GT"
+    },
     ModalShow: false,
     joinModal: false,
     supplierModal: false,
@@ -122,7 +136,10 @@ export default new Vuex.Store({
     editOqcModal: false,
     //
     addWareHouseModal: false,
-    addMaterials: false
+    addMaterials: false,
+    addShipmentModal: false,
+    addOrderModal: false,
+    addCustomer: false
   },
   mutations: {
     change(state) {

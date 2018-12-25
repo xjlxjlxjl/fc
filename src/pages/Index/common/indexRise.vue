@@ -31,7 +31,7 @@
             <a href="https://factoryun.com/firm/register" target="_blank">认证公司</a>
           </el-menu-item>
           <el-menu-item index="4">
-            <a onclick="window.location.href = './user.html#/order'" href="javascript:;">个人中心</a>
+            <a @click="locationTo('/user.html#/order')" href="javascript:;">个人中心</a>
           </el-menu-item>
           <el-menu-item index="5">
             <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
@@ -238,7 +238,7 @@ export default {
     },
     locationTo(url) {
       if (!this.$ifLogin()) return false;
-      if (this.user && !this.user.slug)
+      if (this.user && !this.user.slug && url != '/user.html#/order')
         this.$message({
           message: "需要公司登陆才能使用ERP功能",
           type: "warning"

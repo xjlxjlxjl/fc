@@ -1,9 +1,16 @@
 <template>
-  <div id="message">
+  <div id="message" @click="mousePosition = ['close']">
     <!-- 踢出群聊，邀请群聊（ 0：邀请，1：添加 ） -->
-    <groupUserCheckBox :groupId="groupId" :groupUser="groupUserList" :groupState="groupState"></groupUserCheckBox>
+    <groupUserCheckBox
+      :groupId="groupId"
+      :groupUser="groupUserList"
+      :group="groupList.list"
+      :groupState="groupState"
+      @send="menuClick"
+    ></groupUserCheckBox>
     <!-- 图片画廊 -->
     <gallery :record="record" :galleryIndex="galleryIndex"></gallery>
+    <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
     <el-container>
       <el-aside class="pcShowImportant" width="60px" v-show="!mainDisplay">
         <ul class="function">
@@ -16,6 +23,7 @@
               @click="changeView(index)"
               :alt="item.alt"
             ></i>
+            <span :class="item.isDefault ? `is-active` : ''">{{ item.alt }}</span>
           </li>
         </ul>
       </el-aside>
@@ -52,7 +60,7 @@
             <el-menu default-active="0" v-if="interface[0].isDefault">
               <el-menu-item
                 v-for="(item,index) in chatList.list"
-                v-if="item.friend_uid != 1"
+                v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
                 :key="index"
                 :index="index.toString()"
                 @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true"
@@ -95,7 +103,7 @@
             <el-menu default-active="0" v-else-if="interface[1].isDefault">
               <el-menu-item
                 v-for="(item,index) in friendList.list"
-                v-if="item.friend_uid != 1"
+                v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
                 :key="index"
                 :index="index.toString()"
                 @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true"
@@ -150,7 +158,7 @@
             <el-menu default-active="0" v-else-if="interface[3].isDefault">
               <el-menu-item
                 v-for="(item,index) in searchList"
-                v-if="item.friend_uid != 1"
+                v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
                 :key="index"
                 :index="index.toString()"
                 @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true"
@@ -188,6 +196,7 @@
                   v-for="(item,index) in val.member"
                   :key="index"
                   :index="item.id.toString()"
+                  v-if="item.id != user.user.id"
                   @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true"
                 >
                   <div class="avatarBox">
@@ -256,7 +265,7 @@
                           <span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span>
                         </p>
                         <div class="Bubble"></div>
-                        <div class="messgaeCentent">
+                        <div class="messgaeCentent" @mousedown="popMenu($event, item)">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
                           <img
                             v-else-if="item.msg_type == 2 || item.type == 2"
@@ -287,7 +296,7 @@
                           <span>{{ item.created_at }}</span>
                         </p>
                         <div class="Bubble"></div>
-                        <div class="messgaeCentent">
+                        <div class="messgaeCentent" @mousedown="popMenu($event, item)">
                           <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
                           <img
                             v-else-if="item.msg_type == 2 || item.type == 2"
@@ -360,21 +369,21 @@ export default {
       user: JSON.parse(localStorage.getItem("user")),
       interface: [
         {
-          alt: "聊天",
+          alt: "消息",
           id: "chat",
           icon: "font_family icon-liaotian",
           activeIcon: "font_family icon-liaotian_",
           isDefault: true
         },
         {
-          alt: "通讯录",
+          alt: "好友",
           id: "mail",
           icon: "font_family icon-haoyou_1",
           activeIcon: "font_family icon-haoyou_",
           isDefault: false
         },
         {
-          alt: "群组",
+          alt: "群聊",
           id: "group",
           icon: "font_family icon-qunliao1",
           activeIcon: "font_family icon-qunliao",
@@ -395,7 +404,7 @@ export default {
           isDefault: false
         },
         {
-          alt: "公司成员",
+          alt: "同事",
           id: "member",
           icon: "font_family icon-tongshi_1",
           activeIcon: "font_family icon-tongshi_",
@@ -451,7 +460,16 @@ export default {
       groupState: 0,
       groupUserList: [],
       // socket
-      lockReconnect: false
+      lockReconnect: false,
+      // 右键效果
+      members: {},
+      popItems: [
+        {
+          txt: "转发"
+        }
+      ],
+      mousePosition: [],
+      forwardData: {}
     };
   },
   methods: {
@@ -647,13 +665,13 @@ export default {
       that
         .$get(url, params)
         .then(response => {
-          if (response.status != 200 || response.data.list.length == 0)
-            return false;
+          if (response.status != 200) return false;
 
           if (response.pagination.current_page == 1) {
             that.record.list = response.data.list;
             that.fixLocation();
           } else {
+            if (response.data.list.length == 0) return false;
             response.data.list.reverse();
             response.data.list.forEach(e => that.record.list.unshift(e));
             setTimeout(() => {
@@ -760,7 +778,7 @@ export default {
           if (response.status != 200) return false;
           that.groupUserList = response.data.list;
           that.groupState = 0;
-          this.$store.commit("change");
+          groupUserCheckBox.methods.close.call(this);
         })
         .catch(err => console.error(err));
     },
@@ -817,7 +835,7 @@ export default {
       this.groupId = parseInt(groupId);
       this.groupUserList = this.checkBoxList;
       this.groupState = 1;
-      this.$store.commit("change");
+      groupUserCheckBox.methods.close.call(this);
     },
     // 发信息
     sendMessage() {
@@ -951,10 +969,20 @@ export default {
         .then(response => {
           if (response.status != 200) return false;
           let arr = [];
-          response.data.colleagues.forEach(e => arr.push(e));
-          response.data.friends.forEach(e => arr.push(e));
-          response.data.strangers.forEach(e => arr.push(e));
+          response.data.colleagues.forEach(e => {
+            e.isClick = false;
+            arr.push(e);
+          });
+          response.data.friends.forEach(e => {
+            e.isClick = false;
+            arr.push(e);
+          });
+          response.data.strangers.forEach(e => {
+            e.isClick = false;
+            arr.push(e);
+          });
           that.checkBoxList = arr;
+          that.members = response.data;
         })
         .catch(error => console.error(error));
     },
@@ -997,6 +1025,84 @@ export default {
           callback: action => {}
         }
       );
+    },
+    // 右键弹窗
+    popMenu(e, item) {
+      let that = this;
+      e.preventDefault();
+      if (e.button === 2) {
+        let x = e.clientX,
+          y = e.clientY;
+        that.mousePosition = [x, y];
+        that.forwardData = item;
+      } else if (e.button === 0) that.mousePosition = ["close"];
+    },
+    menuClick(i) {
+      switch (i) {
+        case 0:
+          this.groupId = 0;
+          this.groupUserList = this.checkBoxList;
+          this.groupState = 2;
+          groupUserCheckBox.methods.close.call(this);
+          break;
+        default:
+          i.user.forEach(e =>
+            setTimeout(() => {
+              this.webSocketSend({
+                action: "chat",
+                req: {
+                  avatar: this.user.user.avatar,
+                  content: this.forwardData.content,
+                  form_name: this.user.user.display_name,
+                  to_uid: e,
+                  type: this.forwardData.msg_type || this.forwardData.type
+                }
+              });
+              if (e == this.toUser)
+                this.record.list.push({
+                  from_user_id: that.user.user.id,
+                  from_user: {
+                    from_user_id: that.user.user.id,
+                    avatar: that.user.user.avatar,
+                    display_name: that.user.user.display_name
+                  },
+                  created_at: new Date().toLocaleString(),
+                  msg_type: this.forwardData.msg_type || this.forwardData.type,
+                  content: that.message
+                });
+              this.getChatList();
+            }, 500)
+          );
+          i.group.forEach(e =>
+            setTimeout(() => {
+              this.webSocketSend({
+                action: "group",
+                req: {
+                  avatar: this.user.user.avatar,
+                  content: this.forwardData.content,
+                  form_name: this.user.user.display_name,
+                  to_group_id: e,
+                  type: this.forwardData.msg_type || this.forwardData.type
+                }
+              });
+              if (e == this.toUser)
+                this.record.list.push({
+                  from_user_id: that.user.user.id,
+                  from_user: {
+                    from_user_id: that.user.user.id,
+                    avatar: that.user.user.avatar,
+                    display_name: that.user.user.display_name
+                  },
+                  created_at: new Date().toLocaleString(),
+                  msg_type: this.forwardData.msg_type || this.forwardData.type,
+                  content: that.message
+                });
+              this.getChatList();
+            }, 500)
+          );
+          break;
+      }
+      this.mousePosition = ["close"];
     },
     webSocket() {
       let socketAddress = this.$store.state.socketAddress;
@@ -1238,7 +1344,6 @@ export default {
           index: this.key
         });
     };
-
     Notification.requestPermission(status => console.log(status));
   },
   created() {
@@ -1259,12 +1364,15 @@ export default {
 @gery: #666666;
 @black: #1d1d1d;
 @blue: #0064db;
-@border: 1px solid @gery;
+@menuBoxColor: #f1f1f1;
 @listBackground: @white;
 @hoverBackground: #e6e6e6;
 @background: #dedede;
 @chatBackground: #fffefe;
+@border: 1px solid @gery;
 @chatBorder: 1px solid #dedede;
+@menuBoxBorder: 1px solid @menuBoxColor;
+
 .Bubble() {
   padding: 0;
   margin: 0;
@@ -1276,6 +1384,7 @@ export default {
 }
 #message {
   width: 100%;
+  max-height: 100%;
   box-sizing: border-box;
   .el-container {
     height: 100%;
@@ -1296,7 +1405,7 @@ export default {
         li {
           margin-bottom: 1.5rem;
           text-align: center;
-          height: 3rem;
+          height: 45px;
           overflow: hidden;
           img {
             width: 100%;
@@ -1305,9 +1414,13 @@ export default {
           i {
             font-size: 27px;
             color: @gery;
+            display: block;
+          }
+          span {
+            color: @gery;
           }
           .is-active {
-            color: @blue;
+            color: @menuBoxColor;
           }
         }
       }
@@ -1350,6 +1463,7 @@ export default {
           }
           .el-menu {
             background-color: @listBackground;
+            height: 100px;
             p {
               padding: 1rem 1.5rem;
               background-color: @white;
@@ -1388,6 +1502,7 @@ export default {
                 width: 85%;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                font-size: 1.4rem;
               }
               button {
                 position: absolute;
@@ -1434,6 +1549,7 @@ export default {
             overflow-y: auto;
             border-bottom: @chatBorder;
             .chatMain {
+              position: relative;
               padding: 2rem 2.5rem 1rem 1.5rem;
               @media screen and (max-width: 820px) {
                 height: 20rem;
@@ -1620,6 +1736,34 @@ export default {
         img {
           max-width: 100%;
           height: 100%;
+        }
+      }
+    }
+  }
+  .menu-box {
+    position: fixed;
+    padding: 0;
+    border-radius: 4px;
+    > ul {
+      list-style: none;
+      background-color: @FFF;
+      overflow: hidden;
+      box-sizing: border-box;
+      border-radius: 4px;
+      > li {
+        min-width: 125px;
+        display: list-item;
+        box-sizing: border-box;
+        text-decoration: none;
+        color: @gery;
+        font-size: 14px;
+        border-bottom: @menuBoxBorder;
+        text-align: left;
+        &:last-child {
+          border-bottom: none;
+        }
+        &:hover {
+          background-color: @menuBoxColor;
         }
       }
     }

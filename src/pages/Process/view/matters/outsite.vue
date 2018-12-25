@@ -134,6 +134,17 @@ export default {
           }
         },
         {
+          field: "grants",
+          title: "有无补助",
+          sortable: true,
+          editable: {
+            type: "select",
+            source: [{ value: 1, text: "有" }, { value: 0, text: "无" }],
+            title: "有无补助",
+            emptytext: "空"
+          }
+        },
+        {
           field: "details",
           title: "出差说明（详情）",
           sortable: true,
@@ -194,7 +205,16 @@ export default {
         content.push(`</table>`);
         return content.join("");
       },
-      onEditableSave: (field, mrow, oldValue, $el) => {}
+      onEditableSave: (field, mrow, oldValue, $el) => {
+        mrow.start_at = that.miniDateParse(new Date(mrow.start_at));
+        mrow.end_at = that.miniDateParse(new Date(mrow.end_at));
+        that
+          .$post(`personnels/evections/edit/${mrow.slug}`, mrow)
+          .then(response => {
+            if (response.status != 200);
+          })
+          .catch(err => {});
+      }
     });
   },
   created() {}
