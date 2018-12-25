@@ -1302,6 +1302,7 @@ export default {
       else window.event.returnValue == false;
     };
     this.$refs.uploadBox.ondrop = e => {
+      console.log(e);
       if (e.preventDefault) e.preventDefault();
       else window.event.returnValue == false;
       const data = e.dataTransfer.files; // 获取文件对象
@@ -1314,6 +1315,7 @@ export default {
     };
     // 粘贴上传
     document.getElementById("el-textarea").addEventListener("paste", e => {
+      console.log(e);
       for (var i = 0; i < e.clipboardData.items.length; i++) {
         // 检测是否为图片类型
         if (

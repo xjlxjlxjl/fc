@@ -99,11 +99,20 @@ export default {
         })
         .catch(err => console.error(err));
     },
+    clearForm() {
+      this.userList = [];
+      this.groupList = [];
+    },
     close() {
       this.$store.commit("change");
     }
   },
-  computed: mapState(["ModalShow"])
+  computed: mapState(["ModalShow"]),
+  watch: {
+    ModalShow(val) {
+      this.clearForm();
+    }
+  }
 };
 </script>
 <style lang="less">

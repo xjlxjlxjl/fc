@@ -7,6 +7,7 @@ import elementUi from "element-ui";
 import mouseMenu from 'vue-mouse-menu';
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
+import "@/assets/css/init.css"; // 基础改动
 // 地址
 import VueAreaLinkage from "vue-area-linkage";
 

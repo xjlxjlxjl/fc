@@ -10,83 +10,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   </head>
   <link rel="stylesheet" href="//at.alicdn.com/t/font_654164_oom8aght1f.css" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      font-size: 62.5%;
-      font-family: "Helvetica Neue", Helvetica, "PingFang SC",
-        "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
-    }
-    ::-webkit-scrollbar {
-      width: 5px;
-      height: 10px;
-      background-color: transparent;
-    }
-    /*定义滚动条轨道 内阴影+圆角*/
-    ::-webkit-scrollbar-track {
-      /* -webkit-box-shadow: inset 0 0 6px #666; */
-      border-radius: 10px;
-      background-color: transparent;
-    }
-    /*定义滑块 内阴影+圆角*/
-    ::-webkit-scrollbar-thumb {
-      border-radius: 100px;
-      -webkit-box-shadow: inset 0 0 6px #666;
-      background-color: #555;
-    }
-    html,
-    body,
-    #app,
-    #app > section {
-      height: 100%;
-      -webkit-overflow-scrolling: touch;
-    }
-    p,
-    span,
-    a,
-    div {
-      font-size: 1.2rem;
-    }
-    .text-center {
-      text-align: center;
-    }
-    .pull-left {
-      float: left;
-    }
-    .pull-right {
-      float: right;
-    }
-    .el-header,
-    .el-main,
-    .el-footer {
-      height: auto !important;
-    }
-    .el-message-box {
-      width: auto;
-    }
-    @media screen and (max-width: 500px) {
-      .el-message-box {
-        max-width: 320px;
-      }
-      .el-tabs__nav,
-      .el-table__fixed-right .el-table__fixed-header-wrapper,
-      .el-table__fixed-right .el-table__fixed-body-wrapper {
-        z-index: 0 !important;
-      }
-    }
-    @media screen and (min-width: 500px) {
-      .el-message-box {
-        max-width: 480px;
-      }
-    }
-  </style>
   <script>
     // var baseUrl = "http://api.app.com/";
     // var baseUrl = "http://api.skyliu.cn/";
     var baseUrl = "https://api.factoryun.com/";
   </script>
-  <body onload="timeOut()">
+  <body>
     <!--[if lte IE 9]>
       <script>
         window.location.href =
@@ -97,21 +26,4 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
-  <script>
-    var time = null;
-    document.body.onmousemove = function() {
-      clearTimeout(time);
-      timeOut();
-    };
-    document.body.onmouseup = function() {
-      clearTimeout(time);
-      timeOut();
-    };
-    function timeOut() {
-      time = setTimeout(function() {
-        localStorage.clear();
-        window.location.href = "./login.html#/login";
-      }, 1000 * 60 * 30);
-    }
-  </script>
 </html>

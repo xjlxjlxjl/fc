@@ -7,8 +7,8 @@ import router from "./router";
 import elementUi from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import { post, get, patch, put } from "../../assets/js/http";
-
 import "@/assets/icon/iconfont.css";
+import "@/assets/css/init.css";
 
 Vue.config.productionTip = false;
 Vue.use(elementUi);

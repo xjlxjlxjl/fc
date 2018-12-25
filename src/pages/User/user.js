@@ -14,6 +14,7 @@ import "element-ui/lib/theme-chalk/display.css";
 import "element-ui/lib/theme-chalk/base.css";
 
 import "@/assets/css/transform.css";
+import "@/assets/css/init.css";
 
 Vue.config.productionTip = false;
 Vue.use(elementUi);

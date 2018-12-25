@@ -5,8 +5,8 @@ import qs from "qs";
 // axios 配置
 axios.defaults.timeout = 60000;
 // axios.defaults.baseURL = "http://api.app.com/";
-axios.defaults.baseURL = "http://api.skyliu.cn/";
-// axios.defaults.baseURL = "https://api.factoryun.com/";
+// axios.defaults.baseURL = "http://api.skyliu.cn/";
+axios.defaults.baseURL = "https://api.factoryun.com/";
 // http request 拦截器
 axios.interceptors.request.use(
   config => {

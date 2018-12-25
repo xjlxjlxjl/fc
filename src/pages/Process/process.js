@@ -16,6 +16,7 @@ import "element-ui/lib/theme-chalk/index.css";
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
 import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
+import "@/assets/css/init.css";
 
 import "jquery/dist/jquery.min.js";
 import "tablednd/dist/jquery.tablednd.min.js";
