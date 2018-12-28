@@ -29,7 +29,7 @@
             <a href target="_blank">俺的小金库</a>
           </el-menu-item>-->
           <el-menu-item index="3">
-            <a href="https://factoryun.com/firm/register" target="_blank">认证公司</a>
+            <a href="/#/company">认证公司</a>
           </el-menu-item>
           <el-menu-item index="4">
             <a onclick="window.location.href = './user.html#/order'" href="javascript:;">个人中心</a>

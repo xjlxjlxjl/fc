@@ -33,3 +33,9 @@ x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css
 background-image: linear-gradient(top, #0088cc, #0044cc) to => background-image: linear-gradient(`to top`, #0088cc, #0044cc)
 
 ###
+
+###
+
+    权限加载过多bootstrap table 承载失败 显示为加载中
+
+###

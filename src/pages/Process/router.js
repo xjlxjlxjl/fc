@@ -56,6 +56,8 @@ import Finance from "@/pages/Process/view/finance/finance";
 // 人事
 import Matters from "@/pages/Process/view/matters/matters";
 import staff from "@/pages/Process/view/matters/staff";
+import department from "@/pages/Process/view/matters/department";
+import power from "@/pages/Process/view/matters/power";
 import overtime from "@/pages/Process/view/matters/overtime";
 import leave from "@/pages/Process/view/matters/leave";
 import outsite from "@/pages/Process/view/matters/outsite";
@@ -276,6 +278,14 @@ export default new Router({
         {
           path: "/Matters",
           component: staff
+        },
+        {
+          path: "/Matters/department",
+          component: department
+        },
+        {
+          path: "/Matters/power",
+          component: power
         },
         {
           path: "/Matters/overtime",

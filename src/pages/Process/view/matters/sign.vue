@@ -85,7 +85,7 @@ export default {
         },
         {
           field: "lnglat",
-          title: "打卡人",
+          title: "经纬度",
           sortable: true,
           formatter: (value, row, index) => {
             return `${row.address_x},${row.address_y}`;

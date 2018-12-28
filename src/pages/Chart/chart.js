@@ -4,7 +4,7 @@ import Index from "./Index";
 import router from "./router";
 import store from "../../store";
 import elementUi from "element-ui";
-import mouseMenu from 'vue-mouse-menu';
+import mouseMenu from "vue-mouse-menu";
 import { post, get, upload, patch, put } from "../../assets/js/http";
 import "element-ui/lib/theme-chalk/index.css";
 import "@/assets/css/init.css"; // 基础改动
@@ -20,7 +20,7 @@ import "@/assets/css/transform.css";
 
 Vue.config.productionTip = false;
 Vue.use(VueAreaLinkage);
-Vue.use(mouseMenu)
+Vue.use(mouseMenu);
 Vue.use(elementUi);
 Vue.prototype.$post = post;
 Vue.prototype.$get = get;
@@ -35,6 +35,15 @@ Vue.prototype.$ifLogin = () => {
     });
     return false;
   } else return true;
+};
+Vue.prototype.dateParse = date => {
+  return `${date.getFullYear()}-${
+    date.getMonth() + 1 < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
+  }-${date.getDate() < 9 ? "0" + date.getDate() : date.getDate()} ${
+    date.getHours() < 9 ? "0" + date.getHours() : date.getHours()
+  }:${date.getMinutes() < 9 ? "0" + date.getMinutes() : date.getMinutes()}:${
+    date.getSeconds() < 9 ? "0" + date.getSeconds() : date.getSeconds()
+  }`;
 };
 Array.prototype.repeat = function() {
   var arr = [];

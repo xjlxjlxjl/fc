@@ -14,7 +14,18 @@
           </div>
           <div class="modalBoxMainContent">
             <div id="userList">
-              <el-checkbox-group v-model="userList">
+              <el-checkbox-group v-model="userList" v-if="!groupState">
+                <el-checkbox
+                  v-for="(item,index) in groupUser"
+                  :key="index"
+                  :label="item.id"
+                  :checked="item.isClick"
+                  :disabled="item.id == user.user.id"
+                >
+                  <span>{{ item.last_name }}</span>
+                </el-checkbox>
+              </el-checkbox-group>
+              <el-checkbox-group v-model="userList" v-else>
                 <el-checkbox
                   v-for="(item,index) in groupUser"
                   :key="index"

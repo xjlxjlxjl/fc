@@ -249,6 +249,12 @@ export default {
       width: 800px;
       max-height: 70%;
       overflow: auto;
+      @media screen and (max-width: 320px) {
+        .modalBoxMainContent {
+          height: 200px;
+          overflow: auto;
+        }
+      }
       #createdCustomerForm {
         .el-form {
           display: flex;
@@ -299,10 +305,17 @@ export default {
           .fileList {
             width: 100% !important;
             padding-bottom: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            .el-form-item__label {
+              width: 90px !important;
+              display: block;
+              padding-right: 0;
+            }
             .el-form-item__content {
-              max-height: 130px;
-              overflow-y: auto;
-              overflow-x: hidden;
+              // max-height: 130px;
+              // overflow-y: auto;
+              // overflow-x: hidden;
               > div {
                 display: flex;
                 flex-direction: column-reverse;

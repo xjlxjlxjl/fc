@@ -8,6 +8,70 @@ export default new Vuex.Store({
     companyDetail: {},
     socketAddress: "wss://factoryun.com/wss",
     // socketAddress: "ws://skyliu.cn/ws",
+    msg: {
+      interface: [
+        {
+          alt: "消息",
+          id: "chat",
+          icon: "font_family icon-liaotian",
+          activeIcon: "font_family icon-liaotian_",
+          isDefault: true
+        },
+        {
+          alt: "好友",
+          id: "mail",
+          icon: "font_family icon-haoyou_1",
+          activeIcon: "font_family icon-haoyou_",
+          isDefault: false
+        },
+        {
+          alt: "群聊",
+          id: "group",
+          icon: "font_family icon-qunliao1",
+          activeIcon: "font_family icon-qunliao",
+          isDefault: false
+        },
+        {
+          alt: "用户搜索",
+          id: "search",
+          icon: "el-input__icon el-icon-search",
+          activeIcon: "el-input__icon el-icon-search",
+          isDefault: false
+        },
+        {
+          alt: "群搜索",
+          id: "search",
+          icon: "el-input__icon el-icon-search",
+          activeIcon: "el-input__icon el-icon-search",
+          isDefault: false
+        },
+        {
+          alt: "同事",
+          id: "member",
+          icon: "font_family icon-tongshi_1",
+          activeIcon: "font_family icon-tongshi_",
+          isDefault: false
+        },
+        {
+          alt: "通知",
+          id: "notices",
+          icon: "font_family icon-tongzhi1",
+          activeIcon: "font_family icon-tongzhi",
+          isDefault: false
+        }
+      ],
+      popItems: [
+        {
+          txt: "转发"
+        },
+        {
+          txt: "复制"
+        },
+        {
+          txt: "撤回"
+        }
+      ]
+    },
     userBranch: [],
     // 发票类型
     invoiceType: [],
@@ -25,6 +89,8 @@ export default new Vuex.Store({
     materialType: [],
     // 品牌
     brandList: [],
+    // 权限
+    powerList: [],
     process: {
       sale: [
         { name: "未完成任务", url: "/Sale" },
@@ -53,6 +119,8 @@ export default new Vuex.Store({
       ],
       matters: [
         { name: "员工列表", url: "/Matters" },
+        { name: "公司部门", url: "/Matters/department" },
+        { name: "部门权限", url: "/Matters/power" },
         { name: "加班申请记录", url: "/Matters/overtime" },
         { name: "请假记录", url: "/Matters/leave" },
         { name: "出差申请记录", url: "/Matters/outsite" },
@@ -139,7 +207,9 @@ export default new Vuex.Store({
     addMaterials: false,
     addShipmentModal: false,
     addOrderModal: false,
-    addCustomer: false
+    addCustomer: false,
+    //
+    departmentModal: false
   },
   mutations: {
     change(state) {

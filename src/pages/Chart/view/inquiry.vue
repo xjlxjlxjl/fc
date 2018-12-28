@@ -309,6 +309,10 @@ export default {
     },
     awaken(id, name) {
       if (!this.$ifLogin()) return false;
+      if (!id || !name) {
+        this.$message({ message: "产品公司信息不完整", type: "error" });
+        return false;
+      }
       this.companyId = id;
       this.companyName = name;
       chatModal.methods.close.call(this);

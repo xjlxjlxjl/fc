@@ -602,7 +602,7 @@ export default {
       }
     },
     getRecord({ id, username, index = 0 }) {
-      if (id != this.toUser || username != this.userName)
+      if (id != this.toUser)
         this.record.pagination = { total: 1, current_page: 0 };
 
       let that = this,
@@ -712,7 +712,7 @@ export default {
     acceptGroup(id) {
       let that = this;
       that
-        .$post("group/join", {
+        .$post("/group/join", {
           notice_id: id
         })
         .then(response => {
@@ -724,7 +724,7 @@ export default {
     delGroup(id, index) {
       let that = this;
       that
-        .$post("group/exit", {
+        .$post("/group/exit", {
           group_id: id
         })
         .then(response => {
@@ -803,51 +803,49 @@ export default {
       groupUserCheckBox.methods.close.call(this);
     },
     // 发信息
-    sendMessage(
-      $event = 0,
-      toUser = this.toUser,
-      msgType = 1,
-      message = this.message,
-      state = this.state
-    ) {
+    sendMessage() {
       let that = this,
-        url = null,
-        data = {
-          content: message,
-          msg_type: msgType
-        },
         params = {
           req: {
-            type: msgType,
-            content: message,
+            type: 1,
+            content: that.message,
             from_name: this.user.user.display_name,
             avatar: this.user.user.avatar
           }
         };
 
-      if (msgType == 1) {
-        if (message == "" || message.replace(/[\r\n]/g, "").length == 0) {
-          this.$message({ message: "发送消息不能为空", type: "error" });
-          message = "";
-          return false;
-        }
-        if (message.length > 1000) {
-          this.$message({ message: "消息内容不能超过1000个字", type: "error" });
-          return false;
-        }
+      if (
+        that.message == "" ||
+        that.message.replace(/[\r\n]/g, "").length == 0
+      ) {
+        this.$message({ message: "发送消息不能为空", type: "error" });
+        that.message = "";
+        return false;
       }
-      if (state == 1) {
+      if (that.message.length > 1000) {
+        this.$message({ message: "消息内容不能超过1000个字", type: "error" });
+        return false;
+      }
+      if (that.state == 1) {
         params.action = "chat";
-        params.req.to_uid = toUser;
-        url = `chat/message/create`;
-        data.to_uid = toUser;
-      } else if (state == 2) {
+        params.req.to_uid = that.toUser;
+      } else if (that.state == 2) {
         params.action = "group";
-        params.req.to_group_id = toUser;
-        url = `group/message/create`;
-        data.to_group_id = toUser;
+        params.req.to_group_id = that.toUser;
       } else return false;
-      that.send(url, data, params, msgType);
+      this.webSocketSend(params);
+      this.record.list.push({
+        from_user_id: that.user.user.id,
+        from_user: {
+          from_user_id: that.user.user.id,
+          avatar: that.user.user.avatar,
+          display_name: that.user.user.display_name
+        },
+        created_at: new Date().toLocaleString(),
+        msg_type: 1,
+        content: that.message
+      });
+      this.message = "";
     },
     // 发文件
     uploadFile(file) {
@@ -882,7 +880,7 @@ export default {
           }
           break;
         default:
-          this.$message.error("上传图片只能是 JPG / PNG / ico 格式!");
+          this.$message.error("上传头像图片只能是 JPG / PNG / ico 格式!");
           return false;
           break;
       }
@@ -891,10 +889,6 @@ export default {
     },
     upload(form, type) {
       let that = this,
-        url = null,
-        data = {
-          msg_type: type
-        },
         params = {
           req: {
             type: type,
@@ -910,54 +904,32 @@ export default {
           if (that.state == 1) {
             params.action = "chat";
             params.req.to_uid = that.toUser;
-            url = `chat/message/create`;
-            data.to_uid = that.toUser;
           } else if (that.state == 2) {
             params.action = "group";
             params.req.to_group_id = that.toUser;
-            url = `group/message/create`;
-            data.to_group_id = that.toUser;
           } else return false;
 
           params.req.content = response.data.path;
-          data.content = response.data.path;
-          that.send(url, data, params, type);
-        })
-        .catch(error => console.error(error));
-    },
-    send(url, data, params, type) {
-      let that = this;
-      that
-        .$post(url, data)
-        .then(response => {
-          if (response.status != 200) return false;
-          params.req.msg_id = response.data.msg_id;
           that.webSocketSend(params);
-          let msg = {
+
+          let data = {
             from_user_id: that.user.user.id,
             from_user: {
               from_user_id: that.user.user.id,
               avatar: that.user.user.avatar,
               display_name: that.user.user.display_name
             },
-            created_at: that.dateParse(new Date()),
+            created_at: new Date().toLocaleString(),
             msg_type: type,
-            id: response.data.msg_id,
-            content: data.content
+            content: response.data.path
           };
-          switch (type) {
-            case 1:
-              that.message = "";
-              break;
-            case 2:
-              that.msgImgArr.push(msg);
-              msg.msgImgKey = that.msgImgArr.length - 1;
-              break;
+          if (type == 2) {
+            that.msgImgArr.push(data);
+            data.msgImgKey = that.msgImgArr.length - 1;
           }
-          if (data.to_uid == that.toUser || data.to_group_id == that.toUser)
-            that.record.list.push(msg);
+          that.record.list.push(data);
         })
-        .catch(err => {});
+        .catch(error => console.error(error));
     },
     getMembers() {
       let that = this;
@@ -1053,26 +1025,12 @@ export default {
           this.$message({ message: "复制成功", type: "success" });
           break;
         case 2:
-          let msgSendId =
-            this.forwardData.from_user_id || this.forwardData.user_id;
-          if (msgSendId != this.user.user.id) {
-            this.$message({ message: "只能撤回个人消息", type: "error" });
-            return false;
-          }
-          if (
-            new Date() - new Date(this.forwardData.created_at) >
-            2 * 60 * 1000
-          ) {
-            this.$message({
-              message: "只能撤回不超过2分钟的消息",
-              type: "error"
-            });
-            return false;
-          }
+          console.log(this.forwardData);
+          return false;
           let params = {
             action: "withdrawal",
             req: {
-              msg_id: this.forwardData.id
+              message_id: this.forwardData.id
             }
           };
           if (this.state == 1) params.req.to_uid = this.toUser;
@@ -1081,17 +1039,58 @@ export default {
           this.webSocketSend(params);
           break;
         default:
-          // 转发
           i.user.forEach(e =>
             setTimeout(() => {
-              let type = this.forwardData.msg_type || this.forwardData.type;
-              this.sendMessage(0, e, type, this.forwardData.content, 1);
+              this.webSocketSend({
+                action: "chat",
+                req: {
+                  avatar: this.user.user.avatar,
+                  content: this.forwardData.content,
+                  form_name: this.user.user.display_name,
+                  to_uid: e,
+                  type: this.forwardData.msg_type || this.forwardData.type
+                }
+              });
+              if (e == this.toUser)
+                this.record.list.push({
+                  from_user_id: that.user.user.id,
+                  from_user: {
+                    from_user_id: that.user.user.id,
+                    avatar: that.user.user.avatar,
+                    display_name: that.user.user.display_name
+                  },
+                  created_at: new Date().toLocaleString(),
+                  msg_type: this.forwardData.msg_type || this.forwardData.type,
+                  content: that.message
+                });
+              this.getChatList();
             }, 500)
           );
           i.group.forEach(e =>
             setTimeout(() => {
-              let type = this.forwardData.msg_type || this.forwardData.type;
-              this.sendMessage(0, e, type, this.forwardData.content, 2);
+              this.webSocketSend({
+                action: "group",
+                req: {
+                  avatar: this.user.user.avatar,
+                  content: this.forwardData.content,
+                  form_name: this.user.user.display_name,
+                  to_group_id: e,
+                  type: this.forwardData.msg_type || this.forwardData.type
+                }
+              });
+              if (e == this.toUser)
+                this.record.list.push({
+                  from_user_id: that.user.user.id,
+                  from_user: {
+                    from_user_id: that.user.user.id,
+                    avatar: that.user.user.avatar,
+                    display_name: that.user.user.display_name
+                  },
+                  created_at: new Date().toLocaleString(),
+                  msg_type: this.forwardData.msg_type || this.forwardData.type,
+                  content: that.message
+                });
+              this.getChatList();
             }, 500)
           );
           break;
@@ -1159,7 +1158,7 @@ export default {
                         display_name: this.userName
                       },
                       id: result.msg_id,
-                      created_at: this.dateParse(new Date()),
+                      created_at: new Date().toLocaleString(),
                       msg_type: result.resp.type,
                       content: result.resp.content
                     });
@@ -1202,7 +1201,7 @@ export default {
                     display_name: result.resp.from_name
                   },
                   id: result.msg_id,
-                  created_at: this.dateParse(new Date()),
+                  created_at: new Date().toLocaleString(),
                   msg_type: result.resp.type,
                   content: result.resp.content
                 });
@@ -1248,11 +1247,6 @@ export default {
             break;
           case "withdrawal":
             console.log(result);
-            if (result.msg_id && result.resp.code == 200) {
-              this.record.list.forEach((e, k) => {
-                if (e.id == result.msg_id) this.record.list.splice(k, 1);
-              });
-            }
             break;
           case "close":
             this.webSocketClose();
@@ -1291,12 +1285,7 @@ export default {
     },
     webSocketSend(action) {
       // console.log(action);
-      try {
-        this.ws.send(JSON.stringify(action));
-      } catch (error) {
-        this.connectNum++;
-        this.webSocket();
-      }
+      this.ws.send(JSON.stringify(action));
     },
     webSocketClose() {
       clearInterval(this.pong);
@@ -1318,14 +1307,6 @@ export default {
   components: {
     groupUserCheckBox: groupUserCheckBox,
     gallery: gallery
-  },
-  watch: {
-    toUser() {
-      this.record.pagination = { total: 1, current_page: 0 };
-    },
-    state() {
-      this.record.pagination = { total: 1, current_page: 0 };
-    }
   },
   mounted() {
     this.$refs.uploadBox.ondragover = this.$refs.uploadBox.ondragleave = this.$refs.uploadBox.ondragenter = e => {
@@ -1636,8 +1617,6 @@ export default {
                       background-color: @blue;
                       border-radius: 8px;
                       padding: 1rem;
-                      width: fit-content;
-                      float: right;
                       .goodsMsg {
                         display: flex;
                         align-items: center;
@@ -1701,7 +1680,6 @@ export default {
                       color: @gery;
                       border-radius: 8px;
                       padding: 1rem;
-                      width: fit-content;
                       .goodsMsg {
                         display: flex;
                         align-items: center;
