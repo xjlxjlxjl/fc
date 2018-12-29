@@ -69,12 +69,13 @@ export default {
       }
       that.userArr.forEach(e => {
         that
-          .$post(`personnels/engage/job`, {
+          .$post(`members/adjustment/position`, {
             member_id: e,
             branch_id: that.form.post
           })
           .then(response => {
             if (response.status != 200) return false;
+            that.$emit("refresh");
             that.close();
           })
           .catch(err => {});

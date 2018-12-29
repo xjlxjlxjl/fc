@@ -15,6 +15,16 @@
               <el-form-item v-for="(item,index) in label" :key="index" :label="item.name">
                 <el-input v-model="form[item.label]"></el-input>
               </el-form-item>
+              <el-form-item label="部门">
+                <el-select v-model="form.branch">
+                  <el-option
+                    v-for="item in $store.state.userBranch"
+                    :key="item.id"
+                    :label="item.branch_name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
             </el-form>
           </div>
           <div class="modalBoxMainBtn">
@@ -38,7 +48,7 @@ export default {
       },
       label: [
         { name: "手机", label: "member" },
-        { name: "部门", label: "branch" },
+        // { name: "部门", label: "branch" },
         { name: "工号", label: "employee_id" }
       ]
     };
@@ -81,6 +91,9 @@ export default {
     .el-form-item {
       &:last-child {
         margin-bottom: 0;
+      }
+      .el-select {
+        width: 100%;
       }
     }
   }

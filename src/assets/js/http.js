@@ -52,6 +52,9 @@ axios.interceptors.response.use(
       case 500:
         elementUi.Notification({ message: "服务器内部错误，请联系管理员" });
         break;
+      case 503:
+        elementUi.Notification({ message: "暂无操作权限" });
+        break;
       default:
         elementUi.Notification({ message: "网络错误，请检查网络连接" });
         break;

@@ -225,7 +225,7 @@
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
               <el-menu-item
                 v-for="(item,index) in noticesList.list"
-                v-if="!item.is_read && !item.is_agree && !item.is_delete"
+                v-if="!item.is_read || !item.is_agree || !item.is_delete"
                 :key="index"
                 :index="index.toString()"
                 @click="getNoticesDetail(item, index)"

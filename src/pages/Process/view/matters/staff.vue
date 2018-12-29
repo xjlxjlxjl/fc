@@ -1,7 +1,7 @@
 <template>
   <div id="tasks">
     <entryWork></entryWork>
-    <changePositions :userArr="arr"></changePositions>
+    <changePositions :userArr="arr" @refresh="refreshed"></changePositions>
     <div id="mattersToolbar">
       <span class="lead">员工列表</span>
       <el-button size="mini" @click="entry">邀请入职</el-button>
