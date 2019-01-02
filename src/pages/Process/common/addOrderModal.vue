@@ -13,7 +13,24 @@
           <div class="modalBoxMainContent">
             <el-form :model="form" ref="form" :rules="rules">
               <el-form-item label="收货人" prop="consignee">
-                <el-input type="text" v-model="form.consignee" placeholder="收货人"></el-input>
+                <el-select
+                  v-model="form.consignee"
+                  placeholder="收货人"
+                  :filterable="true"
+                  :remote="true"
+                  :remote-method="customers"
+                  no-match-text="查找不到该客户"
+                  no-data-text="无客户"
+                  @change="setCustomers"
+                >
+                  <el-option
+                    v-for="item in options"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item"
+                  ></el-option>
+                </el-select>
+                <!-- <el-input type="text" v-model="form.consignee" placeholder="收货人"></el-input> -->
               </el-form-item>
               <el-form-item label="手机号" prop="mobile">
                 <el-input type="text" v-model="form.mobile" placeholder="手机号"></el-input>
@@ -62,6 +79,14 @@
                       <el-input v-model="row[col.label]" :placeholder="col.name"></el-input>
                     </template>
                   </el-table-column>
+                  <el-table-column label="是否库存">
+                    <template slot-scope="{ row, $index }">
+                      <el-radio-group v-model="row.is_stock">
+                        <el-radio :label="1">是</el-radio>
+                        <el-radio :label="0">否</el-radio>
+                      </el-radio-group>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </el-form-item>
             </el-form>
@@ -86,6 +111,7 @@ export default {
         delivery_period: "",
         member_id: "",
         consignee: "",
+        consignee_id: "",
         mobile: "",
         address: "",
         invoice_type_id: "",
@@ -98,7 +124,8 @@ export default {
             product_name: "",
             product_specification: "",
             quantity: "",
-            price: ""
+            price: "",
+            is_stock: 1
           }
         ]
       },
@@ -138,7 +165,8 @@ export default {
           { required: true, message: "请输入交期", trigger: "blur" }
         ],
         remark: [{ required: true, message: "请输入备注", trigger: "blur" }]
-      }
+      },
+      options: []
     };
   },
   methods: {
@@ -183,12 +211,12 @@ export default {
         that
           .$post("orders/company/create", {
             delivery_period: that.dateParse(that.form.delivery_period),
-            member_id: that.user.user.id,
+            member_id: that.form.consignee_id,
             consignee: that.form.consignee,
             mobile: that.form.mobile,
             address: that.form.address,
-            invoice_type_id: that.form.invoice_type_id,
-            payment_type_id: that.form.payment_type_id,
+            invoice_type_id: that.form.invoice_type_id || undefined,
+            payment_type_id: that.form.payment_type_id || undefined,
             remark: that.form.remark,
             products: JSON.stringify(that.form.products)
           })
@@ -218,13 +246,32 @@ export default {
             product_name: "",
             product_specification: "",
             quantity: "",
-            price: ""
+            price: "",
+            is_stock: 0
           }
         ]
       };
     },
     close() {
       this.$store.commit("changeModal", "addOrderModal");
+    },
+    customers(query) {
+      let that = this;
+      that
+        .$get(`customers`, {
+          name: query
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.options = response.data.list;
+        })
+        .catch(err => console.error(err));
+    },
+    setCustomers(item) {
+      this.form.consignee = item.name;
+      this.form.consignee_id = item.id;
+      this.form.mobile = item.mobile || item.phone;
+      this.form.address = item.region.address + item.detailed_address;
     }
   },
   computed: mapState(["invoiceType", "paymenType", "addOrderModal"]),
@@ -246,7 +293,8 @@ export default {
             product_name: "",
             product_specification: "",
             quantity: "",
-            price: ""
+            price: "",
+            is_stock: 0
           });
       },
       deep: true
@@ -275,11 +323,17 @@ export default {
           padding: 0 5px;
           margin-bottom: 0;
           .el-select,
+          .el-radio-group,
           .el-date-editor {
             width: 100%;
           }
           &:last-child {
             width: 100%;
+            .el-table__row {
+              .el-radio {
+                margin-left: 0;
+              }
+            }
           }
         }
       }

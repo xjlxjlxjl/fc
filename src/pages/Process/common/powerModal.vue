@@ -65,7 +65,7 @@ export default {
             return content.join("");
           },
           events: {
-            "change .power": function(event, value, row, index) {
+            "click .power": function(event, value, row, index) {
               let val = $(this).val(),
                 key = $(this).attr("key"),
                 list = Object.values(row),

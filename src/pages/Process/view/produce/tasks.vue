@@ -1,19 +1,10 @@
 <template>
   <div id="tasks">
     <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
-    <div id="toolbar">
+    <div id="produceToolbar">
       <span class="lead">未完成任务</span>
-      <!-- <label for="tasks">任务类型：
-        <el-select v-model="status" size="mini">
-          <el-option :value="undefined">全部</el-option>
-          <el-option :value="0">未完成</el-option>
-          <el-option :value="1">完成</el-option>
-          <el-option :value="2">延期未完成</el-option>
-          <el-option :value="3">延期完成</el-option>
-        </el-select>
-      </label>-->
     </div>
-    <table id="table"></table>
+    <table id="produceTable"></table>
   </div>
 </template>
 <script>
@@ -23,8 +14,7 @@ export default {
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
-      activeId: 0,
-      status: undefined
+      activeId: 0
     };
   },
   components: {
@@ -50,19 +40,18 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.current_page = params.limit;
-      params.status = this.status;
+      params.current_page = params.offset / 10 + 1;
+      params.page = params.limit;
       return params;
     },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#produceTable"));
     }
   },
   mounted() {
     let that = this;
-    $("#table").bootstrapTable({
-      toolbar: "#toolbar",
+    $("#produceTable").bootstrapTable({
+      toolbar: "#produceToolbar",
       ajax: this.tableAjaxData,
       queryParams: this.tableAjaxParams,
       search: true,
@@ -162,7 +151,7 @@ export default {
               this.$post(`job/complete/${row.id}`)
                 .then(response => {
                   if (response.status != 200) return false;
-                  that.refresh($("#table"));
+                  that.refresh($("#produceTable"));
                 })
                 .catch(err => console.error(err));
             },
@@ -171,7 +160,7 @@ export default {
                 .then(response => {
                   if (response.status != 200) return false;
                   row.status = 4;
-                  that.ediTable($("#table"), index, row);
+                  that.ediTable($("#produceTable"), index, row);
                 })
                 .catch(err => console.error(err));
             }
@@ -193,11 +182,6 @@ export default {
       },
       onEditableSave: (field, mrow, oldValue, $el) => {}
     });
-  },
-  watch: {
-    status(val) {
-      this.refreshed();
-    }
   },
   created() {}
 };

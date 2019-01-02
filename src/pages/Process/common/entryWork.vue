@@ -19,9 +19,9 @@
                 <el-select v-model="form.branch">
                   <el-option
                     v-for="item in $store.state.userBranch"
-                    :key="item.id"
+                    :key="item.branch_id"
                     :label="item.branch_name"
-                    :value="item.id"
+                    :value="item.branch_id"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -70,7 +70,7 @@ export default {
         return false;
       }
       that
-        .$post(`personnels/engage`)
+        .$post(`personnels/engage`, that.form)
         .then(response => {
           if (response.status != 200) return false;
           that.close();

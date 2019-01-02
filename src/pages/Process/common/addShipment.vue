@@ -15,9 +15,9 @@
               <el-form-item label="客户名称" prop="customer_name">
                 <el-input v-model="form.customer_name" placeholder="客户名称"></el-input>
               </el-form-item>
-              <el-form-item label="总金额" prop="total_amount">
+              <!-- <el-form-item label="总金额" prop="total_amount">
                 <el-input v-model="form.total_amount" placeholder="总金额"></el-input>
-              </el-form-item>
+              </el-form-item>-->
               <el-form-item label="发货日期" prop="ship_date">
                 <el-date-picker v-model="form.ship_date" type="date" placeholder="选择日期"></el-date-picker>
               </el-form-item>
@@ -42,17 +42,17 @@
               <el-form-item label="地址" prop="address">
                 <el-input v-model="form.address" placeholder="地址"></el-input>
               </el-form-item>
-              <el-form-item label="收款金额" prop="receipt_amount">
+              <!-- <el-form-item label="收款金额" prop="receipt_amount">
                 <el-input v-model="form.receipt_amount" placeholder="收款金额"></el-input>
-              </el-form-item>
+              </el-form-item>-->
               <el-form-item label="收件人地址" prop="receipt_address">
                 <el-input v-model="form.receipt_address" placeholder="收件人地址"></el-input>
               </el-form-item>
               <el-form-item label="收件人手机" prop="receipt_mobile">
                 <el-input v-model="form.receipt_mobile" placeholder="收件人手机"></el-input>
               </el-form-item>
-              <el-form-item label="收件人名称" prop="receipt_name">
-                <el-input v-model="form.receipt_name" placeholder="收件人名称"></el-input>
+              <el-form-item label="收件人姓名" prop="receipt_name">
+                <el-input v-model="form.receipt_name" placeholder="收件人姓名"></el-input>
               </el-form-item>
               <el-form-item label="备注" prop="remark">
                 <el-input v-model="form.remark" placeholder="备注"></el-input>
@@ -62,6 +62,11 @@
                   <el-table-column v-for="(col, index) in columns" :key="index" :label="col.label">
                     <template slot-scope="{ row,$index }">
                       <el-input v-model="row[col.value]" :placeholder="col.label"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作">
+                    <template slot-scope="{ row,$index }">
+                      <el-button type="text" size="small" @click="form.items.splice($index,1)">删除</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -84,7 +89,7 @@ export default {
     return {
       form: {
         customer_name: "",
-        total_amount: "",
+        total_amount: undefined,
         ship_date: "",
         salesman: "",
         ship_method: "",
@@ -93,7 +98,7 @@ export default {
         mobile: "",
         phone: "",
         address: "",
-        receipt_amount: "",
+        receipt_amount: undefined,
         receipt_address: "",
         receipt_mobile: "",
         receipt_name: "",
@@ -151,6 +156,9 @@ export default {
         }
       ]
     };
+  },
+  props: {
+    goods: Array
   },
   methods: {
     onSubmit() {
@@ -233,6 +241,11 @@ export default {
   },
   computed: mapState(["addShipmentModal"]),
   watch: {
+    addShipmentModal(val) {
+      if (!val) return false;
+      this.clearForm();
+      this.goods.forEach(e => this.form.items.unshift(e));
+    },
     form: {
       handler(val, old) {
         let item = val.items[val.items.length - 1];

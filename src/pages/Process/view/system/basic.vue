@@ -33,7 +33,10 @@
       <el-form-item label="座机" prop="contact_phone">
         <el-input v-model="companyDetail.contact_phone" placeholder="座机"></el-input>
       </el-form-item>
-      <el-form-item>
+      <el-form-item label="公司官网" prop="website">
+        <el-input v-model="companyDetail.website" placeholder="公司官网"></el-input>
+      </el-form-item>
+      <el-form-item v-if="isEdit">
         <el-button type="primary" size="small" @click="onSubmit">保存</el-button>
         <el-button size="small" @click="resetForm">重置</el-button>
       </el-form-item>
@@ -42,11 +45,13 @@
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
+
 export default {
   name: "basic",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user")),
+      isEdit: true,
       rules: {
         logo: [
           { required: true, message: "请上传企业LOGO", trigger: "change" }
@@ -111,6 +116,7 @@ export default {
       that
         .$get(`members/company/detail/${that.user.user.current_company_id}`)
         .then(response => {
+          if (response.status == 503) this.isEdit = false;
           if (response.status != 200) return false;
           that.setStateData({ name: "companyDetail", arr: response.data });
         })

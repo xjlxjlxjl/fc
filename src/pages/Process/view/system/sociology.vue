@@ -72,7 +72,7 @@
           <span class="el-upload__tip" slot="tip">特许经营许可证</span>
         </div>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="isEdit">
         <el-button type="primary" size="small" @click="onSubmit">保存</el-button>
         <el-button size="small" @click="resetForm">重置</el-button>
       </el-form-item>
@@ -85,6 +85,7 @@ export default {
   name: "sociology",
   data() {
     return {
+      isEdit: true,
       user: JSON.parse(localStorage.getItem("user")),
       rules: {
         name: [{ required: true, message: "请输入企业全称", trigger: "blur" }],
@@ -176,6 +177,7 @@ export default {
       that
         .$get(`members/company/detail/${that.user.uesr.current_company_id}`)
         .then(response => {
+          if (response.status == 503) this.isEdit = false;
           if (response.status != 200) return false;
           that.setStateData({ name: "companyDetail", arr: response.data });
         })

@@ -13,7 +13,7 @@
                 <div :style="`width: ${parseInt(width)-162}px`">
                   <div style="border: 1px solid #000;padding: 10px;display:flex;">
                     <div style="flex-grow: 3;text-align: center;">
-                      <img :src="print.company.logo.location" width="50px" height="50px">
+                      <img :src="print.company.logo" width="50px" height="50px">
                     </div>
                     <div style="flex-grow: 9;">
                       <p
@@ -98,7 +98,7 @@
     <!--endprint-->
     <div id="OQCtoolbar">
       <span class="lead">生产送检表</span>
-      <el-button size="mini">上传质检报告</el-button>
+      <!-- <el-button size="mini">上传质检报告</el-button> -->
     </div>
     <table id="OQCtable"></table>
   </div>
@@ -304,8 +304,8 @@ export default {
           sortable: true
         },
         {
-          field: "quality_time",
-          title: "质检日期",
+          field: "updated_at",
+          title: "修改日期",
           sortable: true
         },
         {

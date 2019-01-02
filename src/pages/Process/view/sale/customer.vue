@@ -152,6 +152,16 @@ export default {
             }
           },
           {
+            field: "mobile",
+            title: "手机号",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "手机号",
+              emptytext: "空"
+            }
+          },
+          {
             field: "logistics_code",
             title: "物流编码",
             sortable: true,

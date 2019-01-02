@@ -113,7 +113,7 @@ export default {
         },
         {
           field: "native_place",
-          title: "老家",
+          title: "籍贯",
           sortable: true
         },
         {

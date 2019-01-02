@@ -47,6 +47,7 @@ export default {
   name: "enterprise",
   data() {
     return {
+      isEdit: true,
       user: JSON.parse(localStorage.getItem("user")),
       rules: {
         company_seal: [
@@ -117,6 +118,7 @@ export default {
       that
         .$get(`members/company/detail/${that.user.user.current_company_id}`)
         .then(response => {
+          if (response.status == 503) this.isEdit = false;
           if (response.status != 200) return false;
           that.setStateData({ name: "companyDetail", arr: response.data });
         })

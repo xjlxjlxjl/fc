@@ -5,7 +5,7 @@
       <div class="modalBox">
         <div class="modalBoxMain">
           <div class="modalBoxMainHeader">
-            <div class="modalBoxMainHeaderTitle">添加备忘录</div>
+            <div class="modalBoxMainHeaderTitle">新建客户</div>
             <div class="modalBoxMainHeaderBtn" @click="close">
               <i class="el-message-box__close el-icon-close"></i>
             </div>
@@ -52,7 +52,14 @@
                 <el-input v-model="form.address" placeholder="地址"></el-input>
               </el-form-item>
               <el-form-item label="业务员">
-                <el-input v-model="form.salesman" placeholder="业务员"></el-input>
+                <el-select v-model="form.salesman" placeholder="业务员">
+                  <el-option
+                    v-for="item in userBranch"
+                    :key="item.id"
+                    :label="item.display_name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="主联系人">
                 <el-input v-model="form.primary_contact" placeholder="主联系人"></el-input>
@@ -139,6 +146,7 @@ export default {
   name: "addCustomer",
   data() {
     return {
+      userBranch: [],
       form: {
         name: "",
         detailed_address: "",
@@ -202,6 +210,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(["getUserBranch"]),
     onSubmit() {
       this.$refs["form"].validate(v => {
         if (!v) return false;
@@ -216,6 +225,25 @@ export default {
           })
           .catch(err => {});
       });
+    },
+    getBranch() {
+      if (this.$store.state.userBranch.length)
+        this.$store.state.userBranch.forEach(e =>
+          e.member.forEach(v => this.userBranch.push(v))
+        );
+      else {
+        let that = this;
+        that
+          .$get(`members/company/branch`, {})
+          .then(response => {
+            if (response.status != 200) return false;
+            response.data.list.forEach(e =>
+              e.member.forEach(v => that.userBranch.push(v))
+            );
+            that.getUserBranch(response.data.list);
+          })
+          .catch(err => console.error(err));
+      }
     },
     clearForm() {
       this.form = {
@@ -318,6 +346,7 @@ export default {
   },
   computed: mapState(["addCustomer"]),
   mounted() {
+    this.getBranch();
     setTimeout(() => this.init(), 2000);
   }
 };
@@ -337,6 +366,9 @@ export default {
           width: 50%;
           padding: 0 15px;
           box-sizing: border-box;
+          .el-select {
+            width: 100%;
+          }
         }
         .widthFull {
           width: 100%;

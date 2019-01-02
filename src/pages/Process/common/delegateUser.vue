@@ -53,7 +53,7 @@ export default {
       else {
         let that = this;
         that
-          .$get(`members/company/branch`)
+          .$get(`members/company/branch`, {})
           .then(response => {
             if (response.status != 200) return false;
             response.data.list.forEach(e =>
@@ -68,6 +68,7 @@ export default {
       let that = this,
         url = null;
       switch (that.active.process) {
+        case 0:
         case 1:
           url = `service/send/customer/service/${that.active.id}`;
           break;

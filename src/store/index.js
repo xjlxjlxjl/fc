@@ -139,6 +139,15 @@ export default new Vuex.Store({
         { name: "客户好评系统汇总", url: "/AfterSale/praise" },
         { name: "客服部共享文件汇总", url: "/AfterSale/sharedFiles" }
       ],
+      produce: [
+        { name: "待完成任务", url: "/Produce" },
+        { name: "生产看板", url: "/Produce/product" },
+        { name: "生产领料", url: "/Produce/picking" },
+        { name: "生产物料车管理", url: "/Produce/materiel" },
+        { name: "生产仓库存", url: "/Produce/store" },
+        { name: "不良率原因汇总表", url: "/Produce/summary" },
+        { name: "工时表", url: "/Produce/time" }
+      ],
       WareHouse: [
         { name: "待完成任务", url: "/WareHouse" },
         { name: "生产看板", url: "/WareHouse/product" },

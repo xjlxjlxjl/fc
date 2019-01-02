@@ -249,7 +249,7 @@ export default {
       width: 800px;
       max-height: 70%;
       overflow: auto;
-      @media screen and (max-width: 320px) {
+      @media screen and (max-width: 820px) {
         .modalBoxMainContent {
           height: 200px;
           overflow: auto;

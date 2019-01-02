@@ -1,22 +1,29 @@
 <template>
   <div id="order">
     <addOrderModal @refresh="refreshed"></addOrderModal>
+    <addShipment :goods="goods" @refresh="refreshed"></addShipment>
     <div id="toolbar">
       <span class="lead">销售订单</span>
-      <el-button size="mini" @click="addOrder">新建销售订单</el-button>
+      <el-button size="mini" :goods="goods" @click="addOrder">新建销售订单</el-button>
+      <el-button size="mini" @click="addSale">新建出货单</el-button>
     </div>
     <table id="table"></table>
   </div>
 </template>
 <script>
 import addOrderModal from "@/pages/Process/common/addOrderModal";
+import addShipment from "@/pages/Process/common/addShipment";
+
 export default {
   name: "saleOrder",
   data() {
-    return {};
+    return {
+      goods: []
+    };
   },
   components: {
-    addOrderModal: addOrderModal
+    addOrderModal: addOrderModal,
+    addShipment: addShipment
   },
   methods: {
     tableAjaxData(params) {
@@ -39,6 +46,26 @@ export default {
     },
     addOrder() {
       addOrderModal.methods.close.call(this);
+    },
+    addSale() {
+      let arr = this.getData($("#table"));
+      this.goods = [];
+      arr.forEach(e => {
+        e.products.forEach(p =>
+          this.goods.push({
+            order_id: e.id,
+            order_no: e.numbering,
+            item_code: p.id,
+            item_name: p.product_name,
+            item_unit: "件",
+            item_num: p.quantity,
+            customer_goods_no: "",
+            customer_order_no: "",
+            remark: ""
+          })
+        );
+      });
+      addShipment.methods.close.call(this);
     },
     refreshed() {
       this.refresh($("#table"));
@@ -79,7 +106,7 @@ export default {
         },
         {
           field: "company_name",
-          title: "客户",
+          title: "创建人",
           sortable: true
         },
         {
@@ -110,6 +137,11 @@ export default {
         {
           field: "consignee",
           title: "联系人",
+          sortable: true
+        },
+        {
+          field: "mobile",
+          title: "手机",
           sortable: true
         },
         {
@@ -156,6 +188,14 @@ export default {
           sortable: true
         },
         {
+          field: "operate_status",
+          title: "排单状态",
+          sortable: true,
+          formatter: (value, row, index) => {
+            return `${value ? "已排单" : "未排单"}`;
+          }
+        },
+        {
           field: "check_status_name",
           title: "审核状态",
           sortable: true,
@@ -177,6 +217,32 @@ export default {
           sortable: true,
           formatter: (value, row, index) => {
             return `${value || "暂无"}`;
+          }
+        },
+        {
+          field: "slug",
+          title: "操作",
+          sortable: true,
+          formatter: (value, row, index) => {
+            let schedule = [
+              `<button class="add btn btn-sm btn-success">添加排单</button>`
+            ];
+            if (!row.operate_status) return schedule;
+            else return;
+          },
+          events: {
+            "click .add": (event, value, row, index) => {
+              that
+                .$post(`schedule/create`, {
+                  slug: value
+                })
+                .then(response => {
+                  if (response.status != 200) return false;
+                  row.operate_status = 1;
+                  that.ediTable($("#table"), index, row);
+                })
+                .catch(err => {});
+            }
           }
         }
       ],

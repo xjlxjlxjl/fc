@@ -3,7 +3,7 @@
     <addShipment @refresh="refreshed"></addShipment>
     <div id="toolbar">
       <span class="lead">出货申请单</span>
-      <el-button size="mini" @click="addSale">创建出货单</el-button>
+      <!-- <el-button size="mini" @click="addSale">创建出货单</el-button> -->
     </div>
     <table id="table"></table>
   </div>
@@ -76,8 +76,9 @@ export default {
         {
           field: "created_user",
           title: "出库申请人",
-          formatter: value => {
-            return `${value.display_name}`;
+          sortable: true,
+          formatter: (value, row, index) => {
+            return `${value ? value.display_name : "无"}`;
           }
         },
         {
@@ -95,16 +96,16 @@ export default {
             emptytext: "空"
           }
         },
-        {
-          field: "total_amount",
-          title: "总金额",
-          sortable: true,
-          editable: {
-            type: "text",
-            title: "总金额",
-            emptytext: "空"
-          }
-        },
+        // {
+        //   field: "total_amount",
+        //   title: "总金额",
+        //   sortable: true,
+        //   editable: {
+        //     type: "text",
+        //     title: "总金额",
+        //     emptytext: "空"
+        //   }
+        // },
         {
           field: "ship_date",
           title: "发货日期",
@@ -185,16 +186,16 @@ export default {
             emptytext: "空"
           }
         },
-        {
-          field: "receipt_amount",
-          title: "收款金额",
-          sortable: true,
-          editable: {
-            type: "text",
-            title: "收款金额",
-            emptytext: "空"
-          }
-        },
+        // {
+        //   field: "receipt_amount",
+        //   title: "收款金额",
+        //   sortable: true,
+        //   editable: {
+        //     type: "text",
+        //     title: "收款金额",
+        //     emptytext: "空"
+        //   }
+        // },
         {
           field: "receipt_address",
           title: "收件人地址",

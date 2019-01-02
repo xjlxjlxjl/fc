@@ -1285,7 +1285,8 @@ export default {
       this.webSocketSend({
         action: "login",
         req: {
-          token: this.user.token
+          token: this.user.token,
+          client_type: "web"
         }
       });
     },
