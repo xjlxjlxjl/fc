@@ -309,6 +309,9 @@ export default {
             flex-wrap: wrap;
             .el-form-item__label {
               width: 90px !important;
+              @media screen and (min-width: 501px) {
+                width: 100px !important;
+              }
               display: block;
               padding-right: 0;
             }

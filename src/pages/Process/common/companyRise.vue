@@ -434,7 +434,8 @@ export default {
       position: absolute;
       right: 20px;
       color: @white;
-      line-height: 60px;
+      line-height: 59px;
+      box-sizing: border-box;
       &:hover {
         text-decoration: none;
       }
