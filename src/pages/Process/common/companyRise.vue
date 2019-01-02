@@ -141,104 +141,14 @@
 import progress from "@/assets/img/progress.png";
 import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
+import message from "@/pages/Chart/view/message";
 
 export default {
   name: "companyRise",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user")) || null,
-      process: [
-        {
-          name: "销售",
-          url: "/Sale",
-          active: false,
-          child: [
-            { name: "客户管理", url: "customers" },
-            { name: "销售订单", url: "orders" },
-            { name: "报价", url: "quotedPrice" }
-          ]
-        },
-        {
-          name: "工程",
-          url: "/Engineer",
-          active: false,
-          child: [
-            { name: "Bom", url: "project" },
-            { name: "料品", url: "materials" }
-          ]
-        },
-        {
-          name: "采购",
-          url: "/Purchase",
-          active: false,
-          child: [
-            { name: "采购计划", url: "project" },
-            { name: "采购单", url: "project" }
-          ]
-        },
-        {
-          name: "IQC",
-          url: "/IQC",
-          active: false,
-          child: [{ name: "来料检测", url: "project" }]
-        },
-        {
-          name: "仓库",
-          url: "/WareHouse",
-          active: false,
-          child: [
-            { name: "料品管理", url: "project" },
-            { name: "出库", url: "project" },
-            { name: "入库", url: "project" }
-          ]
-        },
-        {
-          name: "生产",
-          url: "/Produce",
-          active: false,
-          child: [
-            { name: "生产计划", url: "project" },
-            { name: "生产领料", url: "project" },
-            { name: "生产送检", url: "project" }
-          ]
-        },
-        {
-          name: "OQC",
-          url: "/OQC",
-          active: false,
-          child: [
-            { name: "成品检测", url: "project" },
-            { name: "质检报告", url: "project" }
-          ]
-        },
-        {
-          name: "物流",
-          url: "/Logistics",
-          active: false,
-          child: [{ name: "物流管理", url: "project" }]
-        },
-        {
-          name: "售后",
-          url: "/AfterSale",
-          active: false,
-          child: [
-            { name: "售后计划", url: "project" },
-            { name: "售后维修", url: "project" }
-          ]
-        },
-        {
-          name: "财务",
-          url: "/Finance",
-          active: false,
-          child: [{ name: "财务", url: "project" }]
-        },
-        {
-          name: "人事",
-          url: "/Matters",
-          active: false,
-          child: [{ name: "人事", url: "Matters" }]
-        }
-      ],
+      process: this.$store.state.riseProcess,
       progress: progress,
       progressHide: progressHide,
       progressLast: progressLast,
@@ -298,20 +208,24 @@ export default {
                 });
               }, 5000);
             }
-          case "pong":
-            break;
-          case "chat":
-            ++this.messageTips;
-            break;
-          case "group":
-            ++this.messageTips;
-            break;
-          case "notice":
-            ++this.messageTips;
-            this.$notify({ title: "消息通知", message: result.resp.content });
-            break;
           case "close":
             this.webSocketClose();
+            break;
+          case "pong":
+          case "chat":
+          case "group":
+          case "notice":
+            this.$notify({
+              title: `您有一条来自${result.resp.from_name}的通知`,
+              message: result.resp.content
+            });
+            let notification = new Notification(
+              `您有一条来自${result.resp.from_name}的通知`,
+              {
+                body: result.resp.content
+              }
+            );
+            ++this.messageTips;
             break;
           default:
             console.log("抛出");
@@ -325,32 +239,16 @@ export default {
       };
     },
     reconnect(url) {
-      if (this.lockReconnect) return false;
-      this.lockReconnect = true;
-      //没连接上会一直重连，设置延迟避免请求过多
-      if (this.connectNum > 3) this.webSocketClose();
-      let that = this;
-      setTimeout(function() {
-        that.webSocket();
-        that.lockReconnect = false;
-      }, 2000);
+      message.methods.reconnect.call(this, url);
     },
     webSocketLogin() {
-      this.webSocketSend({
-        action: "login",
-        req: {
-          token: this.user.token,
-          client_type: "web"
-        }
-      });
+      message.methods.webSocketLogin.call(this);
     },
     webSocketSend(action) {
-      let that = this;
-      this.ws.send(JSON.stringify(action));
+      message.methods.webSocketSend.call(this, action);
     },
     webSocketClose() {
-      clearInterval(this.pong);
-      this.ws.close();
+      message.methods.webSocketClose.call(this);
     }
   },
   mounted() {
@@ -582,6 +480,7 @@ export default {
             right: -26px;
             z-index: 2;
             height: 35px;
+            top: -1px;
           }
           .whiteRound;
         }

@@ -110,7 +110,7 @@
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
-// import message from "@/pages/chart/view/message";
+import message from "@/pages/Chart/view/message";
 import fileImg from "@/assets/img/file.png";
 
 export default {
@@ -143,9 +143,13 @@ export default {
           company_id: that.companyId
         })
         .then(response => {
-          if (response.status != 200) return false;
+          if (response.status != 200) {
+            that.close();
+            return false;
+          }
           localStorage.setItem("customer", JSON.stringify(response.data));
           that.customer = response.data;
+          that.toUser = response.data.id;
           this.getRecord({
             id: that.customer.id,
             username: that.customer.display_name
@@ -300,150 +304,19 @@ export default {
         .catch(error => console.error(error));
     },
     webSocket() {
-      let socketAddress = this.$store.state.socketAddress;
-      this.ws = new WebSocket(socketAddress);
-      this.ws.onmessage = event => {
-        let result = JSON.parse(event.data);
-        switch (result.action) {
-          case "init":
-            this.webSocketLogin();
-            break;
-          case "login":
-            if (result.resp.code != 200) {
-              this.webSocketLogin();
-              return false;
-            } else {
-              this.connectNum = 0;
-              clearInterval(this.pong);
-              this.pong = setInterval(() => {
-                this.webSocketSend({
-                  action: "pong",
-                  req: {
-                    message: "hello"
-                  }
-                });
-              }, 5000);
-            }
-          case "pong":
-            break;
-          case "chat":
-            console.log(result);
-            switch (result.resp.type) {
-              case 1:
-              case "1":
-              // 文字消息
-              case 2:
-              case "2":
-              // 图片消息
-              case 3:
-              case "3":
-              // 产品
-              case 4:
-              case "4":
-              // 语音消息
-              case 5:
-              case "5":
-              // 视频消息
-              case 6:
-              case "6":
-                // 位置消息
-                if (result.resp_event == 200) {
-                  if (result.resp.from_uid == this.customer.id) {
-                    this.record.list.push({
-                      from_user_id: result.resp.from_uid,
-                      from_user: {
-                        from_user_id: result.resp.from_uid,
-                        avatar:
-                          result.resp.avatar ||
-                          "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                        display_name: this.userName
-                      },
-                      created_at: new Date().toLocaleString(),
-                      msg_type: result.resp.type,
-                      content: result.resp.content
-                    });
-                  }
-                  this.$notify({
-                    title: `收到一条新消息`,
-                    message: result.resp.content
-                  });
-                  let notification = new Notification("收到一条新消息", {
-                    body: result.resp.content
-                  });
-                }
-                break;
-              case "7":
-                // 广播消息
-                break;
-            }
-            this.fixLocation();
-            break;
-          case "group":
-            console.log(result);
-            if (result.resp_event == 200) {
-              this.$notify({
-                title: `收到一条新消息`,
-                message: result.resp.content
-              });
-              let notification = new Notification(`收到一条新消息`, {
-                body: result.resp.content
-              });
-            }
-            this.fixLocation();
-            break;
-          case "notice":
-            console.log(result);
-            this.$notify({
-              title: `您有一条来自${result.resp.from_name}的通知`,
-              message: result.resp.content
-            });
-            let notification = new Notification(
-              `您有一条来自${result.resp.from_name}的通知`,
-              {
-                body: result.resp.content
-              }
-            );
-            // this.getNotices();
-            break;
-          case "close":
-            this.webSocketClose();
-            break;
-          default:
-            console.log("抛出");
-            console.log(result);
-            break;
-        }
-      };
-      this.ws.onclose = this.ws.onerror = () => {
-        this.connectNum++;
-        this.reconnect(socketAddress);
-      };
+      message.methods.webSocket.call(this);
     },
     reconnect(url) {
-      if (this.lockReconnect) return false;
-      this.lockReconnect = true;
-      //没连接上会一直重连，设置延迟避免请求过多
-      if (this.connectNum > 3) this.webSocketClose();
-      setTimeout(() => {
-        this.webSocket(url);
-        this.lockReconnect = false;
-      }, 2000);
+      message.methods.reconnect.call(this, url);
     },
     webSocketLogin() {
-      this.webSocketSend({
-        action: "login",
-        req: {
-          token: this.user.token,
-          client_type: "web"
-        }
-      });
+      message.methods.webSocketLogin.call(this);
     },
     webSocketSend(action) {
-      this.ws.send(JSON.stringify(action));
-      this.fixLocation();
+      message.methods.webSocketSend.call(this, action);
     },
     webSocketClose() {
-      this.ws.close();
+      message.methods.webSocketClose.call(this);
     },
     fixLocation() {
       setTimeout(() => {

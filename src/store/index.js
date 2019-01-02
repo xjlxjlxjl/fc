@@ -72,6 +72,7 @@ export default new Vuex.Store({
         }
       ]
     },
+    companyList: [],
     userBranch: [],
     // 发票类型
     invoiceType: [],
@@ -91,6 +92,109 @@ export default new Vuex.Store({
     brandList: [],
     // 权限
     powerList: [],
+    riseProcess: [
+      {
+        name: "销售",
+        url: "/Sale",
+        indexUrl: "/process.html#/Sale",
+        active: false,
+        child: [
+          { name: "客户管理", url: "customers" },
+          { name: "销售订单", url: "orders" },
+          { name: "报价", url: "quotedPrice" }
+        ]
+      },
+      {
+        name: "工程",
+        url: "/Engineer",
+        indexUrl: "/process.html#/Engineer",
+        active: false,
+        child: [
+          { name: "Bom", url: "project" },
+          { name: "料品", url: "materials" }
+        ]
+      },
+      {
+        name: "采购",
+        url: "/Purchase",
+        indexUrl: "/process.html#/Purchase",
+        active: false,
+        child: [
+          { name: "采购计划", url: "project" },
+          { name: "采购单", url: "project" }
+        ]
+      },
+      {
+        name: "IQC",
+        url: "/IQC",
+        indexUrl: "/process.html#/IQC",
+        active: false,
+        child: [{ name: "来料检测", url: "project" }]
+      },
+      {
+        name: "仓库",
+        url: "/WareHouse",
+        indexUrl: "/process.html#/WareHouse",
+        active: false,
+        child: [
+          { name: "料品管理", url: "project" },
+          { name: "出库", url: "project" },
+          { name: "入库", url: "project" }
+        ]
+      },
+      {
+        name: "生产",
+        url: "/Produce",
+        indexUrl: "/process.html#/Produce",
+        active: false,
+        child: [
+          { name: "生产计划", url: "project" },
+          { name: "生产领料", url: "project" },
+          { name: "生产送检", url: "project" }
+        ]
+      },
+      {
+        name: "OQC",
+        url: "/OQC",
+        indexUrl: "/process.html#/OQC",
+        active: false,
+        child: [
+          { name: "成品检测", url: "project" },
+          { name: "质检报告", url: "project" }
+        ]
+      },
+      {
+        name: "物流",
+        url: "/Logistics",
+        indexUrl: "/process.html#/Logistics",
+        active: false,
+        child: [{ name: "物流管理", url: "project" }]
+      },
+      {
+        name: "售后",
+        url: "/AfterSale",
+        indexUrl: "/process.html#/AfterSale",
+        active: false,
+        child: [
+          { name: "售后计划", url: "project" },
+          { name: "售后维修", url: "project" }
+        ]
+      },
+      {
+        name: "财务",
+        url: "/Finance",
+        indexUrl: "/process.html#/Finance",
+        active: false,
+        child: [{ name: "财务", url: "project" }]
+      },
+      {
+        name: "人事",
+        url: "/Matters",
+        indexUrl: "/process.html#/Matters",
+        active: false,
+        child: [{ name: "人事", url: "Matters" }]
+      }
+    ],
     process: {
       sale: [
         { name: "未完成任务", url: "/Sale" },
@@ -196,6 +300,7 @@ export default new Vuex.Store({
     galleryModal: false,
     chatModal: false,
     payModal: false,
+    supplierModal: false,
     //
     createdWorkModal: false,
     createdCustomerModal: false,

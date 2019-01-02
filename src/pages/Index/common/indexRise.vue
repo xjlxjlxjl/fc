@@ -116,7 +116,7 @@
     <el-main class="headerProcess hidden-md-and-down">
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
-          <a href="javascript:;" @click="locationTo(val.url)">
+          <a href="javascript:;" @click="locationTo(val.indexUrl)">
             <div class="whiteRoundBox">
               <a href="javascript:;">{{ val.name }}</a>
               <img :src="progress" v-if="key < process.length - 3">
@@ -139,87 +139,7 @@ export default {
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user")) || null,
-      process: [
-        {
-          name: "销售",
-          url: "/process.html#/Sale",
-          child: [
-            { name: "客户管理", url: "customers" },
-            { name: "销售订单", url: "orders" },
-            { name: "报价", url: "quotedPrice" }
-          ]
-        },
-        {
-          name: "工程",
-          url: "/process.html#/Engineer",
-          child: [
-            { name: "Bom", url: "project" },
-            { name: "料品", url: "materials" }
-          ]
-        },
-        {
-          name: "采购",
-          url: "/process.html#/Purchase",
-          child: [
-            { name: "采购计划", url: "project" },
-            { name: "采购单", url: "project" }
-          ]
-        },
-        {
-          name: "IQC",
-          url: "/process.html#/IQC",
-          child: [{ name: "来料检测", url: "project" }]
-        },
-        {
-          name: "仓库",
-          url: "/process.html#/WareHouse",
-          child: [
-            { name: "料品管理", url: "project" },
-            { name: "出库", url: "project" },
-            { name: "入库", url: "project" }
-          ]
-        },
-        {
-          name: "生产",
-          url: "/process.html#/Produce",
-          child: [
-            { name: "生产计划", url: "project" },
-            { name: "生产领料", url: "project" },
-            { name: "生产送检", url: "project" }
-          ]
-        },
-        {
-          name: "OQC",
-          url: "/process.html#/OQC",
-          child: [
-            { name: "成品检测", url: "project" },
-            { name: "质检报告", url: "project" }
-          ]
-        },
-        {
-          name: "物流",
-          url: "/process.html#/Logistics",
-          child: [{ name: "物流管理", url: "project" }]
-        },
-        {
-          name: "售后",
-          url: "/process.html#/AfterSale",
-          child: [
-            { name: "售后计划", url: "project" },
-            { name: "售后维修", url: "project" }
-          ]
-        },
-        {
-          name: "财务",
-          url: "/process.html#/Finance",
-          child: [{ name: "财务", url: "project" }]
-        },
-        {
-          name: "人事",
-          url: "/process.html#/Matters",
-          child: [{ name: "人事", url: "Matters" }]
-        }
-      ],
+      process: this.$store.state.riseProcess,
       progress: progress,
       progressHide: progressHide,
       progressLast: progressLast,
