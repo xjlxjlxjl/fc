@@ -13,6 +13,9 @@
           <div class="modalBoxMainContent">
             <div id="createdCustomerForm" v-if="state == 1">
               <el-form :inline="true" :model="form" label-position="left" label-width="70px">
+                <el-form-item label="公司">
+                  <el-input v-model="form.customer_company_name" placeholder="公司"></el-input>
+                </el-form-item>
                 <el-form-item label="姓名">
                   <el-input v-model="form.customer_linkman" placeholder="姓名"></el-input>
                 </el-form-item>
@@ -34,11 +37,11 @@
                 <el-form-item label="验证码">
                   <el-input v-model="form.code" placeholder="验证码"></el-input>
                 </el-form-item>
+                <el-form-item label="产品型号">
+                  <el-input v-model="form.specification" placeholder="产品型号"></el-input>
+                </el-form-item>
                 <el-form-item label="问题描述">
                   <el-input v-model="form.customer_demand" placeholder="问题描述"></el-input>
-                </el-form-item>
-                <el-form-item label="规格">
-                  <el-input v-model="form.specification" placeholder="规格"></el-input>
                 </el-form-item>
                 <el-form-item label="上传图片" class="fileList">
                   <el-upload
@@ -113,6 +116,7 @@ export default {
       form: {
         number: "",
         apply_linkman: "",
+        customer_company_name: "",
         customer_linkman: "",
         customer_contact: "",
         date: "",
@@ -190,6 +194,7 @@ export default {
       let that = this,
         params = {
           number: this.form.number,
+          customer_company_name: this.form.customer_company_name,
           customer_linkman: this.form.customer_linkman,
           customer_contact: this.form.customer_contact,
           customer_demand: this.form.customer_demand,
@@ -218,6 +223,7 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           // that.$emit("refresh");
+          that.$message({ message: "您的申请已提交", type: "success" });
           that.close();
           that.addTable($("#table"), 0, response.data);
         })

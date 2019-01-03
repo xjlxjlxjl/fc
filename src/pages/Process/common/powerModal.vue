@@ -55,7 +55,9 @@ export default {
                   <td>${val.options[item]}</td>
                   <td><input type='checkbox' name="powerBox" class="power" key="${
                     this.field
-                  }" value='${item}' ${
+                  }" row="${JSON.stringify(
+                  row
+                )}" index="${index}" value='${item}' ${
                   val.value.indexOf(item) != -1 ? 'checked="checked"' : ""
                 }'></td>
                 </tr>`
@@ -63,7 +65,8 @@ export default {
             }
             content.push(`</table>`);
             return content.join("");
-          },
+          }
+          /*
           events: {
             "click .power": function(event, value, row, index) {
               let val = $(this).val(),
@@ -97,6 +100,7 @@ export default {
                 .catch(err => {});
             }
           }
+          */
         })
       );
       this.$emit("init", { columns: this.columns });

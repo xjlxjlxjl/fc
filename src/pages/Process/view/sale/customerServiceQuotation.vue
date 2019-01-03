@@ -2,12 +2,12 @@
   <div id="customerServiceQuotation">
     <div id="toolbar">
       <span class="lead">客服报价表</span>
-      <el-button size="mini" @click="sendContract">发送合同给客户</el-button>
+      <!-- <el-button size="mini" @click="sendContract">发送合同给客户</el-button>
       <el-button size="mini" @click="sendEngineer">工程细化图纸BOM</el-button>
       <el-button size="mini" @click="sendProduct">排单生产</el-button>
-      <el-button size="mini" @click="sendService">发送给客服</el-button>
+      <el-button size="mini" @click="sendService">发送给客服</el-button>-->
       <el-button size="mini" @click="sendCustomer">发送报价给客户</el-button>
-      <el-button size="mini" @click="auditPass">审核通过</el-button>
+      <!-- <el-button size="mini" @click="auditPass">审核通过</el-button> -->
       <br>
     </div>
     <table id="table"></table>
@@ -50,6 +50,130 @@ export default {
     tableAjaxParams(params) {
       params.current_page = params.offset + 1;
       return params;
+    },
+    refreshed() {
+      this.refresh("#table");
+    },
+    init() {
+      let that = this,
+        columns = [
+          {
+            checkbox: true
+          },
+          {
+            field: "quoted_price_number",
+            title: "客服报价单",
+            sortable: true
+          },
+          {
+            field: "member_name",
+            title: "报价人",
+            sortable: true
+          },
+          {
+            field: "create_at",
+            title: "申请日期",
+            sortable: true
+          },
+          {
+            field: "whether_send_customer",
+            title: "是否发送",
+            sortable: true
+          },
+          {
+            field: "customer_company_name",
+            title: "客户",
+            sortable: true
+          },
+          {
+            field: "linkman",
+            title: "联系人",
+            sortable: true
+          },
+          {
+            field: "customer_contact",
+            title: "联系电话",
+            sortable: true
+          },
+          {
+            field: "order_number",
+            title: "销售订单",
+            sortable: true
+          },
+          {
+            field: "whether_warranty",
+            title: "是否过保",
+            sortable: true
+          },
+          {
+            field: "price",
+            title: "总金额",
+            sortable: true
+          },
+          {
+            field: "discount_price",
+            title: "优惠",
+            sortable: true
+          },
+          {
+            field: "creator",
+            title: "应收",
+            sortable: true
+          }
+        ],
+        data = {
+          toolbar: "#customerServiceQuotation #toolbar",
+          ajax: this.tableAjaxData,
+          queryParams: this.tableAjaxParams,
+          search: true,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          sortName: "createTime",
+          sortOrder: "desc",
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          detailView: true,
+          columns: columns,
+          onEditableSave: (field, mrow, oldValue, $el) => {},
+          detailFormatter: (field, mrow, oldValue, $el) => {
+            let html = [
+              `<table class="table">
+              <tr>
+                <th>物料编码</th>
+                <th>物料名称</th>
+                <th>规格</th>
+                <th>单位</th>
+                <th>价格</th>
+                <th>数量</th>
+              </tr>`
+            ];
+            mrow.detail.forEach(e =>
+              html.push(`
+                <tr>
+                  <td>${e.code || "无"}</td>
+                  <td>${e.name}</td>
+                  <td>${e.info}</td>
+                  <td>${e.unit}</td>
+                  <td>${e.price}</td>
+                  <td>${e.number}</td>
+                </tr>
+              `)
+            );
+            html.push("</table>");
+            return html.join("");
+          }
+        };
+      $("#customerServiceQuotation #table").bootstrapTable(data);
     },
     sendContract() {
       let that = this,
@@ -155,123 +279,7 @@ export default {
     }
   },
   mounted() {
-    let that = this;
-    $("#table").bootstrapTable({
-      toolbar: "#toolbar",
-      ajax: this.tableAjaxData,
-      queryParams: this.tableAjaxParams,
-      search: true,
-      strictSearch: true,
-      showRefresh: true,
-      sidePagination: "server",
-      pagination: true,
-      striped: true,
-      clickToSelect: true,
-      showColumns: true,
-      sortName: "createTime",
-      sortOrder: "desc",
-      idField: "id",
-      showToggle: true,
-      showExport: true,
-      exportDataType: "all",
-      exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-      classes: "table",
-      pageList: [10, 25, 50, 100, "All"],
-      detailView: true,
-      columns: [
-        {
-          checkbox: true
-        },
-        {
-          field: "quoted_price_number",
-          title: "客服报价单",
-          sortable: true
-        },
-        {
-          field: "member_name",
-          title: "报价人",
-          sortable: true
-        },
-        {
-          field: "create_at",
-          title: "申请日期",
-          sortable: true
-        },
-        {
-          field: "whether_send_customer",
-          title: "是否发送",
-          sortable: true
-        },
-        {
-          field: "customer_company_name",
-          title: "客户",
-          sortable: true
-        },
-        {
-          field: "linkman",
-          title: "联系人",
-          sortable: true
-        },
-        {
-          field: "customer_contact",
-          title: "联系电话",
-          sortable: true
-        },
-        {
-          field: "order_number",
-          title: "销售订单",
-          sortable: true
-        },
-        {
-          field: "whether_warranty",
-          title: "是否过保",
-          sortable: true
-        },
-        {
-          field: "price",
-          title: "总金额",
-          sortable: true
-        },
-        {
-          field: "discount_price",
-          title: "优惠",
-          sortable: true
-        },
-        {
-          field: "creator",
-          title: "应收",
-          sortable: true
-        }
-      ],
-      onEditableSave: (field, mrow, oldValue, $el) => {},
-      detailFormatter: (field, mrow, oldValue, $el) => {
-        let html = [
-          `<table class="table">
-              <tr>
-                <th>物料编码</th>
-                <th>物料名称</th>
-                <th>规格</th>
-                <th>单位</th>
-                <th>价格</th>
-                <th>数量</th>
-              </tr>`
-        ];
-        mrow.detail.forEach(e =>
-          html.push(`
-                <tr>
-                  <td>${e.code || "无"}</td>
-                  <td>${e.name}</td>
-                  <td>${e.info}</td>
-                  <td>${e.unit}</td>
-                  <td>${e.price}</td>
-                  <td>${e.number}</td>
-                </tr>
-              `)
-        );
-        html.push("</table>");
-        return html.join("");
-      }
-    });
+    this.init();
   },
   created() {
     $(".el-message-box").width("600");

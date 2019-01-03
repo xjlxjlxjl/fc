@@ -30,6 +30,19 @@
               <el-form-item label="账期类型" prop="account_period_type">
                 <el-input v-model="form.account_period_type" placeholder="账期类型"></el-input>
               </el-form-item>
+              <el-form-item label="业务员" prop="salesman">
+                <el-select v-model="form.salesman" placeholder="业务员">
+                  <el-option
+                    v-for="item in userBranch"
+                    :key="item.id"
+                    :label="item.display_name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="联系电话">
+                <el-input v-model="form.phone" placeholder="联系电话"></el-input>
+              </el-form-item>
               <el-form-item class="widthFull" label="地图标注位置" prop="region">
                 <div id="baiduMap"></div>
               </el-form-item>
@@ -51,21 +64,8 @@
               <el-form-item label="地址">
                 <el-input v-model="form.address" placeholder="地址"></el-input>
               </el-form-item>
-              <el-form-item label="业务员">
-                <el-select v-model="form.salesman" placeholder="业务员">
-                  <el-option
-                    v-for="item in userBranch"
-                    :key="item.id"
-                    :label="item.display_name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
               <el-form-item label="主联系人">
                 <el-input v-model="form.primary_contact" placeholder="主联系人"></el-input>
-              </el-form-item>
-              <el-form-item label="联系电话">
-                <el-input v-model="form.phone" placeholder="联系电话"></el-input>
               </el-form-item>
               <el-form-item label="传真">
                 <el-input v-model="form.fax" placeholder="传真"></el-input>
@@ -198,7 +198,8 @@ export default {
         ],
         account_period_type: [
           { required: true, message: "请输入账期类型", trigger: "blur" }
-        ]
+        ],
+        salesman: [{ required: true, message: "请选择业务员", trigger: "blur" }]
         // region: {
         //   address: [
         //     { required: true, message: "请在地图选择地点", trigger: "blur" }

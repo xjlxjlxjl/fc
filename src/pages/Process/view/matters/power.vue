@@ -9,10 +9,13 @@
 </template>
 <script>
 import powerModal from "@/pages/Process/common/powerModal";
+
 export default {
   name: "power",
   data() {
-    return {};
+    return {
+      row: []
+    };
   },
   components: {
     powerModal: powerModal
@@ -41,7 +44,7 @@ export default {
               };
             });
           });
-          console.log(arr);
+          that.row = arr;
           params.success({
             rows: arr,
             total: response.data.pagination.total
@@ -97,6 +100,42 @@ export default {
     /**
      * 放出所有选项
      */
+    changePower() {
+      const that = this;
+      $("#mattersTable").on("click", ".power", function() {
+        let val = $(this).val(),
+          key = $(this).attr("key"),
+          index = $(this).attr("index"),
+          row = that.row[index],
+          list = Object.values(row),
+          arr = [];
+
+        for (let item of list) {
+          if (typeof item == "object") item.value.forEach(e => arr.push(e));
+        }
+        if (arr.indexOf(val) == -1) arr.push(val);
+        else arr.splice(arr.indexOf(val), 1);
+        that
+          .$post(`members/branch/permission/edit/${row.id}`, {
+            permission: JSON.stringify(arr)
+          })
+          .then(response => {
+            if (response.status != 200) return false;
+            let data = {
+              id: row.id,
+              name: row.name
+            };
+            response.data.permission.forEach(p => {
+              data[p.name] = {
+                options: p.options,
+                value: p.value
+              };
+            });
+            that.ediTable($("#mattersTable"), index, data);
+          })
+          .catch(err => {});
+      });
+    },
     a() {
       let that = this,
         self = this.$store.state.powerList;
@@ -152,6 +191,7 @@ export default {
     }
   },
   mounted() {
+    this.changePower();
     // this.init();
   }
 };

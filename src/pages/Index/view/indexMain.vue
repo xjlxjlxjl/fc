@@ -2,7 +2,7 @@
   <div id="main">
     <join-project :join-project="joinProject" :quantity="parseInt(1)"></join-project>
     <login-modal></login-modal>
-    <supplier-modal title="选择供应商" :demand="nonstandard" @onSubmit="createNon"></supplier-modal>
+    <!-- <supplier-modal title="选择供应商" :demand="nonstandard" @onSubmit="createNon"></supplier-modal> -->
     <el-container>
       <el-aside class="homeMainAside" width="200px">
         <el-menu default-active="0">
@@ -2187,11 +2187,12 @@
                 </el-form-item>
               </el-form>
               <div align="right">
-                <el-button
+                <!-- <el-button
                   size="mini"
                   type="primary"
                   @click="$store.commit('changeModal', 'supplierModal')"
-                >确定</el-button>
+                >确定</el-button>-->
+                <el-button size="mini" type="primary" @click="createNon">确定</el-button>
               </div>
             </div>
           </el-main>
@@ -2206,7 +2207,7 @@ import indexChart from "@/pages/Index/common/indexChart";
 import echarts from "echarts";
 import joinProjectModel from "@/pages/Index/common/joinProject";
 import loginModal from "@/pages/Index/common/loginModal";
-import supplierModal from "@/pages/Index/common/supplierModal";
+// import supplierModal from "@/pages/Index/common/supplierModal";
 
 export default {
   name: "indexMain",
@@ -2303,8 +2304,8 @@ export default {
   components: {
     "index-chart": indexChart,
     "join-project": joinProjectModel,
-    "login-modal": loginModal,
-    "supplier-modal": supplierModal
+    "login-modal": loginModal
+    // "supplier-modal": supplierModal
   },
   methods: {
     getCategory() {
@@ -2590,16 +2591,32 @@ export default {
       if (!this.$ifLogin()) return false;
       joinProjectModel.methods.getProject.call(this);
     },
-    createNon(params) {
+    createNon() {
+      // createNon(params) {
+      // if (!params.demand) {
+      //   this.$message({ message: "非标产品需求不能为空", type: "error" });
+      //   return false;
+      // }
+      // if (!params.supplier_ids) {
+      //   this.$message({ message: "供应商不能为空", type: "error" });
+      //   return false;
+      // }
       let that = this,
-        loading = this.$loading({ lock: true });
+        loading = this.$loading({ lock: true }),
+        params = {
+          demand: that.nonstandard.requirements
+        };
+
+      if (that.nonstandard.images_ids.length)
+        params.images_ids = that.nonstandard.images_ids.join(",");
+
       that
         .$post("orders/inquiry-price/create", params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
           that.$message({ message: "添加非标商品报价成功", type: "success" });
-          supplierModal.methods.close.call(this);
+          // supplierModal.methods.close.call(this);
           that.nonstandard = {
             requirements: "",
             images_ids: [],

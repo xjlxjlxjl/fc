@@ -90,6 +90,9 @@ Vue.prototype.refresh = $el => {
   $el.bootstrapTable("refresh");
 };
 
+String.prototype.removeNumber = function() {
+  return this.replace(/\d+[&\|\\\*^%$#@\-]\d+/g, "");
+};
 Array.prototype.sum = function() {
   return this.reduce(reducer, 0);
 };

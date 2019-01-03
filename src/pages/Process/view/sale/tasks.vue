@@ -2,56 +2,59 @@
   <div id="tasks">
     <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
     <el-tabs v-model="activeTabs" type="card" closable @tab-remove="removeTab">
-      <el-tab-pane
-        v-for="(item,index) in tabItems"
-        :key="index"
-        :label="item.name"
-        :name="index.toString()"
-      ></el-tab-pane>
+      <el-tab-pane v-for="(item,index) in tabItems" :key="index" :name="item.label">
+        <span slot="label" v-if="item.num">
+          <el-badge :value="item.num" class="item">{{item.name}}</el-badge>
+        </span>
+        <span slot="label" v-else>{{item.name}}</span>
+      </el-tab-pane>
     </el-tabs>
-    <div id="toolbar">
-      <span class="lead">未完成任务</span>
-      <el-select v-model="tasksStatus" size="mini" placeholder="任务状态">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        ></el-option>
-      </el-select>
-      <el-date-picker
-        size="mini"
-        v-model="date"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="任务开始日期"
-        end-placeholder="任务结束日期"
-        @change="changeDate"
-      ></el-date-picker>
+    <div class="tasks" v-show="activeTabs == 'tasks'">
+      <div id="toolbar">
+        <span class="lead">未完成任务</span>
+        <el-select v-model="tasksStatus" size="mini" placeholder="任务状态">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+        <el-date-picker
+          size="mini"
+          v-model="date"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="任务开始日期"
+          end-placeholder="任务结束日期"
+          @change="changeDate"
+        ></el-date-picker>
+      </div>
+      <table id="table"></table>
     </div>
-    <table id="table"></table>
+    <order v-show="activeTabs == 'order'"></order>
+    <customerServiceApplication v-show="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
+    <customerServiceQuotation v-show="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
   </div>
 </template>
 <script>
 import dateTimePick from "@/pages/Process/common/dateTimePick";
+import order from "@/pages/Process/view/sale/order";
+import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
+import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
+
 export default {
   name: "tasks",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       activeId: 0,
-      activeTabs: 0,
+      activeTabs: "tasks",
       tabItems: [
-        { name: "待完成任务0" },
-        { name: "待完成任务1" },
-        { name: "待完成任务2" },
-        { name: "待完成任务3" },
-        { name: "待完成任务4" },
-        { name: "待完成任务5" },
-        { name: "待完成任务6" },
-        { name: "待完成任务7" },
-        { name: "待完成任务8" },
-        { name: "待完成任务9" }
+        { name: "任务列表", label: "tasks", num: 22 },
+        { name: "销售订单", label: "order", num: 12 },
+        { name: "客服申请", label: "customerServiceApplication", num: 6 },
+        { name: "客服报价", label: "customerServiceQuotation", num: 1 }
       ],
       options: [
         {
@@ -76,11 +79,16 @@ export default {
         }
       ],
       tasksStatus: "",
+      tasksTitle: this.$store.state.tasksTitle,
+      tasksItems: this.$store.state.tasksItems,
       date: []
     };
   },
   components: {
-    dateTimePick: dateTimePick
+    dateTimePick: dateTimePick,
+    order: order,
+    customerServiceApplication: customerServiceApplication,
+    customerServiceQuotation: customerServiceQuotation
   },
   methods: {
     removeTab(tagIndex) {
@@ -116,30 +124,8 @@ export default {
       return params;
     },
     init() {
-      let that = this;
-      $("#table").bootstrapTable({
-        toolbar: "#toolbar",
-        ajax: this.tableAjaxData,
-        queryParams: this.tableAjaxParams,
-        search: true,
-        strictSearch: true,
-        showRefresh: true,
-        sidePagination: "server",
-        pagination: true,
-        striped: true,
-        clickToSelect: true,
-        showColumns: true,
-        sortName: "createTime",
-        sortOrder: "desc",
-        idField: "id",
-        showToggle: true,
-        showExport: true,
-        exportDataType: "all",
-        exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-        classes: "table",
-        pageList: [10, 25, 50, 100, "All"],
-        detailView: true,
-        columns: [
+      let that = this,
+        columns = [
           {
             checkbox: true
           },
@@ -199,6 +185,9 @@ export default {
                 invalid = [
                   '<button class="btn btn-danger invalid">作废</button>'
                 ].join(""),
+                turn = [
+                  '<button class="btn btn-default turn">跳转</button>'
+                ].join(""),
                 taskState = null;
               row.members.forEach(e => {
                 if (e.user.id == this.user.user.id) taskState = e.status;
@@ -207,9 +196,33 @@ export default {
                 return invalid;
               else if (taskState == 1) return complete;
               else if (taskState == 0) return accept;
-              else return "";
+              else return turn;
             },
             events: {
+              "click .turn": (e, value, row, index) => {
+                row.numbering = "OAP20190103-002";
+                let sign = row.numbering.removeNumber(),
+                  sort = that.tasksItems[sign];
+                if (sort) {
+                  let inArr = true;
+                  that.tabItems.forEach(e => {
+                    if (e.label == sort.label) inArr = false;
+                  });
+                  if (inArr)
+                    that.tabItems.push({
+                      name: sort.name,
+                      label: sort.label,
+                      num: 0
+                    });
+                  that.activeTabs = sort.label;
+                } else {
+                  that.$message({
+                    message: "该订单编号尚未注册，请联系管理员后处理",
+                    type: "error"
+                  });
+                  return false;
+                }
+              },
               "click .accept": (e, value, row, index) => {
                 this.activeId = row.id;
                 dateTimePick.methods.close.call(this);
@@ -234,23 +247,47 @@ export default {
             }
           }
         ],
-        detailFormatter: (index, row, $el) => {
-          let html = [
-            "<table class='table'>",
-            "<tr><th>成员姓名</th><th>完成状态</th></tr>"
-          ];
-          row.members.forEach(e =>
-            html.push(
-              `<tr><td>${e.user.display_name}</td><td>${
-                e.status_text
-              }</td></tr>`
-            )
-          );
-          html.push("</table>");
-          return html.join("");
-        },
-        onEditableSave: (field, mrow, oldValue, $el) => {}
-      });
+        data = {
+          toolbar: ".tasks #toolbar",
+          ajax: this.tableAjaxData,
+          queryParams: this.tableAjaxParams,
+          search: true,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          sortName: "createTime",
+          sortOrder: "desc",
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          detailView: true,
+          columns: columns,
+          detailFormatter: (index, row, $el) => {
+            let html = [
+              "<table class='table'>",
+              "<tr><th>成员姓名</th><th>完成状态</th></tr>"
+            ];
+            row.members.forEach(e =>
+              html.push(
+                `<tr><td>${e.user.display_name}</td><td>${
+                  e.status_text
+                }</td></tr>`
+              )
+            );
+            html.push("</table>");
+            return html.join("");
+          },
+          onEditableSave: (field, mrow, oldValue, $el) => {}
+        };
+      $("#tasks #table").bootstrapTable(data);
     },
     changeDate(item) {
       this.date = item;
@@ -261,6 +298,7 @@ export default {
     }
   },
   watch: {
+    activeTabs(val) {},
     tasksStatus(val) {
       this.refreshed();
     }
@@ -273,6 +311,21 @@ export default {
 </script>
 <style lang="less">
 #tasks {
+  .el-tabs__header {
+    margin: 0;
+    .el-tabs__nav-wrap {
+      .el-tabs__nav-scroll {
+        .el-tabs__nav {
+          .el-tabs__item {
+            .el-badge__content {
+              top: 6px;
+              right: 1px;
+            }
+          }
+        }
+      }
+    }
+  }
   #toolbar {
     > div {
       margin-right: 1rem;

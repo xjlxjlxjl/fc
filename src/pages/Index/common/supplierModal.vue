@@ -50,7 +50,7 @@ export default {
       if (this.companyList.length) return false;
       let that = this;
       that
-        .$get(`members/company`)
+        .$get(`purchase/suppliers`)
         .then(response => {
           if (response.status != 200) return false;
           this.setStateData({ name: "companyList", arr: response.data.list });
@@ -75,9 +75,9 @@ export default {
 };
 </script>
 <style lang="less">
-#supplierModal{
-  .modalBoxMainContent{
-    .el-select{
+#supplierModal {
+  .modalBoxMainContent {
+    .el-select {
       width: 100%;
     }
   }
