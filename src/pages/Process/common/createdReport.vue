@@ -21,6 +21,13 @@
                 >
                   <el-input v-model="form[item.label]"></el-input>
                 </el-form-item>
+                <el-form-item label="责任方">
+                  <el-radio-group v-model="form.organization">
+                    <el-radio label="厂内"></el-radio>
+                    <el-radio label="客户"></el-radio>
+                    <el-radio label="无法判定"></el-radio>
+                  </el-radio-group>
+                </el-form-item>
                 <el-form-item label="客服图片" class="fileList">
                   <el-upload
                     action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
@@ -54,14 +61,15 @@ export default {
         deal_method: "",
         deal_result: "",
         deal_advice: "",
+        organization: "客户",
         service_files_id: [],
         fileUrl: []
       },
       label: [
         { label: "reason_analysis", name: "原因分析" },
         { label: "deal_method", name: "处理方式" },
-        { label: "deal_result", name: "处理结果" },
-        { label: "deal_advice", name: "处理建议" }
+        { label: "deal_result", name: "处理结果" }
+        // { label: "deal_advice", name: "处理建议" }
       ]
     };
   },
@@ -88,12 +96,22 @@ export default {
     },
     commit() {
       let that = this;
+      if (!that.form.reason_analysis) {
+        that.$message({ message: "原因分析为必填", type: "error" });
+        return false;
+      }
+      if (!that.form.deal_method) {
+        that.$message({ message: "处理方式为必填", type: "error" });
+        return false;
+      }
+
       that
         .$post(`service/upload/quality/report/${that.active.id}`, {
           reason_analysis: that.form.reason_analysis,
           deal_method: that.form.deal_method,
           deal_result: that.form.deal_result,
-          deal_advice: that.form.deal_advice,
+          // deal_advice: that.form.deal_advice,
+          organization: that.form.organization,
           service_files_id: that.form.service_files_id.join(",")
         })
         .then(response => {

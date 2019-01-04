@@ -64,7 +64,7 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="备注" prop="remark">
+              <el-form-item label="备注">
                 <el-input type="text" v-model="form.remark" placeholder="备注"></el-input>
               </el-form-item>
               <el-form-item label="产品">
@@ -217,10 +217,21 @@ export default {
             address: that.form.address,
             invoice_type_id: that.form.invoice_type_id || undefined,
             payment_type_id: that.form.payment_type_id || undefined,
-            remark: that.form.remark,
+            remark: that.form.remark || undefined,
             products: JSON.stringify(that.form.products)
           })
           .then(response => {
+            if (response.status != 200) {
+              that.form.products.push({
+                product_id: "",
+                product_model: "",
+                product_name: "",
+                product_specification: "",
+                quantity: "",
+                price: "",
+                is_stock: 0
+              });
+            }
             if (response.status != 200) return false;
             that.$emit("refresh");
             that.close();

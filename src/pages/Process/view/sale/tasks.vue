@@ -32,14 +32,14 @@
       </div>
       <table id="table"></table>
     </div>
-    <order v-show="activeTabs == 'order'"></order>
+    <!-- <order v-show="activeTabs == 'order'"></order> -->
     <customerServiceApplication v-show="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
     <customerServiceQuotation v-show="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
   </div>
 </template>
 <script>
 import dateTimePick from "@/pages/Process/common/dateTimePick";
-import order from "@/pages/Process/view/sale/order";
+// import order from "@/pages/Process/view/sale/order";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
 
@@ -52,7 +52,7 @@ export default {
       activeTabs: "tasks",
       tabItems: [
         { name: "任务列表", label: "tasks", num: 22 },
-        { name: "销售订单", label: "order", num: 12 },
+        // { name: "销售订单", label: "order", num: 12 },
         { name: "客服申请", label: "customerServiceApplication", num: 6 },
         { name: "客服报价", label: "customerServiceQuotation", num: 1 }
       ],
@@ -79,14 +79,13 @@ export default {
         }
       ],
       tasksStatus: "",
-      tasksTitle: this.$store.state.tasksTitle,
       tasksItems: this.$store.state.tasksItems,
       date: []
     };
   },
   components: {
     dateTimePick: dateTimePick,
-    order: order,
+    // order: order,
     customerServiceApplication: customerServiceApplication,
     customerServiceQuotation: customerServiceQuotation
   },
@@ -192,11 +191,12 @@ export default {
               row.members.forEach(e => {
                 if (e.user.id == this.user.user.id) taskState = e.status;
               });
+              if (row.numbering) return turn;
               if (row.created_by_id == this.user.user.id && row.status == 0)
                 return invalid;
               else if (taskState == 1) return complete;
               else if (taskState == 0) return accept;
-              else return turn;
+              else return "";
             },
             events: {
               "click .turn": (e, value, row, index) => {
@@ -327,6 +327,12 @@ export default {
     }
   }
   #toolbar {
+    display: none;
+    &:first-child {
+      display: flex;
+      display: -ms-flexbox;
+      display: -webkit-box;
+    }
     > div {
       margin-right: 1rem;
       &:last-child {

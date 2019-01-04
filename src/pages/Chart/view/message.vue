@@ -1291,7 +1291,6 @@ export default {
       });
     },
     webSocketSend(action) {
-      // console.log(action);
       try {
         this.ws.send(JSON.stringify(action));
       } catch (error) {

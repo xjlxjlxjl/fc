@@ -104,7 +104,7 @@ Print.prototype = {
     doc.open();
     doc.write(content);
     doc.close();
-    this.toPrint(w);
+
     var _this = this;
     setTimeout(function() {
       _this.toPrint(w);

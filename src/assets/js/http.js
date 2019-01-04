@@ -16,7 +16,7 @@ axios.interceptors.request.use(
       : null;
     if (user) {
       axios.defaults.headers.common["Accept"] = "application/json";
-      axios.defaults.headers.common["Authorization"] = "Bearer " + user.token;
+      axios.defaults.headers.common["Authorization"] = user ? "Bearer " + user.token : "";
       axios.defaults.headers.common["Company-Code"] = user.slug;
     }
     return config;
@@ -74,7 +74,7 @@ export function get(url, data = new Object()) {
       data: data,
       headers: {
         "Content-Type": "application/json;charset=utf-8",
-        Authorization: "Bearer " + user.token,
+        Authorization: user.token ? "Bearer " + user.token : "",
         "Company-Code": user.slug || ""
       }
     }).then(response => resolve(response), err => reject(err));
@@ -98,7 +98,7 @@ export function post(url, data = new Object()) {
       ],
       headers: {
         "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-        Authorization: "Bearer " + user.token,
+        Authorization: user.token ? "Bearer " + user.token : "",
         "Company-Code": user.slug || ""
       }
     }).then(response => resolve(response), err => reject(err));
@@ -116,7 +116,7 @@ export function upload(url, data = new Object()) {
       data: data,
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: "Bearer " + user.token,
+        Authorization: user.token ? "Bearer " + user.token : "",
         "Company-Code": user.slug || ""
       },
       onUploadProgress: progressEvent => {

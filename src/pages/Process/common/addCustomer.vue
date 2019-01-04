@@ -24,11 +24,11 @@
               <el-form-item label="详细地址" prop="detailed_address">
                 <el-input v-model="form.detailed_address" placeholder="详细地址"></el-input>
               </el-form-item>
-              <el-form-item label="物流编码" prop="logistics_code">
-                <el-input v-model="form.logistics_code" placeholder="物流编码"></el-input>
+              <el-form-item label="主联系人" prop="primary_contact">
+                <el-input v-model="form.primary_contact" placeholder="主联系人"></el-input>
               </el-form-item>
-              <el-form-item label="账期类型" prop="account_period_type">
-                <el-input v-model="form.account_period_type" placeholder="账期类型"></el-input>
+              <el-form-item label="手机号" prop="mobile">
+                <el-input v-model="form.mobile" placeholder="手机号"></el-input>
               </el-form-item>
               <el-form-item label="业务员" prop="salesman">
                 <el-select v-model="form.salesman" placeholder="业务员">
@@ -64,14 +64,14 @@
               <el-form-item label="地址">
                 <el-input v-model="form.address" placeholder="地址"></el-input>
               </el-form-item>
-              <el-form-item label="主联系人">
-                <el-input v-model="form.primary_contact" placeholder="主联系人"></el-input>
-              </el-form-item>
               <el-form-item label="传真">
                 <el-input v-model="form.fax" placeholder="传真"></el-input>
               </el-form-item>
-              <el-form-item label="手机号">
-                <el-input v-model="form.mobile" placeholder="手机号"></el-input>
+              <el-form-item label="邮政代码">
+                <el-input v-model="form.logistics_code" placeholder="邮政代码"></el-input>
+              </el-form-item>
+              <el-form-item label="账期类型">
+                <el-input v-model="form.account_period_type" placeholder="账期类型"></el-input>
               </el-form-item>
               <el-form-item label="发票类型">
                 <el-input v-model="form.invoice_type" placeholder="发票类型"></el-input>
@@ -113,19 +113,39 @@
                 <el-input v-model="form.registered_capital" placeholder="注册资金"></el-input>
               </el-form-item>
               <el-form-item label="成立日期">
-                <el-input v-model="form.establish_at" placeholder="成立日期"></el-input>
+                <el-date-picker
+                  v-model="form.establish_at"
+                  value-format="yyyy-MM-dd HH:mm"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
               </el-form-item>
               <el-form-item label="最近联系日期">
-                <el-input v-model="form.recent_contacts_at" placeholder="最近联系日期"></el-input>
+                <el-date-picker
+                  v-model="form.recent_contacts_at"
+                  value-format="yyyy-MM-dd HH:mm"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
               </el-form-item>
               <el-form-item label="最近联系一次记录">
                 <el-input v-model="form.recent_contacts_record" placeholder="最近联系一次记录"></el-input>
               </el-form-item>
               <el-form-item label="最近服务日期">
-                <el-input v-model="form.recent_service_at" placeholder="最近服务日期"></el-input>
+                <el-date-picker
+                  v-model="form.recent_service_at"
+                  value-format="yyyy-MM-dd HH:mm"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
               </el-form-item>
               <el-form-item label="最近出货日期">
-                <el-input v-model="form.recent_shipping_at" placeholder="最近出货日期"></el-input>
+                <el-date-picker
+                  v-model="form.recent_shipping_at"
+                  value-format="yyyy-MM-dd HH:mm"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
               </el-form-item>
               <el-form-item label="标签">
                 <el-input v-model="form.tags" placeholder="标签"></el-input>
@@ -193,12 +213,10 @@ export default {
         detailed_address: [
           { required: true, message: "请输入详细地址", trigger: "blur" }
         ],
-        logistics_code: [
-          { required: true, message: "请输入物流编码", trigger: "blur" }
+        primary_contact: [
+          { required: true, message: "请输入联系人", trigger: "blur" }
         ],
-        account_period_type: [
-          { required: true, message: "请输入账期类型", trigger: "blur" }
-        ],
+        mobile: [{ required: true, message: "请输入手机号", trigger: "blur" }],
         salesman: [{ required: true, message: "请选择业务员", trigger: "blur" }]
         // region: {
         //   address: [
@@ -367,6 +385,7 @@ export default {
           width: 50%;
           padding: 0 15px;
           box-sizing: border-box;
+          .el-date-editor,
           .el-select {
             width: 100%;
           }

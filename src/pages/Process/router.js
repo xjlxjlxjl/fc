@@ -153,7 +153,7 @@ export default new Router({
       children: [
         {
           path: "/WareHouse",
-          component: wareTasks
+          component: saleTasks
         },
         {
           path: "/WareHouse/product",
@@ -200,7 +200,7 @@ export default new Router({
       children: [
         {
           path: "/Produce",
-          component: produceTasks
+          component: saleTasks
         },
         {
           path: "/Produce/product",
@@ -235,7 +235,7 @@ export default new Router({
       children: [
         {
           path: "/OQC",
-          component: OQCTasks
+          component: saleTasks
         },
         {
           path: "/OQC/product",
@@ -271,7 +271,7 @@ export default new Router({
       children: [
         {
           path: "/AfterSale",
-          component: afterSaleTasks
+          component: saleTasks
         },
         {
           path: "/AfterSale/application",

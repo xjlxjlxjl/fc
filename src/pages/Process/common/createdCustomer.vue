@@ -48,6 +48,7 @@
                     action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
                     list-type="picture-card"
                     :before-upload="upload"
+                    :before-remove="remove"
                     :file-list="form.fileUrl"
                   >
                     <i class="el-icon-plus"></i>
@@ -69,9 +70,9 @@
                 <el-form-item label="联系人号码">
                   <el-input v-model="form.customer_contact" placeholder="联系人号码"></el-input>
                 </el-form-item>
-                <!-- <el-form-item label="出货日期">
-                  <el-date-picker v-model="form.date" type="datetime" placeholder="出货日期"></el-date-picker>
-                </el-form-item>-->
+                <el-form-item label="客户公司">
+                  <el-input v-model="form.customer_company_name" placeholder="客户公司"></el-input>
+                </el-form-item>
                 <el-form-item label="客户需求">
                   <el-input v-model="form.customer_demand" placeholder="客户需求"></el-input>
                 </el-form-item>
@@ -190,6 +191,14 @@ export default {
         })
         .catch(err => console.error(err));
     },
+    remove(item) {
+      this.form.fileUrl.forEach((e, k) => {
+        if (e.uid == item.uid) {
+          this.form.fileUrl.splice(k, 1);
+          this.form.business_file_ids.splice(k, 1);
+        }
+      });
+    },
     commit() {
       let that = this,
         params = {
@@ -218,14 +227,20 @@ export default {
           break;
       }
       let loading = this.$loading({ lock: true });
-      this.$post("/service/create", params)
+      this.$post("service/create", params)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
           // that.$emit("refresh");
-          that.$message({ message: "您的申请已提交", type: "success" });
-          that.close();
-          that.addTable($("#table"), 0, response.data);
+          if (that.state) {
+            console.log(123);
+            that.$router.go(-1);
+          } else {
+            console.log(that.state);
+            that.$message({ message: "您的申请已提交", type: "success" });
+            that.close();
+            that.addTable($("#table"), 0, response.data);
+          }
         })
         .catch(err => loading.close());
     },

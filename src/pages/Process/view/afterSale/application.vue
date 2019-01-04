@@ -288,9 +288,8 @@ export default {
 
             switch (row.process) {
               case 2:
-                if (!row.price) return del + apply;
-                else if (row.price && !row.deal_mans.length)
-                  return del + delegate;
+                if (!row.deal_mans.length) return del + delegate;
+                else if (!row.price) return del + apply;
                 else if (row.price && row.deal_mans.length && !row.deal_result)
                   return report + del;
                 else return del;

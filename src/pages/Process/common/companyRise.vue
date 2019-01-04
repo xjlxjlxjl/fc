@@ -208,13 +208,17 @@ export default {
                 });
               }, 5000);
             }
+            break;
+          case "pong":
+            break;
           case "close":
             this.webSocketClose();
             break;
-          case "pong":
           case "chat":
           case "group":
           case "notice":
+            console.log(result);
+            ++this.messageTips;
             this.$notify({
               title: `您有一条来自${result.resp.from_name}的通知`,
               message: result.resp.content
@@ -225,7 +229,6 @@ export default {
                 body: result.resp.content
               }
             );
-            ++this.messageTips;
             break;
           default:
             console.log("抛出");
@@ -233,7 +236,7 @@ export default {
             break;
         }
       };
-      this.ws.onclose = this.ws.onerror = () => {
+      this.ws.onclose = this.ws.onerror = e => {
         this.connectNum++;
         this.reconnect(socketAddress);
       };
@@ -252,19 +255,13 @@ export default {
     }
   },
   mounted() {
-    this.webSocket();
     let route = this.$route.path.split("/")[1];
     this.process.forEach(e => {
       if (e.url == `/${route}`) e.active = true;
     });
   },
   created() {
-    let that = this,
-      getUserInfo = setInterval(() => {
-        that.getUserInfo();
-        if (JSON.parse(localStorage.getItem("user")))
-          clearInterval(getUserInfo);
-      }, 1000);
+    this.webSocket();
   }
 };
 </script>

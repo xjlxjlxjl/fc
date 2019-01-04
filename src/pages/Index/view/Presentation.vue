@@ -4,7 +4,9 @@
     <createdCustomer @refresh="refresh" :number="$route.params.modal"></createdCustomer>
     <el-main>
       <div class="main">
-        <el-button type="primary" class="createdService" @click="createdService">创建客服申请</el-button>
+        <router-link :to="`/customer/${$route.params.modal}`">
+          <el-button type="primary" class="createdService">创建客服申请</el-button>
+        </router-link>
         <div id="canvasBox"></div>
         <img v-for="(item,index) in data.image" :key="index" :src="item" style="width: 100%">
       </div>
