@@ -78,7 +78,10 @@ export default {
           {
             field: "whether_send_customer",
             title: "是否发送",
-            sortable: true
+            sortable: true,
+            formatter: (value, row, index) => {
+              return `${value ? "已发送" : "未发送"}`;
+            }
           },
           {
             field: "customer_company_name",
@@ -103,7 +106,10 @@ export default {
           {
             field: "whether_warranty",
             title: "是否过保",
-            sortable: true
+            sortable: true,
+            formatter: (value, row, index) => {
+              return `${value ? "在保质期" : "不在保质期"}`;
+            }
           },
           {
             field: "price",
@@ -116,7 +122,7 @@ export default {
             sortable: true
           },
           {
-            field: "creator",
+            field: "real_price",
             title: "应收",
             sortable: true
           }
@@ -146,7 +152,7 @@ export default {
           columns: columns,
           onEditableSave: (field, mrow, oldValue, $el) => {},
           detailFormatter: (field, mrow, oldValue, $el) => {
-            let html = [
+            let content = [
               `<table class="table">
               <tr>
                 <th>物料编码</th>
@@ -158,7 +164,7 @@ export default {
               </tr>`
             ];
             mrow.detail.forEach(e =>
-              html.push(`
+              content.push(`
                 <tr>
                   <td>${e.code || "无"}</td>
                   <td>${e.name}</td>
@@ -169,8 +175,24 @@ export default {
                 </tr>
               `)
             );
-            html.push("</table>");
-            return html.join("");
+            content.push("</table>");
+            content.push(
+              `<table class="table">
+              <tr>
+                <th>额外费用名称</th>
+                <th>额外费用金额</th>
+              </tr>`
+            );
+            mrow.other_detail.forEach(e =>
+              content.push(`
+                <tr>
+                  <td>${e.name || "无"}</td>
+                  <td>${e.money || "无"}</td>
+                </tr>
+              `)
+            );
+            content.push("</table>");
+            return content.join("");
           }
         };
       $("#customerServiceQuotation #table").bootstrapTable(data);
@@ -245,6 +267,7 @@ export default {
       PDFJS.getDocument(url).then(function(pdf) {
         _this.pdfDoc = pdf;
         for (let i = 1; i < pdf.numPages + 1; i++) {
+          if (i == 1) $("#canvasBox").empty();
           _this.renderPage(i);
         }
       });

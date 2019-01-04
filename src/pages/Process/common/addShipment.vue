@@ -88,10 +88,10 @@ export default {
   data() {
     return {
       form: {
-        customer_name: "",
+        customer_name: this.shipment.customer_name,
         total_amount: undefined,
         ship_date: "",
-        salesman: "",
+        salesman: this.shipment.salesman,
         ship_method: "",
         ship_address: "",
         consignee: "",
@@ -99,8 +99,8 @@ export default {
         phone: "",
         address: "",
         receipt_amount: undefined,
-        receipt_address: "",
-        receipt_mobile: "",
+        receipt_address: this.shipment.receipt_address,
+        receipt_mobile: this.shipment.mobile,
         receipt_name: "",
         remark: "",
         items: [
@@ -158,6 +158,7 @@ export default {
     };
   },
   props: {
+    shipment: Object,
     goods: Array
   },
   methods: {
@@ -244,6 +245,13 @@ export default {
     addShipmentModal(val) {
       if (!val) return false;
       this.clearForm();
+
+      this.form.customer_name = this.shipment.customer_name;
+      this.form.salesman = this.shipment.salesman;
+      this.form.receipt_name = this.shipment.customer_name;
+      this.form.receipt_mobile = this.shipment.mobile;
+      this.form.receipt_address = this.shipment.receipt_address;
+
       this.goods.forEach(e => this.form.items.unshift(e));
     },
     form: {

@@ -2,7 +2,7 @@
   <div id="picking">
     <div id="afterSaleToolbar">
       <span class="lead">客服领料申请表</span>
-      <el-button size="mini">新建领料</el-button>
+      <!-- <el-button size="mini">新建领料</el-button> -->
     </div>
     <table id="afterSaleTable"></table>
   </div>
@@ -15,15 +15,17 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      let that = this,
-        loading = this.$loading({
-          lock: true,
-          background: "rgba(0, 0, 0, 0.7)"
-        });
-      params.success({
-        total: 0,
-        rows: []
-      });
+      let that = this;
+      // that
+      //   .$get(`repositories/requisition`, params.data)
+      //   .then(response => {
+      //     if (response.status != 200) return false;
+      //     params.success({
+      //       total: 0,
+      //       rows: []
+      //     });
+      //   })
+      //   .catch(err => {});
     },
     tableAjaxParams(params) {
       params.page = params.offset / 10 + 1;

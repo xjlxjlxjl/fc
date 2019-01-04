@@ -90,7 +90,7 @@ export default {
         },
         {
           field: "service_number",
-          title: "订单号",
+          title: "客服申请单号",
           sortable: true
         },
         {
@@ -109,10 +109,10 @@ export default {
         },
         {
           field: "customer_demand",
-          title: "客户需求",
+          title: "问题描述",
           editable: {
             type: "text",
-            title: "客户需求",
+            title: "问题描述",
             emptytext: "空"
           }
         },
@@ -251,7 +251,7 @@ export default {
           field: "deal_advice",
           title: "处理建议",
           editable: {
-            type: "textarea",
+            type: "text",
             title: "处理建议",
             emptytext: "空"
           }
@@ -264,7 +264,7 @@ export default {
           field: "remark",
           title: "备注",
           editable: {
-            type: "textarea",
+            type: "text",
             title: "备注",
             emptytext: "空"
           }

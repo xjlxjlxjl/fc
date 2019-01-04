@@ -197,16 +197,20 @@ export default {
       this.$refs["form"].validate(v => {
         if (!v) return false;
         let that = this,
-          _this = that.form.products[that.form.products.length - 1];
-        if (
-          !_this.product_id &&
-          !_this.product_model &&
-          !_this.product_name &&
-          !_this.product_specification &&
-          !_this.quantity &&
-          !_this.price
-        )
-          that.form.products.pop();
+          _this = that.form.products;
+        _this.forEach((e, k) => {
+          e.quantity = parseInt(e.quantity);
+          e.price = parseFloat(e.price);
+          if (
+            !e.product_id &&
+            !e.product_model &&
+            !e.product_name &&
+            !e.product_specification &&
+            !e.quantity &&
+            !e.price
+          )
+            that.form.products.splice(k, 1);
+        });
 
         that
           .$post("orders/company/create", {

@@ -232,12 +232,10 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           // that.$emit("refresh");
+          that.$message({ message: "您的申请已提交", type: "success" });
           if (that.state) {
-            console.log(123);
-            that.$router.go(-1);
+            setTimeout(() => that.$router.go(-1), 1000);
           } else {
-            console.log(that.state);
-            that.$message({ message: "您的申请已提交", type: "success" });
             that.close();
             that.addTable($("#table"), 0, response.data);
           }

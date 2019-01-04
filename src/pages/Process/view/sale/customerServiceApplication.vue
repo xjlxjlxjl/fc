@@ -87,7 +87,7 @@ export default {
           },
           {
             field: "service_number",
-            title: "订单号",
+            title: "客服申请单号",
             sortable: true
           },
           {
@@ -106,10 +106,10 @@ export default {
           },
           {
             field: "customer_demand",
-            title: "客户需求",
+            title: "问题描述",
             editable: {
               type: "text",
-              title: "客户需求",
+              title: "问题描述",
               emptytext: "空"
             }
           },
@@ -225,14 +225,6 @@ export default {
           {
             field: "discount_price",
             title: "折扣价",
-            editable: {
-              type: "number",
-              title: "维修报价",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            },
             formatter: (value, row, index) => {
               return `${value || "未报价"}`;
             }
@@ -248,7 +240,7 @@ export default {
             field: "deal_advice",
             title: "处理建议",
             editable: {
-              type: "textarea",
+              type: "text",
               title: "处理建议",
               emptytext: "空"
             }
@@ -261,7 +253,7 @@ export default {
             field: "remark",
             title: "备注",
             editable: {
-              type: "textarea",
+              type: "text",
               title: "备注",
               emptytext: "空"
             }
@@ -315,16 +307,16 @@ export default {
                 that.active = row;
                 applyService.methods.close.call(this);
               },
-              "click .discountPrice": ($el, value, row, index) => {
+              "click .discountPrice": ($el, val, row, index) => {
                 that
                   .$prompt("请输入优惠价", "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消"
                   })
-                  .then(({ price }) => {
+                  .then(({ value }) => {
                     that
-                      .$post(`service/set/discount/price/${value}`, {
-                        discount_price: price
+                      .$post(`service/set/discount/price/${val}`, {
+                        discount_price: value
                       })
                       .then(response => {
                         if (response.status != 200) return false;

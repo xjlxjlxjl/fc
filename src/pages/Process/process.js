@@ -91,13 +91,17 @@ Vue.prototype.refresh = $el => {
 };
 
 String.prototype.removeNumber = function() {
-  return this.replace(/\d+[&\|\\\*^%$#@\-]\d+/g, "");
+  return this.replace(/\d+[a-zA-Z&\|\\\*^%$#@\-]\d+/g, "");
 };
 Array.prototype.sum = function() {
   return this.reduce(reducer, 0);
 };
 var reducer = function add(sumSoFar, item) {
-  return sumSoFar + parseInt(item.number || 0) * parseFloat(item.price || 0);
+  return parseFloat(
+    sumSoFar +
+      parseInt(item.number || 1) *
+        parseFloat(item.price ? item.price : item.money ? item.money : 0)
+  );
 };
 
 /* eslint-disable no-new */

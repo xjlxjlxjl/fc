@@ -75,7 +75,7 @@ export default {
         },
         {
           field: "service_number",
-          title: "订单号",
+          title: "客服报告单号",
           sortable: true
         },
         {
@@ -84,12 +84,16 @@ export default {
           sortable: true
         },
         {
+          field: "member_last_name",
+          title: "创建人"
+        },
+        {
           field: "business_man_name",
           title: "申请联系人"
         },
         {
           field: "customer_demand",
-          title: "客户需求"
+          title: "问题描述"
         },
         {
           field: "customer_linkman",
@@ -165,6 +169,10 @@ export default {
         {
           field: "remark",
           title: "备注"
+        },
+        {
+          field: "organization",
+          title: "责任单位"
         }
       ],
       onEditableSave(field, mrow, oldValue, $el) {

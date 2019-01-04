@@ -1,7 +1,7 @@
 <template>
   <div id="order">
     <addOrderModal @refresh="refreshed"></addOrderModal>
-    <addShipment :goods="goods" @refresh="refreshed"></addShipment>
+    <addShipment :shipment="shipment" :goods="goods" @refresh="refreshed"></addShipment>
     <div id="toolbar">
       <span class="lead">销售订单</span>
       <el-button size="mini" :goods="goods" @click="addOrder">新建销售订单</el-button>
@@ -18,6 +18,12 @@ export default {
   name: "saleOrder",
   data() {
     return {
+      shipment: {
+        customer_name: "",
+        salesman: "",
+        mobile: "",
+        receipt_address: ""
+      },
       goods: []
     };
   },
@@ -50,7 +56,15 @@ export default {
     addSale() {
       let arr = this.getData($("#table"));
       this.goods = [];
-      arr.forEach(e => {
+      arr.forEach((e, k) => {
+        if (!k)
+          this.shipment = {
+            customer_name: e.consignee,
+            salesman: e.created_by_name,
+            mobile: e.mobile,
+            receipt_address: e.address
+          };
+
         e.products.forEach(p =>
           this.goods.push({
             order_id: e.id,
@@ -60,7 +74,7 @@ export default {
             item_unit: "件",
             item_num: p.quantity,
             customer_goods_no: "",
-            customer_order_no: "",
+            customer_order_no: e.numbering,
             remark: ""
           })
         );
@@ -82,7 +96,7 @@ export default {
             sortable: true
           },
           {
-            field: "company_name",
+            field: "created_by_name",
             title: "创建人",
             sortable: true
           },

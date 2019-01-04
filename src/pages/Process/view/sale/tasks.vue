@@ -91,7 +91,12 @@ export default {
   },
   methods: {
     removeTab(tagIndex) {
-      this.tabItems.splice(tagIndex, 1);
+      this.tabItems.forEach((e, k) => {
+        if (e.label == tagIndex) {
+          this.tabItems.splice(k, 1);
+          this.activeTabs = this.tabItems[k ? k - 1 : k].label;
+        }
+      });
     },
     tableAjaxData(params) {
       let that = this,
@@ -298,7 +303,6 @@ export default {
     }
   },
   watch: {
-    activeTabs(val) {},
     tasksStatus(val) {
       this.refreshed();
     }

@@ -206,7 +206,8 @@ export default {
         recent_contacts_record: "",
         recent_service_at: "",
         recent_shipping_at: "",
-        tags: ""
+        tags: "",
+        enabled: 1
       },
       rules: {
         name: [{ required: true, message: "请输入客户名称", trigger: "blur" }],

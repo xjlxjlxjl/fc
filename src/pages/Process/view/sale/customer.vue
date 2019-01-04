@@ -289,11 +289,10 @@ export default {
           {
             field: "enabled",
             title: "状态",
-            sortable: true,
             editable: {
               type: "select",
               title: "状态",
-              score: [{ text: "启用", value: 1 }, { text: "不启用", value: 0 }],
+              source: [{ text: "启用", value: 1 }, { text: "禁用", value: 0 }],
               emptytext: "空"
             }
           },

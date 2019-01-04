@@ -1,6 +1,6 @@
 <template>
   <div id="shipment">
-    <addShipment @refresh="refreshed"></addShipment>
+    <addShipment :shipment="shipment" @refresh="refreshed"></addShipment>
     <div id="toolbar">
       <span class="lead">出货申请单</span>
       <!-- <el-button size="mini" @click="addSale">创建出货单</el-button> -->
@@ -14,7 +14,14 @@ import addShipment from "@/pages/Process/common/addShipment";
 export default {
   name: "shipment",
   data() {
-    return {};
+    return {
+      shipment: {
+        customer_name: "",
+        salesman: "",
+        mobile: "",
+        receipt_address: ""
+      }
+    };
   },
   components: {
     addShipment: addShipment
