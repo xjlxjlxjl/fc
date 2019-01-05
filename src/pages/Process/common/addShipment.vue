@@ -39,9 +39,10 @@
               <el-form-item label="电话" prop="phone">
                 <el-input v-model="form.phone" placeholder="电话"></el-input>
               </el-form-item>
-              <el-form-item label="地址" prop="address">
+              <div style="width: 100%;height: 1px;background-color: #ebeef5;margin: 1.5rem 0;"></div>
+              <!-- <el-form-item label="地址" prop="address">
                 <el-input v-model="form.address" placeholder="地址"></el-input>
-              </el-form-item>
+              </el-form-item>-->
               <!-- <el-form-item label="收款金额" prop="receipt_amount">
                 <el-input v-model="form.receipt_amount" placeholder="收款金额"></el-input>
               </el-form-item>-->
@@ -178,6 +179,41 @@ export default {
         )
           that.form.items.splice(k, 1);
       });
+      if (!that.form.customer_name) {
+        this.$message({ message: "客户名称为必填", type: "error" });
+        return false;
+      } else if (!that.form.ship_date) {
+        this.$message({ message: "发货日期为必填", type: "error" });
+        return false;
+      } else if (!that.form.salesman) {
+        this.$message({ message: "业务员为必填", type: "error" });
+        return false;
+      } else if (!that.form.consignee) {
+        this.$message({ message: "联系人为必填", type: "error" });
+        return false;
+      } else if (!that.form.mobile) {
+        this.$message({ message: "手机为必填", type: "error" });
+        return false;
+      } else if (!that.form.receipt_address) {
+        this.$message({ message: "收件人地址为必填", type: "error" });
+        return false;
+      } else if (!that.form.items.length) {
+        this.$message({ message: "发货物件为必填", type: "error" });
+        that.form.items = [
+          {
+            order_id: "",
+            order_no: "",
+            item_code: "",
+            item_name: "",
+            item_unit: "",
+            item_num: "",
+            customer_goods_no: "",
+            customer_order_no: "",
+            remark: ""
+          }
+        ];
+        return false;
+      }
       that
         .$post(`ship_order/create`, {
           customer_name: that.form.customer_name,
@@ -189,7 +225,7 @@ export default {
           consignee: that.form.consignee,
           mobile: that.form.mobile,
           phone: that.form.phone,
-          address: that.form.address,
+          // address: that.form.address,
           receipt_amount: that.form.receipt_amount,
           receipt_address: that.form.receipt_address,
           receipt_mobile: that.form.receipt_mobile,

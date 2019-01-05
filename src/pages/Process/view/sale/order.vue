@@ -38,6 +38,10 @@ export default {
         .$get(`orders/company`, params.data)
         .then(response => {
           if (response.status != 200) return false;
+          that.$store.commit("changeTasks", {
+            name: "order",
+            num: response.data.pagination.total
+          });
           params.success({
             rows: response.data.list,
             total: response.data.pagination.total
@@ -123,6 +127,11 @@ export default {
           {
             field: "address",
             title: "收货地址",
+            sortable: true
+          },
+          {
+            field: "customer_name",
+            title: "客户名",
             sortable: true
           },
           {

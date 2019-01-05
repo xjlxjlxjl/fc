@@ -204,9 +204,12 @@ export default {
             checkbox: true
           },
           {
-            field: "id",
+            field: "order",
             title: "订单号",
-            sortable: true
+            sortable: true,
+            formatter: (value, row, index) => {
+              return `${value.numbering}`;
+            }
           },
           {
             field: "slug",
@@ -237,27 +240,20 @@ export default {
             sortable: true
           },
           {
-            field: "member_user",
-            title: "组装人员",
-            sortable: true,
-            formatter: (value, row, index) => {
-              return `${value.last_name}`;
-            }
-          },
-          {
-            field: "check_status",
+            field: "is_pass",
             title: "质检状态",
             sortable: true,
             formatter: (value, row, index) => {
               switch (value) {
-                case "success":
-                  return "正常";
+                case 0:
+                  if (row.report_url.length) {
+                    return "未通过";
+                  } else {
+                    return "待审核";
+                  }
                   break;
-                case "error":
-                  return "问题";
-                  break;
-                case "wait":
-                  return "等待中";
+                case 1:
+                  return "通过";
                   break;
               }
             }
@@ -268,9 +264,12 @@ export default {
             sortable: true
           },
           {
-            field: "check_man_id",
+            field: "member_user",
             title: "质检员",
-            sortable: true
+            sortable: true,
+            formatter: (value, row, index) => {
+              return `${value.last_name}`;
+            }
           },
           {
             field: "updated_at",

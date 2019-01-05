@@ -42,6 +42,10 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
+          that.$store.commit("changeTasks", {
+            name: "customerServiceApplication",
+            num: response.data.pagination.total
+          });
           that.tableData = response.data.list;
           params.success({
             total: response.data.pagination.total,
@@ -53,7 +57,7 @@ export default {
     tableAjaxParams(params) {
       return {
         search: params.search,
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         service_status: 0
       };

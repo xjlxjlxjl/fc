@@ -40,16 +40,22 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
+          that.$store.commit("changeTasks", {
+            name: "customerServiceQuotation",
+            num: response.data.pagination.total
+          });
           params.success({
-            total: response.data.list.length,
+            total: response.data.pagination.total,
             rows: response.data.list
           });
         })
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.current_page = params.offset + 1;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit
+      };
     },
     refreshed() {
       this.refresh("#table");

@@ -412,6 +412,7 @@ export default {
       userName: "",
       message: "",
       timeOut: null,
+      connectNum: 0,
       // 群聊变量
       checkBoxList: [],
       msgImgArr: [],
@@ -857,37 +858,51 @@ export default {
       if (file.size / 1024 / 1024 <= 100) {
         form.append("file", file);
         that.upload(form, 3);
-      } else if (file.size / 1024 / 1024 <= 500) {
+      } else if (file.size / 1024 / 1024 <= 500)
         this.$notify({
           title: "文件太大暂时不能上传",
           message: "文件太大暂时无法上传"
         });
-      } else if (file.size / 1024 / 1024 > 500) {
+      else if (file.size / 1024 / 1024 > 500)
         this.$message.error("上传文件大小不能超过 500MB!");
-        return false;
-      }
     },
     // 发图片
     uploadImg(file) {
       let form = new FormData(),
-        that = this;
+        that = this,
+        reader = new FileReader();
       switch (file.type) {
         case "image/jpeg":
         case "image/png":
+        case "image/svg+xml":
         case "image/x-icon":
-          // case 'image/svg+xml':
           if (file.size / 1024 / 1024 > 10) {
             this.$message.error("上传图像大小不能超过 10MB!");
             return false;
           }
           break;
         default:
-          this.$message.error("上传图片只能是 JPG / PNG / ico 格式!");
+          this.$message.error("上传图片只能是 JPG / PNG / SVG / ico 格式!");
           return false;
           break;
       }
-      form.append("file", file);
-      that.upload(form, 2);
+      reader.readAsDataURL(file);
+      reader.onload = e => {
+        this.$alert(
+          `<img src="${
+            reader.result
+          }" style="max-height: 500px;max-width: 100%;">`,
+          "上传",
+          {
+            dangerouslyUseHTMLString: true
+          }
+        )
+          .then(result => {
+            form.append("file", file);
+            that.upload(form, 2);
+          })
+          .catch(err => console.error("err", err));
+      };
     },
     upload(form, type) {
       let that = this,
@@ -1099,6 +1114,27 @@ export default {
       this.e = null;
       this.mousePosition = ["close"];
     },
+    notify(result, state) {
+      this.$notify({
+        title: `${result.resp.from_name}`,
+        message: result.resp.content
+      });
+      let notification = new Notification(`${result.resp.from_name}`, {
+        body: result.resp.content
+      });
+      clearTimeout(this.timeOut);
+      this.timeOut = setTimeout(() => {
+        this.getChatList(false);
+        switch (state) {
+          case 1:
+            this.getFriendList();
+            break;
+          case 2:
+            this.getGroupList();
+            break;
+        }
+      }, 2000);
+    },
     webSocket() {
       let socketAddress = this.$store.state.socketAddress;
       this.ws = new WebSocket(socketAddress);
@@ -1110,8 +1146,14 @@ export default {
             break;
           case "login":
             if (result.resp.code != 200) {
+              if (result.resp.code == 400) {
+                this.$notify({
+                  title: "过多的连接",
+                  message: "请关闭其他本网站网页"
+                });
+                return false;
+              }
               this.webSocketLogin();
-              return false;
             } else {
               this.connectNum = 0;
               clearInterval(this.pong);
@@ -1124,67 +1166,30 @@ export default {
                 });
               }, 5000);
             }
+            break;
           case "pong":
             break;
           case "chat":
             console.log(result);
-            switch (result.resp.type) {
-              case 1:
-              case "1":
-              // 文字消息
-              case 2:
-              case "2":
-              // 图片消息
-              case 3:
-              case "3":
-              // 产品
-              case 4:
-              case "4":
-              // 语音消息
-              case 5:
-              case "5":
-              // 视频消息
-              case 6:
-              case "6":
-                // 位置消息
-                if (result.resp_event == 200) {
-                  if (result.resp.from_uid == this.toUser) {
-                    this.record.list.push({
-                      from_user_id: result.resp.from_uid,
-                      from_user: {
-                        from_user_id: result.resp.from_uid,
-                        avatar:
-                          result.resp.avatar ||
-                          "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                        display_name: this.userName
-                      },
-                      id: result.msg_id,
-                      created_at: this.dateParse(new Date()),
-                      msg_type: result.resp.type,
-                      content: result.resp.content
-                    });
-                  }
-                  // this.getRecord({ id: this.toUser, username: this.userName });
-                  this.$notify({
-                    title: `${result.resp.from_name}`,
-                    message: result.resp.content
-                  });
-                  let notification = new Notification(
-                    `${result.resp.from_name}`,
-                    {
-                      body: result.resp.content
-                    }
-                  );
-                  clearTimeout(this.timeOut);
-                  this.timeOut = setTimeout(() => {
-                    this.getChatList(false);
-                    this.getFriendList();
-                  }, 2000);
-                }
-                break;
-              case "7":
-                // 广播消息
-                break;
+            if (result.resp_event == 200) {
+              if (result.resp.from_uid == this.toUser) {
+                this.record.list.push({
+                  from_user_id: result.resp.from_uid,
+                  from_user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: this.userName
+                  },
+                  id: result.msg_id,
+                  created_at: this.dateParse(new Date()),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                });
+              }
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              this.notify(result, 1);
             }
             this.fixLocation();
             break;
@@ -1208,18 +1213,7 @@ export default {
                 });
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
-              this.$notify({
-                title: `${result.resp.from_name}`,
-                message: result.resp.content
-              });
-              let notification = new Notification(`收到一条新消息`, {
-                body: result.resp.content
-              });
-              clearTimeout(this.timeOut);
-              this.timeOut = setTimeout(() => {
-                this.getChatList(false);
-                this.getGroupList();
-              }, 2000);
+              this.notify(result, 2);
             }
             this.fixLocation();
             break;
@@ -1263,18 +1257,16 @@ export default {
             break;
         }
       };
-      this.ws.onclose = this.ws.onerror = () => {
+      this.ws.onclose = this.ws.onerror = e => {
         this.connectNum++;
         this.reconnect(socketAddress);
       };
     },
     reconnect(url) {
-      if (this.lockReconnect) return false;
+      if (this.lockReconnect || this.connectNum > 3) return false;
 
       this.lockReconnect = true;
       //没连接上会一直重连，设置延迟避免请求过多
-
-      if (this.connectNum > 3) this.webSocketClose();
 
       setTimeout(() => {
         this.webSocket(url);
@@ -1340,7 +1332,17 @@ export default {
         return false; // 检测是否有文件拖拽到页面
       }
       for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        this.uploadFile(e.dataTransfer.files[i]);
+        switch (e.dataTransfer.files[i].type) {
+          case "image/jpeg":
+          case "image/png":
+          case "image/svg+xml":
+          case "image/x-icon":
+            this.uploadImg(e.dataTransfer.files[i]);
+            break;
+          default:
+            this.uploadFile(e.dataTransfer.files[i]);
+            break;
+        }
       }
     };
     // 粘贴上传
@@ -1350,25 +1352,8 @@ export default {
         if (
           e.clipboardData.items[i].kind == "file" &&
           /image\//.test(e.clipboardData.items[i].type)
-        ) {
-          let imageFile = e.clipboardData.items[i].getAsFile(),
-            reader = new FileReader();
-          reader.readAsDataURL(imageFile);
-          reader.onload = e => {
-            this.$alert(
-              `<img src="${
-                reader.result
-              }" style="max-height: 500px;max-width: 100%;">`,
-              "上传",
-              {
-                dangerouslyUseHTMLString: true
-              }
-            )
-              .then(result => this.uploadImg(imageFile))
-              .catch(err => {});
-          };
-          break;
-        }
+        )
+          this.uploadImg(e.clipboardData.items[i].getAsFile());
       }
     });
     // 分页

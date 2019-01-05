@@ -332,6 +332,12 @@ export default new Vuex.Store({
       TP: { name: "委外计划", label: "sourcPlan" },
       TB: { name: "委外报价", label: "sourcOffer" }
     },
+    tasksPendingNum: {
+      tasks: 0,
+      order: 0,
+      customerServiceApplication: 0,
+      customerServiceQuotation: 0
+    },
     apiKeys: {
       // baiduMap: "IjVLfQ6Tudo7LK8wCBeCPESmHl8doh61"
       baiduMap: "davD7QtGgnBgqrfET20iwKHlWTL5g8GT"
@@ -403,6 +409,10 @@ export default new Vuex.Store({
      */
     setStateData(state, { name, arr }) {
       state[name] = arr;
+    },
+    // 更改待完成任务条数
+    changeTasks(state, { name, num }) {
+      state.tasksPendingNum[name] = num;
     }
   }
 });

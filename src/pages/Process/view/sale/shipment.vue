@@ -145,11 +145,11 @@ export default {
         },
         {
           field: "consignee",
-          title: "客户联系人",
+          title: "客户公司/客户联系人",
           sortable: true,
           editable: {
             type: "text",
-            title: "客户联系人",
+            title: "客户公司/客户联系人",
             emptytext: "空"
           }
         },
@@ -173,16 +173,16 @@ export default {
             emptytext: "空"
           }
         },
-        {
-          field: "address",
-          title: "客户地址",
-          sortable: true,
-          editable: {
-            type: "text",
-            title: "客户地址",
-            emptytext: "空"
-          }
-        },
+        // {
+        //   field: "address",
+        //   title: "客户地址",
+        //   sortable: true,
+        //   editable: {
+        //     type: "text",
+        //     title: "客户地址",
+        //     emptytext: "空"
+        //   }
+        // },
         {
           field: "ship_method",
           title: "发货方式",
@@ -221,6 +221,11 @@ export default {
             type: "text",
             title: "收件人名称",
             emptytext: "空"
+          },
+          formatter: (value, row, index) => {
+            return `${
+              value ? value : row.customer_name ? row.customer_name : "无"
+            }`;
           }
         },
         {

@@ -16,7 +16,9 @@ axios.interceptors.request.use(
       : null;
     if (user) {
       axios.defaults.headers.common["Accept"] = "application/json";
-      axios.defaults.headers.common["Authorization"] = user ? "Bearer " + user.token : "";
+      axios.defaults.headers.common["Authorization"] = user
+        ? "Bearer " + user.token
+        : "";
       axios.defaults.headers.common["Company-Code"] = user.slug;
     }
     return config;
@@ -31,10 +33,26 @@ axios.interceptors.response.use(
   response => {
     if (response.status == 200) {
       if (response.data.status != 200) {
-        elementUi.Message({
-          message: response.data.message,
-          type: "error"
-        });
+        switch (window.location.hash) {
+          case "#/":
+          case "#/Sale":
+          case "#/Engineer":
+          case "#/Purchase":
+          case "#/IQC":
+          case "#/WareHouse":
+          case "#/Produce":
+          case "#/OQC":
+          case "#/Logistics":
+          case "#/AfterSale":
+          case "#/Finance":
+            break;
+          default:
+            elementUi.Message({
+              message: response.data.message,
+              type: "error"
+            });
+            break;
+        }
       }
       return response.data;
     }
@@ -46,14 +64,14 @@ axios.interceptors.response.use(
         localStorage.clear();
         setTimeout(() => (window.location.href = "/login.html#/login"), 1500);
         break;
+      case 403:
+        elementUi.Notification({ message: "暂无操作权限" });
+        break;
       case 404:
         elementUi.Notification({ message: "资源不见啦，请联系管理员" });
         break;
       case 500:
         elementUi.Notification({ message: "服务器内部错误，请联系管理员" });
-        break;
-      case 503:
-        elementUi.Notification({ message: "暂无操作权限" });
         break;
       default:
         elementUi.Notification({ message: "网络错误，请检查网络连接" });

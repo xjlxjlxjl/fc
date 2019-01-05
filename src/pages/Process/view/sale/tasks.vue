@@ -32,14 +32,15 @@
       </div>
       <table id="table"></table>
     </div>
-    <!-- <order v-show="activeTabs == 'order'"></order> -->
+    <order v-show="activeTabs == 'order'"></order>
     <customerServiceApplication v-show="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
     <customerServiceQuotation v-show="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
 import dateTimePick from "@/pages/Process/common/dateTimePick";
-// import order from "@/pages/Process/view/sale/order";
+import order from "@/pages/Process/view/sale/order";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
 
@@ -51,10 +52,10 @@ export default {
       activeId: 0,
       activeTabs: "tasks",
       tabItems: [
-        { name: "任务列表", label: "tasks", num: 22 },
-        // { name: "销售订单", label: "order", num: 12 },
-        { name: "客服申请", label: "customerServiceApplication", num: 6 },
-        { name: "客服报价", label: "customerServiceQuotation", num: 1 }
+        { name: "任务列表", label: "tasks", num: 0 },
+        { name: "销售订单", label: "order", num: 0 },
+        { name: "客服申请", label: "customerServiceApplication", num: 0 },
+        { name: "客服报价", label: "customerServiceQuotation", num: 0 }
       ],
       options: [
         {
@@ -79,13 +80,12 @@ export default {
         }
       ],
       tasksStatus: "",
-      tasksItems: this.$store.state.tasksItems,
       date: []
     };
   },
   components: {
     dateTimePick: dateTimePick,
-    // order: order,
+    order: order,
     customerServiceApplication: customerServiceApplication,
     customerServiceQuotation: customerServiceQuotation
   },
@@ -109,6 +109,10 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
+          that.$store.commit("changeTasks", {
+            name: "tasks",
+            num: response.data.total_page
+          });
           params.success({
             total: response.data.total_page,
             rows: response.data.list
@@ -302,7 +306,18 @@ export default {
       this.refresh($("#table"));
     }
   },
+  computed: mapState(["tasksItems", "tasksPendingNum"]),
   watch: {
+    tasksPendingNum: {
+      handler(val) {
+        for (const key in val) {
+          this.tabItems.forEach(e => {
+            if (e.label == key) e.num = val[key];
+          });
+        }
+      },
+      deep: true
+    },
     tasksStatus(val) {
       this.refreshed();
     }

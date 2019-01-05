@@ -179,11 +179,12 @@ export default {
   },
   created() {
     let that = this,
-      getUserInfo = setInterval(() => {
-        that.getUserInfo();
-        if (JSON.parse(localStorage.getItem("user")))
-          clearInterval(getUserInfo);
-      }, 1000);
+      orignalSetItem = localStorage.setItem;
+
+    localStorage.setItem = function(key, newValue) {
+      orignalSetItem.apply(this, arguments);
+      if (key == "user") that.getUserInfo();
+    };
   }
 };
 </script>
