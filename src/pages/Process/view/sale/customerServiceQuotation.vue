@@ -223,8 +223,9 @@ export default {
     sendCustomer() {
       let arr = this.getData($("#table")),
         that = this;
-      if (arr.length && arr.length > 1) {
+      if (arr.length && arr.length > 0 && arr.length == 1) {
         this.$message({ message: "只能选择一个客户发送", type: "error" });
+        return false;
       }
       let detail = arr.pop();
       this.$get("service/quoted_price/generate_pdf", {

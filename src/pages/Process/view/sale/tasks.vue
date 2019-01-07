@@ -54,11 +54,11 @@ export default {
       activeId: 0,
       activeTabs: "tasks",
       tabItems: [
-        { name: "任务列表", label: "tasks", num: 0 },
-        { name: "销售订单", label: "order", num: 0 },
-        { name: "客服申请", label: "customerServiceApplication", num: 0 },
-        { name: "客服报价", label: "application", num: 0 },
-        { name: "发送报价", label: "customerServiceQuotation", num: 0 }
+        { name: "任务列表", label: "tasks", num: 0 }
+        // { name: "销售订单", label: "order", num: 0 },
+        // { name: "客服申请", label: "customerServiceApplication", num: 0 },
+        // { name: "客服报价", label: "application", num: 0 },
+        // { name: "发送报价", label: "customerServiceQuotation", num: 0 }
       ],
       options: [
         {
@@ -262,7 +262,7 @@ export default {
                     that.tabItems.push({
                       name: sort.name,
                       label: sort.label,
-                      num: 0
+                      num: that.tasksPendingNum[sort.label]
                     });
                   that.activeTabs = sort.label;
                 } else {

@@ -3,6 +3,7 @@
     <createdCustomer @refresh="refreshed" number></createdCustomer>
     <applyService :active="active"></applyService>
     <delegateUser :active="active" title="选择通知客服" @refresh="refreshed"></delegateUser>
+    <editServicePrice :active="active" @refresh="refreshed"></editServicePrice>
     <div id="toolbar">
       <span class="lead">客服申请表</span>
       <el-button size="mini" @click="addApplication">新建</el-button>
@@ -15,6 +16,7 @@
 import createdCustomer from "@/pages/Process/common/createdCustomer";
 import applyService from "@/pages/Process/common/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
+import editServicePrice from "@/pages/Process/common/editServicePrice";
 
 export default {
   name: "customerServiceApplication",
@@ -28,7 +30,8 @@ export default {
   components: {
     createdCustomer: createdCustomer,
     applyService: applyService,
-    delegateUser: delegateUser
+    delegateUser: delegateUser,
+    editServicePrice: editServicePrice
   },
   methods: {
     tableAjaxData(params) {
@@ -213,22 +216,30 @@ export default {
           },
           {
             field: "price",
-            title: "维修报价",
-            editable: {
-              type: "number",
-              title: "维修报价",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            },
+            title: "总价",
+            // editable: {
+            //   type: "number",
+            //   title: "总价",
+            //   emptytext: "未报价",
+            //   validate: v => {
+            //     if (!v) return "不能为空";
+            //   }
+            // },
             formatter: (value, row, index) => {
               return `${value || "未报价"}`;
             }
           },
           {
             field: "discount_price",
-            title: "折扣价",
+            title: "优惠价",
+            // editable: {
+            //   type: "number",
+            //   title: "优惠卷",
+            //   emptytext: "未报价",
+            //   validate: v => {
+            //     if (!v) return "不能为空";
+            //   }
+            // },
             formatter: (value, row, index) => {
               return `${value || "未报价"}`;
             }
@@ -273,7 +284,7 @@ export default {
                 '<button class="btn btn-success service btn-sm">提交客服</button>'
               ];
               let discountPrice = [
-                '<button class="btn btn-success discountPrice btn-sm">优惠价　</button>'
+                '<button class="btn btn-success discountPrice btn-sm">优 惠 价</button>'
               ];
               switch (row.process) {
                 case 0:
@@ -282,10 +293,10 @@ export default {
                   break;
                 case 2:
                   if (row.price) {
-                    if (row.discount_price) return del;
-                    else return discountPrice + del;
+                    // if (row.discount_price) return del;
+                    // else
+                    return discountPrice + del;
                   } else return del;
-
                   break;
                 default:
                   return del;
@@ -312,25 +323,8 @@ export default {
                 applyService.methods.close.call(this);
               },
               "click .discountPrice": ($el, val, row, index) => {
-                that
-                  .$prompt("请输入优惠价", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消"
-                  })
-                  .then(({ value }) => {
-                    that
-                      .$post(`service/set/discount/price/${val}`, {
-                        discount_price: value,
-                        report_user_id: that.user.user.id,
-                        report_user_name: that.user.user.display_name
-                      })
-                      .then(response => {
-                        if (response.status != 200) return false;
-                        that.refreshed();
-                      })
-                      .catch(err => {});
-                  })
-                  .catch(err => {});
+                that.active = row;
+                editServicePrice.methods.close.call(this);
               }
             }
           }
