@@ -320,7 +320,9 @@ export default {
                   .then(({ value }) => {
                     that
                       .$post(`service/set/discount/price/${val}`, {
-                        discount_price: value
+                        discount_price: value,
+                        report_user_id: that.user.user.id,
+                        report_user_name: that.user.user.display_name
                       })
                       .then(response => {
                         if (response.status != 200) return false;

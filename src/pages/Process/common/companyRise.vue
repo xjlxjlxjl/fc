@@ -214,10 +214,23 @@ export default {
           case "close":
             this.webSocketClose();
             break;
-          case "chat":
-          case "group":
           case "notice":
             console.log(result);
+            switch (result.resp.slug) {
+              case "service":
+                that.refresh($("#customerServiceApplication #table"));
+                that.refresh($("#application #afterSaleTable"));
+                break;
+              case "service_quote":
+                that.refresh($("#application #afterSaleTable"));
+                break;
+              case "order":
+                that.refresh($("#order #table"));
+                break;
+              case "worker":
+                that.refresh($("#tasks #table"));
+                break;
+            }
             ++this.messageTips;
             this.$notify({
               title: `您有一条来自${result.resp.from_name}的通知`,
@@ -230,6 +243,8 @@ export default {
               }
             );
             break;
+          case "chat":
+          case "group":
           default:
             console.log("抛出");
             console.log(result);

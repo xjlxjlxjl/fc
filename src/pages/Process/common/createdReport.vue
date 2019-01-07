@@ -56,6 +56,7 @@ export default {
   name: "createdReport",
   data() {
     return {
+      user: JSON.parse(localStorage.getItem("user") || "{}"),
       form: {
         reason_analysis: "",
         deal_method: "",
@@ -112,22 +113,25 @@ export default {
           deal_result: that.form.deal_result,
           // deal_advice: that.form.deal_advice,
           organization: that.form.organization,
-          service_files_id: that.form.service_files_id.join(",")
+          service_files_id: that.form.service_files_id.join(","),
+          report_user_id: that.user.user.id,
+          report_user_name: that.user.user.display_name
         })
         .then(response => {
           if (response.status != 200) return false;
+          that.$emit("refresh");
           that.close();
           that.clearForm();
-          that.$emit("refresh");
         })
         .catch(err => {});
     },
     clearForm() {
-      that.form = {
+      this.form = {
         reason_analysis: "",
         deal_method: "",
         deal_result: "",
         deal_advice: "",
+        organization: "客户",
         service_files_id: [],
         fileUrl: []
       };

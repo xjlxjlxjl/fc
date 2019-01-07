@@ -34,6 +34,7 @@
     </div>
     <order v-show="activeTabs == 'order'"></order>
     <customerServiceApplication v-show="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
+    <application v-show="activeTabs == 'application'"></application>
     <customerServiceQuotation v-show="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
   </div>
 </template>
@@ -42,6 +43,7 @@ import { mapState } from "vuex";
 import dateTimePick from "@/pages/Process/common/dateTimePick";
 import order from "@/pages/Process/view/sale/order";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
+import application from "@/pages/Process/view/afterSale/application";
 import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
 
 export default {
@@ -55,7 +57,8 @@ export default {
         { name: "任务列表", label: "tasks", num: 0 },
         { name: "销售订单", label: "order", num: 0 },
         { name: "客服申请", label: "customerServiceApplication", num: 0 },
-        { name: "客服报价", label: "customerServiceQuotation", num: 0 }
+        { name: "客服报价", label: "application", num: 0 },
+        { name: "发送报价", label: "customerServiceQuotation", num: 0 }
       ],
       options: [
         {
@@ -64,22 +67,31 @@ export default {
         },
         {
           value: 0,
-          label: "未完成"
-        },
-        {
-          value: 1,
-          label: "完成"
+          label: "未完成（未延期）"
         },
         {
           value: 2,
-          label: "延期未完成"
+          label: "未完成（延期）"
+        },
+        {
+          value: "undone",
+          label: "未完成（全部）"
+        },
+        {
+          value: 1,
+          label: "完成（未延期）"
         },
         {
           value: 3,
-          label: "延期完成"
+          label: "完成（延期）"
+        },
+        {
+          value: "complete",
+          label: "完成（全部）"
         }
       ],
-      tasksStatus: "",
+      // 默认未完成（全部）
+      tasksStatus: "undone",
       date: []
     };
   },
@@ -87,6 +99,7 @@ export default {
     dateTimePick: dateTimePick,
     order: order,
     customerServiceApplication: customerServiceApplication,
+    application: application,
     customerServiceQuotation: customerServiceQuotation
   },
   methods: {
@@ -111,18 +124,18 @@ export default {
           if (response.status != 200) return false;
           that.$store.commit("changeTasks", {
             name: "tasks",
-            num: response.data.total_page
+            num: response.data.total
           });
           params.success({
-            total: response.data.total_page,
+            total: response.data.total,
             rows: response.data.list
           });
         })
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.current_page = params.limit;
+      params.page = params.offset / params.limit + 1;
+      params.perPage = params.limit;
       params.status = this.tasksStatus;
       if (this.date.length) {
         params.end_time = this.dateParse(this.date[1]);
@@ -200,17 +213,45 @@ export default {
               row.members.forEach(e => {
                 if (e.user.id == this.user.user.id) taskState = e.status;
               });
-              if (row.numbering) return turn;
-              if (row.created_by_id == this.user.user.id && row.status == 0)
-                return invalid;
-              else if (taskState == 1) return complete;
-              else if (taskState == 0) return accept;
-              else return "";
+              switch (row.redirect_slug) {
+                case "service":
+                case "service_quote":
+                case "order":
+                  return turn;
+                  break;
+                case "worker":
+                default:
+                  // 已废弃任务不做操作
+                  if (row.status == 4) return "";
+                  // 自己是任务发起者并且是成员
+                  else if (
+                    taskState == 0 &&
+                    row.created_by_id == this.user.user.id
+                  )
+                    return accept + invalid;
+                  else if (
+                    taskState == 0 &&
+                    row.created_by_id != this.user.user.id
+                  )
+                    return accept;
+                  else if (
+                    taskState == 1 &&
+                    row.created_by_id == this.user.user.id
+                  )
+                    return complete + invalid;
+                  else if (
+                    taskState == 1 &&
+                    row.created_by_id != this.user.user.id
+                  )
+                    return complete;
+                  else return "";
+                  break;
+              }
             },
             events: {
               "click .turn": (e, value, row, index) => {
-                row.numbering = "OAP20190103-002";
-                let sign = row.numbering.removeNumber(),
+                let sign = row.redirect_slug,
+                  // let sign = row.numbering.removeNumber(),
                   sort = that.tasksItems[sign];
                 if (sort) {
                   let inArr = true;
@@ -276,6 +317,7 @@ export default {
           exportDataType: "all",
           exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
           classes: "table",
+          pageSize: 10,
           pageList: [10, 25, 50, 100, "All"],
           detailView: true,
           columns: columns,

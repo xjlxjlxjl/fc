@@ -35,6 +35,7 @@ export default {
   name: "delegateUser",
   data() {
     return {
+      user: JSON.parse(localStorage.getItem("user") || "{}"),
       userBranch: [],
       checkedUser: []
     };
@@ -78,7 +79,9 @@ export default {
       }
       that
         .$post(url, {
-          user_ids: that.checkedUser.join(",")
+          user_ids: that.checkedUser.join(","),
+          report_user_id: that.user.user.id,
+          report_user_name: that.user.user.display_name
         })
         .then(response => {
           if (response.status != 200) return false;

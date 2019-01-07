@@ -38,12 +38,15 @@ export default {
     padding: 11px 0 0 11px;
   }
   #toolbar {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    .lead {
-      margin-right: 20px;
-      margin-bottom: 0;
+    display: none;
+    &:first-child {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      .lead {
+        margin-right: 20px;
+        margin-bottom: 0;
+      }
     }
   }
   .table th,
