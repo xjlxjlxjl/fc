@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="modalBoxMainContent">
-            <div id="customer">
+            <div id="chatMain">
               <div class="chatMain">
                 <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
                   <div v-if="item.from_user_id != customer.id" class="formMessage">
@@ -110,8 +110,8 @@
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
-import message from "@/pages/Chart/view/message";
 import fileImg from "@/assets/img/file.png";
+import message from "@/pages/Chart/view/message";
 
 export default {
   name: "chatModal",
@@ -121,6 +121,8 @@ export default {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       customer: {},
       message: "",
+      state: 1,
+      connectNum: 0,
       record: {
         list: [],
         pagination: {
@@ -158,151 +160,34 @@ export default {
         .catch(err => {});
     },
     getRecord({ id, username }) {
-      let that = this,
-        url = null,
-        params = {
-          page: ++that.record.pagination.current_page,
-          to_user_id: id
-        },
-        pcHeight = document.getElementById("customer").scrollHeight,
-        moblieHeight = document.getElementsByClassName("chatMain")[0]
-          .scrollHeight;
-
-      that
-        .$get("chat/record", params)
-        .then(response => {
-          if (response.status != 200 || response.data.list.length == 0)
-            return false;
-
-          if (response.pagination.current_page == 1) {
-            that.record.list = response.data.list;
-            that.fixLocation();
-          } else {
-            response.data.list.reverse();
-            response.data.list.forEach(e => that.record.list.unshift(e));
-            setTimeout(() => {
-              document.getElementById("customer").scrollTop =
-                document.getElementById("customer").scrollHeight - pcHeight;
-              document.getElementsByClassName("chatMain")[0].scrollTop =
-                document.getElementsByClassName("chatMain")[0].scrollHeight -
-                moblieHeight;
-            }, 100);
-          }
-          that.record.pagination = response.pagination;
-        })
-        .catch(error => console.error(error));
+      message.methods.getRecord.call(this, { id: id, username: username });
     },
     // 发信息
     sendMessage() {
-      let that = this,
-        params = {
-          req: {
-            type: 1,
-            content: that.message,
-            from_name: this.user.user.display_name,
-            avatar: this.user.user.avatar,
-            to_uid: this.customer.id
-          }
-        };
-
-      if (
-        that.message == "" ||
-        that.message.replace(/[\r\n]/g, "").length == 0
-      ) {
-        this.$message({ message: "发送消息不能为空", type: "error" });
-        that.message = "";
-        return false;
-      }
-      params.action = "chat";
-      this.webSocketSend(params);
-      this.record.list.push({
-        from_user_id: that.user.user.id,
-        from_user: {
-          from_user_id: that.user.user.id,
-          avatar: that.user.user.avatar,
-          display_name: that.user.user.display_name
-        },
-        created_at: new Date().toLocaleString(),
-        msg_type: 1,
-        content: that.message
-      });
-      this.message = "";
+      message.methods.sendMessage.call(
+        this,
+        0,
+        this.toUser,
+        1,
+        this.message,
+        1
+      );
     },
     // 发文件
     uploadFile(file) {
-      let form = new FormData(),
-        that = this;
-
-      if (file.size / 1024 / 1024 <= 100) {
-        form.append("file", file);
-        that.upload(form, 3);
-      } else if (file.size / 1024 / 1024 <= 500) {
-        this.$notify({
-          title: "文件太大暂时不能上传",
-          message: "文件太大暂时无法上传"
-        });
-      } else if (file.size / 1024 / 1024 > 500) {
-        this.$message.error("上传文件大小不能超过 500MB!");
-        return false;
-      }
+      message.methods.uploadFile.call(this, file);
     },
     // 发图片
     uploadImg(file) {
-      let form = new FormData(),
-        that = this;
-      switch (file.type) {
-        case "image/jpeg":
-        case "image/png":
-        case "image/x-icon":
-          // case 'image/svg+xml':
-          if (file.size / 1024 / 1024 > 10) {
-            this.$message.error("上传图像大小不能超过 10MB!");
-            return false;
-          }
-          break;
-        default:
-          this.$message.error("上传头像图片只能是 JPG / PNG / ico 格式!");
-          return false;
-          break;
-      }
-      form.append("file", file);
-      that.upload(form, 2);
+      message.methods.uploadImg.call(this, file);
     },
     upload(form, type) {
-      let that = this,
-        params = {
-          req: {
-            type: type,
-            from_name: this.user.user.display_name,
-            avatar: this.user.user.avatar,
-            to_uid: this.customer.id
-          }
-        };
-      that
-        .$upload("chat/upload_file", form)
-        .then(response => {
-          if (response.status != 200) return false;
-
-          params.action = "chat";
-          params.req.to_uid = that.customer.id;
-          params.req.content = response.data.path;
-          that.webSocketSend(params);
-
-          let data = {
-            from_user_id: that.user.user.id,
-            from_user: {
-              from_user_id: that.user.user.id,
-              avatar: that.user.user.avatar,
-              display_name: that.user.user.display_name
-            },
-            created_at: new Date().toLocaleString(),
-            msg_type: type,
-            content: response.data.path
-          };
-          that.record.list.push(data);
-        })
-        .catch(error => console.error(error));
+      message.methods.upload.call(this, form, type);
     },
+    send(url, data, params, type) {
+      message.methods.send.call(this, url, data, params, type);
+    },
+    notify() {},
     webSocket() {
       message.methods.webSocket.call(this);
     },
@@ -318,17 +203,11 @@ export default {
     webSocketClose() {
       message.methods.webSocketClose.call(this);
     },
+    finishingPictures() {
+      message.methods.finishingPictures.call(this);
+    },
     fixLocation() {
-      setTimeout(() => {
-        document.getElementById("customer").scrollTop = document.getElementById(
-          "customer"
-        ).scrollHeight;
-        document.getElementsByClassName(
-          "chatMain"
-        )[0].scrollTop = document.getElementsByClassName(
-          "chatMain"
-        )[0].scrollHeight;
-      }, 100);
+      message.methods.fixLocation.call(this);
     },
     close() {
       this.$store.commit("changeModal", "chatModal");
@@ -342,54 +221,7 @@ export default {
     }
   },
   mounted() {
-    this.$refs.uploadBox.ondragover = this.$refs.uploadBox.ondragleave = this.$refs.uploadBox.ondragenter = e => {
-      if (e.preventDefault) e.preventDefault();
-      else window.event.returnValue == false;
-    };
-    this.$refs.uploadBox.ondrop = e => {
-      if (e.preventDefault) e.preventDefault();
-      else window.event.returnValue == false;
-      const data = e.dataTransfer.files; // 获取文件对象
-      if (data.length < 1) {
-        return false; // 检测是否有文件拖拽到页面
-      }
-      for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        this.uploadFile(e.dataTransfer.files[i]);
-      }
-    };
-    // 粘贴上传
-    document.getElementById("el-textarea").addEventListener("paste", e => {
-      for (var i = 0; i < e.clipboardData.items.length; i++) {
-        // 检测是否为图片类型
-        if (
-          e.clipboardData.items[i].kind == "file" &&
-          /image\//.test(e.clipboardData.items[i].type)
-        ) {
-          var imageFile = e.clipboardData.items[i].getAsFile();
-          // console.log(imageFile)
-          this.uploadImg(imageFile);
-          break;
-        }
-      }
-    });
-    // 分页
-    document.getElementById(
-      "customer"
-    ).onscroll = document.getElementsByClassName(
-      "chatMain"
-    )[0].onscroll = e => {
-      if (
-        !e.target.scrollTop &&
-        this.record.pagination.total > 15 &&
-        this.record.pagination.total / 15 > this.record.pagination.current_page
-      )
-        this.getRecord({
-          id: this.customer.id,
-          username: this.customer.display_name
-        });
-    };
-
-    Notification.requestPermission(status => console.log(status));
+    message.mounted.call(this);
   },
   created() {
     this.webSocket();
@@ -430,8 +262,12 @@ export default {
       @media screen and (max-width: 510px) {
         max-height: 100%;
       }
-      #customer {
+      #chatMain {
         overflow-y: auto;
+        height: 500px;
+        @media screen and (max-width: 510px) {
+          max-height: 130px;
+        }
         border-bottom: @chatBorder;
         .chatMain {
           padding: 2rem 1.5rem 1rem 1.5rem;
@@ -471,6 +307,8 @@ export default {
                   background-color: @blue;
                   border-radius: 8px;
                   padding: 1rem;
+                  width: fit-content;
+                  float: right;
                   .goodsMsg {
                     display: flex;
                     align-items: center;
@@ -534,6 +372,7 @@ export default {
                   color: @gery;
                   border-radius: 8px;
                   padding: 1rem;
+                  width: fit-content;
                   .goodsMsg {
                     display: flex;
                     align-items: center;

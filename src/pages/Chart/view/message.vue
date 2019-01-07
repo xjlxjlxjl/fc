@@ -617,7 +617,8 @@ export default {
       that.key = index;
       that.toUser = id;
       that.userName = username;
-      that.chatList.list[that.key].unread_message_num = 0;
+      if (that.chatList && that.chatList.list.length)
+        that.chatList.list[that.key].unread_message_num = 0;
       if (that.state == 1) {
         url = "chat/record";
         params.to_user_id = id;
@@ -965,7 +966,7 @@ export default {
               that.message = "";
               break;
             case 2:
-              that.msgImgArr.push(msg);
+              if (that.msgImgArr) that.msgImgArr.push(msg);
               msg.msgImgKey = that.msgImgArr.length - 1;
               break;
           }
@@ -1115,13 +1116,26 @@ export default {
       this.mousePosition = ["close"];
     },
     notify(result, state) {
+      let msg = null;
+      switch (result.resp.type) {
+        case 1:
+          msg = result.resp.content;
+          break;
+        case 2:
+          msg = "[图片]";
+          break;
+        case 3:
+          msg = "[文件]";
+          break;
+      }
       this.$notify({
         title: `${result.resp.from_name}`,
-        message: result.resp.content
+        message: msg
       });
       let notification = new Notification(`${result.resp.from_name}`, {
-        body: result.resp.content
+        body: msg
       });
+
       clearTimeout(this.timeOut);
       this.timeOut = setTimeout(() => {
         this.getChatList(false);
@@ -1173,7 +1187,7 @@ export default {
             console.log(result);
             if (result.resp_event == 200) {
               if (result.resp.from_uid == this.toUser) {
-                this.record.list.push({
+                let msg = {
                   from_user_id: result.resp.from_uid,
                   from_user: {
                     from_user_id: result.resp.from_uid,
@@ -1186,7 +1200,12 @@ export default {
                   created_at: this.dateParse(new Date()),
                   msg_type: result.resp.type,
                   content: result.resp.content
-                });
+                };
+                this.record.list.push(msg);
+                if (msg.msg_type == 2) {
+                  this.msgImgArr.push(msg);
+                  msg.msgImgKey = this.msgImgArr.length - 1;
+                }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
               this.notify(result, 1);
@@ -1197,7 +1216,7 @@ export default {
             console.log(result);
             if (result.resp_event == 200) {
               if (result.resp.group == this.toUser) {
-                this.record.list.push({
+                let msg = {
                   from_user_id: result.resp.from_uid,
                   user: {
                     from_user_id: result.resp.from_uid,
@@ -1210,7 +1229,12 @@ export default {
                   created_at: this.dateParse(new Date()),
                   msg_type: result.resp.type,
                   content: result.resp.content
-                });
+                };
+                this.record.list.push(msg);
+                if (msg.msg_type == 2) {
+                  this.msgImgArr.push(msg);
+                  msg.msgImgKey = this.msgImgArr.length - 1;
+                }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
               this.notify(result, 2);
