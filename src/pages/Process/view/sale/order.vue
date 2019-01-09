@@ -80,13 +80,13 @@ export default {
             order_id: e.id,
             order_no: e.numbering,
             item_id: p.id,
-            item_code: p.id,
+            item_code: p.product_model,
             item_name: `${p.product_name} / ${p.product_model}`,
             item_unit: p.unit || "件",
             item_num: p.quantity,
             customer_goods_no: "",
             customer_order_no: e.numbering,
-            remark: ""
+            remark: p.product_specification
           })
         );
       });
@@ -280,7 +280,7 @@ export default {
           detailFormatter(field, mrow, oldValue, $el) {
             let content = [
               `<table class="table">`,
-              `<tr><th>商品名</th></th><th>发票类型</th><th>数量</th><th>单价</th><th>合计</th></tr>`
+              `<tr><th>商品名</th></th><th>数量</th><th>单价</th><th>合计</th></tr>`
             ];
             mrow.products.forEach(e =>
               content.push(
@@ -289,7 +289,6 @@ export default {
                 <p>${e.product_name}</p>
                 <p style="margin-bottom: 0;">${e.product_model}</p>
               </td>
-              <td>${e.invoice_type_name || "暂无"}</td>
               <td>${e.quantity}</td>
               <td>${e.purchase_price}</td>
               <td>${parseInt(e.quantity) *

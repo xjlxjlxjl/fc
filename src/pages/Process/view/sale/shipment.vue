@@ -71,7 +71,9 @@
                 <td style="border-left: 1px solid #ddd;padding: 5px;">{{ item.item_unit }}</td>
                 <td style="border-left: 1px solid #ddd;padding: 5px;">{{ item.item_num }}</td>
                 <td style="border-left: 1px solid #ddd;padding: 5px;">{{ item.customer_goods_no }}</td>
-                <td style="border-left: 1px solid #ddd;padding: 5px;">{{ item.customer_order_no }}</td>
+                <td
+                  style="border-left: 1px solid #ddd;border-right: 1px solid #ddd;padding: 5px;"
+                >{{ item.customer_order_no }}</td>
               </tr>
             </table>
             <div

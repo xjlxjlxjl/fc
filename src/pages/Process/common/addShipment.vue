@@ -129,7 +129,7 @@ export default {
         },
         {
           label: "料品编码",
-          value: "item_code"
+          value: "item_id"
         },
         {
           label: "品名/规格",

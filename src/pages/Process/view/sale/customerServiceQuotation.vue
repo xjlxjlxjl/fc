@@ -249,6 +249,10 @@ export default {
                   dangerouslyUseHTMLString: true
                 })
                 .then(() => that.sendEmail(res.data.url));
+              $(".el-message-box").css({
+                width: "1020px",
+                "max-width": "none"
+              });
               that.showPDF(res.data.url);
             })
             .catch(erro => {});
@@ -314,9 +318,6 @@ export default {
   },
   mounted() {
     this.init();
-  },
-  created() {
-    $(".el-message-box").width("600");
   }
 };
 </script>
@@ -325,10 +326,11 @@ export default {
 }
 #canvasBox {
   max-height: 100%;
-  height: 400px;
+  height: 600px;
   overflow: auto;
   canvas {
     max-width: 100% !important;
+    width: 100% !important;
     height: auto;
   }
 }

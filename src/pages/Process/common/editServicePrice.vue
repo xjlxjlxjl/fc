@@ -12,12 +12,20 @@
           </div>
           <div class="modalBoxMainContent">
             <div id="servicePrice">
-              <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+              <el-form :model="form" :rules="rules" ref="form" label-width="100px">
                 <el-form-item label="总价" prop="price">
                   <el-input v-model="form.price"></el-input>
                 </el-form-item>
                 <el-form-item label="优惠价" prop="discount_price">
                   <el-input v-model="form.discount_price"></el-input>
+                </el-form-item>
+                <el-form-item label="报价有效期">
+                  <el-date-picker
+                    v-model="form.validity_date"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    type="date"
+                    placeholder="报价有效期"
+                  ></el-date-picker>
                 </el-form-item>
               </el-form>
             </div>
@@ -40,6 +48,7 @@ export default {
       form: {
         price: "",
         discount_price: "",
+        validity_date: "",
         report_user_id: user.user.id,
         report_user_name: user.user.display_name
       },

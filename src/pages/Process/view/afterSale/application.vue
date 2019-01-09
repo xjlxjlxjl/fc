@@ -339,14 +339,16 @@ export default {
                   case "png":
                   case "jpeg":
                     html.push(
-                      `<li><img src="${
+                      `<li><a href="${e.url}" target="_blank"><img src="${
                         e.url
-                      }" class="img-rounded" style="width: 100px;"></li>`
+                      }" class="img-rounded" style="width: 100px;"></a></li>`
                     );
                     break;
                   default:
                     html.push(
-                      `<li><a href="${e.url}" target="_blank"></a></li>`
+                      `<li><a href="${e.url}" target="_blank">${e.url
+                        .split("/")
+                        .pop()}</a></li>`
                     );
                     break;
                 }
@@ -364,14 +366,16 @@ export default {
                   case "png":
                   case "jpeg":
                     html.push(
-                      `<li><img src="${
+                      `<li><a href="${e.url}" target="_blank"><img src="${
                         e.url
-                      }" class="img-rounded" style="width: 100px;"></li>`
+                      }" class="img-rounded" style="width: 100px;"></a></li>`
                     );
                     break;
                   default:
                     html.push(
-                      `<li><a href="${e.url}" target="_blank"></a></li>`
+                      `<li><a href="${e.url}" target="_blank">${e.url
+                        .split("/")
+                        .pop()}</a></li>`
                     );
                     break;
                 }
@@ -389,14 +393,16 @@ export default {
                   case "png":
                   case "jpeg":
                     html.push(
-                      `<li><img src="${
+                      `<li><a href="${e.url}" target="_blank"><img src="${
                         e.url
-                      }" class="img-rounded" style="width: 100px;"></li>`
+                      }" class="img-rounded" style="width: 100px;"></a></li>`
                     );
                     break;
                   default:
                     html.push(
-                      `<li><a href="${e.url}" target="_blank"></a></li>`
+                      `<li><a href="${e.url}" target="_blank">${e.url
+                        .split("/")
+                        .pop()}</a></li>`
                     );
                     break;
                 }

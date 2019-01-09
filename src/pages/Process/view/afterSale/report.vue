@@ -20,6 +20,7 @@ export default {
   name: "report",
   data() {
     return {
+      user: JSON.parse(localStorage.getItem("user") || "{}"),
       date: []
     };
   },
@@ -41,11 +42,11 @@ export default {
       let p = {
         page: params.offset / params.limit + 1,
         per_page: params.limit,
+        member: this.user.user.display_name,
         start_at: this.date[0],
         end_at: this.date[1]
       };
-      if (params.search.length > 8) p.member = params.search;
-      else p.number = params.search || undefined;
+      p.number = params.search || undefined;
       return p;
     },
     init() {

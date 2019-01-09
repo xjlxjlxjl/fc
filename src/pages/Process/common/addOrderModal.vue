@@ -67,7 +67,7 @@
               <el-form-item label="备注">
                 <el-input type="text" v-model="form.remark" placeholder="备注"></el-input>
               </el-form-item>
-              <el-form-item label="产品">
+              <el-form-item label="料品">
                 <el-table :data="form.products">
                   <el-table-column
                     v-for="col in columns"
@@ -132,19 +132,19 @@ export default {
       columns: [
         {
           label: "product_id",
-          name: "产品编号"
+          name: "料品编码"
         },
         {
           label: "product_name",
-          name: "产品名字"
+          name: "料品名称"
         },
         {
           label: "product_model",
-          name: "产品型号"
+          name: "料品型号"
         },
         {
           label: "product_specification",
-          name: "产品说明"
+          name: "备注"
         },
         {
           label: "quantity",
