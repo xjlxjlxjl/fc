@@ -166,7 +166,6 @@ export default {
                 <th>物料名称</th>
                 <th>规格</th>
                 <th>单位</th>
-                <th>价格</th>
                 <th>数量</th>
               </tr>`
             ];
@@ -177,28 +176,27 @@ export default {
                   <td>${e.name}</td>
                   <td>${e.info}</td>
                   <td>${e.unit}</td>
-                  <td>${e.price}</td>
                   <td>${e.number}</td>
                 </tr>
               `)
             );
             content.push("</table>");
-            content.push(
-              `<table class="table">
-              <tr>
-                <th>额外费用名称</th>
-                <th>额外费用金额</th>
-              </tr>`
-            );
-            mrow.other_detail.forEach(e =>
-              content.push(`
-                <tr>
-                  <td>${e.name || "无"}</td>
-                  <td>${e.money || "无"}</td>
-                </tr>
-              `)
-            );
-            content.push("</table>");
+            // content.push(
+            //   `<table class="table">
+            //   <tr>
+            //     <th>额外费用名称</th>
+            //     <th>额外费用金额</th>
+            //   </tr>`
+            // );
+            // mrow.other_detail.forEach(e =>
+            //   content.push(`
+            //     <tr>
+            //       <td>${e.name || "无"}</td>
+            //       <td>${e.money || "无"}</td>
+            //     </tr>
+            //   `)
+            // );
+            // content.push("</table>");
             return content.join("");
           }
         };

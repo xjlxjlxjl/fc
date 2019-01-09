@@ -1,7 +1,7 @@
 <template>
   <div id="application">
     <div id="afterSaleToolbar">
-      <span class="lead">客服历史报告</span>
+      <span class="lead">客服历史申请</span>
     </div>
     <table id="afterSaleTable"></table>
   </div>

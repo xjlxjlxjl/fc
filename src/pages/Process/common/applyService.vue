@@ -92,7 +92,7 @@ export default {
       // ],
       tableLabel: [
         { label: "料品编号", prop: "code" },
-        { label: "产品", prop: "name" },
+        { label: "品名", prop: "name" },
         { label: "规格", prop: "info" },
         { label: "单位", prop: "unit" },
         { label: "数量", prop: "number" }
@@ -178,7 +178,7 @@ export default {
     customerService(val, oldVal) {
       if (!val) return false;
       this.form.linkman = this.active.customer_linkman;
-      this.customer_company_name = this.active.customer_company_name;
+      this.form.customer_company_name = this.active.customer_company_name;
     },
     form: {
       handler(val, oldVal) {

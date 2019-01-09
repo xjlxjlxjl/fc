@@ -238,7 +238,7 @@ export default new Vuex.Store({
         { name: "客服申请表", url: "/AfterSale/application" },
         { name: "客服报告列表", url: "/AfterSale/report" },
         { name: "客服领料申请表", url: "/AfterSale/picking" },
-        { name: "历史客服报告", url: "/AfterSale/history" },
+        { name: "历史客服申请", url: "/AfterSale/history" },
         { name: "客服总类分析", url: "/AfterSale/analysis" },
         { name: "不良产品问题归类", url: "/AfterSale/badProblem" },
         { name: "客户好评系统汇总", url: "/AfterSale/praise" },
