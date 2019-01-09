@@ -2,7 +2,23 @@
   <div id="application">
     <applyService :active="active" @refresh="refreshed"></applyService>
     <delegateUser :active="active" title="选择委派人员" @refresh="refreshed"></delegateUser>
-    <createdReport :active="active" @refresh="refreshed"></createdReport>
+    <createdReport :active="active" @refresh="childRefreshed"></createdReport>
+    <div
+      class="modal fade bs-example-modal-lg"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div id="afterSaleChildToolbar">
+            <span class="lead">报告列表</span>
+            <el-button @click="addReport" size="small">上传报告</el-button>
+          </div>
+          <table id="afterSaleChildTable"></table>
+        </div>
+      </div>
+    </div>
     <div id="afterSaleToolbar">
       <span class="lead">客服申请表</span>
     </div>
@@ -57,8 +73,35 @@ export default {
         page: params.offset / params.limit + 1,
         per_page: params.limit,
         search: params.search,
-        is_reported: 0,
+        // is_reported: 0,
         service_status: 0
+      };
+    },
+    childAjaxData(params) {
+      let that = this;
+      if (!this.active.id) {
+        params.success({
+          rows: [],
+          total: 0
+        });
+        return false;
+      }
+      that
+        .$get(`service/report`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => {});
+    },
+    childAjaxParams(params) {
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        number: this.active.service_number
       };
     },
     init() {
@@ -159,47 +202,8 @@ export default {
             }
           },
           {
-            field: "reason_analysis",
-            title: "原因分析",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "原因分析",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            }
-          },
-          {
-            field: "deal_method",
-            title: "处理方式",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "处理方式",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            }
-          },
-          {
-            field: "deal_result",
-            title: "处理结果",
-            sortable: true
-          },
-          {
             field: "price",
             title: "维修报价",
-            editable: {
-              type: "number",
-              title: "维修报价",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            },
             formatter: (value, row, index) => {
               return `${value || "未报价"}`;
             }
@@ -207,14 +211,6 @@ export default {
           {
             field: "discount_price",
             title: "折扣价",
-            editable: {
-              type: "number",
-              title: "维修报价",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            },
             formatter: (value, row, index) => {
               return `${value || "未报价"}`;
             }
@@ -224,15 +220,6 @@ export default {
             title: "应收价",
             formatter: (value, row, index) => {
               return `${row.price ? row.price - row.discount_price : "未报价"}`;
-            }
-          },
-          {
-            field: "deal_advice",
-            title: "处理建议",
-            editable: {
-              type: "text",
-              title: "处理建议",
-              emptytext: "空"
             }
           },
           {
@@ -262,15 +249,16 @@ export default {
                 '<button class="btn btn-warning delegate btn-sm">委派人员</button>'
               ];
               let report = [
-                '<button class="btn btn-warning report btn-sm">生成报告</button>'
+                '<button class="btn btn-warning report btn-sm">新建报告</button>'
               ];
 
               switch (row.process) {
                 case 2:
                   if (!row.deal_mans.length) return del + delegate;
-                  else if (!row.price) return del + apply;
+                  else if (row.quoted_price.price == undefined)
+                    return del + apply;
                   else if (
-                    row.price &&
+                    row.quoted_price.price != undefined &&
                     row.deal_mans.length &&
                     !row.deal_result
                   )
@@ -300,7 +288,8 @@ export default {
               },
               "click .report": ($el, value, row, index) => {
                 that.active = row;
-                createdReport.methods.close.call(this);
+                that.refresh($("#application #afterSaleChildTable"));
+                $(".bs-example-modal-lg").modal("show");
               }
             }
           }
@@ -416,11 +405,128 @@ export default {
             }
             return html.join("");
           }
+        },
+        childColumns = [
+          {
+            checkbox: true
+          },
+          {
+            field: "number",
+            title: "客服报告单号",
+            sortable: true
+          },
+          {
+            field: "customer_name",
+            title: "客户名称",
+            sortable: true
+          },
+          {
+            field: "customer_linkman",
+            title: "联系人",
+            sortable: true
+          },
+          {
+            field: "customer_mobile",
+            title: "客户手机",
+            sortable: true
+          },
+          {
+            field: "specification",
+            title: "规格",
+            sortable: true
+          },
+          {
+            field: "quantity",
+            title: "数量",
+            sortable: true
+          },
+          {
+            field: "description",
+            title: "描述",
+            sortable: true
+          },
+          {
+            field: "analysis",
+            title: "原因分析",
+            sortable: true
+          },
+          {
+            field: "content",
+            title: "处理方案",
+            sortable: true
+          },
+          {
+            field: "organization",
+            title: "责任单位",
+            sortable: true
+          },
+          {
+            field: "advice",
+            title: "维修建议",
+            sortable: true
+          },
+          {
+            field: "service_at",
+            title: "服务时间",
+            sortable: true
+          },
+          {
+            field: "member_name",
+            title: "创建人",
+            sortable: true
+          },
+          {
+            field: "company_name",
+            title: "创建人公司",
+            sortable: true
+          }
+        ],
+        childData = {
+          toolbar: "#afterSaleChildToolbar",
+          ajax: this.childAjaxData,
+          queryParams: this.childAjaxParams,
+          search: false,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          detailView: true,
+          columns: childColumns,
+          onEditableSave(field, mrow, oldValue, $el) {},
+          detailFormatter(field, mrow, oldValue, $el) {
+            let content = [`<table><tr>`];
+            mrow.files.forEach(e =>
+              content.push(
+                `<td><img src="${e.url}" style="width: 150px;" /></td>`
+              )
+            );
+            content.push(`</tr></table>`);
+            return content.join("");
+          }
         };
       $("#application #afterSaleTable").bootstrapTable(data);
+      $("#application #afterSaleChildTable").bootstrapTable(childData);
+    },
+    addReport() {
+      $(".bs-example-modal-lg").modal("hide");
+      createdReport.methods.close.call(this);
     },
     refreshed() {
       this.refresh($("#afterSaleTable"));
+    },
+    childRefreshed() {
+      $(".bs-example-modal-lg").modal("show");
+      this.refresh($("#afterSaleChildTable"));
     }
   },
   mounted() {

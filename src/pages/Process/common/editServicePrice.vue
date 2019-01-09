@@ -13,10 +13,10 @@
           <div class="modalBoxMainContent">
             <div id="servicePrice">
               <el-form :model="form" :rules="rules" ref="form" label-width="80px">
-                <el-form-item label="总价">
+                <el-form-item label="总价" prop="price">
                   <el-input v-model="form.price"></el-input>
                 </el-form-item>
-                <el-form-item label="优惠价">
+                <el-form-item label="优惠价" prop="discount_price">
                   <el-input v-model="form.discount_price"></el-input>
                 </el-form-item>
               </el-form>
@@ -60,7 +60,7 @@ export default {
       this.$refs["form"].validate(v => {
         if (!v) return false;
         that
-          .$post(`service/set/discount/price/${that.active.id}`, that.form)
+          .$post(`service/quoted_price/price/${that.active.id}`, that.form)
           .then(response => {
             if (response.status != 200) return false;
             that.$emit("refresh");

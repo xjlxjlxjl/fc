@@ -55,6 +55,7 @@ export default {
       return {
         page: params.offset / params.limit + 1,
         per_page: params.limit
+        // check_status: 0
       };
     },
     refreshed() {
@@ -223,7 +224,12 @@ export default {
     sendCustomer() {
       let arr = this.getData($("#table")),
         that = this;
-      if (arr.length && arr.length > 0 && arr.length == 1) {
+
+      if (!arr.length) {
+        this.$message({ message: "请选择客户", type: "error" });
+        return false;
+      }
+      if (arr.length > 1) {
         this.$message({ message: "只能选择一个客户发送", type: "error" });
         return false;
       }

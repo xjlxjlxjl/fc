@@ -176,7 +176,9 @@ export default {
   },
   watch: {
     customerService(val, oldVal) {
-      if (val) this.form.linkman = this.active.customer_linkman;
+      if (!val) return false;
+      this.form.linkman = this.active.customer_linkman;
+      this.customer_company_name = this.active.customer_company_name;
     },
     form: {
       handler(val, oldVal) {

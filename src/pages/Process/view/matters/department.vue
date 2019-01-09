@@ -65,7 +65,13 @@ export default {
       that
         .$get(`members/branch`, params.data)
         .then(response => {
-          if (response.status != 200) return false;
+          if (response.status != 200) {
+            params.success({
+              rows: [],
+              total: 0
+            });
+            return false;
+          }
           params.success({
             rows: response.data.list,
             // total: response.data.list.length

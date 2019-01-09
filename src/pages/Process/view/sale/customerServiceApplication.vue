@@ -184,37 +184,6 @@ export default {
             }
           },
           {
-            field: "reason_analysis",
-            title: "原因分析",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "原因分析",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            }
-          },
-          {
-            field: "deal_method",
-            title: "处理方式",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "处理方式",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            }
-          },
-          {
-            field: "deal_result",
-            title: "处理结果",
-            sortable: true
-          },
-          {
             field: "price",
             title: "总价",
             // editable: {
@@ -252,15 +221,6 @@ export default {
             }
           },
           {
-            field: "deal_advice",
-            title: "处理建议",
-            editable: {
-              type: "text",
-              title: "处理建议",
-              emptytext: "空"
-            }
-          },
-          {
             field: "service_status_name",
             title: "服务状态"
           },
@@ -292,9 +252,7 @@ export default {
                   return service + del;
                   break;
                 case 2:
-                  if (row.price) {
-                    // if (row.discount_price) return del;
-                    // else
+                  if (row.quoted_price.price != undefined) {
                     return discountPrice + del;
                   } else return del;
                   break;

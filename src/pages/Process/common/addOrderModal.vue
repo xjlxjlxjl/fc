@@ -135,12 +135,12 @@ export default {
           name: "产品编号"
         },
         {
-          label: "product_model",
-          name: "产品型号"
-        },
-        {
           label: "product_name",
           name: "产品名字"
+        },
+        {
+          label: "product_model",
+          name: "产品型号"
         },
         {
           label: "product_specification",
@@ -327,7 +327,8 @@ export default {
     width: 800px;
     max-width: 100%;
     .modalBoxMainContent {
-      height: 400px;
+      height: 480px;
+      max-height: 80%;
       overflow-y: auto;
       .el-form {
         display: flex;

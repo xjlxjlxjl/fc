@@ -26,7 +26,13 @@ export default {
       that
         .$get(`members/branch/permission`, params.data)
         .then(response => {
-          if (response.status != 200) return false;
+          if (response.status != 200) {
+            params.success({
+              rows: [],
+              total: 0
+            });
+            return false;
+          }
           let arr = [];
           response.data.list.forEach((e, k) => {
             arr.push({

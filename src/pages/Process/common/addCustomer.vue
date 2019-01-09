@@ -46,6 +46,7 @@
               <el-form-item class="widthFull" label="地图标注位置" prop="region">
                 <div id="baiduMap"></div>
               </el-form-item>
+              <p class="lead widthFull">客户信息（选填）</p>
               <el-form-item label="客户级别">
                 <el-input v-model="form.customer_level" placeholder="客户级别"></el-input>
               </el-form-item>
@@ -66,9 +67,6 @@
               </el-form-item>
               <el-form-item label="传真">
                 <el-input v-model="form.fax" placeholder="传真"></el-input>
-              </el-form-item>
-              <el-form-item label="邮政代码">
-                <el-input v-model="form.logistics_code" placeholder="邮政代码"></el-input>
               </el-form-item>
               <el-form-item label="账期类型">
                 <el-input v-model="form.account_period_type" placeholder="账期类型"></el-input>
@@ -91,18 +89,6 @@
               <el-form-item label="电子邮件">
                 <el-input v-model="form.email" placeholder="电子邮件"></el-input>
               </el-form-item>
-              <el-form-item label="送货方式">
-                <el-input v-model="form.delivery_methods" placeholder="送货方式"></el-input>
-              </el-form-item>
-              <el-form-item label="交货地址">
-                <el-input v-model="form.delivery_address" placeholder="交货地址"></el-input>
-              </el-form-item>
-              <el-form-item label="备注">
-                <el-input v-model="form.remark" placeholder="备注"></el-input>
-              </el-form-item>
-              <el-form-item label="状态">
-                <el-input v-model="form.status" placeholder="状态"></el-input>
-              </el-form-item>
               <el-form-item label="发票抬头">
                 <el-input v-model="form.invoice_head" placeholder="发票抬头"></el-input>
               </el-form-item>
@@ -120,6 +106,26 @@
                   placeholder="选择日期"
                 ></el-date-picker>
               </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="form.remark" placeholder="备注"></el-input>
+              </el-form-item>
+              <el-form-item label="状态">
+                <el-input v-model="form.status" placeholder="状态"></el-input>
+              </el-form-item>
+              <el-form-item label="标签">
+                <el-input v-model="form.tags" placeholder="标签"></el-input>
+              </el-form-item>
+              <p class="lead widthFull">快递方式（选填）</p>
+              <el-form-item label="邮政代码">
+                <el-input v-model="form.logistics_code" placeholder="邮政代码"></el-input>
+              </el-form-item>
+              <el-form-item label="送货方式">
+                <el-input v-model="form.delivery_methods" placeholder="送货方式"></el-input>
+              </el-form-item>
+              <el-form-item label="交货地址">
+                <el-input v-model="form.delivery_address" placeholder="交货地址"></el-input>
+              </el-form-item>
+              <p class="lead widthFull">商务记录（选填）</p>
               <el-form-item label="最近联系日期">
                 <el-date-picker
                   v-model="form.recent_contacts_at"
@@ -146,9 +152,6 @@
                   type="date"
                   placeholder="选择日期"
                 ></el-date-picker>
-              </el-form-item>
-              <el-form-item label="标签">
-                <el-input v-model="form.tags" placeholder="标签"></el-input>
               </el-form-item>
             </el-form>
           </div>
@@ -352,6 +355,7 @@ export default {
         map.clearOverlays();
         var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)); // 创建标注
         geoc.getLocation(e.point, res => {
+          that.form.detailed_address = res.address;
           that.form.region = {
             address: `${res.addressComponents.province}-${
               res.addressComponents.city

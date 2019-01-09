@@ -53,6 +53,7 @@ import Logistics from "@/pages/Process/view/logistics/logistics";
 import AfterSale from "@/pages/Process/view/afterSale/afterSale";
 import afterSaleTasks from "@/pages/Process/view/afterSale/tasks";
 import application from "@/pages/Process/view/afterSale/application";
+import afterSaleReport from "@/pages/Process/view/afterSale/report";
 import picking from "@/pages/Process/view/afterSale/picking";
 import history from "@/pages/Process/view/afterSale/history";
 import analysis from "@/pages/Process/view/afterSale/analysis";
@@ -276,6 +277,10 @@ export default new Router({
         {
           path: "/AfterSale/application",
           component: application
+        },
+        {
+          path: "/AfterSale/report",
+          component: afterSaleReport
         },
         {
           path: "/AfterSale/picking",

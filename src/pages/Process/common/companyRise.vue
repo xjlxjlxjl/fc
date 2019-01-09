@@ -218,17 +218,17 @@ export default {
             console.log(result);
             switch (result.resp.slug) {
               case "service":
-                that.refresh($("#customerServiceApplication #table"));
-                that.refresh($("#application #afterSaleTable"));
+                this.refresh($("#customerServiceApplication #table"));
+                this.refresh($("#application #afterSaleTable"));
                 break;
               case "service_quote":
-                that.refresh($("#application #afterSaleTable"));
+                this.refresh($("#application #afterSaleTable"));
                 break;
               case "order":
-                that.refresh($("#order #table"));
+                this.refresh($("#order #table"));
                 break;
               case "worker":
-                that.refresh($("#tasks #table"));
+                this.refresh($("#tasks #table"));
                 break;
             }
             ++this.messageTips;

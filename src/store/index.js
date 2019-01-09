@@ -236,6 +236,7 @@ export default new Vuex.Store({
       afterSale: [
         { name: "待完成任务", url: "/AfterSale" },
         { name: "客服申请表", url: "/AfterSale/application" },
+        { name: "客服报告列表", url: "/AfterSale/report" },
         { name: "客服领料申请表", url: "/AfterSale/picking" },
         { name: "历史客服报告", url: "/AfterSale/history" },
         { name: "客服总类分析", url: "/AfterSale/analysis" },

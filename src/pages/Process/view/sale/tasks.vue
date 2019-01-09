@@ -141,7 +141,8 @@ export default {
         params.end_time = this.dateParse(this.date[1]);
         params.star_time = this.dateParse(this.date[0]);
       }
-      params.work_no = params.search;
+      if (params.search.length > 8) params.work_no = params.search;
+      else params.username = params.search;
       return params;
     },
     init() {

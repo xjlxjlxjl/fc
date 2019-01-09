@@ -39,13 +39,13 @@
               <el-form-item label="电话" prop="phone">
                 <el-input v-model="form.phone" placeholder="电话"></el-input>
               </el-form-item>
-              <div style="width: 100%;height: 1px;background-color: #ebeef5;margin: 1.5rem 0;"></div>
               <!-- <el-form-item label="地址" prop="address">
                 <el-input v-model="form.address" placeholder="地址"></el-input>
               </el-form-item>-->
               <!-- <el-form-item label="收款金额" prop="receipt_amount">
                 <el-input v-model="form.receipt_amount" placeholder="收款金额"></el-input>
               </el-form-item>-->
+              <p class="lead widthFull">快递信息</p>
               <el-form-item label="收件人地址" prop="receipt_address">
                 <el-input v-model="form.receipt_address" placeholder="收件人地址"></el-input>
               </el-form-item>
@@ -289,6 +289,7 @@ export default {
       this.form.receipt_address = this.shipment.receipt_address;
 
       this.goods.forEach(e => this.form.items.unshift(e));
+      console.log(this.goods);
     },
     form: {
       handler(val, old) {
@@ -347,6 +348,10 @@ export default {
           .el-date-editor {
             width: 100%;
           }
+        }
+        .widthFull {
+          width: 100%;
+          margin-bottom: 0px;
         }
       }
     }

@@ -37,7 +37,13 @@ export default {
       that
         .$get(`orders/company`, params.data)
         .then(response => {
-          if (response.status != 200) return false;
+          if (response.status != 200) {
+            params.success({
+              rows: [],
+              total: 0
+            });
+            return false;
+          }
           that.$store.commit("changeTasks", {
             name: "order",
             num: response.data.pagination.total
@@ -73,9 +79,10 @@ export default {
           this.goods.push({
             order_id: e.id,
             order_no: e.numbering,
+            item_id: p.id,
             item_code: p.id,
-            item_name: p.product_name,
-            item_unit: "件",
+            item_name: `${p.product_name} / ${p.product_model}`,
+            item_unit: p.unit || "件",
             item_num: p.quantity,
             customer_goods_no: "",
             customer_order_no: e.numbering,
@@ -273,7 +280,7 @@ export default {
           detailFormatter(field, mrow, oldValue, $el) {
             let content = [
               `<table class="table">`,
-              `<tr><th>商品名</th><th>商品图片</th><th>发票类型</th><th>数量</th><th>单价</th><th>合计</th></tr>`
+              `<tr><th>商品名</th></th><th>发票类型</th><th>数量</th><th>单价</th><th>合计</th></tr>`
             ];
             mrow.products.forEach(e =>
               content.push(
@@ -281,9 +288,6 @@ export default {
               <td>
                 <p>${e.product_name}</p>
                 <p style="margin-bottom: 0;">${e.product_model}</p>
-              </td>
-              <td>
-                <img src="${e.product_image}" width="50px" height="50px">
               </td>
               <td>${e.invoice_type_name || "暂无"}</td>
               <td>${e.quantity}</td>
