@@ -33,7 +33,7 @@
               <p
                 style="width: 100%;white-space: nowrap;display: flex;justify-content: space-between;"
               >
-                <span>地址：{{ printDetail.ship_address }}</span>
+                <span>地址：{{ printDetail.receipt_address }}</span>
                 <span>业务员：{{ printDetail.salesman }}</span>
                 <span>日期：{{ printDetail.ship_date }}</span>
               </p>

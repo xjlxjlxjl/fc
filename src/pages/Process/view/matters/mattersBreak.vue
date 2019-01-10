@@ -21,7 +21,8 @@ export default {
   name: "overtime",
   data() {
     return {
-      date: ""
+      date: "",
+      user: JSON.parse(localStorage.getItem("user") || "{}")
     };
   },
   components: {},
@@ -84,11 +85,72 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let del = [
-                `<button class="btn btn-danger btn-sm del">删除</button>`
-              ];
+                  `<button class="btn btn-danger btn-sm del">删除</button>`
+                ],
+                canApproval = false;
+              row.rest.forEach(e => {
+                if (
+                  (this.user.user.id == e.member_id && e.receive) ||
+                  (this.user.user.id == e.member_id && e.reject)
+                )
+                  canApproval = "exit";
+                else if (
+                  (this.user.user.id == e.member_id && !e.receive) ||
+                  (this.user.user.id == e.member_id && !e.reject)
+                )
+                  canApproval = e.id;
+              });
+              let adopt = [
+                  `<button appId="${canApproval}" class="btn btn-success btn-sm adopt">通过</button>`
+                ],
+                refuse = [
+                  `<button appId="${canApproval}" class="btn btn-danger btn-sm refuse">拒绝</button>`
+                ];
+              if (canApproval == "exit") return;
+              else if (canApproval) return adopt + refuse;
               return del;
             },
             events: {
+              "click .adopt": function($el, value, row, index) {
+                let id = $(this).attr("appId");
+                that
+                  .$prompt(`同意原因`, "")
+                  .then(({ value }) => {
+                    that
+                      .$post(`personnels/approval`, {
+                        receive: 1,
+                        reason: value,
+                        type: "rest",
+                        id: id
+                      })
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.refresh($("#mattersTable"));
+                      })
+                      .catch(err => console.error(err));
+                  })
+                  .catch(err => console.error(err));
+              },
+              "click .refuse": function($el, value, row, index) {
+                let id = $(this).attr("appId");
+                that
+                  .$prompt(`拒绝原因`, "")
+                  .then(({ value }) => {
+                    that
+                      .$post(`personnels/approval`, {
+                        reject: 1,
+                        reason: value,
+                        type: "rest",
+                        id: id
+                      })
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.refresh($("#mattersTable"));
+                      })
+                      .catch(err => console.error(err));
+                  })
+                  .catch(err => console.error(err));
+              },
               "click .del": ($el, value, row, index) => {
                 that
                   .$get(`personnels/rest/delete`, { id: row.id })

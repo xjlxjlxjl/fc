@@ -11,7 +11,9 @@ import { mapState } from "vuex";
 export default {
   name: "overtime",
   data() {
-    return {};
+    return {
+      user: JSON.parse(localStorage.getItem("user") || "{}")
+    };
   },
   components: {},
   methods: {
@@ -54,30 +56,8 @@ export default {
         }, 1000);
     },
     tableInit() {
-      let that = this;
-      $("#mattersTable").bootstrapTable({
-        toolbar: "#mattersToolbar",
-        ajax: this.tableAjaxData,
-        queryParams: this.tableAjaxParams,
-        search: true,
-        strictSearch: true,
-        showRefresh: true,
-        sidePagination: "server",
-        pagination: true,
-        striped: true,
-        clickToSelect: true,
-        showColumns: true,
-        sortName: "createTime",
-        sortOrder: "desc",
-        idField: "id",
-        showToggle: true,
-        showExport: true,
-        exportDataType: "all",
-        exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-        classes: "table",
-        pageList: [10, 25, 50, 100, "All"],
-        detailView: true,
-        columns: [
+      let that = this,
+        columns = [
           {
             checkbox: true
           },
@@ -206,21 +186,84 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let del = [
-                `<button class="btn btn-danger btn-sm del">删除</button>`
-              ];
-              let destroy = [
-                `<button class="btn btn-success btn-sm destroy">销假</button>`
-              ];
-              switch (row.vacation_leave_status) {
-                case 0:
-                  return destroy + del;
-                  break;
-                case 1:
-                  return del;
-                  break;
+                  `<button class="btn btn-danger btn-sm del">删除</button>`
+                ],
+                destroy = [
+                  `<button class="btn btn-success btn-sm destroy">销假</button>`
+                ],
+                canApproval = false;
+              row.vacations.forEach(e => {
+                if (
+                  (this.user.user.id == e.member_id && e.receive) ||
+                  (this.user.user.id == e.member_id && e.reject)
+                )
+                  canApproval = "exit";
+                else if (
+                  (this.user.user.id == e.member_id && !e.receive) ||
+                  (this.user.user.id == e.member_id && !e.reject)
+                )
+                  canApproval = e.id;
+              });
+              let adopt = [
+                  `<button appId="${canApproval}" class="btn btn-success btn-sm adopt">通过</button>`
+                ],
+                refuse = [
+                  `<button appId="${canApproval}" class="btn btn-danger btn-sm refuse">拒绝</button>`
+                ];
+              if (canApproval == "exit") return;
+              else if (canApproval) return adopt + refuse;
+              else {
+                switch (row.vacation_leave_status) {
+                  case 0:
+                    return destroy + del;
+                    break;
+                  case 1:
+                    return del;
+                    break;
+                }
               }
             },
             events: {
+              "click .adopt": function($el, value, row, index) {
+                let id = $(this).attr("appId");
+                that
+                  .$prompt(`同意原因`, "")
+                  .then(({ value }) => {
+                    that
+                      .$post(`personnels/approval`, {
+                        receive: 1,
+                        reason: value,
+                        type: "vacations",
+                        id: id
+                      })
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.refresh($("#mattersTable"));
+                      })
+                      .catch(err => console.error(err));
+                  })
+                  .catch(err => console.error(err));
+              },
+              "click .refuse": function($el, value, row, index) {
+                let id = $(this).attr("appId");
+                that
+                  .$prompt(`拒绝原因`, "")
+                  .then(({ value }) => {
+                    that
+                      .$post(`personnels/approval`, {
+                        reject: 1,
+                        reason: value,
+                        type: "vacations",
+                        id: id
+                      })
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.refresh($("#mattersTable"));
+                      })
+                      .catch(err => console.error(err));
+                  })
+                  .catch(err => console.error(err));
+              },
               "click .del": ($el, value, row, index) => {
                 that
                   .$post(`personnels/vacations/delete/${value}`)
@@ -246,46 +289,70 @@ export default {
             }
           }
         ],
-        detailFormatter: (index, row, $el) => {
-          let html = [
-            `<table class="table">
+        data = {
+          toolbar: "#mattersToolbar",
+          ajax: this.tableAjaxData,
+          queryParams: this.tableAjaxParams,
+          search: true,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          sortName: "createTime",
+          sortOrder: "desc",
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          detailView: true,
+          columns: columns,
+          detailFormatter: (index, row, $el) => {
+            let html = [
+              `<table class="table">
             <tr><th>审批人</th><th>审批状态</th><th>审批时间</th></tr>`
-          ];
-          row.vacations.forEach(e =>
-            html.push(
-              `<tr><td>${e.name}</td><td>${
-                e.receive ? "接受" : e.reject ? "拒绝" : "等待"
-              }</td><td>${e.created_at}</td></tr>`
-            )
-          );
-          html.push(`</table>`);
-          return html.join("");
-        },
-        onEditableSave: (field, mrow, oldValue, $el) => {
-          mrow.start_at = that.miniDateParse(new Date(mrow.start_at));
-          mrow.end_at = that.miniDateParse(new Date(mrow.end_at));
-          let str = "";
-          that.leaveType.obj.forEach(e => {
-            if (e.key.id == mrow["type.id"]) str = JSON.stringify(e.key);
-          });
-          that
-            .$post(`personnels/vacations/edit/${mrow.slug}`, {
-              start_at: mrow.start_at,
-              end_at: mrow.end_at,
-              working_days_off: mrow.working_days_off,
-              details: mrow.details,
-              work_transfer: mrow.work_transfer,
-              total_time: mrow.total_time,
-              type: str,
-              working_address: mrow.working_address,
-              total_cost: mrow.total_cost
-            })
-            .then(response => {
-              if (response.status != 200) return false;
-            })
-            .catch(err => {});
-        }
-      });
+            ];
+            row.vacations.forEach(e =>
+              html.push(
+                `<tr><td>${e.name}</td><td>${
+                  e.receive ? "接受" : e.reject ? "拒绝" : "等待"
+                }</td><td>${e.created_at}</td></tr>`
+              )
+            );
+            html.push(`</table>`);
+            return html.join("");
+          },
+          onEditableSave: (field, mrow, oldValue, $el) => {
+            mrow.start_at = that.miniDateParse(new Date(mrow.start_at));
+            mrow.end_at = that.miniDateParse(new Date(mrow.end_at));
+            let str = "";
+            that.leaveType.obj.forEach(e => {
+              if (e.key.id == mrow["type.id"]) str = JSON.stringify(e.key);
+            });
+            that
+              .$post(`personnels/vacations/edit/${mrow.slug}`, {
+                start_at: mrow.start_at,
+                end_at: mrow.end_at,
+                working_days_off: mrow.working_days_off,
+                details: mrow.details,
+                work_transfer: mrow.work_transfer,
+                total_time: mrow.total_time,
+                type: str,
+                working_address: mrow.working_address,
+                total_cost: mrow.total_cost
+              })
+              .then(response => {
+                if (response.status != 200) return false;
+              })
+              .catch(err => {});
+          }
+        };
+      $("#mattersTable").bootstrapTable(data);
     }
   },
   computed: mapState({

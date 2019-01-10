@@ -233,7 +233,7 @@
               >
                 <label
                   slot="title"
-                >{{ item.from_user ? `${ item.from_user.last_name || item.from_user.display_name }：${ item.message }`: item.message }}</label>
+                >{{ item.from_user ? `${ item.from_user ? item.from_user.last_name ? item.from_user.last_name: item.from_user.display_name ? item.from_user.display_name : '通知' : '通知' }：${ item.message }`: item.message }}</label>
                 <el-popover v-if="item.type != 15" placement="right" trigger="hover">
                   <el-button size="mini" slot="reference">操作</el-button>
                   <el-button
@@ -1041,10 +1041,10 @@ export default {
       let that = this,
         url = null,
         params = {};
-      switch(this.state){
+      switch (this.state) {
         case 1:
           url = `chat/files`;
-          params.friend_id= this.toUser;
+          params.friend_id = this.toUser;
           break;
         case 2:
           url = `group/files`;
@@ -1054,11 +1054,11 @@ export default {
       that
         .$get(url, params)
         .then(response => {
-          if(response.status != 200) return false;
-          that.fileList = { 
+          if (response.status != 200) return false;
+          that.fileList = {
             list: response.data,
             pagination: response.pagination
-          }
+          };
           fileList.methods.close.call(this);
         })
         .catch(err => console.error(err));

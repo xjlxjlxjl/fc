@@ -73,6 +73,7 @@ export default {
     position: absolute;
     .modalBoxMain {
       width: 680px;
+      margin-top: 0 !important;
       .modalBoxMainContent {
         height: 480px;
         overflow: auto;

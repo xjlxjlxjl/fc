@@ -335,8 +335,8 @@ export default new Vuex.Store({
     // },
     tasksItems: {
       worker: { name: "任务列表", label: "tasks" },
-      service: { name: "客服申请", label: "customerServiceApplication" },
-      service_quote: { name: "客服报价", label: "application" },
+      service_quote: { name: "客服申请", label: "customerServiceApplication" },
+      service: { name: "客服报价", label: "application" },
       order: { name: "销售订单", label: "order" }
     },
     tasksPendingNum: {
