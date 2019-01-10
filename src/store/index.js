@@ -359,6 +359,7 @@ export default new Vuex.Store({
     chatModal: false,
     payModal: false,
     supplierModal: false,
+    fileListModal: false,
     //
     createdWorkModal: false,
     createdCustomerModal: false,

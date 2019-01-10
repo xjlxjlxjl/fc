@@ -10,6 +10,7 @@
     ></groupUserCheckBox>
     <!-- 图片画廊 -->
     <gallery :record="record" :galleryIndex="galleryIndex"></gallery>
+    <fileListModal :fileList="fileList"></fileListModal>
     <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
     <el-container>
       <el-aside class="pcShowImportant" width="60px" v-show="!mainDisplay">
@@ -257,7 +258,10 @@
                 <div>
                   <span>{{ userName }}</span>
                 </div>
-                <div @click="mainDisplay = false">
+                <div class="mobileHide" @click="showFileList">
+                  <i class="el-icon-download"></i>
+                </div>
+                <div class="pcHide" @click="mainDisplay = false">
                   <i class="el-icon-back"></i>
                 </div>
               </el-header>
@@ -370,6 +374,7 @@
 import fileImg from "@/assets/img/file.png";
 import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
 import gallery from "@/pages/Chart/common/gallery";
+import fileList from "@/pages/Chart/common/fileList";
 export default {
   name: "message",
   data() {
@@ -413,6 +418,13 @@ export default {
       message: "",
       timeOut: null,
       connectNum: 0,
+      fileList: {
+        list: [],
+        pagination: {
+          total: 1,
+          current_page: 0
+        }
+      },
       // 群聊变量
       checkBoxList: [],
       msgImgArr: [],
@@ -1025,6 +1037,32 @@ export default {
         })
         .catch(error => console.error(error));
     },
+    showFileList() {
+      let that = this,
+        url = null,
+        params = {};
+      switch(this.state){
+        case 1:
+          url = `chat/files`;
+          params.friend_id= this.toUser;
+          break;
+        case 2:
+          url = `group/files`;
+          params.group_id = this.toUser;
+          break;
+      }
+      that
+        .$get(url, params)
+        .then(response => {
+          if(response.status != 200) return false;
+          that.fileList = { 
+            list: response.data,
+            pagination: response.pagination
+          }
+          fileList.methods.close.call(this);
+        })
+        .catch(err => console.error(err));
+    },
     getNoticesDetail(item, key) {
       this.$alert(
         `
@@ -1333,7 +1371,8 @@ export default {
   },
   components: {
     groupUserCheckBox: groupUserCheckBox,
-    gallery: gallery
+    gallery: gallery,
+    fileListModal: fileList
   },
   watch: {
     toUser() {
@@ -1594,12 +1633,27 @@ export default {
                   font-size: 1.2rem;
                 }
               }
-              > i {
-                @media screen and (min-width: 820px) {
-                  display: none;
+            }
+            @media screen and (min-width: 820px) {
+              .pcHide {
+                display: none;
+              }
+              .mobileHide {
+                > i {
+                  font-size: 2rem;
+                  font-weight: bold;
                 }
-                font-size: 2rem;
-                font-weight: bold;
+              }
+            }
+            @media screen and (max-width: 820px) {
+              .pcHide {
+                > i {
+                  font-size: 2rem;
+                  font-weight: bold;
+                }
+              }
+              .mobileHide {
+                display: none;
               }
             }
           }
