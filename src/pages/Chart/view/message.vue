@@ -638,7 +638,7 @@ export default {
       } else if (that.state == 2) {
         url = "group/chat/record";
         params.group = id;
-        clear_unread_message_num.req.to_group_id = id;
+        clear_unread_message_num.req.group_id = id;
       } else return false;
       that.webSocketSend(clear_unread_message_num);
       that
