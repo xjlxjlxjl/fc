@@ -30,7 +30,7 @@
                   v-for="(item,index) in groupUser"
                   :key="index"
                   :label="item.id"
-                  v-if="item.id != user.user.id"
+                  v-show="item.id != user.user.id"
                   :checked="item.isClick"
                 >
                   <span>{{ item.last_name }}</span>
@@ -88,7 +88,18 @@ export default {
       let that = this,
         params = { user_ids: userId.join(",") };
       if (groupId) params.group_id = groupId;
-      else params.group_name = groupName;
+      else {
+        if (userId.length > 4) params.group_name = groupName;
+        else {
+          let nameArr = [];
+          this.groupUser.forEach(e => {
+            userId.forEach(i => {
+              if (e.id == i) nameArr.push(e.last_name);
+            });
+          });
+          params.group_name = nameArr.join(",");
+        }
+      }
       that
         .$post("group/invite", params)
         .then(response => {

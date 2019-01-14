@@ -226,7 +226,6 @@
             <el-menu default-active="0" v-else-if="interface[6].isDefault">
               <el-menu-item
                 v-for="(item,index) in noticesList.list"
-                v-if="!item.is_read || !item.is_agree || !item.is_delete"
                 :key="index"
                 :index="index.toString()"
                 @click="getNoticesDetail(item, index)"
@@ -234,7 +233,11 @@
                 <label
                   slot="title"
                 >{{ item.from_user ? `${ item.from_user ? item.from_user.last_name ? item.from_user.last_name: item.from_user.display_name ? item.from_user.display_name : '通知' : '通知' }：${ item.message }`: item.message }}</label>
-                <el-popover v-if="item.type != 15" placement="right" trigger="hover">
+                <el-popover
+                  placement="right"
+                  trigger="hover"
+                  v-if="item.type != 15 && item.type != 4 && item.is_read == 0 && item.is_agree == 0 && item.is_delete == 0"
+                >
                   <el-button size="mini" slot="reference">操作</el-button>
                   <el-button
                     size="mini"
@@ -468,16 +471,14 @@ export default {
           setTimeout(() => {
             document.getElementById("notices").onscroll = e => {
               let isLoad =
-                e.target.scrollTop >=
-                e.target.scrollHeight - e.target.offsetHeight;
-              if (
-                isLoad &&
-                this.noticesList.pagination.total > 15 &&
-                this.noticesList.pagination.total / 15 >
+                  e.target.scrollTop >=
+                  e.target.scrollHeight - e.target.offsetHeight,
+                total = this.noticesList.pagination.total,
+                currentPage =
+                  this.noticesList.pagination.total / 15 >
                   (this.noticesList.pagination.currentPage ||
-                    this.noticesList.pagination.current_page)
-              )
-                this.getNotices();
+                    this.noticesList.pagination.current_page);
+              if (isLoad && total && currentPage) this.getNotices();
             };
           }, 100);
           break;
@@ -518,7 +519,7 @@ export default {
       this.$prompt("请输入验证信息", "发送验证消息")
         .then(({ value }) => {
           that
-            .$post("/friend/add/verify", {
+            .$post("friend/add/verify", {
               friend_id: id,
               content: value
             })
@@ -544,7 +545,7 @@ export default {
       let that = this,
         loading = this.$loading({ lock: true });
       that
-        .$post("/friend/del", {
+        .$post("friend/del", {
           friend_id: id
         })
         .then(response => {
@@ -576,10 +577,12 @@ export default {
         })
         .catch(err => console.error(err));
     },
+    // 中间过滤显示聊天显示第一个
     recordTo() {
       let that = this;
       switch (that.chatList.list[0].friend_uid) {
         case 0:
+          // 群聊
           that.state = 2;
           that.getRecord({
             id: that.chatList.list[0].group_id,
@@ -587,6 +590,7 @@ export default {
           });
           break;
         case 1:
+          // 私聊 用户 id = 1，选择第二个
           if (that.chatList.list[1].friend_uid) {
             that.state = 1;
             that.getRecord({
@@ -604,6 +608,7 @@ export default {
           }
           break;
         default:
+          // 其他用户
           that.state = 1;
           that.getRecord({
             id: that.chatList.list[0].friend_uid,
@@ -654,11 +659,10 @@ export default {
             response.data.list.reverse();
             response.data.list.forEach(e => that.record.list.unshift(e));
             setTimeout(() => {
-              document.getElementById("chatMain").scrollTop =
-                document.getElementById("chatMain").scrollHeight - pcHeight;
-              document.getElementsByClassName("chatMain")[0].scrollTop =
-                document.getElementsByClassName("chatMain")[0].scrollHeight -
-                moblieHeight;
+              let $chatMain = document.getElementById("chatMain"),
+                chatMain = document.getElementsByClassName("chatMain")[0];
+              $chatMain.scrollTop = $chatMain.scrollHeight - pcHeight;
+              chatMain.scrollTop = chatMain.scrollHeight - moblieHeight;
             }, 100);
           }
           that.finishingPictures();
@@ -682,7 +686,7 @@ export default {
     delChat(id, key) {
       let that = this;
       that
-        .$post("/chat/session/remove", {
+        .$post("chat/session/remove", {
           cid: id
         })
         .then(response => {
@@ -962,30 +966,30 @@ export default {
           params.req.msg_id = response.data.msg_id;
           that.webSocketSend(params);
           let msg = {
-            from_user_id: that.user.user.id,
-            from_user: {
               from_user_id: that.user.user.id,
-              avatar: that.user.user.avatar,
-              display_name: that.user.user.display_name
+              from_user: {
+                from_user_id: that.user.user.id,
+                avatar: that.user.user.avatar,
+                display_name: that.user.user.display_name
+              },
+              created_at: that.dateParse(new Date()),
+              msg_type: type,
+              id: response.data.msg_id,
+              content: data.content
             },
-            created_at: that.dateParse(new Date()),
-            msg_type: type,
-            id: response.data.msg_id,
-            content: data.content
-          };
-          switch (type) {
-            case 1:
-              that.message = "";
-              break;
-            case 2:
-              if (that.msgImgArr) that.msgImgArr.push(msg);
-              msg.msgImgKey = that.msgImgArr.length - 1;
-              break;
-          }
+            msgType = {
+              1: () => (that.message = ""),
+              2: () => {
+                if (that.msgImgArr) that.msgImgArr.push(msg);
+                msg.msgImgKey = that.msgImgArr.length - 1;
+              },
+              3: () => {}
+            };
+          msgType[type]();
           if (data.to_uid == that.toUser || data.to_group_id == that.toUser)
             that.record.list.push(msg);
         })
-        .catch(err => {});
+        .catch(err => console.error(err));
     },
     getMembers() {
       let that = this;
@@ -993,19 +997,15 @@ export default {
         .$get("chat/select/members")
         .then(response => {
           if (response.status != 200) return false;
-          let arr = [];
-          response.data.colleagues.forEach(e => {
-            e.isClick = false;
-            arr.push(e);
-          });
-          response.data.friends.forEach(e => {
-            e.isClick = false;
-            arr.push(e);
-          });
-          response.data.strangers.forEach(e => {
-            e.isClick = false;
-            arr.push(e);
-          });
+          let arr = [],
+            user = ["colleagues", "friends", "strangers"];
+          for (const key in response.data) {
+            if (user.indexOf(key) != -1)
+              response.data[key].forEach(e => {
+                e.isClick = false;
+                arr.push(e);
+              });
+          }
           that.checkBoxList = arr;
           that.members = response.data;
         })
@@ -1031,6 +1031,7 @@ export default {
         })
         .then(response => {
           if (response.status != 200) return false;
+
           response.data.list.forEach(e => that.noticesList.list.push(e));
           // response.data.list.forEach(e => that.noticesList.list.unshift(e));
           that.noticesList.pagination = response.pagination;
@@ -1040,17 +1041,21 @@ export default {
     showFileList() {
       let that = this,
         url = null,
-        params = {};
-      switch (this.state) {
-        case 1:
-          url = `chat/files`;
-          params.friend_id = this.toUser;
-          break;
-        case 2:
-          url = `group/files`;
-          params.group_id = this.toUser;
-          break;
-      }
+        params = {
+          page: 1
+        },
+        setUrl = {
+          1: () => {
+            url = `chat/files`;
+            params.friend_id = this.toUser;
+          },
+          2: () => {
+            url = `group/files`;
+            params.group_id = this.toUser;
+          }
+        };
+      setUrl[this.state]();
+
       that
         .$get(url, params)
         .then(response => {
@@ -1136,188 +1141,170 @@ export default {
           break;
         default:
           // 转发
-          i.user.forEach(e =>
-            setTimeout(() => {
-              let type = this.forwardData.msg_type || this.forwardData.type;
-              this.sendMessage(0, e, type, this.forwardData.content, 1);
-            }, 500)
-          );
-          i.group.forEach(e =>
-            setTimeout(() => {
-              let type = this.forwardData.msg_type || this.forwardData.type;
-              this.sendMessage(0, e, type, this.forwardData.content, 2);
-            }, 500)
-          );
+          for (const item in i) {
+            i[item].forEach(e =>
+              setTimeout(() => {
+                let msg = this.forwardData,
+                  type = msg.msg_type || msg.type,
+                  state = item == "user" ? 1 : 2;
+                this.sendMessage(0, e, type, msg.content, state);
+              }, 500)
+            );
+          }
           break;
       }
       this.e = null;
       this.mousePosition = ["close"];
     },
     notify(result, state) {
-      let msg = null;
-      switch (result.resp.type) {
-        case 1:
-          msg = result.resp.content;
-          break;
-        case 2:
-          msg = "[图片]";
-          break;
-        case 3:
-          msg = "[文件]";
-          break;
-      }
+      let msg = null,
+        title = {
+          1: result.resp.content,
+          2: "[图片]",
+          3: "[文件]"
+        },
+        getRequset = {
+          1: () => this.getFriendList(),
+          2: () => this.getGroupList()
+        };
+
       this.$notify({
         title: `${result.resp.from_name}`,
-        message: msg
+        message: title[result.resp.type]
       });
       let notification = new Notification(`${result.resp.from_name}`, {
-        body: msg
+        body: title[result.resp.type]
       });
 
       clearTimeout(this.timeOut);
       this.timeOut = setTimeout(() => {
         this.getChatList(false);
-        switch (state) {
-          case 1:
-            this.getFriendList();
-            break;
-          case 2:
-            this.getGroupList();
-            break;
-        }
+        getRequset[state]();
       }, 2000);
     },
     webSocket() {
       let socketAddress = this.$store.state.socketAddress;
       this.ws = new WebSocket(socketAddress);
       this.ws.onmessage = event => {
-        let result = JSON.parse(event.data);
-        switch (result.action) {
-          case "init":
-            this.webSocketLogin();
-            break;
-          case "login":
-            if (result.resp.code != 200) {
-              if (result.resp.code == 400) {
-                this.$notify({
-                  title: "过多的连接",
-                  message: "请关闭其他本网站网页"
-                });
-                return false;
+        const result = JSON.parse(event.data),
+          act = {
+            init: () => this.webSocketLogin(),
+            login: () => {
+              if (result.resp.code != 200) {
+                if (result.resp.code == 400) {
+                  this.$notify({
+                    title: "过多的连接",
+                    message: "请关闭其他本网站网页"
+                  });
+                  return false;
+                }
+                this.webSocketLogin();
+              } else {
+                this.connectNum = 0;
+                clearInterval(this.pong);
+                this.pong = setInterval(() => {
+                  this.webSocketSend({
+                    action: "pong",
+                    req: {
+                      message: "hello"
+                    }
+                  });
+                }, 5000);
               }
-              this.webSocketLogin();
-            } else {
-              this.connectNum = 0;
-              clearInterval(this.pong);
-              this.pong = setInterval(() => {
-                this.webSocketSend({
-                  action: "pong",
-                  req: {
-                    message: "hello"
+            },
+            pong: () => {},
+            chat: () => {
+              console.log(result);
+              if (result.resp_event == 200) {
+                if (result.resp.from_uid == this.toUser) {
+                  let msg = {
+                    from_user_id: result.resp.from_uid,
+                    from_user: {
+                      from_user_id: result.resp.from_uid,
+                      avatar:
+                        result.resp.avatar ||
+                        "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                      display_name: this.userName
+                    },
+                    id: result.msg_id,
+                    created_at: this.dateParse(new Date()),
+                    msg_type: result.resp.type,
+                    content: result.resp.content
+                  };
+                  this.record.list.push(msg);
+                  if (msg.msg_type == 2) {
+                    this.msgImgArr.push(msg);
+                    msg.msgImgKey = this.msgImgArr.length - 1;
                   }
-                });
-              }, 5000);
-            }
-            break;
-          case "pong":
-            break;
-          case "chat":
-            console.log(result);
-            if (result.resp_event == 200) {
-              if (result.resp.from_uid == this.toUser) {
-                let msg = {
-                  from_user_id: result.resp.from_uid,
-                  from_user: {
-                    from_user_id: result.resp.from_uid,
-                    avatar:
-                      result.resp.avatar ||
-                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                    display_name: this.userName
-                  },
-                  id: result.msg_id,
-                  created_at: this.dateParse(new Date()),
-                  msg_type: result.resp.type,
-                  content: result.resp.content
-                };
-                this.record.list.push(msg);
-                if (msg.msg_type == 2) {
-                  this.msgImgArr.push(msg);
-                  msg.msgImgKey = this.msgImgArr.length - 1;
                 }
+                // this.getRecord({ id: this.toUser, username: this.userName });
+                this.notify(result, 1);
               }
-              // this.getRecord({ id: this.toUser, username: this.userName });
-              this.notify(result, 1);
-            }
-            this.fixLocation();
-            break;
-          case "group":
-            console.log(result);
-            if (result.resp_event == 200) {
-              if (result.resp.group == this.toUser) {
-                let msg = {
-                  from_user_id: result.resp.from_uid,
-                  user: {
+              this.fixLocation();
+            },
+            group: () => {
+              console.log(result);
+              if (result.resp_event == 200) {
+                if (result.resp.group == this.toUser) {
+                  let msg = {
                     from_user_id: result.resp.from_uid,
-                    avatar:
-                      result.resp.avatar ||
-                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                    display_name: result.resp.from_name
-                  },
-                  id: result.msg_id,
-                  created_at: this.dateParse(new Date()),
-                  msg_type: result.resp.type,
-                  content: result.resp.content
-                };
-                this.record.list.push(msg);
-                if (msg.msg_type == 2) {
-                  this.msgImgArr.push(msg);
-                  msg.msgImgKey = this.msgImgArr.length - 1;
+                    user: {
+                      from_user_id: result.resp.from_uid,
+                      avatar:
+                        result.resp.avatar ||
+                        "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                      display_name: result.resp.from_name
+                    },
+                    id: result.msg_id,
+                    created_at: this.dateParse(new Date()),
+                    msg_type: result.resp.type,
+                    content: result.resp.content
+                  };
+                  this.record.list.push(msg);
+                  if (msg.msg_type == 2) {
+                    this.msgImgArr.push(msg);
+                    msg.msgImgKey = this.msgImgArr.length - 1;
+                  }
                 }
+                // this.getRecord({ id: this.toUser, username: this.userName });
+                this.notify(result, 2);
               }
-              // this.getRecord({ id: this.toUser, username: this.userName });
-              this.notify(result, 2);
-            }
-            this.fixLocation();
-            break;
-          case "notice":
-            console.log(result);
-            this.$notify({
-              title: `您有一条来自${result.resp.from_name}的通知`,
-              message: result.resp.content
-            });
-            let notification = new Notification(
-              `您有一条来自${result.resp.from_name}的通知`,
-              {
-                body: result.resp.content
-              }
-            );
-            this.noticesList.list.unshift({
-              id: result.resp.notice_id,
-              from_user: {
-                last_name: result.resp.from_name || ""
-              },
-              message: result.resp.content,
-              type: result.resp.type,
-              user_id: result.resp.user_id
-            });
-            // this.getNotices();
-            break;
-          case "withdrawal":
-            console.log(result);
-            if (result.resp.from_uid == this.toUser && result.msg_id) {
-              this.record.list.forEach((e, k) => {
-                if (e.id == result.msg_id) this.record.list.splice(k, 1);
+              this.fixLocation();
+            },
+            notice: () => {
+              console.log(result);
+              this.$notify({
+                title: `您有一条来自${result.resp.from_name}的通知`,
+                message: result.resp.content
               });
-            }
-            break;
-          case "close":
-            this.webSocketClose();
-            break;
-          default:
-            console.log("抛出");
-            console.log(result);
-            break;
-        }
+              let notification = new Notification(
+                `您有一条来自${result.resp.from_name}的通知`,
+                {
+                  body: result.resp.content
+                }
+              );
+              this.noticesList.list.unshift({
+                id: result.resp.notice_id,
+                from_user: {
+                  last_name: result.resp.from_name || ""
+                },
+                message: result.resp.content,
+                type: result.resp.type,
+                user_id: result.resp.user_id
+              });
+              // this.getNotices();
+            },
+            withdrawal: () => {
+              console.log(result);
+              if (result.msg_id) {
+                this.record.list.forEach((e, k) => {
+                  if (e.id == result.msg_id) this.record.list.splice(k, 1);
+                });
+              }
+            },
+            close: () => this.webSocketClose()
+          };
+        act[result.action]();
       };
       this.ws.onclose = this.ws.onerror = e => {
         this.connectNum++;
@@ -1363,14 +1350,10 @@ export default {
     },
     fixLocation() {
       setTimeout(() => {
-        document.getElementById("chatMain").scrollTop = document.getElementById(
-          "chatMain"
-        ).scrollHeight;
-        document.getElementsByClassName(
-          "chatMain"
-        )[0].scrollTop = document.getElementsByClassName(
-          "chatMain"
-        )[0].scrollHeight;
+        let $chatMain = document.getElementById("chatMain"),
+          chatMain = document.getElementsByClassName("chatMain")[0];
+        $chatMain.scrollTop = $chatMain.scrollHeight;
+        chatMain.scrollTop = chatMain.scrollHeight;
       }, 100);
     }
   },
@@ -1388,53 +1371,48 @@ export default {
     }
   },
   mounted() {
-    this.$refs.uploadBox.ondragover = this.$refs.uploadBox.ondragleave = this.$refs.uploadBox.ondragenter = e => {
+    let $uploadBox = this.$refs["uploadBox"],
+      $elTextarea = document.getElementById("el-textarea"),
+      $chatMain = document.getElementById("chatMain"),
+      chatMain = document.getElementsByClassName("chatMain")[0];
+
+    $uploadBox.ondragover = $uploadBox.ondragleave = $uploadBox.ondragenter = e => {
       if (e.preventDefault) e.preventDefault();
       else window.event.returnValue == false;
     };
-    this.$refs.uploadBox.ondrop = e => {
+    $uploadBox.ondrop = e => {
       if (e.preventDefault) e.preventDefault();
       else window.event.returnValue == false;
       const data = e.dataTransfer.files; // 获取文件对象
-      if (data.length < 1) {
-        return false; // 检测是否有文件拖拽到页面
-      }
-      for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        switch (e.dataTransfer.files[i].type) {
+      if (data.length < 1) return false; // 检测是否有文件拖拽到页面
+      for (const item of data) {
+        switch (item.type) {
           case "image/jpeg":
           case "image/png":
           case "image/svg+xml":
           case "image/x-icon":
-            this.uploadImg(e.dataTransfer.files[i]);
+            this.uploadImg(item);
             break;
           default:
-            this.uploadFile(e.dataTransfer.files[i]);
+            this.uploadFile(item);
             break;
         }
       }
     };
     // 粘贴上传
-    document.getElementById("el-textarea").addEventListener("paste", e => {
-      for (let i = 0; i < e.clipboardData.items.length; i++) {
+    $elTextarea.addEventListener("paste", e => {
+      for (const item of e.clipboardData.items) {
         // 检测是否为图片类型
-        if (
-          e.clipboardData.items[i].kind == "file" &&
-          /image\//.test(e.clipboardData.items[i].type)
-        )
-          this.uploadImg(e.clipboardData.items[i].getAsFile());
+        if (item.kind == "file" && /image\//.test(item.type))
+          this.uploadImg(item.getAsFile());
       }
     });
     // 分页
-    document.getElementById(
-      "chatMain"
-    ).onscroll = document.getElementsByClassName(
-      "chatMain"
-    )[0].onscroll = e => {
-      if (
-        !e.target.scrollTop &&
-        this.record.pagination.total > 15 &&
-        this.record.pagination.total / 15 > this.record.pagination.current_page
-      )
+    $chatMain.onscroll = chatMain.onscroll = e => {
+      const page = this.record.pagination,
+        total = page.total > 15,
+        current_page = page.total / 15 > page.current_page;
+      if (!e.target.scrollTop && total && current_page)
         this.getRecord({
           id: this.toUser,
           username: this.userName,

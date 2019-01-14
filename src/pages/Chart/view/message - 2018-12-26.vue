@@ -1109,8 +1109,14 @@ export default {
             break;
           case "login":
             if (result.resp.code != 200) {
+              if (result.resp.code == 400) {
+                this.$notify({
+                  title: "过多的连接",
+                  message: "请关闭其他本网站网页"
+                });
+                return false;
+              }
               this.webSocketLogin();
-              return false;
             } else {
               this.connectNum = 0;
               clearInterval(this.pong);
@@ -1123,67 +1129,35 @@ export default {
                 });
               }, 5000);
             }
+            break;
           case "pong":
             break;
           case "chat":
             console.log(result);
-            switch (result.resp.type) {
-              case 1:
-              case "1":
-              // 文字消息
-              case 2:
-              case "2":
-              // 图片消息
-              case 3:
-              case "3":
-              // 产品
-              case 4:
-              case "4":
-              // 语音消息
-              case 5:
-              case "5":
-              // 视频消息
-              case 6:
-              case "6":
-                // 位置消息
-                if (result.resp_event == 200) {
-                  if (result.resp.from_uid == this.toUser) {
-                    this.record.list.push({
-                      from_user_id: result.resp.from_uid,
-                      from_user: {
-                        from_user_id: result.resp.from_uid,
-                        avatar:
-                          result.resp.avatar ||
-                          "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                        display_name: this.userName
-                      },
-                      id: result.msg_id,
-                      created_at: new Date().toLocaleString(),
-                      msg_type: result.resp.type,
-                      content: result.resp.content
-                    });
-                  }
-                  // this.getRecord({ id: this.toUser, username: this.userName });
-                  this.$notify({
-                    title: `${result.resp.from_name}`,
-                    message: result.resp.content
-                  });
-                  let notification = new Notification(
-                    `${result.resp.from_name}`,
-                    {
-                      body: result.resp.content
-                    }
-                  );
-                  clearTimeout(this.timeOut);
-                  this.timeOut = setTimeout(() => {
-                    this.getChatList(false);
-                    this.getFriendList();
-                  }, 2000);
+            if (result.resp_event == 200) {
+              if (result.resp.from_uid == this.toUser) {
+                let msg = {
+                  from_user_id: result.resp.from_uid,
+                  from_user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: this.userName
+                  },
+                  id: result.msg_id,
+                  created_at: this.dateParse(new Date()),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                };
+                this.record.list.push(msg);
+                if (msg.msg_type == 2) {
+                  this.msgImgArr.push(msg);
+                  msg.msgImgKey = this.msgImgArr.length - 1;
                 }
-                break;
-              case "7":
-                // 广播消息
-                break;
+              }
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              this.notify(result, 1);
             }
             this.fixLocation();
             break;
@@ -1191,7 +1165,7 @@ export default {
             console.log(result);
             if (result.resp_event == 200) {
               if (result.resp.group == this.toUser) {
-                this.record.list.push({
+                let msg = {
                   from_user_id: result.resp.from_uid,
                   user: {
                     from_user_id: result.resp.from_uid,
@@ -1201,24 +1175,18 @@ export default {
                     display_name: result.resp.from_name
                   },
                   id: result.msg_id,
-                  created_at: new Date().toLocaleString(),
+                  created_at: this.dateParse(new Date()),
                   msg_type: result.resp.type,
                   content: result.resp.content
-                });
+                };
+                this.record.list.push(msg);
+                if (msg.msg_type == 2) {
+                  this.msgImgArr.push(msg);
+                  msg.msgImgKey = this.msgImgArr.length - 1;
+                }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
-              this.$notify({
-                title: `${result.resp.from_name}`,
-                message: result.resp.content
-              });
-              let notification = new Notification(`收到一条新消息`, {
-                body: result.resp.content
-              });
-              clearTimeout(this.timeOut);
-              this.timeOut = setTimeout(() => {
-                this.getChatList(false);
-                this.getGroupList();
-              }, 2000);
+              this.notify(result, 2);
             }
             this.fixLocation();
             break;
@@ -1247,6 +1215,11 @@ export default {
             break;
           case "withdrawal":
             console.log(result);
+            if (result.resp.from_uid == this.toUser && result.msg_id) {
+              this.record.list.forEach((e, k) => {
+                if (e.id == result.msg_id) this.record.list.splice(k, 1);
+              });
+            }
             break;
           case "close":
             this.webSocketClose();
