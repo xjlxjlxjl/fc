@@ -92,6 +92,8 @@ export default new Vuex.Store({
     brandList: [],
     // 权限
     powerList: [],
+    // 审批插件
+    addonList: [],
     riseProcess: [
       {
         name: "销售",
@@ -231,7 +233,9 @@ export default new Vuex.Store({
         { name: "签到列表", url: "/Matters/sign" },
         { name: "备忘录列表", url: "/Matters/remember" },
         { name: "调休列表", url: "/Matters/break" },
-        { name: "用户入职申请审核列表", url: "/Matters/entry" }
+        { name: "用户入职申请审核列表", url: "/Matters/entry" },
+        { name: "审批条件列表", url: "/Matters/approval" },
+        { name: "审批类型列表", url: "/Matters/approvals/type" }
       ],
       afterSale: [
         { name: "待完成任务", url: "/AfterSale" },
@@ -371,7 +375,8 @@ export default new Vuex.Store({
     addCustomer: false,
     editServicePrice: false,
     //
-    departmentModal: false
+    departmentModal: false,
+    addAppTypeModal: false
   },
   mutations: {
     change(state) {

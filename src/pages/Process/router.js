@@ -74,6 +74,8 @@ import sign from "@/pages/Process/view/matters/sign";
 import remember from "@/pages/Process/view/matters/remember";
 import mattersBreak from "@/pages/Process/view/matters/mattersBreak";
 import entry from "@/pages/Process/view/matters/entry";
+import approval from "@/pages/Process/view/matters/approval";
+import approvalType from "@/pages/Process/view/matters/approvalType";
 // 系统设置
 import System from "@/pages/Process/view/system/system";
 import basic from "@/pages/Process/view/system/basic";
@@ -357,6 +359,14 @@ export default new Router({
         {
           path: "/Matters/entry",
           component: entry
+        },
+        {
+          path: "/Matters/approval",
+          component: approval
+        },
+        {
+          path: "/Matters/approvals/type",
+          component: approvalType
         }
       ]
     },
