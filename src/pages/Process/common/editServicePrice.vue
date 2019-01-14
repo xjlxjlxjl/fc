@@ -69,7 +69,10 @@ export default {
       this.$refs["form"].validate(v => {
         if (!v) return false;
         that
-          .$post(`service/quoted_price/price/${that.active.id}`, that.form)
+          .$post(
+            `service/quoted_price/price/${that.active.reports.id}`,
+            that.form
+          )
           .then(response => {
             if (response.status != 200) return false;
             that.$emit("refresh");
