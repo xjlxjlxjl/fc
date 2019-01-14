@@ -1304,7 +1304,7 @@ export default {
             break;
           case "withdrawal":
             console.log(result);
-            if (result.msg_id && result.resp.code == 200) {
+            if (result.resp.from_uid == this.toUser && result.msg_id) {
               this.record.list.forEach((e, k) => {
                 if (e.id == result.msg_id) this.record.list.splice(k, 1);
               });
@@ -1348,8 +1348,13 @@ export default {
       try {
         this.ws.send(JSON.stringify(action));
       } catch (error) {
-        this.connectNum++;
-        this.webSocket();
+        if (this.connectNum < 3) {
+          this.connectNum++;
+          this.webSocketSend(action);
+        } else {
+          this.connectNum = 0;
+          this.reconnect();
+        }
       }
     },
     webSocketClose() {

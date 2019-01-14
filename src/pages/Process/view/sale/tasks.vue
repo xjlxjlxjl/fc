@@ -60,36 +60,7 @@ export default {
         // { name: "客服报价", label: "application", num: 0 },
         // { name: "发送报价", label: "customerServiceQuotation", num: 0 }
       ],
-      options: [
-        {
-          value: undefined,
-          label: "全部"
-        },
-        {
-          value: 0,
-          label: "未完成（未延期）"
-        },
-        {
-          value: 2,
-          label: "未完成（延期）"
-        },
-        {
-          value: "undone",
-          label: "未完成（全部）"
-        },
-        {
-          value: 1,
-          label: "完成（未延期）"
-        },
-        {
-          value: 3,
-          label: "完成（延期）"
-        },
-        {
-          value: "complete",
-          label: "完成（全部）"
-        }
-      ],
+      options: this.$store.state.tasksType,
       // 默认未完成（全部）
       tasksStatus: "undone",
       date: []
@@ -216,6 +187,7 @@ export default {
               });
               switch (row.redirect_slug) {
                 case "service":
+                case "service_assign":
                 case "service_quote":
                 case "order":
                   return turn;

@@ -289,54 +289,42 @@ export default new Vuex.Store({
         { name: "企业电子章", url: "/System/enterprise" }
       ]
     },
-    // oldTasksItems: {
-    //   BM: { name: "Bom清单", label: "BOM" },
-    //   ON: { name: "通知单", label: "notice" },
-    //   OP: { name: "任务列表", label: "tasks" },
-    //   OAP: { name: "公告单", label: "bulletin" },
-    //   FJ: { name: "应付结账单", label: "reckoning" },
-    //   FP: { name: "付款单", label: "payment" },
-    //   RF: { name: "预付款单", label: "advance" },
-    //   PI: { name: "采购入库单", label: "beLaidUp" },
-    //   PT: { name: "采购退货", label: "purchaseReturns" },
-    //   PZ: { name: "来料暂收", label: "incomingTem" },
-    //   PO: { name: "采购订单", label: "purchaseOrder" },
-    //   PR: { name: "采购计划", label: "purchasePlan" },
-    //   PP: { name: "采购报价", label: "purchaseOffer" },
-    //   RI: { name: "应收结账单", label: "offerOrder" },
-    //   RR: { name: "预收款单", label: "advanceReceipt" },
-    //   RS: { name: "收款单", label: "receipt" },
-    //   SI: { name: "销售发票", label: "saleInvoice" },
-    //   SHA: { name: "销售出货", label: "saleShipment" },
-    //   SO: { name: "销售订单", label: "saleOrder" },
-    //   ST: { name: "销售退货", label: "saleReturn" },
-    //   SB: { name: "销售报价", label: "saleOffer" },
-    //   WI: { name: "生产入库", label: "prodWare" },
-    //   WC: { name: "拆分单", label: "split" },
-    //   WZ: { name: "组合单", label: "combination" },
-    //   WQ: { name: "其他入库", label: "otherWare" },
-    //   WE: { name: "其他出库", label: "otherStock" },
-    //   WL: { name: "生产领料", label: "prodMate" },
-    //   WN: { name: "生产退料", label: "prodReturn" },
-    //   SA: { name: "维修申请", label: "customerServiceApplication" },
-    //   SQ: { name: "维修报价", label: "customerServiceQuotation" },
-    //   SEO: { name: "维修出库", label: "mainExport" },
-    //   SU: { name: "维修领料", label: "mainMate" },
-    //   RT: { name: "维修退料", label: "mainReturn" },
-    //   MP: { name: "生产计划", label: "prodPlan" },
-    //   TE: { name: "委外费用单", label: "sourcExp" },
-    //   TI: { name: "委外入库", label: "sourcWare" },
-    //   TO: { name: "委外工单", label: "sourcOrder" },
-    //   TZ: { name: "委外暂收", label: "sourcTem" },
-    //   TL: { name: "委外领料", label: "sourcMate" },
-    //   TR: { name: "委外退料", label: "sourcReturn" },
-    //   TP: { name: "委外计划", label: "sourcPlan" },
-    //   TB: { name: "委外报价", label: "sourcOffer" }
-    // },
+    // 任务
+    tasksType: [
+      {
+        value: undefined,
+        label: "全部"
+      },
+      {
+        value: 0,
+        label: "未完成（未延期）"
+      },
+      {
+        value: 2,
+        label: "未完成（延期）"
+      },
+      {
+        value: "undone",
+        label: "未完成（全部）"
+      },
+      {
+        value: 1,
+        label: "完成（未延期）"
+      },
+      {
+        value: 3,
+        label: "完成（延期）"
+      },
+      {
+        value: "complete",
+        label: "完成（全部）"
+      }
+    ],
     tasksItems: {
       worker: { name: "任务列表", label: "tasks" },
-      service_quote: { name: "客服申请", label: "customerServiceApplication" },
-      service: { name: "客服报价", label: "application" },
+      service: { name: "客服申请", label: "customerServiceApplication" },
+      service_assign: { name: "客服报价", label: "application" },
+      service_quote: { name: "客服报价", label: "application" },
       order: { name: "销售订单", label: "order" }
     },
     tasksPendingNum: {

@@ -74,7 +74,7 @@ Vue.prototype.addTable = ($el, index, data) => {
   });
 };
 /**
- * data String 'id'
+ * type String 'id'
  * data Array [ id, id, id ]
  */
 Vue.prototype.delTable = ($el, type, data) => {

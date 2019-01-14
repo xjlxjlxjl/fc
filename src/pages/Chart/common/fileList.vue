@@ -24,7 +24,7 @@
               </el-table-column>
               <el-table-column label="上传者">
                 <template slot-scope="{row}">
-                  <span>{{ row.user.display_name }}</span>
+                  <span>{{ row.user ? row.user.display_name : row.from_user ? row.from_user.display_name : '' }}</span>
                 </template>
               </el-table-column>
               <el-table-column label=" ">
