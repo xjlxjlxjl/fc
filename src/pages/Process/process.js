@@ -93,15 +93,25 @@ Vue.prototype.refresh = $el => {
 String.prototype.removeNumber = function() {
   return this.replace(/\d+[a-zA-Z&\|\\\*^%$#@\-]\d+/g, "");
 };
-Array.prototype.sum = function() {
-  return this.reduce(reducer, 0);
+
+Array.prototype.inArray = function(n) {
+  return this.includes(n);
 };
-var reducer = function add(sumSoFar, item) {
-  return parseFloat(
-    sumSoFar +
-      parseInt(item.number || 1) *
-        parseFloat(item.price ? item.price : item.money ? item.money : 0)
-  );
+Array.prototype.rep = function() {
+  return Array.from(new Set(this));
+};
+Array.prototype.sum = function(num = "number", price = "price") {
+  return this.reduce((sumSoFar, item) => {
+    return parseFloat(
+      sumSoFar +
+        parseInt(item[num] || 1) *
+          parseFloat(item[price] ? item[price] : item.money ? item.money : 0)
+    );
+  }, 0);
+};
+Array.prototype.limit = function(cond, ition) {
+  if (cond) return this.filter(n => n > ition);
+  else return this.filter(n => n[cond] > ition);
 };
 
 /* eslint-disable no-new */
