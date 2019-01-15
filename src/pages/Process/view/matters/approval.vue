@@ -1,16 +1,33 @@
 <template>
   <div id="approval">
+    <addApproval :form="form" @refresh="refreshed"></addApproval>
     <div id="mattersToolbar">
       <span class="lead">审批条件列表</span>
+      <el-button size="mini" @click="add">新建</el-button>
+      <el-button size="mini" @click="del">删除</el-button>
     </div>
     <table id="mattersTable"></table>
   </div>
 </template>
 <script>
+import addApproval from "@/pages/Process/common/addApproval";
 export default {
   name: "approval",
   data() {
-    return {};
+    return {
+      form: {
+        name: "",
+        condition_rule: "",
+        condition_unit: "",
+        condition_value: "",
+        type: "",
+        members: [],
+        is_branch_manage: 1
+      }
+    };
+  },
+  components: {
+    addApproval: addApproval
   },
   methods: {
     tableAjaxData(params) {
@@ -84,8 +101,13 @@ export default {
             field: "id",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = [`<button class="btn btn-danger btn-sm">删除</button>`];
-              return del;
+              let del = [
+                `<button class="btn btn-danger btn-sm del">删除</button>`
+              ];
+              let edit = [
+                `<button class="btn btn-success btn-sm edit">编辑</button>`
+              ];
+              return del + edit;
             },
             events: {
               "click .del": ($el, value, row, index) => {
@@ -98,6 +120,15 @@ export default {
                     that.delTable($("#mattersTable"), "id", [value]);
                   })
                   .catch(err => console.error(err));
+              },
+              "click .edit": ($el, value, row, index) => {
+                let arr = [],
+                  type = 0;
+                row.members.forEach(e => arr.push(e.id));
+                row.members = arr;
+                row.type = row.type.id;
+                this.form = row;
+                addApproval.methods.close.call(this);
               }
             }
           }
@@ -126,7 +157,7 @@ export default {
           detailView: true,
           columns: columns,
           detailFormatter: (index, row, $el) => {
-            let content = [`<table>`];
+            let content = [`<table class="table table-bordered">`];
             content.push(`<tr><th>用户名</th><th>手机</th></tr>`);
             row.members.forEach(e =>
               content.push(
@@ -139,6 +170,33 @@ export default {
           onEditableSave: (field, mrow, oldValue, $el) => {}
         };
       $("#mattersTable").bootstrapTable(data);
+    },
+    add() {
+      this.form = {
+        name: "",
+        condition_rule: "",
+        condition_unit: "",
+        condition_value: "",
+        type: "",
+        members: [],
+        is_branch_manage: 1
+      };
+      addApproval.methods.close.call(this);
+    },
+    del() {
+      let that = this;
+      that.getData($("#mattersTable")).forEach(e => {
+        that
+          .$post(`approvals/approval/delete`, { id: e.id })
+          .then(response => {
+            if (response.status != 200) return false;
+            that.delTable($("#mattersTable"), "id", [e.id]);
+          })
+          .catch(err => console.error(err));
+      });
+    },
+    refreshed() {
+      this.refresh($("#mattersTable"));
     }
   },
   mounted() {

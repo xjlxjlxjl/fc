@@ -168,6 +168,7 @@ export default {
     getType() {
       if (this.$store.state.addonList.length) {
         this.addonList = this.$store.state.addonList;
+        this.init();
         return false;
       }
       let that = this;

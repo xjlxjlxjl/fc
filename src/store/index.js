@@ -94,6 +94,7 @@ export default new Vuex.Store({
     powerList: [],
     // 审批插件
     addonList: [],
+    appTypeList: [],
     riseProcess: [
       {
         name: "销售",
@@ -376,7 +377,8 @@ export default new Vuex.Store({
     editServicePrice: false,
     //
     departmentModal: false,
-    addAppTypeModal: false
+    addAppTypeModal: false,
+    addApprovalModal: false
   },
   mutations: {
     change(state) {
