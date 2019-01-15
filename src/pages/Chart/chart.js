@@ -45,6 +45,20 @@ Vue.prototype.dateParse = date => {
     date.getSeconds() < 9 ? "0" + date.getSeconds() : date.getSeconds()
   }`;
 };
+Vue.prototype.download = (content, filename) => {
+  // 创建隐藏的可下载链接
+  let eleLink = document.createElement("a");
+  eleLink.download = filename;
+  eleLink.style.display = "none";
+  // 字符内容转变成blob地址
+  let blob = new Blob([content]);
+  eleLink.href = URL.createObjectURL(blob);
+  // 触发点击
+  document.body.appendChild(eleLink);
+  eleLink.click();
+  // 然后移除
+  document.body.removeChild(eleLink);
+};
 Array.prototype.repeat = function() {
   var arr = [];
   for (var i = 0; i < this.length; i++) {
@@ -65,10 +79,9 @@ Array.prototype.repeatDepth = function() {
   return arr;
 };
 Array.prototype.sum = function() {
-  return this.reduce(reducer, 0);
-};
-var reducer = function add(sumSoFar, item) {
-  return sumSoFar + parseInt(item.quantity) * parseFloat(item.price);
+  return this.reduce((sumSoFar, item) => {
+    return sumSoFar + parseInt(item.quantity) * parseFloat(item.price);
+  }, 0);
 };
 
 new Vue({

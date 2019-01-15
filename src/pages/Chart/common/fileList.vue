@@ -29,7 +29,10 @@
               </el-table-column>
               <el-table-column label=" ">
                 <template slot-scope="{row}">
-                  <a :href="row.content" target="_blank">
+                  <a
+                    href="javascript:;"
+                    @click="downFile(row.content,row.content.split('/').pop())"
+                  >
                     <i class="el-icon-download"></i>
                   </a>
                 </template>
@@ -58,6 +61,9 @@ export default {
   methods: {
     onSubmit() {
       this.close();
+    },
+    downFile(content, filename) {
+      this.download(content, filename);
     },
     close() {
       this.$store.commit("changeModal", "fileListModal");
