@@ -1186,125 +1186,132 @@ export default {
       let socketAddress = this.$store.state.socketAddress;
       this.ws = new WebSocket(socketAddress);
       this.ws.onmessage = event => {
-        const result = JSON.parse(event.data),
-          act = {
-            init: () => this.webSocketLogin(),
-            login: () => {
-              if (result.resp.code != 200) {
-                if (result.resp.code == 400) {
-                  this.$notify({
-                    title: "过多的连接",
-                    message: "请关闭其他本网站网页"
-                  });
-                  return false;
-                }
-                this.webSocketLogin();
-              } else {
-                this.connectNum = 0;
-                clearInterval(this.pong);
-                this.pong = setInterval(() => {
-                  this.webSocketSend({
-                    action: "pong",
-                    req: {
-                      message: "hello"
-                    }
-                  });
-                }, 5000);
-              }
-            },
-            pong: () => {},
-            chat: () => {
-              console.log(result);
-              if (result.resp_event == 200) {
-                if (result.resp.from_uid == this.toUser) {
-                  let msg = {
-                    from_user_id: result.resp.from_uid,
-                    from_user: {
-                      from_user_id: result.resp.from_uid,
-                      avatar:
-                        result.resp.avatar ||
-                        "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                      display_name: this.userName
-                    },
-                    id: result.msg_id,
-                    created_at: this.dateParse(new Date()),
-                    msg_type: result.resp.type,
-                    content: result.resp.content
-                  };
-                  this.record.list.push(msg);
-                  if (msg.msg_type == 2) {
-                    this.msgImgArr.push(msg);
-                    msg.msgImgKey = this.msgImgArr.length - 1;
-                  }
-                }
-                // this.getRecord({ id: this.toUser, username: this.userName });
-                this.notify(result, 1);
-              }
-              this.fixLocation();
-            },
-            group: () => {
-              console.log(result);
-              if (result.resp_event == 200) {
-                if (result.resp.group == this.toUser) {
-                  let msg = {
-                    from_user_id: result.resp.from_uid,
-                    user: {
-                      from_user_id: result.resp.from_uid,
-                      avatar:
-                        result.resp.avatar ||
-                        "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
-                      display_name: result.resp.from_name
-                    },
-                    id: result.msg_id,
-                    created_at: this.dateParse(new Date()),
-                    msg_type: result.resp.type,
-                    content: result.resp.content
-                  };
-                  this.record.list.push(msg);
-                  if (msg.msg_type == 2) {
-                    this.msgImgArr.push(msg);
-                    msg.msgImgKey = this.msgImgArr.length - 1;
-                  }
-                }
-                // this.getRecord({ id: this.toUser, username: this.userName });
-                this.notify(result, 2);
-              }
-              this.fixLocation();
-            },
-            notice: () => {
-              console.log(result);
-              this.$notify({
-                title: `您有一条来自${result.resp.from_name}的通知`,
-                message: result.resp.content
-              });
-              let notification = new Notification(
-                `您有一条来自${result.resp.from_name}的通知`,
-                {
-                  body: result.resp.content
-                }
-              );
-              this.noticesList.list.unshift({
-                id: result.resp.notice_id,
-                from_user: {
-                  last_name: result.resp.from_name || ""
-                },
-                message: result.resp.content,
-                type: result.resp.type,
-                user_id: result.resp.user_id
-              });
-              // this.getNotices();
-            },
-            withdrawal: () => {
-              console.log(result);
-              if (result.msg_id) {
-                this.record.list.forEach((e, k) => {
-                  if (e.id == result.msg_id) this.record.list.splice(k, 1);
+        const result = JSON.parse(event.data);
+        switch (result.action) {
+          case "init":
+            this.webSocketLogin();
+            break;
+          case "login":
+            if (result.resp.code != 200) {
+              if (result.resp.code == 400) {
+                this.$notify({
+                  title: "过多的连接",
+                  message: "请关闭其他本网站网页"
                 });
+                return false;
               }
-            },
-            close: () => this.webSocketClose()
-          };
-        act[result.action]();
+              this.webSocketLogin();
+            } else {
+              this.connectNum = 0;
+              clearInterval(this.pong);
+              this.pong = setInterval(() => {
+                this.webSocketSend({
+                  action: "pong",
+                  req: {
+                    message: "hello"
+                  }
+                });
+              }, 5000);
+            }
+            break;
+          case "pong":
+            break;
+          case "chat":
+            console.log(result);
+            if (result.resp_event == 200) {
+              if (result.resp.from_uid == this.toUser) {
+                let msg = {
+                  from_user_id: result.resp.from_uid,
+                  from_user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: this.userName
+                  },
+                  id: result.msg_id,
+                  created_at: this.dateParse(new Date()),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                };
+                this.record.list.push(msg);
+                if (msg.msg_type == 2) {
+                  this.msgImgArr.push(msg);
+                  msg.msgImgKey = this.msgImgArr.length - 1;
+                }
+              }
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              this.notify(result, 1);
+            }
+            this.fixLocation();
+            break;
+          case "group":
+            console.log(result);
+            if (result.resp_event == 200) {
+              if (result.resp.group == this.toUser) {
+                let msg = {
+                  from_user_id: result.resp.from_uid,
+                  user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: result.resp.from_name
+                  },
+                  id: result.msg_id,
+                  created_at: this.dateParse(new Date()),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                };
+                this.record.list.push(msg);
+                if (msg.msg_type == 2) {
+                  this.msgImgArr.push(msg);
+                  msg.msgImgKey = this.msgImgArr.length - 1;
+                }
+              }
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              this.notify(result, 2);
+            }
+            this.fixLocation();
+            break;
+          case "notice":
+            console.log(result);
+            this.$notify({
+              title: `您有一条来自${result.resp.from_name}的通知`,
+              message: result.resp.content
+            });
+            let notification = new Notification(
+              `您有一条来自${result.resp.from_name}的通知`,
+              {
+                body: result.resp.content
+              }
+            );
+            this.noticesList.list.unshift({
+              id: result.resp.notice_id,
+              from_user: {
+                last_name: result.resp.from_name || ""
+              },
+              message: result.resp.content,
+              type: result.resp.type,
+              user_id: result.resp.user_id
+            });
+            // this.getNotices();
+            break;
+          case "withdrawal":
+            if (result.msg_id) {
+              this.record.list.forEach((e, k) => {
+                if (e.id == result.msg_id) this.record.list.splice(k, 1);
+              });
+            }
+            break;
+          case "close":
+            this.webSocketClose();
+            break;
+          default:
+            console.log("抛出");
+            console.log(result);
+            break;
+        }
       };
       this.ws.onclose = this.ws.onerror = e => {
         this.connectNum++;
