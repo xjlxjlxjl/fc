@@ -5,7 +5,7 @@
       <div class="modalBox">
         <div class="modalBoxMain">
           <div class="modalBoxMainHeader">
-            <div class="modalBoxMainHeaderTitle">添加备忘录</div>
+            <div class="modalBoxMainHeaderTitle">添加审批类型</div>
             <div class="modalBoxMainHeaderBtn" @click="close">
               <i class="el-message-box__close el-icon-close"></i>
             </div>

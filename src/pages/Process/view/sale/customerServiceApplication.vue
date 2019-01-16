@@ -59,7 +59,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        search: params.search,
+        search: params.search || undefined,
         page: params.offset / params.limit + 1,
         per_page: params.limit,
         service_status: 0
