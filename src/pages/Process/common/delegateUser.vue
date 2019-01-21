@@ -67,7 +67,7 @@ export default {
     },
     commit() {
       let that = this,
-        url = null;
+        url;
       switch (that.active.process) {
         case 0:
         case 1:

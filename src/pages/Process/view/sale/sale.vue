@@ -23,8 +23,7 @@ export default {
   },
   components: {
     companyAside: companyAside
-  },
-  methods: {}
+  }
 };
 </script>
 <style lang="less">
