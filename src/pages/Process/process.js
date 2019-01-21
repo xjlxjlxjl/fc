@@ -8,10 +8,10 @@ if (
 import Vue from "vue";
 import Index from "./Index";
 import router from "./router";
-import store from "../../store";
+import store from "@/store";
 import elementUi from "element-ui";
-import { post, get, upload } from "../../assets/js/http";
-import Print from "../../assets/js/print";
+import { post, get, upload } from "@/assets/js/http";
+import Print from "@/assets/js/print";
 import "element-ui/lib/theme-chalk/index.css";
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
@@ -29,7 +29,6 @@ import "bootstrap-table/dist/bootstrap-table.min.js";
 import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
 import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js";
 import "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js";
-import "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js";
 import "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js";
 import "@/assets/js/tableExport.min.js";
 import "bootstrap-table/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.min.js";
