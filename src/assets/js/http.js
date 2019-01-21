@@ -81,7 +81,7 @@ axios.interceptors.response.use(
   }
 );
 
-export function get(url, data = new Object()) {
+function get(url, data = new Object()) {
   let user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : { token: "", slig: "" };
@@ -99,7 +99,7 @@ export function get(url, data = new Object()) {
   });
 }
 
-export function post(url, data = new Object()) {
+function post(url, data = new Object()) {
   let user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : { token: "", slig: "" };
@@ -123,7 +123,7 @@ export function post(url, data = new Object()) {
   });
 }
 
-export function upload(url, data = new Object()) {
+function upload(url, data = new Object()) {
   let user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : { token: "", slig: "" };
@@ -145,7 +145,7 @@ export function upload(url, data = new Object()) {
   });
 }
 
-export function patch(url, data = {}) {
+function patch(url, data = {}) {
   return new Promise((resolve, reject) => {
     axios
       .patch(url, data)
@@ -153,10 +153,20 @@ export function patch(url, data = {}) {
   });
 }
 
-export function put(url, data = {}) {
+function put(url, data = {}) {
   return new Promise((resolve, reject) => {
     axios
       .put(url, data)
       .then(response => resolve(response), err => reject(err));
   });
 }
+
+const MyPlugin = {};
+MyPlugin.install = function(Vue, options) {
+  Vue.prototype.$post = post;
+  Vue.prototype.$get = get;
+  Vue.prototype.$upload = upload;
+  Vue.prototype.$patch = patch;
+  Vue.prototype.$put = put;
+};
+export default MyPlugin;

@@ -10,8 +10,9 @@ import Index from "./Index";
 import router from "./router";
 import store from "@/store";
 import elementUi from "element-ui";
-import { post, get, upload } from "@/assets/js/http";
+import Http from "@/assets/js/http";
 import Print from "@/assets/js/print";
+import Config from "@/assets/js/config";
 import "element-ui/lib/theme-chalk/index.css";
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
@@ -36,84 +37,9 @@ import "bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js";
 
 Vue.config.productionTip = false;
 Vue.use(elementUi);
+Vue.use(Http);
 Vue.use(Print);
-Vue.prototype.$post = post;
-Vue.prototype.$get = get;
-Vue.prototype.$upload = upload;
-Vue.prototype.dateParse = date => {
-  return `${date.getFullYear()}-${
-    date.getMonth() + 1 < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
-  }-${date.getDate() < 9 ? "0" + date.getDate() : date.getDate()} ${
-    date.getHours() < 9 ? "0" + date.getHours() : date.getHours()
-  }:${date.getMinutes() < 9 ? "0" + date.getMinutes() : date.getMinutes()}:${
-    date.getSeconds() < 9 ? "0" + date.getSeconds() : date.getSeconds()
-  }`;
-};
-Vue.prototype.miniDateParse = date => {
-  return `${date.getFullYear()}-${
-    date.getMonth() + 1 < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
-  }-${date.getDate() < 9 ? "0" + date.getDate() : date.getDate()} ${
-    date.getHours() < 9 ? "0" + date.getHours() : date.getHours()
-  }:${date.getMinutes() < 9 ? "0" + date.getMinutes() : date.getMinutes()}`;
-};
-
-Vue.prototype.getTableAttr = ($el, attr) => {
-  let arr = [],
-    selected = $el.bootstrapTable("getAllSelections");
-  selected.forEach(e => {
-    arr.push(e[attr]);
-  });
-  return arr;
-};
-Vue.prototype.getData = $el => {
-  return $el.bootstrapTable("getSelections");
-};
-Vue.prototype.addTable = ($el, index, data) => {
-  $el.bootstrapTable("insertRow", {
-    index: index,
-    row: data
-  });
-};
-/**
- * type String 'id'
- * data Array [ id, id, id ]
- */
-Vue.prototype.delTable = ($el, type, data) => {
-  $el.bootstrapTable("remove", {
-    field: type,
-    values: data
-  });
-};
-Vue.prototype.ediTable = ($el, index, data) => {
-  $el.bootstrapTable("updateRow", { index: index, row: data });
-};
-Vue.prototype.refresh = $el => {
-  $el.bootstrapTable("refresh");
-};
-
-String.prototype.removeNumber = function() {
-  return this.replace(/\d+[a-zA-Z&\|\\\*^%$#@\-]\d+/g, "");
-};
-
-Array.prototype.inArray = function(n) {
-  return this.includes(n);
-};
-Array.prototype.rep = function() {
-  return Array.from(new Set(this));
-};
-Array.prototype.sum = function(num = "number", price = "price") {
-  return this.reduce((sumSoFar, item) => {
-    return parseFloat(
-      sumSoFar +
-        parseInt(item[num] || 1) *
-          parseFloat(item[price] ? item[price] : item.money ? item.money : 0)
-    );
-  }, 0);
-};
-Array.prototype.limit = function(cond, ition) {
-  if (cond) return this.filter(n => n > ition);
-  else return this.filter(n => n[cond] > ition);
-};
+Vue.use(Config);
 
 /* eslint-disable no-new */
 new Vue({

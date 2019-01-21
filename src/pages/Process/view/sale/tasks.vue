@@ -339,8 +339,7 @@ export default {
   },
   mounted() {
     this.init();
-  },
-  created() {}
+  }
 };
 </script>
 <style lang="less">
