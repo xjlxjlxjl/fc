@@ -80,6 +80,8 @@ String.prototype.removeNumber = function() {
 Array.prototype.inArray = function(n) {
   return this.includes(n);
 };
+
+// 数组去重
 Array.prototype.rep = function() {
   return Array.from(new Set(this));
 };
@@ -90,9 +92,10 @@ Array.prototype.repeat = function() {
   }
   return arr;
 };
+// 数组内 id 去重
 Array.prototype.repeatDepth = function() {
-  var inArray = false;
-  var arr = [];
+  var inArray,
+    arr = [];
   for (var i = 0; i < this.length; i++) {
     inArray = false;
     for (var j = 0; j < arr.length; j++) {

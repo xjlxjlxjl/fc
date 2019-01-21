@@ -10,7 +10,7 @@
               <i class="el-message-box__close el-icon-close"></i>
             </div>
           </div>
-          <div class="modalBoxMainContent">
+          <div ref="box" class="modalBoxMainContent">
             <el-table :data="fileList.list">
               <el-table-column label="文件">
                 <template slot-scope="{row}">
@@ -53,10 +53,19 @@ import { mapState } from "vuex";
 export default {
   name: "fileList",
   data() {
-    return {};
+    return {
+      fileList: {
+        list: [],
+        pagination: {
+          current_page: 0,
+          total_page: 1
+        }
+      }
+    };
   },
   props: {
-    fileList: Object
+    toUser: Number,
+    state: Number
   },
   methods: {
     onSubmit() {
@@ -67,9 +76,78 @@ export default {
     },
     close() {
       this.$store.commit("changeModal", "fileListModal");
+    },
+    getFileList() {
+      if (
+        this.fileList.pagination.current_page <
+        this.fileList.pagination.total_page
+      ) {
+        let that = this,
+          url = null,
+          boxTop = this.$refs["box"].scrollTop,
+          params = {
+            page: ++this.fileList.pagination.current_page
+          },
+          setUrl = {
+            1: () => {
+              url = `chat/files`;
+              params.friend_id = this.toUser;
+            },
+            2: () => {
+              url = `group/files`;
+              params.group_id = this.toUser;
+            }
+          };
+        setUrl[this.state]();
+
+        that
+          .$get(url, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            if (params.page == 1) {
+              that.fileList = {
+                list: response.data,
+                pagination: response.pagination
+              };
+              this.$nextTick(() => (this.$refs["box"].scrollTop = 0));
+            } else {
+              response.data.forEach(e => that.fileList.list.push(e));
+              that.fileList.pagination = response.pagination;
+              this.$nextTick(() => (this.$refs["box"].scrollTop = boxTop));
+            }
+          })
+          .catch(err => console.error(err));
+      }
     }
   },
-  computed: mapState(["fileListModal"])
+  computed: mapState(["fileListModal"]),
+  watch: {
+    fileListModal(val) {
+      if (!val) return false;
+      this.getFileList();
+      this.$refs["box"].onscroll = e => {
+        if (
+          this.$refs["box"].scrollTop ==
+          this.$refs["box"].scrollHeight - e.target.clientHeight
+        )
+          this.getFileList();
+      };
+    },
+    toUser(val) {
+      this.fileList.pagination = {
+        current_page: 0,
+        total_page: 1
+      };
+      this.$refs["box"].scrollTop = 0;
+    },
+    state(val) {
+      this.fileList.pagination = {
+        current_page: 0,
+        total_page: 1
+      };
+      this.$refs["box"].scrollTop = 0;
+    }
+  }
 };
 </script>
 <style lang="less">

@@ -10,7 +10,7 @@
     ></groupUserCheckBox>
     <!-- 图片画廊 -->
     <gallery :record="record" :galleryIndex="galleryIndex"></gallery>
-    <fileListModal :fileList="fileList"></fileListModal>
+    <fileListModal :toUser="toUser" :state="state"></fileListModal>
     <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
     <el-container>
       <el-aside class="pcShowImportant" width="60px" v-show="!mainDisplay">
@@ -417,17 +417,11 @@ export default {
       // 公用变量
       key: 0,
       toUser: 0,
+      state: 0,
       userName: "",
       message: "",
       timeOut: null,
       connectNum: 0,
-      fileList: {
-        list: [],
-        pagination: {
-          total: 1,
-          current_page: 0
-        }
-      },
       // 群聊变量
       checkBoxList: [],
       msgImgArr: [],
@@ -1039,34 +1033,7 @@ export default {
         .catch(error => console.error(error));
     },
     showFileList() {
-      let that = this,
-        url = null,
-        params = {
-          page: 1
-        },
-        setUrl = {
-          1: () => {
-            url = `chat/files`;
-            params.friend_id = this.toUser;
-          },
-          2: () => {
-            url = `group/files`;
-            params.group_id = this.toUser;
-          }
-        };
-      setUrl[this.state]();
-
-      that
-        .$get(url, params)
-        .then(response => {
-          if (response.status != 200) return false;
-          that.fileList = {
-            list: response.data,
-            pagination: response.pagination
-          };
-          fileList.methods.close.call(this);
-        })
-        .catch(err => console.error(err));
+      fileList.methods.close.call(this);
     },
     getNoticesDetail(item, key) {
       this.$alert(
