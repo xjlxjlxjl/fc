@@ -219,6 +219,7 @@ export default {
             switch (result.resp.slug) {
               case "service":
                 this.refresh($("#customerServiceApplication #table"));
+              case "service_assign":
                 this.refresh($("#application #afterSaleTable"));
                 break;
               case "service_quote":

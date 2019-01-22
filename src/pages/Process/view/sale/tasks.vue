@@ -190,7 +190,30 @@ export default {
                 case "service_assign":
                 case "service_quote":
                 case "order":
-                  return turn;
+                  // 已废弃任务不做操作
+                  if (row.status == 4) return "";
+                  // 自己是任务发起者并且是成员
+                  else if (
+                    taskState == 0 &&
+                    row.created_by_id == this.user.user.id
+                  )
+                    return turn + accept + invalid;
+                  else if (
+                    taskState == 0 &&
+                    row.created_by_id != this.user.user.id
+                  )
+                    return turn + accept;
+                  else if (
+                    taskState == 1 &&
+                    row.created_by_id == this.user.user.id
+                  )
+                    return turn + complete + invalid;
+                  else if (
+                    taskState == 1 &&
+                    row.created_by_id != this.user.user.id
+                  )
+                    return turn + complete;
+                  else return turn;
                   break;
                 case "worker":
                 default:
@@ -226,6 +249,47 @@ export default {
                 let sign = row.redirect_slug,
                   // let sign = row.numbering.removeNumber(),
                   sort = that.tasksItems[sign];
+                switch (sign) {
+                  // 提交客服
+                  case "service":
+                    $("#customerServiceApplication #table").bootstrapTable(
+                      "refresh",
+                      {
+                        url: "service/list",
+                        query: {
+                          number: row.order_no
+                        }
+                      }
+                    );
+                    break;
+                  // 客服主管指派客服
+                  case "service_assign":
+                    $("#application #afterSaleTable").bootstrapTable(
+                      "refresh",
+                      {
+                        url: "service/list",
+                        query: {
+                          number: row.order_no
+                        }
+                      }
+                    );
+                    break;
+                  // 客服报价
+                  case "service_quote":
+                    $("#application #afterSaleTable").bootstrapTable(
+                      "refresh",
+                      {
+                        url: "service/list",
+                        query: {
+                          number: row.order_no
+                        }
+                      }
+                    );
+                    break;
+                  case "order":
+                    // this.refresh($("#order #table"));
+                    break;
+                }
                 if (sort) {
                   let inArr = true;
                   that.tabItems.forEach(e => {

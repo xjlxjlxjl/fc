@@ -54,8 +54,8 @@ export default {
     tableAjaxParams(params) {
       return {
         page: params.offset / params.limit + 1,
-        per_page: params.limit
-        // check_status: 0
+        per_page: params.limit,
+        check_status: 0
       };
     },
     refreshed() {
