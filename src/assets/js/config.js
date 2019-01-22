@@ -67,8 +67,8 @@ MyPlugin.install = function(Vue, options) {
   Vue.prototype.ediTable = ($el, index, data) => {
     $el.bootstrapTable("updateRow", { index: index, row: data });
   };
-  Vue.prototype.refresh = $el => {
-    $el.bootstrapTable("refresh");
+  Vue.prototype.refresh = ($el, data = {}) => {
+    $el.bootstrapTable("refresh", data);
   };
 };
 export default MyPlugin;

@@ -252,39 +252,30 @@ export default {
                 switch (sign) {
                   // 提交客服
                   case "service":
-                    $("#customerServiceApplication #table").bootstrapTable(
-                      "refresh",
-                      {
-                        url: "service/list",
-                        query: {
-                          number: row.order_no
-                        }
+                    that.refresh($("#customerServiceApplication #table"), {
+                      url: "service/list",
+                      query: {
+                        number: row.order_no
                       }
-                    );
+                    });
                     break;
                   // 客服主管指派客服
                   case "service_assign":
-                    $("#application #afterSaleTable").bootstrapTable(
-                      "refresh",
-                      {
-                        url: "service/list",
-                        query: {
-                          number: row.order_no
-                        }
+                    that.refresh($("#application #afterSaleTable"), {
+                      url: "service/list",
+                      query: {
+                        number: row.order_no
                       }
-                    );
+                    });
                     break;
                   // 客服报价
                   case "service_quote":
-                    $("#application #afterSaleTable").bootstrapTable(
-                      "refresh",
-                      {
-                        url: "service/list",
-                        query: {
-                          number: row.order_no
-                        }
+                    that.refresh($("#application #afterSaleTable"), {
+                      url: "service/list",
+                      query: {
+                        number: row.order_no
                       }
-                    );
+                    });
                     break;
                   case "order":
                     // this.refresh($("#order #table"));
