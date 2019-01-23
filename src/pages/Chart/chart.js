@@ -7,6 +7,7 @@ import elementUi from "element-ui";
 import mouseMenu from "vue-mouse-menu";
 import Http from "@/assets/js/http";
 import Config from "@/assets/js/config";
+import preview from "vue-photo-preview";
 import "element-ui/lib/theme-chalk/index.css";
 import "@/assets/css/init.css"; // 基础改动
 // 地址
@@ -23,6 +24,7 @@ Vue.use(mouseMenu);
 Vue.use(Http);
 Vue.use(VueAreaLinkage);
 Vue.use(Config);
+Vue.use(preview);
 
 Vue.prototype.$ifLogin = () => {
   if (!localStorage.getItem("user")) {

@@ -39,3 +39,5 @@ background-image: linear-gradient(top, #0088cc, #0044cc) to => background-image:
     权限加载过多bootstrap table 承载失败 显示为加载中
 
 ###
+
+# vue-photo-preview/dist/skin.css 层级调整为 3000 .pswp

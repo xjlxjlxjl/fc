@@ -9,7 +9,7 @@
       @send="menuClick"
     ></groupUserCheckBox>
     <!-- 图片画廊 -->
-    <gallery :record="record" :galleryIndex="galleryIndex"></gallery>
+    <!-- <gallery :record="record" :galleryIndex="galleryIndex"></gallery> -->
     <fileListModal :toUser="toUser" :state="state"></fileListModal>
     <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
     <el-container>
@@ -286,7 +286,8 @@
                           <img
                             v-else-if="item.msg_type == 2 || item.type == 2"
                             :src="item.content"
-                            @click="galleryShow();galleryIndex = item.msgImgKey"
+                            @click="galleryShow();"
+                            preview="1"
                             class="messageImg"
                           >
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
@@ -317,7 +318,8 @@
                           <img
                             v-else-if="item.msg_type == 2 || item.type == 2"
                             :src="item.content"
-                            @click="galleryShow();galleryIndex = item.msgImgKey"
+                            @click="galleryShow();"
+                            preview="1"
                             class="messageImg"
                           >
                           <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
@@ -370,14 +372,15 @@
         </el-container>
       </el-main>
     </el-container>
-    <!-- <el-progress type="circle" :percentage="parseFloat(98.38088016643208.toFixed(2))"></el-progress> -->
   </div>
 </template>
 <script>
 import fileImg from "@/assets/img/file.png";
 import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
-import gallery from "@/pages/Chart/common/gallery";
 import fileList from "@/pages/Chart/common/fileList";
+// import gallery from "@/pages/Chart/common/gallery";
+import "vue-photo-preview/dist/skin.css";
+
 export default {
   name: "message",
   data() {
@@ -424,8 +427,8 @@ export default {
       connectNum: 0,
       // 群聊变量
       checkBoxList: [],
-      msgImgArr: [],
-      galleryIndex: 0,
+      // msgImgArr: [],
+      // galleryIndex: 0,
       groupId: 0,
       groupState: 0,
       groupUserList: [],
@@ -659,24 +662,26 @@ export default {
               chatMain.scrollTop = chatMain.scrollHeight - moblieHeight;
             }, 100);
           }
-          that.finishingPictures();
+          // that.finishingPictures();
           that.record.pagination = response.pagination;
         })
         .catch(error => console.error(error));
     },
     galleryShow() {
-      gallery.methods.close.call(this);
+      this.$preview.on("imageLoadComplete", (e, item) => console.log());
     },
-    finishingPictures() {
-      this.msgImgArr = [];
-      this.record.list.forEach(e => {
-        // 赋值 msgImgKey
-        if (e.msg_type == 2 || e.type == 2) {
-          this.msgImgArr.push(e);
-          this.msgImgArr.forEach((item, k) => (e.msgImgKey = k));
-        }
-      });
-    },
+    /*
+      finishingPictures() {
+        this.msgImgArr = [];
+        this.record.list.forEach(e => {
+          // 赋值 msgImgKey
+          if (e.msg_type == 2 || e.type == 2) {
+            this.msgImgArr.push(e);
+            this.msgImgArr.forEach((item, k) => (e.msgImgKey = k));
+          }
+        });
+      },
+    */
     delChat(id, key) {
       let that = this;
       that
@@ -974,8 +979,8 @@ export default {
             msgType = {
               1: () => (that.message = ""),
               2: () => {
-                if (that.msgImgArr) that.msgImgArr.push(msg);
-                msg.msgImgKey = that.msgImgArr.length - 1;
+                // if (that.msgImgArr) that.msgImgArr.push(msg);
+                // msg.msgImgKey = that.msgImgArr.length - 1;
               },
               3: () => {}
             };
@@ -1202,10 +1207,10 @@ export default {
                   content: result.resp.content
                 };
                 this.record.list.push(msg);
-                if (msg.msg_type == 2) {
-                  this.msgImgArr.push(msg);
-                  msg.msgImgKey = this.msgImgArr.length - 1;
-                }
+                // if (msg.msg_type == 2) {
+                //   this.msgImgArr.push(msg);
+                //   msg.msgImgKey = this.msgImgArr.length - 1;
+                // }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
               this.notify(result, 1);
@@ -1231,10 +1236,10 @@ export default {
                   content: result.resp.content
                 };
                 this.record.list.push(msg);
-                if (msg.msg_type == 2) {
-                  this.msgImgArr.push(msg);
-                  msg.msgImgKey = this.msgImgArr.length - 1;
-                }
+                // if (msg.msg_type == 2) {
+                //   this.msgImgArr.push(msg);
+                //   msg.msgImgKey = this.msgImgArr.length - 1;
+                // }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
               this.notify(result, 2);
@@ -1333,7 +1338,7 @@ export default {
   },
   components: {
     groupUserCheckBox: groupUserCheckBox,
-    gallery: gallery,
+    // gallery: gallery,
     fileListModal: fileList
   },
   watch: {
@@ -1342,6 +1347,12 @@ export default {
     },
     state() {
       this.record.pagination = { total: 1, current_page: 0 };
+    },
+    record: {
+      handler(val) {
+        this.$previewRefresh();
+      },
+      deep: true
     }
   },
   mounted() {

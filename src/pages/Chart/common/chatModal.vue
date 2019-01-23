@@ -27,6 +27,8 @@
                           v-else-if="item.msg_type == 2 || item.type == 2"
                           :src="item.content"
                           class="messageImg"
+                          preview="2"
+                          @click="showImg()"
                         >
                         <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
                           <img :src="fileImg">
@@ -56,6 +58,8 @@
                           v-else-if="item.msg_type == 2 || item.type == 2"
                           :src="item.content"
                           class="messageImg"
+                          preview="2"
+                          @click="showImg()"
                         >
                         <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
                           <img :src="fileImg">
@@ -112,6 +116,7 @@
 import { mapState, mapMutations } from "vuex";
 import fileImg from "@/assets/img/file.png";
 import message from "@/pages/Chart/view/message";
+import "vue-photo-preview/dist/skin.css";
 
 export default {
   name: "chatModal",
@@ -161,6 +166,9 @@ export default {
     },
     getRecord({ id, username }) {
       message.methods.getRecord.call(this, { id: id, username: username });
+    },
+    showImg() {
+      this.$preview.on("imageLoadComplete", (e, item) => console.log());
     },
     // 发信息
     sendMessage() {
@@ -218,6 +226,12 @@ export default {
     chatModal(newVal) {
       if (!newVal) return false;
       this.getServiceUser();
+    },
+    record: {
+      handler(val) {
+        this.$previewRefresh();
+      },
+      deep: true
     }
   },
   mounted() {
