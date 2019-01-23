@@ -30,6 +30,7 @@
 </template>
 <script>
 import { mapState } from "vuex";
+import "@/assets/css/modal.css";
 import icon from "@/assets/icon/iconfont.js";
 
 export default {

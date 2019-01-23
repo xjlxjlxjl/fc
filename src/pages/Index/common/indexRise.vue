@@ -133,6 +133,7 @@
 import progress from "@/assets/img/progress.png";
 import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
+import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 
 export default {
   name: "indexRise",

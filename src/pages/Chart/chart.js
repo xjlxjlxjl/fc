@@ -15,7 +15,6 @@ import VueAreaLinkage from "vue-area-linkage";
 // 响应式
 import "element-ui/lib/theme-chalk/display.css";
 // 过渡效果 缩放 淡入
-import "element-ui/lib/theme-chalk/base.css";
 import "@/assets/css/transform.css";
 
 Vue.config.productionTip = false;
@@ -42,6 +41,8 @@ new Vue({
   el: "#app",
   router,
   store,
-  components: { Index },
+  components: {
+    Index
+  },
   template: "<Index/>"
 });

@@ -35,6 +35,22 @@ import indexTail from "@/pages/Index/common/indexTail";
 // import indexChart from "@/pages/Index/common/indexChart";
 // import companyAside from "@/pages/Process/common/companyAside";
 
+import "jquery/dist/jquery.min.js";
+import "tablednd/dist/jquery.tablednd.min.js";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
+import "bootstrap-table/dist/bootstrap-table.min.css";
+import "bootstrap-table/dist/bootstrap-table.min.js";
+
+import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
+import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js";
+import "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js";
+import "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js";
+import "@/assets/js/tableExport.min.js";
+import "bootstrap-table/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.min.js";
+import "bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js";
+
 export default {
   name: "Index",
   data() {

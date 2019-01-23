@@ -22,7 +22,6 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import "@/assets/css/modal.css";
 
 export default {
   name: "gallery",

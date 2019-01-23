@@ -78,7 +78,6 @@
   </div>
 </template>
 <script>
-import "@/assets/css/modal.css";
 import { mapState } from "vuex";
 
 export default {

@@ -19,6 +19,8 @@ new Vue({
   el: "#app",
   router,
   // store,
-  components: { Index },
+  components: {
+    Index
+  },
   template: "<Index/>"
 });

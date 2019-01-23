@@ -13,7 +13,6 @@ import "element-ui/lib/theme-chalk/display.css";
 // 过渡效果 缩放 淡入
 import "element-ui/lib/theme-chalk/base.css";
 
-import "@/assets/css/transform.css";
 import "@/assets/css/init.css";
 
 Vue.config.productionTip = false;
@@ -37,6 +36,8 @@ new Vue({
   el: "#app",
   router,
   store,
-  components: { Center },
+  components: {
+    Center
+  },
   template: "<Center/>"
 });
