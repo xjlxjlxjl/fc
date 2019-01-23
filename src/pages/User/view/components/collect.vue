@@ -47,10 +47,13 @@ export default {
     },
     delCollect(id) {
       let that = this;
-      that.$post("members/collects/delete", { products: id }).then(response => {
-        if (response.status != 200) return false;
-        that.getList();
-      });
+      that
+        .$post("members/collects/delete", { products: id })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.getList();
+        })
+        .catch(err => console.error(err));
     }
   },
   created() {

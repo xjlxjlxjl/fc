@@ -2579,13 +2579,18 @@ export default {
     },
     getBranch() {
       let that = this;
-      that
-        .$get("members/company/branch")
-        .then(response => {
-          if (response.status != 200) return false;
-          that.joinProject.member = response.data.list;
-        })
-        .catch(error => {});
+      if (this.$store.state.userBranch.length)
+        that.joinProject.member = this.$store.state.userBranch;
+      else {
+        that
+          .$get("members/company/branch")
+          .then(response => {
+            if (response.status != 200) return false;
+            that.joinProject.member = response.data.list;
+            that.$store.commit("getUserBranch", response.data.list);
+          })
+          .catch(error => console.error(error));
+      }
     },
     getProject() {
       if (!this.$ifLogin()) return false;

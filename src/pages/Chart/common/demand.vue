@@ -96,8 +96,6 @@ export default {
         });
         if (!inArr) delArr.push(k);
       });
-      console.log(delArr);
-      // delArr.forEach((e, k) => this.demand.images_ids.splice(k, 1));
       this.demand.fileList = fileList;
     },
     close() {

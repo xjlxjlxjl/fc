@@ -16,7 +16,7 @@
                 <el-option
                   v-for="(item,index) in projectList.list"
                   :key="index"
-                  v-if="!item.is_default"
+                  v-show="!item.is_default"
                   :label="item.name"
                   :value="item.slug"
                 ></el-option>

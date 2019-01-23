@@ -62,7 +62,7 @@
   </transition>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "joinProject",
@@ -74,15 +74,21 @@ export default {
     quantity: Number
   },
   methods: {
+    ...mapMutations(["getUserBranch"]),
     getBranch() {
       let that = this;
-      that
-        .$get("members/company/branch")
-        .then(response => {
-          if (response.status != 200) return false;
-          that.joinProject.member = response.data.list;
-        })
-        .catch(error => {});
+      if (this.userBranch.length) {
+        that.joinProject.member = this.userBranch;
+      } else {
+        that
+          .$get("members/company/branch")
+          .then(response => {
+            if (response.status != 200) return false;
+            this.getUserBranch(response.data.list);
+            that.joinProject.member = response.data.list;
+          })
+          .catch(error => console.error(error));
+      }
     },
     getProject() {
       const loading = this.$loading({ lock: true }),
@@ -136,8 +142,8 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          that.close();
           that.$message({ message: "添加成功", type: "success" });
+          that.close();
         })
         .catch(error => loading.close());
     },
@@ -148,7 +154,7 @@ export default {
       this.$store.commit("changeModal", "joinModal", false);
     }
   },
-  computed: mapState(["joinModal"]),
+  computed: mapState(["joinModal", "userBranch"]),
   created() {
     if (
       JSON.parse(localStorage.getItem("user")) &&

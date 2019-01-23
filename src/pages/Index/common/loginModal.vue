@@ -102,10 +102,8 @@ export default {
     },
     getCode() {
       let that = this;
-      if (that.isClick) {
-        return false;
-      }
-      if (that.loginDetail.mobile == "") {
+      if (that.isClick) return false;
+      else if (that.loginDetail.mobile == "") {
         that.$message({
           message: "请输入手机号码",
           type: "error"
@@ -119,9 +117,7 @@ export default {
         })
         .then(response => {
           loading.close();
-          if (response.status != 200) {
-            return false;
-          }
+          if (response.status != 200) return false;
           that.isClick = true;
           that.lastTime();
         })
@@ -131,9 +127,8 @@ export default {
       let that = this;
       that.codeCacheTime = 60;
       let setTimeOut = setInterval(function() {
-        if (that.codeCacheTime > 1) {
-          that.codeCacheTime--;
-        } else {
+        if (that.codeCacheTime > 1) that.codeCacheTime--;
+        else {
           clearInterval(setTimeOut);
           that.codeCacheTime = "重新发送";
           that.isClick = false;

@@ -47,9 +47,7 @@ export default {
           if (typeof response.data.urls.product_attachment != "object")
             return false;
           that.data = response.data.urls;
-          response.data.urls.pdf.forEach(e => {
-            this.showPDF(e);
-          });
+          response.data.urls.pdf.forEach(e => this.showPDF(e));
         })
         .catch(err => loading.close());
     },

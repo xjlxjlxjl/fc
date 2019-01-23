@@ -113,12 +113,8 @@ export default {
           password: that.changeMobile.password
         })
         .then(response => {
-          if (response.status != 200) {
-            that.isClick = false;
-            return false;
-          }
-          // 开始倒计时
-          that.lastTime();
+          if (response.status != 200) that.isClick = false;
+          else that.lastTime(); // 开始倒计时
         })
         .catch(error => loading.close());
     },
@@ -137,11 +133,8 @@ export default {
         .$post("members/user/new-send", { mobile: that.changeMobile.newMobile })
         .then(response => {
           loading.close();
-          if (response.status != 200) {
-            that.isClick = false;
-            return false;
-          }
-          that.lastTime();
+          if (response.status != 200) that.isClick = false;
+          else that.lastTime();
         })
         .catch(error => loading.close());
     },
@@ -149,9 +142,8 @@ export default {
       let that = this;
       that.codeCacheTime = 60;
       that.setTimeOut = setInterval(() => {
-        if (that.codeCacheTime > 1) {
-          that.codeCacheTime--;
-        } else {
+        if (that.codeCacheTime > 1) that.codeCacheTime--;
+        else {
           clearInterval(that.setTimeOut);
           that.codeCacheTime = "重新发送";
           that.isClick = false;
@@ -183,8 +175,7 @@ export default {
           type: "error"
         });
         return false;
-      }
-      if (!this.changeMobile.newCode) {
+      } else if (!this.changeMobile.newCode) {
         this.$message({
           showClose: true,
           message: "验证码不能为空",

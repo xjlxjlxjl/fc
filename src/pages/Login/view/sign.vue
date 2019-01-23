@@ -31,8 +31,6 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-
 export default {
   name: "sign",
   data() {
@@ -51,9 +49,8 @@ export default {
   methods: {
     getCode() {
       let that = this;
-      if (that.isClick) {
-        return false;
-      }
+      if (that.isClick) return false;
+
       if (that.signDetail.mobile == "") {
         that.$message({
           message: "请输入手机号码",
@@ -73,9 +70,8 @@ export default {
         .$post("members/send/register", that.signDetail)
         .then(response => {
           loading.close();
-          if (response.status != 200) {
-            return false;
-          }
+          if (response.status != 200) return false;
+
           that.isClick = true;
           that.lastTime();
         })
@@ -85,9 +81,8 @@ export default {
       let that = this;
       that.codeCacheTime = 60;
       let setTimeOut = setInterval(function() {
-        if (that.codeCacheTime > 1) {
-          that.codeCacheTime--;
-        } else {
+        if (that.codeCacheTime > 1) that.codeCacheTime--;
+        else {
           clearInterval(setTimeOut);
           that.codeCacheTime = "重新发送";
           that.isClick = false;
@@ -103,12 +98,8 @@ export default {
           confirmButtonText: "同意并继续",
           cancelButtonText: "拒绝"
         })
-        .then(() => {
-          that.userProtocol = true;
-        })
-        .catch(() => {
-          that.userProtocol = false;
-        });
+        .then(() => (that.userProtocol = true))
+        .catch(() => (that.userProtocol = false));
     },
     sign() {
       let that = this;
@@ -118,22 +109,19 @@ export default {
           type: "error"
         });
         return false;
-      }
-      if (that.signDetail.password == "") {
+      } else if (that.signDetail.password == "") {
         that.$message({
           message: "请输入密码",
           type: "error"
         });
         return false;
-      }
-      if (that.signDetail.code == "") {
+      } else if (that.signDetail.code == "") {
         that.$message({
           message: "请输入验证码",
           type: "error"
         });
         return false;
-      }
-      if (!that.userProtocol) {
+      } else if (!that.userProtocol) {
         that.$message({
           message: "请查看用户协议",
           type: "error"
@@ -153,15 +141,13 @@ export default {
     }
   },
   created() {
-    let that = this;
-    const loading = that.$loading({ lock: true });
+    let that = this,
+      loading = that.$loading({ lock: true });
     that
       .$get("dashboard/agreement/members")
       .then(response => {
         loading.close();
-        if (response.status != 200) {
-          return false;
-        }
+        if (response.status != 200) return false;
         that.agreement = response.data.agreement;
       })
       .catch(error => loading.close());

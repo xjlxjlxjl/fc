@@ -55,7 +55,7 @@ export default {
           if (response.status != 200) return false;
           this.setStateData({ name: "companyList", arr: response.data.list });
         })
-        .catch(err => {});
+        .catch(err => console.error(err));
     },
     onSubmit() {
       this.$emit("onSubmit", {

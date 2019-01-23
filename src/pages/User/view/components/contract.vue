@@ -116,9 +116,8 @@ export default {
         })
         .then(response => {
           loading.close();
-          if (response.status != 200) {
-            return false;
-          }
+          if (response.status != 200) return false;
+
           for (let item of response.data.list) {
             self.list.push(item);
           }

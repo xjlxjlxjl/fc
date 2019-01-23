@@ -198,7 +198,7 @@
   </el-container>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import supplier from "@/pages/Chart/common/supplier";
 import moveProject from "@/pages/Chart/common/moveProject";
 import joinProject from "@/pages/Index/common/joinProject";
@@ -240,6 +240,7 @@ export default {
     joinProject: joinProject
   },
   methods: {
+    ...mapMutations(["getUserBranch"]),
     showProjectChange(index) {
       const loading = this.$loading({ lock: true }),
         that = this;
@@ -269,13 +270,9 @@ export default {
         .catch(error => loading.close());
     },
     toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
+      if (rows)
+        rows.forEach(row => this.$refs.multipleTable.toggleRowSelection(row));
+      else this.$refs.multipleTable.clearSelection();
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -326,14 +323,18 @@ export default {
     getBranch() {
       let that = this;
       if (that.options.length) return false;
-      that
-        .$get("members/company/branch")
-        .then(response => {
-          if (response.status != 200) return false;
-          that.options = response.data.list;
-          that.setMembersCard();
-        })
-        .catch(error => {});
+      if (this.userBranch.length) that.options = this.userBranch;
+      else {
+        that
+          .$get("members/company/branch")
+          .then(response => {
+            if (response.status != 200) return false;
+            this.getUserBranch(response.data.list);
+            that.options = response.data.list;
+            that.setMembersCard();
+          })
+          .catch(error => console.error(error));
+      }
     },
     // 设置成员卡片
     setMembersCard() {
@@ -385,9 +386,7 @@ export default {
       let that = this,
         loading = this.$loading({ lock: true }),
         arr = [];
-      this.multipleSelection.forEach(e => {
-        arr.push(e.id);
-      });
+      this.multipleSelection.forEach(e => arr.push(e.id));
       that
         .$post(`carts/items/delete/${that.projectList.list[that.index].slug}`, {
           ids: arr.join(",")
@@ -513,7 +512,7 @@ export default {
       if (!newValue) this.getProject();
     }
   },
-  computed: mapState(["moveModal", "joinModal"]),
+  computed: mapState(["moveModal", "joinModal", "userBranch"]),
   created() {
     this.getProject();
   }
