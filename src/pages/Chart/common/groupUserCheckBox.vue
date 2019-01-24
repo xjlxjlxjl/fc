@@ -86,34 +86,44 @@ export default {
   methods: {
     joinGroup(userId, groupName = "", groupId = 0) {
       let that = this,
-        params = { user_ids: userId.join(",") };
+        params = { user_ids: userId.join(",") },
+        membersArr = [];
+      this.groupUser.forEach(e =>
+        userId.forEach(i => {
+          if (e.id == i) membersArr.push(e.last_name);
+        })
+      );
+      params.invite_username = membersArr.join(",");
       if (groupId) params.group_id = groupId;
       else {
-        if (userId.length > 4) params.group_name = groupName;
-        else {
-          let nameArr = [];
-          this.groupUser.forEach(e => {
-            userId.forEach(i => {
-              if (e.id == i) nameArr.push(e.last_name);
-            });
-          });
-          params.group_name = nameArr.join(",");
-        }
+        if (userId.length > 6) params.group_name = groupName;
+        else params.group_name = membersArr.join(",");
       }
       that
         .$post("group/invite", params)
         .then(response => {
           if (response.status != 200) return false;
+          setTimeout(() => {
+            if (!groupId) that.$emit("refresh");
+          }, 1000);
+
           that.close();
         })
         .catch(error => console.error(error));
     },
     kick() {
-      let that = this;
+      let that = this,
+        membersArr = [];
+      this.groupUser.forEach(e =>
+        this.userList.forEach(i => {
+          if (e.id == i) membersArr.push(e.last_name);
+        })
+      );
       that
         .$post("group/remove/user", {
           group_id: that.groupId,
-          user_ids: that.userList.join(",")
+          user_ids: that.userList.join(","),
+          remove_username: membersArr.join(",")
         })
         .then(response => {
           if (response.status != 200) return false;

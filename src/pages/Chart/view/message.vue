@@ -7,6 +7,7 @@
       :group="groupList.list"
       :groupState="groupState"
       @send="menuClick"
+      @refresh="getChatList"
     ></groupUserCheckBox>
     <!-- 图片画廊 -->
     <!-- <gallery :record="record" :galleryIndex="galleryIndex"></gallery> -->
@@ -92,8 +93,9 @@
                     size="mini"
                     type="warning"
                     v-else
-                    @click="delGroup(item.group_id, index);delChat(item.id, index)"
+                    @click="delGroup(item.group_id, index);chatList.list.splice(index, 1);"
                   >退出</el-button>
+                  <!-- @click="delGroup(item.group_id, index);delChat(item.id, index)" -->
                   <el-button
                     type="primary"
                     size="mini"
@@ -272,7 +274,13 @@
                 <div class="chatMain">
                   <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
                     <div
-                      v-if="item.from_user_id == user.user.id || item.user_id == user.user.id"
+                      v-if="item.msg_type == 0 || item.msg_type == 10 || item.type == 0 || item.type == 10"
+                      class="toast"
+                    >
+                      <span>{{ item.content }}</span>
+                    </div>
+                    <div
+                      v-else-if="item.from_user_id == user.user.id || item.user_id == user.user.id"
                       class="formMessage"
                     >
                       <div class="messgaeBox">
@@ -767,7 +775,7 @@ export default {
     groupSearch() {
       let that = this;
       that
-        .$get("group/search", { name: that.searchId })
+        .$get("group/search", { group_name: that.searchId })
         .then(response => {
           if (response.status != 200) return false;
           that.searchList = response.data.list;
@@ -1042,10 +1050,9 @@ export default {
     },
     getNoticesDetail(item, key) {
       this.$alert(
-        `
-        ${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} 
-        <p>通知内容：<b>${item.message}</b>
-      </p>`,
+        `${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} 
+          <p>通知内容：<b>${item.message}</b>
+        </p>`,
         "通知",
         {
           confirmButtonText: "确定",
@@ -1174,16 +1181,18 @@ export default {
               }
               this.webSocketLogin();
             } else {
-              this.connectNum = 0;
               clearInterval(this.pong);
-              this.pong = setInterval(() => {
-                this.webSocketSend({
-                  action: "pong",
-                  req: {
-                    message: "hello"
-                  }
-                });
-              }, 5000);
+              this.connectNum = 0;
+              this.pong = setInterval(
+                () =>
+                  this.webSocketSend({
+                    action: "pong",
+                    req: {
+                      message: "hello"
+                    }
+                  }),
+                5000
+              );
             }
             break;
           case "pong":
@@ -1213,7 +1222,7 @@ export default {
                 // }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
-              this.notify(result, 1);
+              if (result.resp.from_uid) this.notify(result, 1);
             }
             this.fixLocation();
             break;
@@ -1242,7 +1251,7 @@ export default {
                 // }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
-              this.notify(result, 2);
+              if (result.resp.from_uid) this.notify(result, 2);
             }
             this.fixLocation();
             break;
@@ -1291,15 +1300,19 @@ export default {
       };
     },
     reconnect(url) {
-      if (this.lockReconnect || this.connectNum > 3) return false;
-
+      if (this.lockReconnect) return false;
       this.lockReconnect = true;
       //没连接上会一直重连，设置延迟避免请求过多
-
-      setTimeout(() => {
-        this.webSocket(url);
-        this.lockReconnect = false;
-      }, 2000);
+      setTimeout(
+        () => {
+          clearInterval(this.pong);
+          this.webSocket(url);
+          this.lockReconnect = false;
+        },
+        2000 * (this.connectNum + 1) > 64000
+          ? 64000
+          : 2000 * (this.connectNum + 1)
+      );
     },
     webSocketLogin() {
       this.webSocketSend({
@@ -1311,17 +1324,7 @@ export default {
       });
     },
     webSocketSend(action) {
-      try {
-        this.ws.send(JSON.stringify(action));
-      } catch (error) {
-        if (this.connectNum < 3) {
-          this.connectNum++;
-          this.webSocketSend(action);
-        } else {
-          this.connectNum = 0;
-          this.reconnect();
-        }
-      }
+      this.ws.send(JSON.stringify(action));
     },
     webSocketClose() {
       clearInterval(this.pong);
@@ -1353,6 +1356,9 @@ export default {
         this.$previewRefresh();
       },
       deep: true
+    },
+    connectNum(val) {
+      console.log(val);
     }
   },
   mounted() {
@@ -1535,20 +1541,26 @@ export default {
               display: flex;
               align-items: center;
               box-sizing: border-box;
+              * {
+                vertical-align: unset;
+              }
               &:hover {
                 background-color: @hoverBackground;
               }
               .avatarBox {
-                width: 50px;
-                height: 50px;
+                width: 40px;
+                height: 40px;
                 overflow: hidden;
                 display: inline-block;
+
                 img {
                   width: 100%;
                   height: 100%;
+                  border-radius: 50px;
                 }
               }
               .el-badge {
+                height: 50px;
                 .el-badge__content {
                   top: 10px;
                 }
@@ -1635,12 +1647,22 @@ export default {
                 height: 20rem;
                 overflow-y: auto;
               }
+              .toast {
+                text-align: center;
+                margin-bottom: 15px;
+                span {
+                  padding: 5px;
+                  border-radius: 10px;
+                  color: @FFF;
+                  background-color: #bdb9b9;
+                }
+              }
               .chatMessage {
                 position: relative;
                 .messageImg {
                   max-width: 200px;
                   position: inherit;
-                  background-color: #fff;
+                  background-color: @FFF;
                 }
                 .formMessage {
                   display: flex;
