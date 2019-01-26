@@ -12,7 +12,7 @@
           </div>
           <div class="modalBoxMainContent">
             <el-form :model="form" size="mini" label-width="80px">
-              <el-form-item label="加班时间">
+              <el-form-item label="请假时间">
                 <el-date-picker
                   v-model="date"
                   type="datetimerange"

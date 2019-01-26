@@ -304,7 +304,10 @@
                               <h1>{{ item.content.split('/').pop() }}</h1>
                               <!-- <span>{{ item.content }}</span> -->
                               <br>
-                              <a target="_blank" :href="item.content">下载</a>
+                              <a
+                                href="javascript:;"
+                                @click="download(item.content,item.content.split('/').pop())"
+                              >下载</a>
                             </div>
                           </div>
                         </div>
@@ -336,7 +339,10 @@
                               <h1>{{ item.content.split('/').pop() }}</h1>
                               <!-- <span>{{ item.content }}</span> -->
                               <br>
-                              <a target="_blank" :href="item.content">下载</a>
+                              <a
+                                href="javascript:;"
+                                @click="download(item.content,item.content.split('/').pop())"
+                              >下载</a>
                             </div>
                           </div>
                         </div>

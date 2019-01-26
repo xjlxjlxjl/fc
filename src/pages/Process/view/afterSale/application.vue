@@ -256,13 +256,13 @@ export default {
                 case 2:
                   if (!row.deal_mans.length) return del + delegate;
                   else if (row.quoted_price.price == undefined)
-                    return report + del + apply;
+                    return report + del + apply + delegate;
                   else if (
                     row.quoted_price.price != undefined &&
                     row.deal_mans.length &&
                     !row.deal_result
                   )
-                    return report + del;
+                    return report + del + apply + delegate;
                   else return del;
                 default:
                   return del;

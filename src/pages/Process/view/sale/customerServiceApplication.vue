@@ -243,6 +243,9 @@ export default {
               let service = [
                 '<button class="btn btn-success service btn-sm">提交客服</button>'
               ];
+              let delegate = [
+                '<button class="btn btn-warning delegate btn-sm">委派人员</button>'
+              ];
               let discountPrice = [
                 '<button class="btn btn-success discountPrice btn-sm">优 惠 价</button>'
               ];
