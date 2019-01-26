@@ -1,16 +1,16 @@
-String.prototype.removeNumber = function() {
+String.prototype.removeNumber = function () {
   return this.replace(/\d+[a-zA-Z&\|\\\*^%$#@\-]\d+/g, "");
 };
 
-Array.prototype.inArray = function(n) {
+Array.prototype.inArray = function (n) {
   return this.includes(n);
 };
 
 // 数组去重
-Array.prototype.rep = function() {
+Array.prototype.rep = function () {
   return Array.from(new Set(this));
 };
-Array.prototype.repeat = function() {
+Array.prototype.repeat = function () {
   var arr = [];
   for (var i = 0; i < this.length; i++) {
     if (arr.indexOf(this[i]) == -1) arr.push(this[i]);
@@ -18,7 +18,7 @@ Array.prototype.repeat = function() {
   return arr;
 };
 // 数组内 id 去重
-Array.prototype.repeatDepth = function() {
+Array.prototype.repeatDepth = function () {
   // return Array.from(new Set(this.map(v => v.id)));
   var inArray,
     arr = [];
@@ -31,22 +31,22 @@ Array.prototype.repeatDepth = function() {
   }
   return arr;
 };
-Array.prototype.sum = function(num = "number", price = "price", fix = 2) {
+Array.prototype.sum = function (num = "number", price = "price", fix = 2) {
   return this.reduce((sumSoFar, item) => {
     return parseFloat(
       sumSoFar +
-        parseInt(item[num] ? item[num] : item.quantity ? item.quantity : 1) *
-          parseFloat(item[price] ? item[price] : item.money ? item.money : 0)
+      parseInt(item[num] ? item[num] : item.quantity ? item.quantity : 1) *
+      parseFloat(item[price] ? item[price] : item.money ? item.money : 0)
     ).toFixed(fix);
   }, 0);
 };
-Array.prototype.limit = function(cond, ition) {
+Array.prototype.limit = function (cond, ition) {
   if (cond) return this.filter(n => n > ition);
   else return this.filter(n => n[cond] > ition);
 };
 
 export default {
-  install: function(Vue, options) {
+  install: function (Vue, options) {
     Vue.prototype.dateParse = date => {
       return `${date.getFullYear()}-${
         date.getMonth() + 1 < 9
@@ -70,18 +70,18 @@ export default {
     };
 
     Vue.prototype.download = (content, filename) => {
-      // 创建隐藏的可下载链接
-      let eleLink = document.createElement("a");
-      eleLink.download = filename;
-      eleLink.style.display = "none";
-      // 字符内容转变成blob地址
-      let blob = new Blob([content]);
-      eleLink.href = URL.createObjectURL(blob);
-      // 触发点击
-      document.body.appendChild(eleLink);
-      eleLink.click();
-      // 然后移除
-      document.body.removeChild(eleLink);
+      let folder = content.split('/')
+      Vue.prototype.$post(`files/download/${folder[folder.length - 2]}/${filename}`)
+      /*
+        var link = document.createElement('a');
+        link.setAttribute("download", filename);
+        link.href = content;
+        link.style.display = "none";
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link)
+      */
     };
 
     Vue.prototype.getTableAttr = ($el, attr) => {
@@ -112,7 +112,10 @@ export default {
       });
     };
     Vue.prototype.ediTable = ($el, index, data) => {
-      $el.bootstrapTable("updateRow", { index: index, row: data });
+      $el.bootstrapTable("updateRow", {
+        index: index,
+        row: data
+      });
     };
     Vue.prototype.refresh = ($el, data = {}) => {
       $el.bootstrapTable("refresh", data);
