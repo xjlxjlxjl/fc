@@ -70,18 +70,15 @@ export default {
     };
 
     Vue.prototype.download = (content, filename) => {
-      let folder = content.split('/')
-      Vue.prototype.$post(`files/download/${folder[folder.length - 2]}/${filename}`)
-      /*
-        var link = document.createElement('a');
-        link.setAttribute("download", filename);
-        link.href = content;
-        link.style.display = "none";
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link)
-      */
+      let folder = content.split("/"),
+        link = document.createElement("a");
+      link.setAttribute("download", filename);
+      link.href = `https://api.factoryun.com/files/download/${folder[folder.length - 2]}/${filename}`;
+      link.style.display = "none";
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     Vue.prototype.getTableAttr = ($el, attr) => {
