@@ -584,6 +584,11 @@ export default {
           if (response.status != 200) return false;
           that.chatList = response.data;
           if (!that.chatList.list.length) return false;
+          if(that.messageTips == 0){
+            for (const item of that.chatList.list) {
+              that.messageTips += parseInt(item.unread_message_num);
+            }
+          }
           if (state) that.recordTo();
         })
         .catch(err => console.error(err));
@@ -684,18 +689,6 @@ export default {
     galleryShow() {
       this.$preview.on("imageLoadComplete", (e, item) => console.log());
     },
-    /*
-      finishingPictures() {
-        this.msgImgArr = [];
-        this.record.list.forEach(e => {
-          // 赋值 msgImgKey
-          if (e.msg_type == 2 || e.type == 2) {
-            this.msgImgArr.push(e);
-            this.msgImgArr.forEach((item, k) => (e.msgImgKey = k));
-          }
-        });
-      },
-    */
     delChat(id, key) {
       let that = this;
       that
@@ -1141,25 +1134,11 @@ export default {
       this.e = null;
       this.mousePosition = ["close"];
     },
-    notify(result, state) {
-      let msg = null,
-        title = {
-          1: result.resp.content,
-          2: "[图片]",
-          3: "[文件]"
-        },
-        getRequset = {
+    notify(state) {
+      let getRequset = {
           1: () => this.getFriendList(),
           2: () => this.getGroupList()
         };
-
-      this.$notify({
-        title: `${result.resp.from_name}`,
-        message: title[result.resp.type]
-      });
-      let notification = new Notification(`${result.resp.from_name}`, {
-        body: title[result.resp.type]
-      });
 
       clearTimeout(this.timeOut);
       this.timeOut = setTimeout(() => {
@@ -1222,13 +1201,9 @@ export default {
                   content: result.resp.content
                 };
                 this.record.list.push(msg);
-                // if (msg.msg_type == 2) {
-                //   this.msgImgArr.push(msg);
-                //   msg.msgImgKey = this.msgImgArr.length - 1;
-                // }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
-              if (result.resp.from_uid) this.notify(result, 1);
+              if (result.resp.from_uid) this.notify(1);
             }
             this.fixLocation();
             break;
@@ -1251,28 +1226,14 @@ export default {
                   content: result.resp.content
                 };
                 this.record.list.push(msg);
-                // if (msg.msg_type == 2) {
-                //   this.msgImgArr.push(msg);
-                //   msg.msgImgKey = this.msgImgArr.length - 1;
-                // }
               }
               // this.getRecord({ id: this.toUser, username: this.userName });
-              if (result.resp.from_uid) this.notify(result, 2);
+              if (result.resp.from_uid) this.notify(2);
             }
             this.fixLocation();
             break;
           case "notice":
             console.log(result);
-            this.$notify({
-              title: `您有一条来自${result.resp.from_name}的通知`,
-              message: result.resp.content
-            });
-            let notification = new Notification(
-              `您有一条来自${result.resp.from_name}的通知`,
-              {
-                body: result.resp.content
-              }
-            );
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
               from_user: {

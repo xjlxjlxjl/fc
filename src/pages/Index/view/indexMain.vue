@@ -174,21 +174,21 @@
                       <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
                       <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
                       <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                     <p v-else-if="params.feedback_type == 'magnetic_scale'">
                       <el-radio v-model="params.precision" label="1">1</el-radio>
                       <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
                       <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
                       <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                     <p v-else>
                       <span>重现精度:</span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
                       <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                   </div>
                 </li>
@@ -386,7 +386,7 @@
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -412,12 +412,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -432,7 +432,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <dir class="opera">
                       <el-button
                         type="primary"
@@ -588,21 +588,21 @@
                       <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
                       <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
                       <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                     <p v-else-if="params.feedback_type == 'magnetic_scale'">
                       <el-radio v-model="params.precision" label="1">1</el-radio>
                       <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
                       <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
                       <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                     <p v-else>
                       <span>重现精度:</span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
                       <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                   </div>
                 </li>
@@ -646,7 +646,7 @@
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -672,12 +672,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -692,7 +692,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -733,13 +733,14 @@
                   </div>
                 </li>
                 <li>
-                  <div>速度</div>
+                  <div>最大速度</div>
                   <div>
                     <el-radio v-model="params.speed" label="250">250</el-radio>
                     <el-radio v-model="params.speed" label="500">500</el-radio>
-                    <el-radio v-model="params.speed" label="1000">1000</el-radio>
-                    <el-input v-model="params.speed" placeholder="输入"></el-input>
-                    <span>mm/s （行程超过700mm每增加100mm，最大速度递减15%）</span>
+                    <el-radio v-model="params.speed" label="1000">1000 mm/s</el-radio>
+                    <!-- <el-input v-model="params.speed" placeholder="输入"></el-input> -->
+                    <span>（行程超过700mm每增加100mm，最大速度递减15%）</span>
+                    <p class="speedTips" v-show="screwRealSpeed">理论上最高速度可达到{{ screwRealSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -839,14 +840,13 @@
                   </div>
                 </li>
               </ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -872,12 +872,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -892,7 +892,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -910,14 +910,13 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 4">
             <div class="main">
               <ul></ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -943,12 +942,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -963,7 +962,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1102,7 +1101,7 @@
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1128,12 +1127,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1148,7 +1147,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1166,14 +1165,13 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 6">
             <div class="main">
               <ul></ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1199,12 +1197,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1219,7 +1217,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1237,14 +1235,13 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 7">
             <div class="main">
               <ul></ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1270,12 +1267,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1290,7 +1287,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1308,14 +1305,13 @@
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 8">
             <div class="main">
               <ul></ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1341,12 +1337,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1361,7 +1357,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1404,23 +1400,25 @@
                   </div>
                 </li>
                 <li>
-                  <div>X轴 速度</div>
+                  <div>X轴 最大速度</div>
                   <div>
                     <el-input v-model="params.x_maximum_speed" placeholder="输入"></el-input>
                     <span>
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
+                    <p class="speedTips" v-show="screwRealXSpeed">理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
-                  <div>Y轴 速度</div>
+                  <div>Y轴 最大速度</div>
                   <div>
                     <el-input v-model="params.y_maximum_speed" placeholder="输入"></el-input>
                     <span>
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
+                    <p class="speedTips" v-show="screwRealYSpeed">理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -1491,7 +1489,6 @@
                   </div>
                 </li>
               </ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <img src="../../../assets/img/screw_xy_platform.png" class="diagram" style>
               <div class="operation">
                 <span></span>
@@ -1499,7 +1496,7 @@
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1525,12 +1522,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1545,7 +1542,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1595,6 +1592,7 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
+                    <p class="speedTips" v-show="screwRealXSpeed">理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -1605,6 +1603,7 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
+                    <p class="speedTips" v-show="screwRealYSpeed">理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -1675,14 +1674,13 @@
                   </div>
                 </li>
               </ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1708,12 +1706,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1728,7 +1726,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1785,6 +1783,7 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
+                    <p class="speedTips" v-show="screwRealXSpeed">理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -1795,6 +1794,7 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
+                    <p class="speedTips" v-show="screwRealYSpeed">理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -1872,14 +1872,13 @@
                   </div>
                 </li>
               </ul>
-              <canvas id="speedChart" style="display: none;"></canvas>
               <div class="operation">
                 <span></span>
                 <el-button type="primary" size="mini" @click="screen">筛选</el-button>
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -1905,12 +1904,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -1925,7 +1924,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera">
                       <el-button
                         type="primary"
@@ -1999,21 +1998,21 @@
                       <el-radio v-model="params.precision" label="0.5">0.5</el-radio>
                       <el-radio v-model="params.precision" label="0.1">0.1</el-radio>
                       <el-input class="labelInput" v-model="params.precision"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                     <p v-else-if="params.feedback_type == 'magnetic_scale'">
                       <el-radio v-model="params.positioning_accuracy" label="1">1</el-radio>
                       <el-radio v-model="params.positioning_accuracy" label="0.5">0.5</el-radio>
                       <el-radio v-model="params.positioning_accuracy" label="0.1">0.1</el-radio>
                       <el-input class="labelInput" v-model="params.positioning_accuracy"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                     <p v-else>
                       <span>重现精度:</span>
                       <el-radio v-model="params.reproduce_the_accuracy" label="3">3</el-radio>
                       <el-radio v-model="params.reproduce_the_accuracy" label="1">1</el-radio>
                       <el-input v-model="params.reproduce_the_accuracy" placeholder="其他"></el-input>
-                      <span>um</span>
+                      <span>μm</span>
                     </p>
                   </div>
                 </li>
@@ -2097,7 +2096,7 @@
               </div>
               <el-table border :data="tableData.list">
                 <el-table-column label="产品" width="400">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="productInfo">
                       <div>
                         <img :src="row.image" :alt="row.name">
@@ -2123,12 +2122,12 @@
                 </el-table-column>
                 <el-table-column prop="sales_price" label="价格"></el-table-column>
                 <el-table-column prop="delivery_period" label="交期">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <span>{{ row.delivery_period }} 工作日</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="图纸">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="drawing">
                       <div v-if="row.drawing_2d">
                         <i class="font_family icon-d2twig"></i>
@@ -2143,7 +2142,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
-                  <template slot-scope="{ row,$index }">
+                  <template slot-scope="{ row }">
                     <div class="opera" v-if="!typeSelection.selling_price_slug">
                       <el-button
                         type="primary"
@@ -2167,7 +2166,6 @@
           <!-- 非标准品 -->
           <el-main class="homeGoodDetail" v-else-if="showDetailState == 13">
             <div class="main">
-              <canvas id="speedChart" style="display: none;"></canvas>
               <el-form label-position="top" :model="nonstandard">
                 <el-form-item label="非标产品需求描述">
                   <el-input type="textarea" placeholder="请填写" v-model="nonstandard.requirements"></el-input>
@@ -2281,6 +2279,11 @@ export default {
         module_install_method: "horizon",
         module_configuration_motor: "0"
       },
+      // 丝杆实际最大速度
+      screwRealSpeed: 0,
+      screwRealXSpeed: 0,
+      screwRealYSpeed: 0,
+      screwRealZSpeed: 0,
       speedChart: null,
       joinProject: {
         id: 0,
@@ -2347,14 +2350,19 @@ export default {
           case "linear_module":
             this.showDetailState = 1;
             url += "#/linear_module";
+            this.params.speed = '0.5';
+            that.initChart();
             break;
           case "liner_motor":
             this.showDetailState = 2;
             url += "#/liner_motor";
+            this.params.speed = '0.5';
+            that.initChart();
             break;
           case "screw_module":
             this.showDetailState = 3;
             url += "#/screw_module";
+            this.params.speed = '250';
             break;
           case "precision_lifting_platform":
             this.showDetailState = 4;
@@ -2363,6 +2371,8 @@ export default {
           case "moving_stator":
             this.showDetailState = 5;
             url += "#/moving_stator";
+            this.params.speed = '0.5';
+            that.initChart();
             break;
           case "fpc_diving_platform":
             this.showDetailState = 6;
@@ -2393,6 +2403,7 @@ export default {
           case "xy_platform":
             this.showDetailState = 10;
             url += "#/xy_platform";
+            that.initChart();
             break;
           // 非标定制
           case "non_standard_customization":
@@ -2405,7 +2416,6 @@ export default {
             break;
         }
         if (url) location.href = url;
-        that.initChart();
       }
     },
     // 修改Echart显示
@@ -2460,9 +2470,8 @@ export default {
           }
         ]
       };
-      if (option && typeof option === "object") {
+      if (option && typeof option === "object") 
         that.speedChart.setOption(option, true);
-      }
     },
     sendMailto(str_id) {
       let that = this;
@@ -2687,7 +2696,46 @@ export default {
   watch: {
     params: {
       handler(val, oldVal) {
-        this.changeSpeedChart();
+        this.screwRealSpeed = 0;
+        switch(this.showDetailState){
+          case 1:
+          case 2:
+          case 10:
+          case 5:
+            this.changeSpeedChart();
+            break;
+          case 3:
+            if (val.distance > 700){
+              for(let i = 0; i < Math.floor((val.distance - 700) * 0.01); i++){
+                this.screwRealSpeed = (this.screwRealSpeed || val.speed) - (this.screwRealSpeed || val.speed) * 0.15;
+              }
+              this.screwRealSpeed = this.screwRealSpeed.toFixed(0);
+            } else this.screwRealSpeed = 0;
+            break;
+          case 12:
+          case 9:
+          case 11:
+            if(val.x_distance > 700){
+              for(let i = 0; i < Math.floor((val.x_distance - 700) * 0.01); i++){
+                this.screwRealXSpeed = (this.screwRealXSpeed || val.x_maximum_speed) - (this.screwRealXSpeed || val.x_maximum_speed) * 0.15;
+              }
+              this.screwRealXSpeed = this.screwRealXSpeed.toFixed(0);
+            } else this.screwRealXSpeed = 0;
+            
+            if(val.y_distance > 700){
+              for(let i = 0; i < Math.floor((val.y_distance - 700) * 0.01); i++){
+                this.screwRealYSpeed = (this.screwRealYSpeed || val.y_maximum_speed) - (this.screwRealYSpeed || val.y_maximum_speed) * 0.15;
+              }
+              this.screwRealYSpeed = this.screwRealYSpeed.toFixed(0);
+            } else this.screwRealYSpeed = 0;
+            break;
+          case 13:
+          case 4:
+          case 6:
+          case 7:
+          case 8:
+            break;
+        }
       },
       deep: true
     }
@@ -2702,6 +2750,7 @@ export default {
 @border: solid 1px #e6e6e6;
 @gery: #666666;
 @blue: #0064db;
+@red: #ff0000;
 @white: #ffffff;
 .borShadow () {
   // border: @border;
@@ -2819,6 +2868,9 @@ export default {
                     }
                     .tips {
                       margin-top: 1rem;
+                    }
+                    .speedTips{
+                      color: @red;
                     }
                   }
                 }

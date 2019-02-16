@@ -133,6 +133,7 @@
 import progress from "@/assets/img/progress.png";
 import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
+import companyRise from "@/pages/Process/common/companyRise";
 import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 
 export default {
@@ -146,7 +147,8 @@ export default {
       progressLast: progressLast,
       menuShow: false,
       searchText: "",
-      messageTips: 0
+      messageTips: 0,
+      lockReconnect: false
     };
   },
   methods: {
@@ -176,6 +178,24 @@ export default {
           if (response.status != 200) return false;
         })
         .catch(error => loading.close());
+    },
+    webSocket() {
+      companyRise.methods.webSocket.call(this);
+    },
+    reconnect(url) {
+      companyRise.methods.reconnect.call(this, url);
+    },
+    webSocketLogin() {
+      companyRise.methods.webSocketLogin.call(this);
+    },
+    webSocketSend(action) {
+      companyRise.methods.webSocketSend.call(this, action);
+    },
+    webSocketClose() {
+      companyRise.methods.webSocketClose.call(this);
+    },
+    getUnreadMessage() {
+      companyRise.methods.getUnreadMessage.call(this);
     }
   },
   created() {
@@ -186,6 +206,8 @@ export default {
       orignalSetItem.apply(this, arguments);
       if (key == "user") that.getUserInfo();
     };
+
+    this.webSocket();
   }
 };
 </script>

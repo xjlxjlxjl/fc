@@ -185,6 +185,7 @@ export default {
       });
     },
     webSocket() {
+      this.getUnreadMessage();
       let socketAddress = this.$store.state.socketAddress;
       this.ws = new WebSocket(socketAddress);
       this.ws.onmessage = event => {
@@ -194,10 +195,8 @@ export default {
             this.webSocketLogin();
             break;
           case "login":
-            if (result.resp.code != 200) {
-              this.webSocketLogin();
-              return false;
-            } else {
+            if (result.resp.code != 200) this.webSocketLogin();
+            else {
               this.connectNum = 0;
               clearInterval(this.pong);
               this.pong = setInterval(() => {
@@ -216,6 +215,8 @@ export default {
             this.webSocketClose();
             break;
           case "notice":
+          case "chat":
+          case "group":
             console.log(result);
             switch (result.resp.slug) {
               case "service":
@@ -233,20 +234,29 @@ export default {
                 this.refresh($("#tasks #table"));
                 break;
             }
-            ++this.messageTips;
-            this.$notify({
-              title: `您有一条来自${result.resp.from_name}的通知`,
-              message: result.resp.content
-            });
-            let notification = new Notification(
-              `您有一条来自${result.resp.from_name}的通知`,
-              {
-                body: result.resp.content
+            
+            if(result.resp.from_uid != this.user.user.id){
+              ++this.messageTips;
+              let info = {
+                user: result.resp.from_name
               }
-            );
+              switch(result.resp.type) {
+                case 2:
+                  info.content = '[图片]';
+                  break;
+                case 3:
+                  info.content = '[文件]';
+                  break;
+                case 1:
+                default:
+                  info.content = result.resp.content;
+                  break;
+              }
+
+              this.$notify({ title: `您有一条来自${info.user}的通知`, message: info.content });
+              new Notification(`您有一条来自${info.user}的通知`, { body: info.content });
+            }
             break;
-          case "chat":
-          case "group":
           default:
             console.log("抛出");
             console.log(result);
@@ -269,6 +279,9 @@ export default {
     },
     webSocketClose() {
       message.methods.webSocketClose.call(this);
+    },
+    getUnreadMessage() {
+      message.methods.getChatList.call(this, false);
     }
   },
   mounted() {
