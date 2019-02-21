@@ -439,6 +439,7 @@ export default {
       message: "",
       timeOut: null,
       connectNum: 0,
+      inView: true,
       // 群聊变量
       checkBoxList: [],
       // msgImgArr: [],
@@ -1261,7 +1262,8 @@ export default {
             break;
         }
       };
-      this.ws.onerror = e => {
+      this.ws.onclose = this.ws.onerror = e => {
+        if (!this.inView) return false;
         this.connectNum++;
         this.reconnect(socketAddress);
       };
@@ -1294,6 +1296,7 @@ export default {
       this.ws.send(JSON.stringify(action));
     },
     webSocketClose() {
+      this.inView = false;
       clearInterval(this.pong);
       this.ws.close();
     },
