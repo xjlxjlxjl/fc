@@ -291,7 +291,7 @@ export default {
     });
   },
   created() {
-    this.webSocket();
+    if(this.user) this.webSocket();
   }
 };
 </script>

@@ -128,6 +128,7 @@ export default {
       message: "",
       state: 1,
       connectNum: 0,
+      inView: true,
       record: {
         list: [],
         pagination: {
