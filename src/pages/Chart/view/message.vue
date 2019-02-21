@@ -1261,7 +1261,7 @@ export default {
             break;
         }
       };
-      this.ws.onclose = this.ws.onerror = e => {
+      this.ws.onerror = e => {
         this.connectNum++;
         this.reconnect(socketAddress);
       };
@@ -1327,6 +1327,9 @@ export default {
     connectNum(val) {
       console.log(val);
     }
+  },
+  beforeDestroy() {
+    this.webSocketClose();
   },
   mounted() {
     let $uploadBox = this.$refs["uploadBox"],

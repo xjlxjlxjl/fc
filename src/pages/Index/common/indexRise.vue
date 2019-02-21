@@ -206,8 +206,8 @@ export default {
       orignalSetItem.apply(this, arguments);
       if (key == "user") that.getUserInfo();
     };
-
-    this.webSocket();
+    
+    if(this.user) this.webSocket();
   }
 };
 </script>

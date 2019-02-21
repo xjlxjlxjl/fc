@@ -234,6 +234,9 @@ export default {
       deep: true
     }
   },
+  beforeDestroy() {
+    this.webSocketClose();
+  },
   mounted() {
     message.mounted.call(this);
   },
