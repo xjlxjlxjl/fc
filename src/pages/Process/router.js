@@ -142,7 +142,13 @@ export default new Router({
     {
       path: "/Purchase",
       name: "Purchase",
-      component: Purchase
+      component: Purchase,
+      children: [
+        {
+          path: "/Purchase",
+          component: saleTasks
+        }
+      ]
     },
     {
       path: "/IQC",
