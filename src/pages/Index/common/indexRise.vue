@@ -37,7 +37,7 @@
             <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
           </el-menu-item>
           <el-menu-item index="6">
-            <a href="/chart.html#/message">
+            <a href="javascript:;" @click="changeModal('modalShow')">
               <el-badge :value="messageTips" v-if="messageTips > 0" class="item">
                 <i class="el-icon-bell"></i>
               </el-badge>
@@ -127,7 +127,7 @@
         </el-menu-item>
       </el-menu>
     </el-main>
-    <msgBox></msgBox>
+    <msgBox :modal="modalShow" @change="changeModal" @tips="++messageTips" @clearTips="messageTips = 0"></msgBox>
   </el-container>
 </template>
 <script>
@@ -147,6 +147,7 @@ export default {
       progressHide: progressHide,
       progressLast: progressLast,
       menuShow: false,
+      modalShow: false,
       searchText: "",
       messageTips: 0,
       lockReconnect: false
@@ -182,6 +183,10 @@ export default {
           if (response.status != 200) return false;
         })
         .catch(error => loading.close());
+    },
+    changeModal(name, state = null) {
+      if (state) this[name] = state;
+      else this[name] = !this[name];
     }
   },
   created() {
