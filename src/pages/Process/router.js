@@ -11,6 +11,7 @@ import saleOrder from "@/pages/Process/view/sale/order";
 import saleOffer from "@/pages/Process/view/sale/offer";
 import saleShipment from "@/pages/Process/view/sale/shipment";
 import customerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
+import customerMap from '@/pages/Process/view/sale/customerMap';
 // 工程
 import Engineer from "@/pages/Process/view/engineer/engineer";
 // 采购
@@ -133,6 +134,11 @@ export default new Router({
           component: customerServiceMaterial
         }
       ]
+    },
+    {
+      path: "/customerMap",
+      name: 'customerMap',
+      component: customerMap
     },
     {
       path: "/Engineer",

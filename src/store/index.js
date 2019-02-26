@@ -253,8 +253,7 @@ export default new Vuex.Store({
       }
     ],
     process: {
-      sale: [
-        {
+      sale: [{
           name: "未完成任务",
           url: "/Sale"
         },
@@ -311,8 +310,7 @@ export default new Vuex.Store({
           url: "/Sale/historyRemittance"
         }
       ],
-      matters: [
-        {
+      matters: [{
           name: "员工列表",
           url: "/Matters"
         },
@@ -361,8 +359,7 @@ export default new Vuex.Store({
           url: "/Matters/approvals/type"
         }
       ],
-      afterSale: [
-        {
+      afterSale: [{
           name: "待完成任务",
           url: "/AfterSale"
         },
@@ -399,8 +396,7 @@ export default new Vuex.Store({
           url: "/AfterSale/sharedFiles"
         }
       ],
-      produce: [
-        {
+      produce: [{
           name: "待完成任务",
           url: "/Produce"
         },
@@ -429,8 +425,7 @@ export default new Vuex.Store({
           url: "/Produce/time"
         }
       ],
-      WareHouse: [
-        {
+      WareHouse: [{
           name: "待完成任务",
           url: "/WareHouse"
         },
@@ -511,8 +506,7 @@ export default new Vuex.Store({
           url: ""
         }
       ],
-      OQC: [
-        {
+      OQC: [{
           name: "待完成任务",
           url: "/OQC"
         },
@@ -537,8 +531,7 @@ export default new Vuex.Store({
           url: "/OQC/history"
         }
       ],
-      system: [
-        {
+      system: [{
           name: "基本信息",
           url: "/System"
         },
@@ -551,8 +544,7 @@ export default new Vuex.Store({
           url: "/System/enterprise"
         }
       ],
-      purchase: [
-        {
+      purchase: [{
           name: '待完成任务',
           url: '/Purchase'
         },
@@ -664,7 +656,8 @@ export default new Vuex.Store({
     //
     departmentModal: false,
     addAppTypeModal: false,
-    addApprovalModal: false
+    addApprovalModal: false,
+    addVisitModal: false
   },
   mutations: {
     change(state) {

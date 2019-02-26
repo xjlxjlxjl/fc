@@ -34,6 +34,7 @@ export default {
 }
 @media screen and (max-width: 820px) {
   footer {
+    display: none;
     background-color: #353535;
     padding: 1rem;
     line-height: 2;

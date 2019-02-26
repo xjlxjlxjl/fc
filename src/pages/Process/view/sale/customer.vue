@@ -1,6 +1,7 @@
 <template>
   <div id="customer">
     <addCustomer @refresh="refreshed"></addCustomer>
+    <addVisit :slug="slug" @refresh="refreshed"></addVisit>
     <div
       class="modal fade bs-example-modal-lg"
       tabindex="-1"
@@ -16,25 +17,32 @@
         </div>
       </div>
     </div>
+
     <div id="toolbar">
       <span class="lead">客户管理</span>
       <el-button size="mini" @click="add">新建客户</el-button>
+      <router-link to="/customerMap" style="margin-left: 5px;">
+        <el-button size="mini">附近客户</el-button>
+      </router-link>
     </div>
     <table id="table"></table>
   </div>
 </template>
 <script>
 import addCustomer from "@/pages/Process/common/addCustomer";
+import addVisit from "@/pages/Process/common/addVisit";
 
 export default {
   name: "customer",
   data() {
     return {
-      user: JSON.parse(localStorage.getItem("user") || "{}")
+      user: JSON.parse(localStorage.getItem("user") || "{}"),
+      slug: ""
     };
   },
   components: {
-    addCustomer: addCustomer
+    addCustomer: addCustomer,
+    addVisit: addVisit
   },
   methods: {
     tableAjaxData(params) {
@@ -320,22 +328,8 @@ export default {
             },
             events: {
               "click .visit": (e, value, row, index) => {
-                that
-                  .$prompt("", "输入拜访地址", {})
-                  .then(result => {
-                    that
-                      .$post(`customers/visit/create`, {
-                        slug: value,
-                        access_at: that.miniDateParse(new Date()),
-                        address: result.value
-                      })
-                      .then(response => {
-                        if (response.status != 200) return false;
-                        that.refresh($("#table"));
-                      })
-                      .catch(err => {});
-                  })
-                  .catch(err => {});
+                that.slug = value;
+                addVisit.methods.close.call(this);
               },
               "click .list": (e, value, row, index) => {
                 $("#childTable").bootstrapTable("load", row.visit);
@@ -375,6 +369,11 @@ export default {
         pageList: [10, 25, 50, 100, "All"],
         columns: [
           {
+            field: "created_at",
+            title: "创建时间",
+            sortable: true
+          },
+          {
             field: "access_at",
             title: "拜访时间",
             sortable: true
@@ -390,15 +389,171 @@ export default {
             }
           },
           {
+            field: "together",
+            title: "同行人",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "client_company",
+            title: "公司名称",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "product_used",
+            title: "所用产品",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "purchase_quantity_year",
+            title: "年采购量",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "payment_method",
+            title: "付款方式",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "business_content",
+            title: "营业内容",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "contact",
+            title: "联系人",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "mobile",
+            title: "电话",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "customer_level",
+            title: "客户等级",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "visiting_content",
+            title: "拜访内容",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "market_status",
+            title: "市场状态",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "suggestions",
+            title: "建议事项",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "同行人",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "supervisor_reply",
+            title: "主管回复",
+            sortable: true
+          },
+          {
+            field: "reply_at",
+            title: "回复时间",
+            sortable: true
+          },
+          {
             field: "slug",
             title: "操作",
             formatter: () => {
               let del = [
-                `<button class="btn btn-danger btn-sm del">删除记录</button>`
-              ];
-              return del;
+                  `<button class="btn btn-danger btn-sm del">删除记录</button>`
+                ],
+                reply = [
+                  `<button class="btn btn-primary btn-sm reply">主管回复</button>`
+                ];
+              if (row.is_reply) return reply + del;
+              else return del;
             },
             events: {
+              "click .reply": (e, slug, row, index) => {
+                $(".bs-example-modal-lg").modal("hide");
+                that
+                  .$prompt("主管回复内容", "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消"
+                  })
+                  .then(({ value }) => {
+                    that
+                      .$post(`customers/visit/reply`, {
+                        slug: slug,
+                        supervisor_reply: value
+                      })
+                      .then(response => {
+                        $(".bs-example-modal-lg").modal("show");
+                        if (response.status != 200) return false;
+                        that.$message({ message: "回复成功", type: "success" });
+                      })
+                      .catch(err => {});
+                  })
+                  .catch(() => {});
+              },
               "click .del": (e, value, row, index) => {
                 that
                   .$get(`customers/visit/delete`, row)
@@ -412,10 +567,12 @@ export default {
           }
         ],
         onEditableSave(field, mrow, oldValue, $el) {
+          mrow.access_at = that.miniDateParse(new Date(mrow.access_at));
           that
             .$post(`customers/visit/edit`, mrow)
             .then(response => {
               if (response.status != 200) return false;
+              this.$message({ message: "修改成功", type: "success" });
             })
             .catch(err => {});
         }
