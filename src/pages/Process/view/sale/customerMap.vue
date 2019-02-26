@@ -66,7 +66,9 @@ export default {
             );
             that.map.addOverlay(marker);
             that.addClickHandler(
-              `名称：${e.name} 电话：${e.mobile} 地址：${e.region.address}`,
+              `名称：${e.name} 电话：${e.mobile} 地址：${
+                e.region.address
+              } 距离：${e.distance}m`,
               marker
             );
           });

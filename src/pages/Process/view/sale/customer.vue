@@ -317,7 +317,7 @@ export default {
           {
             field: "slug",
             title: "操作",
-            formatter: () => {
+            formatter: (value, row, index) => {
               let visit = [
                   `<button class="btn btn-success btn-sm visit">添加访问</button>`
                 ],
@@ -521,7 +521,7 @@ export default {
           {
             field: "slug",
             title: "操作",
-            formatter: () => {
+            formatter: (value, row, index) => {
               let del = [
                   `<button class="btn btn-danger btn-sm del">删除记录</button>`
                 ],
