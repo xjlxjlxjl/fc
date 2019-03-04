@@ -5,7 +5,7 @@
     <!-- <supplier-modal title="选择供应商" :demand="nonstandard" @onSubmit="createNon"></supplier-modal> -->
     <el-container>
       <el-aside class="homeMainAside" width="200px">
-        <el-menu default-active="0">
+        <el-menu :default-active="productIndex.toString()">
           <el-menu-item
             v-for="(item,index) in product"
             :key="index"
@@ -19,7 +19,7 @@
       <el-main class="homeMainContent">
         <el-container>
           <el-aside class="homeAsideList" width="120px">
-            <el-menu default-active="0">
+            <el-menu :default-active="selectedCateIndex.toString()">
               <el-menu-item
                 v-for="(item,index) in selectedCate"
                 :key="index"
@@ -2514,6 +2514,8 @@ export default {
       selectedGood: {},
       selectedDetail: {},
       showDetailState: 0,
+      productIndex: 0,
+      selectedCateIndex: 0,
       typeSelection: {
         Int: 0,
         FPC: 0,
@@ -2616,9 +2618,7 @@ export default {
         .$get("store/category")
         .then(response => {
           loading.close();
-          if (response.status != 200) {
-            return false;
-          }
+          if (response.status != 200) return false;
           that.product = response.data.list;
           that.showCategory(that.product[0].children);
         })
@@ -2626,12 +2626,21 @@ export default {
     },
     showCategory(item) {
       this.selectedCate = item;
-      this.goodsListActive = "0";
       this.showGoodsList(item[0].children);
-      // this.changeGoodsListActive();
 
-      if (this.$route.params.modal && this.firstJoin)
+      if (this.$route.params.modal && this.firstJoin) {
         this.showDetail({ enable: 1, code: this.$route.params.modal });
+        this.product.forEach((e,k) => {
+          e.children.forEach((item, index) => {
+            item.children.forEach(value => {
+              if(value.code == this.$route.params.modal){
+                this.productIndex = k;
+                this.selectedCateIndex = index;
+              }
+            });
+          });
+        });
+      }
       this.firstJoin = false;
     },
     showGoodsList(item) {
@@ -2647,97 +2656,81 @@ export default {
         switch (item.code) {
           case "linear_module":
             this.showDetailState = 1;
-            url += "#/linear_module";
             this.params.speed = "0.5";
             that.initChart();
             break;
           case "liner_motor":
             this.showDetailState = 2;
-            url += "#/liner_motor";
             this.params.speed = "0.5";
             that.initChart();
             break;
           case "screw_module":
             this.showDetailState = 3;
-            url += "#/screw_module";
             this.params.speed = "250";
             break;
           case "precision_lifting_platform":
             this.showDetailState = 4;
-            url += "#/precision_lifting_platform";
             this.screen();
             break;
           case "moving_stator":
             this.showDetailState = 5;
-            url += "#/moving_stator";
             this.params.speed = "0.5";
             that.initChart();
             break;
           case "fpc_diving_platform":
             this.showDetailState = 6;
-            url += "#/fpc_diving_platform";
             this.screen();
             break;
           case "fpc_flying_light_path":
             this.showDetailState = 7;
-            url += "#/fpc_flying_light_path";
             this.screen();
             break;
           case "fpc_bridge":
             this.showDetailState = 8;
-            url += "#/fpc_bridge";
             this.screen();
             break;
           case "screw_xy_platform":
             // 丝杆十字标准
             this.showDetailState = 9;
-            url += "#/screw_xy_platform";
             break;
           case "screw_xy_cantilever":
             // 丝杆悬臂
             this.showDetailState = 11;
-            url += "#/screw_xy_cantilever";
             break;
           case "screw_xyz_cantilever":
             this.showDetailState = 12;
-            url += "#/screw_xyz_cantilever";
             break;
           case "xy_platform":
             this.showDetailState = 10;
-            url += "#/xy_platform";
             that.initChart();
             break;
           // 非标定制
           case "non_standard_customization":
             if (!this.$ifLogin()) return false;
             this.showDetailState = 13;
-            url += "#/non_standard_customization";
             break;
           // D3015整机
           case "d3015_machine":
             this.showDetailState = 14;
-            url += "#/d3015_machine";
             this.screen();
             break;
           case "d3015_machine_horizontal":
             this.showDetailState = 15;
-            url += "#/d3015_machine_horizontal";
             this.screen();
             break;
           case "d3015_machine_left":
             this.showDetailState = 16;
-            url += "#/d3015_machine_left";
             this.screen();
             break;
           case "d3015_machine_mover":
             this.showDetailState = 17;
-            url += "#/d3015_machine_mover";
             this.screen();
             break;
           default:
             url = null;
             break;
         }
+        url += `#/${item.code}`;
         if (url) location.href = url;
       }
     },
@@ -3011,21 +3004,6 @@ export default {
       });
       delArr.forEach((e, k) => this.nonstandard.images_ids.splice(k, 1));
       this.nonstandard.fileUrl = fileList;
-    },
-    changeGoodsListActive() {
-      setTimeout(() => {
-        let $active = document.getElementsByClassName("homeAsideList")[0]
-          .children[0].children;
-        for (let i = 0; i < $active.length; i++) {
-          if (!i) {
-            if (!$active[i].classList.contains("is-active")) {
-              $active[i].classList.add("is-active");
-            }
-          } else {
-            $active[i].classList.remove("is-active");
-          }
-        }
-      }, 100);
     }
   },
   watch: {
@@ -3144,7 +3122,7 @@ export default {
         height: 100%;
         .homeAsideList {
           .el-menu-item {
-            border-bottom: 1px solid #e6e6e6;
+            border-bottom: @border;
           }
           .el-menu-item.is-active {
             background-color: #ff9900;
@@ -3346,6 +3324,15 @@ export default {
     > .el-container {
       height: auto;
       display: block;
+      .homeMainContent {
+        > .el-container {
+          display: block;
+          border-top: 1rem solid @white;
+          > .homeAsideList {
+            width: 100% !important;
+          }
+        }
+      }
       .homeMainAside {
         padding: 0;
         width: 100% !important;
@@ -3353,7 +3340,7 @@ export default {
         .el-menu {
           border: none;
           .el-menu-item {
-            border-bottom: 1px solid #e6e6e6;
+            border-bottom: @border;
             box-sizing: border-box;
           }
           .el-menu-item.is-active {
@@ -3371,10 +3358,10 @@ export default {
         .homeAsideList {
           box-sizing: border-box;
           .el-menu-item {
-            border-bottom: 1px solid #e6e6e6;
+            border-bottom: @border;
             box-sizing: border-box;
             &:first-child {
-              border-top: 1px solid #e6e6e6;
+              border-top: @border;
             }
           }
           .el-menu-item.is-active {
