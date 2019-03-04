@@ -1407,7 +1407,10 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
-                    <p class="speedTips" v-show="screwRealXSpeed">理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
+                    <p
+                      class="speedTips"
+                      v-show="screwRealXSpeed"
+                    >理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -1418,7 +1421,10 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
-                    <p class="speedTips" v-show="screwRealYSpeed">理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
+                    <p
+                      class="speedTips"
+                      v-show="screwRealYSpeed"
+                    >理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -1592,7 +1598,10 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
-                    <p class="speedTips" v-show="screwRealXSpeed">理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
+                    <p
+                      class="speedTips"
+                      v-show="screwRealXSpeed"
+                    >理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -1603,7 +1612,10 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
-                    <p class="speedTips" v-show="screwRealYSpeed">理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
+                    <p
+                      class="speedTips"
+                      v-show="screwRealYSpeed"
+                    >理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li v-show="params.mountingmotor == 'FW'">
@@ -1783,7 +1795,10 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
-                    <p class="speedTips" v-show="screwRealXSpeed">理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
+                    <p
+                      class="speedTips"
+                      v-show="screwRealXSpeed"
+                    >理论上最高速度可达到{{ screwRealXSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -1794,7 +1809,10 @@
                       mm/s
                       <small>（行程超过700mm，最大速度递减15%）</small>
                     </span>
-                    <p class="speedTips" v-show="screwRealYSpeed">理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
+                    <p
+                      class="speedTips"
+                      v-show="screwRealYSpeed"
+                    >理论上最高速度可达到{{ screwRealYSpeed }} mm/s</p>
                   </div>
                 </li>
                 <li>
@@ -2194,6 +2212,286 @@
               </div>
             </div>
           </el-main>
+          <!-- 3015整机 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 14">
+            <div class="main">
+              <ul></ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row }">
+                    <div class="drawing">
+                      <div v-if="row.drawing_2d">
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_3d">
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row }">
+                    <div class="opera">
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- 3015整机横轴 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 15">
+            <div class="main">
+              <ul></ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row }">
+                    <div class="drawing">
+                      <div v-if="row.drawing_2d">
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_3d">
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row }">
+                    <div class="opera">
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- 3015整机下轴 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 16">
+            <div class="main">
+              <ul></ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row }">
+                    <div class="drawing">
+                      <div v-if="row.drawing_2d">
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_3d">
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row }">
+                    <div class="opera">
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <!-- 3015整机动定子 -->
+          <el-main class="homeGoodDetail" v-else-if="showDetailState == 17">
+            <div class="main">
+              <ul></ul>
+              <div class="operation">
+                <span></span>
+                <el-button type="primary" size="mini" @click="screen">筛选</el-button>
+              </div>
+              <el-table border :data="tableData.list">
+                <el-table-column label="产品" width="400">
+                  <template slot-scope="{ row }">
+                    <div class="productInfo">
+                      <div>
+                        <img :src="row.image" :alt="row.name">
+                      </div>
+                      <div>
+                        <p>
+                          名称：
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.name }}</a>
+                        </p>
+                        <p>
+                          型号:
+                          <a
+                            target="_blank"
+                            :href="`./index.html#/product/${ row.slug }/${ row.id }/${ row.selling_price_slug }`"
+                          >{{ row.model }}</a>
+                        </p>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sales_price" label="价格"></el-table-column>
+                <el-table-column prop="delivery_period" label="交期">
+                  <template slot-scope="{ row }">
+                    <span>{{ row.delivery_period }} 工作日</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="图纸">
+                  <template slot-scope="{ row }">
+                    <div class="drawing">
+                      <div v-if="row.drawing_2d">
+                        <i class="font_family icon-d2twig"></i>
+                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_3d">
+                        <i class="font_family icon-d3twig"></i>
+                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                      </div>
+                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="{ row }">
+                    <div class="opera">
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="joinProject.id = row.id;joinProject.history = row.selling_price_slug;getProject()"
+                      >加入项目</el-button>
+                      <el-button type="success" size="mini" @click="sendMailto(row.str_id)">发送图纸</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
         </el-container>
         <index-chart></index-chart>
       </el-main>
@@ -2350,41 +2648,45 @@ export default {
           case "linear_module":
             this.showDetailState = 1;
             url += "#/linear_module";
-            this.params.speed = '0.5';
+            this.params.speed = "0.5";
             that.initChart();
             break;
           case "liner_motor":
             this.showDetailState = 2;
             url += "#/liner_motor";
-            this.params.speed = '0.5';
+            this.params.speed = "0.5";
             that.initChart();
             break;
           case "screw_module":
             this.showDetailState = 3;
             url += "#/screw_module";
-            this.params.speed = '250';
+            this.params.speed = "250";
             break;
           case "precision_lifting_platform":
             this.showDetailState = 4;
             url += "#/precision_lifting_platform";
+            this.screen();
             break;
           case "moving_stator":
             this.showDetailState = 5;
             url += "#/moving_stator";
-            this.params.speed = '0.5';
+            this.params.speed = "0.5";
             that.initChart();
             break;
           case "fpc_diving_platform":
             this.showDetailState = 6;
             url += "#/fpc_diving_platform";
+            this.screen();
             break;
           case "fpc_flying_light_path":
             this.showDetailState = 7;
             url += "#/fpc_flying_light_path";
+            this.screen();
             break;
           case "fpc_bridge":
             this.showDetailState = 8;
             url += "#/fpc_bridge";
+            this.screen();
             break;
           case "screw_xy_platform":
             // 丝杆十字标准
@@ -2410,6 +2712,27 @@ export default {
             if (!this.$ifLogin()) return false;
             this.showDetailState = 13;
             url += "#/non_standard_customization";
+            break;
+          // D3015整机
+          case "d3015_machine":
+            this.showDetailState = 14;
+            url += "#/d3015_machine";
+            this.screen();
+            break;
+          case "d3015_machine_horizontal":
+            this.showDetailState = 15;
+            url += "#/d3015_machine_horizontal";
+            this.screen();
+            break;
+          case "d3015_machine_left":
+            this.showDetailState = 16;
+            url += "#/d3015_machine_left";
+            this.screen();
+            break;
+          case "d3015_machine_mover":
+            this.showDetailState = 17;
+            url += "#/d3015_machine_mover";
+            this.screen();
             break;
           default:
             url = null;
@@ -2470,7 +2793,7 @@ export default {
           }
         ]
       };
-      if (option && typeof option === "object") 
+      if (option && typeof option === "object")
         that.speedChart.setOption(option, true);
     },
     sendMailto(str_id) {
@@ -2573,6 +2896,18 @@ export default {
           if (that.params.screw_photoelectric_switch == "0")
             that.params.switch_line_length = 0;
           else that.params.switch_line_length = that.params.switchline; // 开关线
+          break;
+        case 14:
+          url = "products/selected/d3015_machine";
+          break;
+        case 15:
+          url = "products/selected/d3015_machine_horizontal";
+          break;
+        case 16:
+          url = "products/selected/d3015_machine_left";
+          break;
+        case 17:
+          url = "products/selected/d3015_machine_mover";
           break;
         default:
           break;
@@ -2697,7 +3032,7 @@ export default {
     params: {
       handler(val, oldVal) {
         this.screwRealSpeed = 0;
-        switch(this.showDetailState){
+        switch (this.showDetailState) {
           case 1:
           case 2:
           case 10:
@@ -2705,9 +3040,15 @@ export default {
             this.changeSpeedChart();
             break;
           case 3:
-            if (val.distance > 700){
-              for(let i = 0; i < Math.floor((val.distance - 700) * 0.01); i++){
-                this.screwRealSpeed = (this.screwRealSpeed || val.speed) - (this.screwRealSpeed || val.speed) * 0.15;
+            if (val.distance > 700) {
+              for (
+                let i = 0;
+                i < Math.floor((val.distance - 700) * 0.01);
+                i++
+              ) {
+                this.screwRealSpeed =
+                  (this.screwRealSpeed || val.speed) -
+                  (this.screwRealSpeed || val.speed) * 0.15;
               }
               this.screwRealSpeed = this.screwRealSpeed.toFixed(0);
             } else this.screwRealSpeed = 0;
@@ -2715,16 +3056,28 @@ export default {
           case 12:
           case 9:
           case 11:
-            if(val.x_distance > 700){
-              for(let i = 0; i < Math.floor((val.x_distance - 700) * 0.01); i++){
-                this.screwRealXSpeed = (this.screwRealXSpeed || val.x_maximum_speed) - (this.screwRealXSpeed || val.x_maximum_speed) * 0.15;
+            if (val.x_distance > 700) {
+              for (
+                let i = 0;
+                i < Math.floor((val.x_distance - 700) * 0.01);
+                i++
+              ) {
+                this.screwRealXSpeed =
+                  (this.screwRealXSpeed || val.x_maximum_speed) -
+                  (this.screwRealXSpeed || val.x_maximum_speed) * 0.15;
               }
               this.screwRealXSpeed = this.screwRealXSpeed.toFixed(0);
             } else this.screwRealXSpeed = 0;
-            
-            if(val.y_distance > 700){
-              for(let i = 0; i < Math.floor((val.y_distance - 700) * 0.01); i++){
-                this.screwRealYSpeed = (this.screwRealYSpeed || val.y_maximum_speed) - (this.screwRealYSpeed || val.y_maximum_speed) * 0.15;
+
+            if (val.y_distance > 700) {
+              for (
+                let i = 0;
+                i < Math.floor((val.y_distance - 700) * 0.01);
+                i++
+              ) {
+                this.screwRealYSpeed =
+                  (this.screwRealYSpeed || val.y_maximum_speed) -
+                  (this.screwRealYSpeed || val.y_maximum_speed) * 0.15;
               }
               this.screwRealYSpeed = this.screwRealYSpeed.toFixed(0);
             } else this.screwRealYSpeed = 0;
@@ -2869,7 +3222,7 @@ export default {
                     .tips {
                       margin-top: 1rem;
                     }
-                    .speedTips{
+                    .speedTips {
                       color: @red;
                     }
                   }

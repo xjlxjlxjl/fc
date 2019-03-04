@@ -528,8 +528,8 @@ export default {
                 reply = [
                   `<button class="btn btn-primary btn-sm reply">主管回复</button>`
                 ];
-              if (row.is_reply) return reply + del;
-              else return del;
+              if (row.is_reply) return reply;
+              else return "";
             },
             events: {
               "click .reply": (e, slug, row, index) => {
@@ -556,7 +556,9 @@ export default {
               },
               "click .del": (e, value, row, index) => {
                 that
-                  .$get(`customers/visit/delete`, row)
+                  .$post(`customers/visit/delete`, {
+                    slug: value
+                  })
                   .then(response => {
                     if (response.status != 200) return false;
                     that.delTable($("#childTable"), "id", [row.id]);
