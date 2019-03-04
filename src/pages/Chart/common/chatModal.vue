@@ -1,466 +1,1186 @@
 <template>
-  <transition name="el-fade-in-linear">
-    <div id="customerChat" v-show="chatModal">
-      <div class="Curtain"></div>
-      <div class="modalBox">
-        <div class="modalBoxMain">
-          <div class="modalBoxMainHeader">
-            <div class="modalBoxMainHeaderTitle">{{ companyName }}（{{ customer.display_name }}）</div>
-            <div class="modalBoxMainHeaderBtn" @click="close">
-              <i class="el-message-box__close el-icon-close"></i>
-            </div>
-          </div>
-          <div class="modalBoxMainContent">
-            <div id="chatMain">
-              <div class="chatMain">
-                <div v-for="(item,index) in record.list" :key="index" class="chatMessage">
-                  <div v-if="item.from_user_id != customer.id" class="formMessage">
-                    <div class="messgaeBox">
-                      <p class="messageUser" align="right">
-                        <span>{{ item.created_at }}</span>
-                        <span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span>
-                      </p>
-                      <div class="Bubble"></div>
-                      <div class="messgaeCentent">
-                        <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
-                        <img
-                          v-else-if="item.msg_type == 2 || item.type == 2"
-                          :src="item.content"
-                          class="messageImg"
-                          preview="2"
-                          @click="showImg()"
-                        >
-                        <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
-                          <img :src="fileImg">
-                          <div>
-                            <h1>{{ item.content.split('/').pop() }}</h1>
-                            <br>
-                            <a target="_blank" :href="item.content">下载</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <img
-                      :src="user.user.avatar || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/头像xhdpi.png'"
-                    >
-                  </div>
-                  <div v-else class="toMessage">
-                    <img :src="customer.avatar">
-                    <div class="messgaeBox">
-                      <p class="messageUser">
-                        <span v-if="item.user">{{ item.user.remark || item.user.display_name }}</span>
-                        <span>{{ item.created_at }}</span>
-                      </p>
-                      <div class="Bubble"></div>
-                      <div class="messgaeCentent">
-                        <span v-if="item.msg_type == 1 || item.type == 1">{{ item.content }}</span>
-                        <img
-                          v-else-if="item.msg_type == 2 || item.type == 2"
-                          :src="item.content"
-                          class="messageImg"
-                          preview="2"
-                          @click="showImg()"
-                        >
-                        <div v-else-if="item.msg_type == 3 || item.type == 3" class="goodsMsg">
-                          <img :src="fileImg">
-                          <div>
-                            <h1>{{ item.content.split('/').pop() }}</h1>
-                            <!-- <span>{{ item.content }}</span> -->
-                            <br>
-                            <a target="_blank" :href="item.content">下载</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modalBoxMainBtn">
-            <div ref="uploadBox">
-              <el-upload
-                class="file-upload"
-                action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                :show-file-list="false"
-                :before-upload="uploadFile"
-              >
-                <i class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
-              <el-upload
-                class="avatar-uploader"
-                action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                :show-file-list="false"
-                :before-upload="uploadImg"
-              >
-                <i class="el-icon-picture avatar-uploader-icon"></i>
-              </el-upload>
-              <el-input
-                type="textarea"
-                id="el-textarea"
-                ref="uploadText"
-                v-model="message"
-                @keyup.13.native="sendMessage"
-              ></el-input>
-              <div class="btnBox">
-                <el-button type="primary" size="mini" @click="sendMessage">发送</el-button>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div id="msgBox" v-show="modal">
+    <!-- 
+      传递聊天记录
+      当前用户聊天名称 id
+      发送消息方法
+     -->
+    <popup 
+      :record="record"
+      :toUser="toUser"
+      :userName="userName"
+      :state="state"
+      :modal="modalShow"
+      @send="send"
+      @menuClick="menuClick"
+      @getRecord="getRecord"
+      @change="modalShow =! modalShow"
+    ></popup>
+    <!-- 踢出群聊，邀请群聊（ 0：邀请，1：添加 ） -->
+    <groupUserCheckBox
+      :groupId="groupId"
+      :groupUser="groupUserList"
+      :group="groupList.list"
+      :groupState="groupState"
+      @send="menuClick"
+      @refresh="getChatList"
+    ></groupUserCheckBox>
+
+    <div class="msgRise">
+      <div class="avatar"></div>
+      <div class="switch">
+        <i class="el-icon-close" @click="$emit('change', 'modalShow', false)"></i>
       </div>
     </div>
-  </transition>
+    <div class="msgMain">
+      <div class="msgSearch">
+        <el-input 
+          size="mini" 
+          v-if="msg.interface[2].isDefault || msg.interface[4].isDefault" 
+          v-model="searchId"
+          placeholder="搜索群组" 
+          @keyup.13.native="changeView(4)"
+          prefix-icon="el-icon-search"></el-input>
+        <el-input 
+          size="mini" 
+          v-else 
+          v-model="searchId"
+          placeholder="搜索用户" 
+          @keyup.13.native="changeView(3)"
+          prefix-icon="el-icon-search"></el-input>
+      </div>
+      <!-- 消息 -->
+      <div class="msgList" v-if="msg.interface[0].isDefault">
+        <el-menu default-active="0">
+          <el-menu-item
+            v-for="(item,index) in chatList.list"
+            v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
+            :key="index"
+            :index="index.toString()"
+            @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true">
+            <el-badge
+              :value="item.unread_message_num"
+              class="item"
+              v-if="parseInt(item.unread_message_num)">
+              <div class="avatarBox">
+                <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
+              </div>
+            </el-badge>
+            <div class="avatarBox" v-else>
+              <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
+            </div>
+            <span slot="title">{{ item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name }}</span>
+            <el-popover placement="right" trigger="hover">
+              <el-button
+                type="danger"
+                size="mini"
+                v-if="item.friend_user"
+                @click="delChat(item.id, index)"
+              >删除</el-button>
+              <el-button
+                size="mini"
+                type="warning"
+                v-else
+                @click="delGroup(item.group_id, index);chatList.list.splice(index, 1);"
+              >退出</el-button>
+              <!-- @click="delGroup(item.group_id, index);delChat(item.id, index)" -->
+              <el-button
+                type="primary"
+                size="mini"
+                v-if="item.friend_user"
+                @click="joinGroup"
+              >创建群聊</el-button>
+              <el-button
+                size="mini"
+                type="info"
+                v-else
+                @click="getGroupUser(item.group_id)"
+              >查看群成员</el-button>
+              <el-button size="mini" slot="reference">操作</el-button>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <!-- 好友 -->
+      <div class="msgList" v-else-if="msg.interface[1].isDefault">
+        <el-menu default-active="0">
+          <el-menu-item
+            v-for="(item,index) in friendList.list"
+            v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
+            :key="index"
+            :index="index.toString()"
+            @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true">
+            <div class="avatarBox">
+              <img :src="item.avatar">
+            </div>
+            <span slot="title">{{ item.remark || item.display_name }}</span>
+            <el-popover placement="right" trigger="hover">
+              <el-button type="danger" size="mini" @click="delUser(item.id,index)">删除</el-button>
+              <el-button type="primary" size="mini" @click="joinGroup">创建群聊</el-button>
+              <el-button type="success" size="mini" @click="setRemarks(item.id,index)">修改备注</el-button>
+              <el-button size="mini" slot="reference">操作</el-button>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <!-- 群聊 -->
+      <div class="msgList" v-else-if="msg.interface[2].isDefault">
+        <el-menu default-active="0">
+          <el-menu-item
+            v-for="(item,index) in groupList.list"
+            :key="index"
+            :index="index.toString()"
+            @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index });mainDisplay = true">
+            <div class="avatarBox">
+              <img :src="item.avatar">
+            </div>
+            <span slot="title">{{ item.group_name }}</span>
+            <el-popover placement="right" trigger="hover">
+              <el-button size="mini" slot="reference">操作</el-button>
+              <el-button
+                size="mini"
+                type="success"
+                @click="editGroup(item.id, item.group_name, item.group_description, index)"
+              >修改群信息</el-button>
+              <el-button size="mini" type="warning" @click="delGroup(item.id, index)">退出</el-button>
+              <el-button
+                size="mini"
+                type="danger"
+                v-if="item.admin_id == user.user.id"
+                @click="dissolution(item.id, index)"
+              >解散</el-button>
+              <el-button
+                size="mini"
+                type="primary"
+                v-if="item.admin_id == user.user.id"
+                @click="joinGroup(item.id)"
+              >邀请加入群聊</el-button>
+              <el-button size="mini" type="info" @click="getGroupUser(item.id)">查看群成员</el-button>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <!-- 用户搜索 -->
+      <div class="msgList" v-else-if="msg.interface[3].isDefault">
+        <el-menu default-active="0">
+          <el-menu-item
+            v-for="(item,index) in searchList"
+            v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
+            :key="index"
+            :index="index.toString()"
+            @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true">
+            <div class="avatarBox">
+              <img :src="item.avatar">
+            </div>
+            <span slot="title">{{ item.last_name || item.display_name }}</span>
+            <el-popover placement="right" trigger="hover">
+              <el-button size="mini" slot="reference">操作</el-button>
+              <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <!-- 群搜索 -->
+      <div class="msgList" v-else-if="msg.interface[4].isDefault">
+        <el-menu default-active="0">
+          <el-menu-item
+            v-for="(item,index) in searchList"
+            :key="index"
+            :index="index.toString()">
+            <div class="avatarBox">
+              <img :src="item.avatar">
+            </div>
+            <span slot="title">{{ item.group_name }}</span>
+            <el-popover placement="right" trigger="hover">
+              <el-button size="mini" slot="reference">操作</el-button>
+              <el-button size="mini" type="danger" @click="addGroup(item.id)">加入群组</el-button>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <!-- 同事 -->
+      <div class="msgList" v-else-if="msg.interface[5].isDefault">
+        <el-menu default-active="0">
+          <div v-for="(val,key) in mailList" :key="key">
+            <p>{{ val.branch_name }}</p>
+            <el-menu-item
+              v-for="(item,index) in val.member"
+              :key="index"
+              :index="item.id.toString()"
+              v-if="item.id != user.user.id"
+              @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true">
+              <div class="avatarBox">
+                <img :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'">
+              </div>
+              <span slot="title">{{ item.display_name }}</span>
+              <el-popover placement="right" trigger="hover">
+                <el-button size="mini" slot="reference">操作</el-button>
+                <el-button size="mini" type="primary" @click="joinGroup">创建群聊</el-button>
+                <el-button size="mini" type="danger" @click="addFriend(item.id)">添加好友</el-button>
+              </el-popover>
+            </el-menu-item>
+          </div>
+        </el-menu>
+      </div>
+      <!-- 通知 -->
+      <div class="msgList" id="notices" v-else-if="msg.interface[6].isDefault">
+        <el-menu default-active="0">
+          <el-menu-item
+            v-for="(item,index) in noticesList.list"
+            :key="index"
+            :index="index.toString()"
+            @click="getNoticesDetail(item, index)">
+            <label
+              slot="title"
+            >{{ item.from_user ? `${ item.from_user ? item.from_user.last_name ? item.from_user.last_name: item.from_user.display_name ? item.from_user.display_name : '通知' : '通知' }：${ item.message }`: item.message }}</label>
+            <el-popover
+              placement="right"
+              trigger="hover"
+              v-if="item.type != 15 && item.type != 4 && item.is_read == 0 && item.is_agree == 0 && item.is_delete == 0"
+            >
+              <el-button size="mini" slot="reference">操作</el-button>
+              <el-button
+                size="mini"
+                type="danger"
+                v-if="item.type == 3"
+                @click="acceptFriend(item.id)"
+              >添加</el-button>
+              <el-button
+                size="mini"
+                type="danger"
+                v-if="item.type == 16"
+                @click="acceptGroup(item.id)"
+              >同意添加</el-button>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </div>
+    </div>
+    <div class="msgTail">
+      <div v-for="item in msg.interface" 
+          :key="item.index" 
+          v-show="item.isShow"
+          @click="changeView(item.index)"
+          class="tailBox">
+        <i :class="item.isDefault ? item.activeIcon : item.icon"></i>
+        <p>{{ item.alt }}</p>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
 import fileImg from "@/assets/img/file.png";
-import message from "@/pages/Chart/view/message";
-import "vue-photo-preview/dist/skin.css";
+import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
+import popup from '@/pages/Chart/common/popup';
 
 export default {
   name: "chatModal",
   data() {
     return {
       fileImg: fileImg,
-      user: JSON.parse(localStorage.getItem("user") || "{}"),
-      customer: {},
-      message: "",
-      state: 1,
-      connectNum: 0,
-      inView: true,
+      user: JSON.parse(localStorage.getItem("user")) || null,
+      mainDisplay: false,
+      searchId: "",
+      chatList: {
+        list: []
+      },
+      friendList: {
+        list: []
+      },
+      groupList: {
+        list: []
+      },
+      searchList: {
+        list: []
+      },
+      mailList: {},
+      noticesList: {
+        list: [],
+        pagination: {
+          total: 1,
+          current_page: 0
+        }
+      },
       record: {
         list: [],
         pagination: {
-          current_page: 0,
-          total: 1
+          total: 1,
+          current_page: 0
         }
-      }
+      },
+      // 公用变量
+      key: 0,
+      toUser: 0,
+      state: 0,
+      userName: "",
+      message: "",
+      timeOut: null,
+      connectNum: 0,
+      inView: true,
+      modalShow: false,
+      // 群聊变量
+      checkBoxList: [],
+      groupId: 0,
+      groupState: 0,
+      groupUserList: [],
+      // socket
+      lockReconnect: false,
     };
   },
+  components: {
+    popup: popup,
+    groupUserCheckBox: groupUserCheckBox
+  },
   props: {
-    companyId: Number,
-    companyName: String
+    modal: Boolean
   },
   methods: {
-    getServiceUser() {
+    changeView(index) {
+      this.msg.interface.forEach((e, k) => {
+        if (index == k) e.isDefault = true;
+        else e.isDefault = false;
+      });
+      switch (index) {
+        case 0:
+          this.getChatList();
+          break;
+        case 1:
+          this.getFriendList();
+          break;
+        case 2:
+          this.getGroupList();
+          break;
+        case 3:
+          this.userSearch();
+          break;
+        case 4:
+          this.groupSearch();
+          break;
+        case 6:
+          // this.getNotices();
+          setTimeout(() => {
+            document.getElementById("notices").onscroll = e => {
+              let isLoad =
+                  e.target.scrollTop >=
+                  e.target.scrollHeight - e.target.offsetHeight,
+                total = this.noticesList.pagination.total,
+                currentPage =
+                  this.noticesList.pagination.total / 15 >
+                  (this.noticesList.pagination.currentPage ||
+                    this.noticesList.pagination.current_page);
+              if (isLoad && total && currentPage) this.getNotices();
+            };
+          }, 100);
+          break;
+      }
+    },
+    getFriendList() {
       let that = this;
-      // if (that.customer.id) return false;
       that
-        .$get(`workerman/service_set/member`, {
-          company_id: that.companyId
+        .$get("friend/list")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.friendList = response.data;
+        })
+        .catch(err => console.error(err));
+    },
+    setRemarks(id, key) {
+      let that = this;
+      this.$prompt("", "设置备注", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValue: name
+      }).then(({ value, action }) => {
+        that
+          .$post("friend/remark", {
+            friend_id: id,
+            remark: value
+          })
+          .then(response => {
+            if (response.status != 200) return false;
+            that.friendList.list[key].remark = value;
+            if (id == that.toUser) that.userName = value;
+          })
+          .catch(err => console.error(err));
+      });
+    },
+    addFriend(id) {
+      let that = this;
+      this.$prompt("请输入验证信息", "发送验证消息")
+        .then(({ value }) => {
+          that
+            .$post("friend/add/verify", {
+              friend_id: id,
+              content: value
+            })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.$message({ message: "发送成功", type: "success" });
+            })
+            .catch(error => console.error(error));
+        })
+        .catch(err => console.log("添加取消"));
+    },
+    acceptFriend(noticeId) {
+      let that = this;
+      that
+        .$post("friend/add", { notice_id: noticeId })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.getFriendList();
+        })
+        .catch(err => console.error(err));
+    },
+    delUser(id, index) {
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$post("friend/del", {
+          friend_id: id
         })
         .then(response => {
-          if (response.status != 200) {
-            that.close();
-            return false;
-          }
-          localStorage.setItem("customer", JSON.stringify(response.data));
-          that.customer = response.data;
-          that.toUser = response.data.id;
-          this.getRecord({
-            id: that.customer.id,
-            username: that.customer.display_name
-          });
+          loading.close();
+          if (response.status != 200) return false;
+          that.friendList.list.splice(index, 1);
         })
-        .catch(err => {});
+        .catch(err => loading.close());
     },
-    getRecord({ id, username }) {
-      message.methods.getRecord.call(this, { id: id, username: username });
+    userSearch() {
+      let that = this;
+      that
+        .$get("users/search", { name: that.searchId })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.searchList = response.data.list;
+        })
+        .catch(err => console.error(err));
     },
-    showImg() {
-      this.$preview.on("imageLoadComplete", (e, item) => console.log());
+    getChatList(state = true) {
+      let that = this;
+      that
+        .$get("chat/session/record")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.chatList = response.data;
+          if (!that.chatList.list.length) return false;
+          if(that.messageTips == 0){
+            for (const item of that.chatList.list) {
+              that.messageTips += parseInt(item.unread_message_num);
+            }
+          }
+          if (state) that.recordTo();
+        })
+        .catch(err => console.error(err));
     },
-    // 发信息
-    sendMessage() {
-      message.methods.sendMessage.call(
-        this,
-        0,
-        this.toUser,
-        1,
-        this.message,
-        1
-      );
+    // 中间过滤显示聊天显示第一个
+    recordTo() {
+      let that = this;
+      switch (that.chatList.list[0].friend_uid) {
+        case 0:
+          // 群聊
+          that.state = 2;
+          that.getRecord({
+            id: that.chatList.list[0].group_id,
+            username: that.chatList.list[0].group.group_name
+          });
+          break;
+        case 1:
+          // 私聊 用户 id = 1，选择第二个
+          if (that.chatList.list[1].friend_uid) {
+            that.state = 1;
+            that.getRecord({
+              id: that.chatList.list[1].friend_uid,
+              username:
+                that.chatList.list[1].friend_user.remark ||
+                that.chatList.list[1].friend_user.display_name
+            });
+          } else {
+            that.state = 2;
+            that.getRecord({
+              id: that.chatList.list[1].group.group_id,
+              username: that.chatList.list[1].group.group_name
+            });
+          }
+          break;
+        default:
+          // 其他用户
+          that.state = 1;
+          that.getRecord({
+            id: that.chatList.list[0].friend_uid,
+            username:
+              that.chatList.list[0].friend_user.remark ||
+              that.chatList.list[0].friend_user.display_name
+          });
+          break;
+      }
     },
-    // 发文件
-    uploadFile(file) {
-      message.methods.uploadFile.call(this, file);
+    getRecord({ id, username, index = 0 }) {
+      if (id != this.toUser || username != this.userName)
+        this.record.pagination = { total: 1, current_page: 0 };
+
+      let that = this,
+        url = null,
+        params = { page: ++that.record.pagination.current_page },
+        clear_unread_message_num = { action: "clear", req: {} },
+        pcHeight = document.getElementById("chatMain").scrollHeight,
+        moblieHeight = document.getElementsByClassName("chatMain")[0]
+          .scrollHeight;
+
+      that.key = index;
+      that.toUser = id;
+      that.userName = username;
+      if (that.chatList && that.chatList.list.length)
+        that.chatList.list[that.key].unread_message_num = 0;
+      if (that.state == 1) {
+        url = "chat/record";
+        params.to_user_id = id;
+        clear_unread_message_num.req.to_uid = id;
+      } else if (that.state == 2) {
+        url = "group/chat/record";
+        params.group = id;
+        clear_unread_message_num.req.group_id = id;
+      } else return false;
+      that.webSocketSend(clear_unread_message_num);
+      that
+        .$get(url, params)
+        .then(response => {
+          if (response.status != 200) return false;
+
+          if (response.pagination.current_page == 1) {
+            that.record.list = response.data.list;
+            that.fixLocation();
+          } else {
+            if (response.data.list.length == 0) return false;
+            response.data.list.reverse();
+            response.data.list.forEach(e => that.record.list.unshift(e));
+            that.modalShow = true;
+            setTimeout(() => {
+              let $chatMain = document.getElementById("chatMain"),
+                chatMain = document.getElementsByClassName("chatMain")[0];
+              $chatMain.scrollTop = $chatMain.scrollHeight - pcHeight;
+              chatMain.scrollTop = chatMain.scrollHeight - moblieHeight;
+            }, 100);
+          }
+          // that.finishingPictures();
+          that.record.pagination = response.pagination;
+        })
+        .catch(error => console.error(error));
     },
-    // 发图片
-    uploadImg(file) {
-      message.methods.uploadImg.call(this, file);
+    delChat(id, key) {
+      let that = this;
+      that
+        .$post("chat/session/remove", {
+          cid: id
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.toUser = 0;
+          that.chatList.list.splice(key, 1);
+        })
+        .catch(err => console.error(err));
     },
-    upload(form, type) {
-      message.methods.upload.call(this, form, type);
+    getGroupList() {
+      let that = this;
+      that
+        .$get("group/list")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.groupList.list = response.data.list;
+        })
+        .catch(err => console.error(err));
+    },
+    addGroup(id) {
+      let that = this;
+      that
+        .$prompt("请输入验证消息", "验证消息", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        })
+        .then(({ value }) => {
+          that
+            .$post("group/join/verify", {
+              group_id: id,
+              content: value
+            })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.getGroupList();
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
+    },
+    acceptGroup(id) {
+      let that = this;
+      that
+        .$post("group/join", {
+          notice_id: id
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.getGroupList();
+        })
+        .catch(err => console.error(err));
+    },
+    delGroup(id, index) {
+      let that = this;
+      that
+        .$post("group/exit", {
+          group_id: id
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.toUser = 0;
+          that.groupList.list.splice(index, 1);
+        })
+        .catch(err => console.error(err));
+    },
+    getGroupUser(id) {
+      let that = this;
+      this.groupId = id;
+      that
+        .$get("group/users", { group_id: id })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.groupUserList = response.data.list;
+          that.groupState = 0;
+          groupUserCheckBox.methods.close.call(this);
+        })
+        .catch(err => console.error(err));
+    },
+    groupSearch() {
+      let that = this;
+      that
+        .$get("group/search", { group_name: that.searchId })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.searchList = response.data.list;
+        })
+        .catch(err => console.error(err));
+    },
+    editGroup(id, name, desc, key) {
+      let that = this;
+      this.$prompt("", "修改群名", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValue: name
+      }).then(({ value, action }) => {
+        that
+          .$post("group/modify", {
+            group_id: id,
+            group_name: value
+          })
+          .then(response => {
+            if (response.status != 200) return false;
+            that.groupList.list[key].group_name = value;
+            that.userName = value;
+          })
+          .catch(err => console.error(err));
+      });
+    },
+    dissolution(id, key) {
+      let that = this;
+      this.$confirm("此操作将永久解散该群组, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(res => {
+          that
+            .$post("group/dissolution", { group_id: id })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.toUser = 0;
+              that.groupList.list.splice(key, 1);
+            })
+            .catch(error => console.error(error));
+        })
+        .catch(err => console.log("点错了"));
+    },
+    joinGroup(groupId = 0) {
+      this.groupId = parseInt(groupId);
+      this.groupUserList = this.checkBoxList.repeatDepth();
+      this.groupState = 1;
+      groupUserCheckBox.methods.close.call(this);
     },
     send(url, data, params, type) {
-      message.methods.send.call(this, url, data, params, type);
+      let that = this;
+      that
+        .$post(url, data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.req.msg_id = response.data.msg_id;
+          that.webSocketSend(params);
+          let msg = {
+              from_user_id: that.user.user.id,
+              from_user: {
+                from_user_id: that.user.user.id,
+                avatar: that.user.user.avatar,
+                display_name: that.user.user.display_name
+              },
+              created_at: that.dateParse(new Date()),
+              msg_type: type,
+              id: response.data.msg_id,
+              content: data.content
+            };
+
+          if (data.to_uid == that.toUser || data.to_group_id == that.toUser)
+            that.record.list.push(msg);
+        })
+        .catch(err => console.error(err));
     },
-    notify() {},
+    getMembers() {
+      let that = this;
+      that
+        .$get("chat/select/members")
+        .then(response => {
+          if (response.status != 200) return false;
+          let arr = [],
+            user = ["colleagues", "friends", "strangers"];
+          for (const key in response.data) {
+            if (user.indexOf(key) != -1)
+              response.data[key].forEach(e => {
+                e.isClick = false;
+                arr.push(e);
+              });
+          }
+          that.checkBoxList = arr;
+          that.members = response.data;
+        })
+        .catch(error => console.error(error));
+    },
+    getBranch() {
+      let that = this;
+      that
+        .$get("members/company/branch")
+        .then(response => {
+          if (response.status != 200) return false;
+          that.mailList = response.data.list;
+        })
+        .catch(error => console.error(error));
+    },
+    getNotices() {
+      let that = this;
+      that
+        .$get("chat/notices", {
+          page:
+            ++that.noticesList.pagination.currentPage ||
+            ++that.noticesList.pagination.current_page
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+
+          response.data.list.forEach(e => that.noticesList.list.push(e));
+          // response.data.list.forEach(e => that.noticesList.list.unshift(e));
+          that.noticesList.pagination = response.pagination;
+        })
+        .catch(error => console.error(error));
+    },
+    getNoticesDetail(item, key) {
+      this.$alert(
+        `${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} 
+          <p>通知内容：<b>${item.message}</b>
+        </p>`,
+        "通知",
+        {
+          confirmButtonText: "确定",
+          dangerouslyUseHTMLString: true,
+          callback: action => {}
+        }
+      );
+    },
+    menuClick(i, text, forwardData) {
+      switch (i) {
+        case 0:
+          this.groupId = 0;
+          this.groupUserList = this.checkBoxList.repeatDepth();
+          this.groupState = 2;
+          this.forwardData = forwardData;
+          groupUserCheckBox.methods.close.call(this);
+          break;
+        case 1:
+          var save = e => {
+            e.clipboardData.setData("text/plain", text.target.innerText); //下面会说到clipboardData对象
+            e.preventDefault(); //阻止默认行为
+          };
+          document.addEventListener("copy", save);
+          document.execCommand("copy");
+          this.$message({ message: "复制成功", type: "success" });
+          break;
+        case 2:
+          let msgSendId =
+            forwardData.from_user_id || forwardData.user_id;
+          if (msgSendId != this.user.user.id) {
+            this.$message({ message: "只能撤回个人消息", type: "error" });
+            return false;
+          }
+          if (
+            new Date() - new Date(forwardData.created_at) >
+            2 * 60 * 1000
+          ) {
+            this.$message({
+              message: "只能撤回不超过2分钟的消息",
+              type: "error"
+            });
+            return false;
+          }
+          let params = {
+            action: "withdrawal",
+            req: {
+              msg_id: forwardData.id
+            }
+          };
+          if (this.state == 1) params.req.to_uid = this.toUser;
+          else if (this.state == 2) params.req.group_id = this.toUser;
+          else return false;
+          this.webSocketSend(params);
+          break;
+        default:
+          // 转发
+          this.$on('send', (url, data, params, msgType) => this.send(url, data, params, msgType))
+          for (const item in i) {
+            i[item].forEach(e =>
+              setTimeout(() => {
+                let msg = this.forwardData,
+                  type = msg.msg_type || msg.type,
+                  state = item == "user" ? 1 : 2;
+                popup.methods.sendMessage.call(this, 0, e, type, msg.content, state);
+              }, 500)
+            );
+          }
+          break;
+      }
+    },
+    notify(result, state) {
+      let msg = null,
+        title = {
+          1: result.resp.content,
+          2: "[图片]",
+          3: "[文件]"
+        },
+        getRequset = {
+          1: () => this.getFriendList(),
+          2: () => this.getGroupList()
+        };
+      this.$notify({ title: `${result.resp.from_name}`, message: title[result.resp.type] });
+      new Notification(`${result.resp.from_name}`, { body: title[result.resp.type] });
+
+      clearTimeout(this.timeOut);
+      this.timeOut = setTimeout(() => {
+        this.getChatList(false);
+        getRequset[state]();
+      }, 2000);
+    },
     webSocket() {
-      message.methods.webSocket.call(this);
+      let socketAddress = this.$store.state.socketAddress;
+      this.ws = new WebSocket(socketAddress);
+      this.ws.onmessage = event => {
+        const result = JSON.parse(event.data);
+        switch (result.action) {
+          case "init":
+            this.webSocketLogin();
+            break;
+          case "login":
+            if (result.resp.code != 200) {
+              if (result.resp.code == 400) {
+                this.$notify({
+                  title: "过多的连接",
+                  message: "请关闭其他本网站网页"
+                });
+                return false;
+              }
+              this.webSocketLogin();
+            } else {
+              clearInterval(this.pong);
+              this.connectNum = 0;
+              this.pong = setInterval(
+                () =>
+                  this.webSocketSend({
+                    action: "pong",
+                    req: {
+                      message: "hello"
+                    }
+                  }),
+                5000
+              );
+            }
+            break;
+          case "pong":
+            break;
+          case "chat":
+            console.log(result);
+            if (result.resp_event == 200) {
+              if (result.resp.from_uid == this.toUser) {
+                let msg = {
+                  from_user_id: result.resp.from_uid,
+                  from_user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: this.userName
+                  },
+                  id: result.msg_id,
+                  created_at: this.dateParse(new Date()),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                };
+                this.record.list.push(msg);
+              }
+              this.$emit('tips');
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              if (result.resp.from_uid) this.notify(result, 1);
+            }
+            this.fixLocation();
+            break;
+              this.$emit('messageTips');
+          case "group":
+            console.log(result);
+            if (result.resp_event == 200) {
+              if (result.resp.group == this.toUser) {
+                let msg = {
+                  from_user_id: result.resp.from_uid,
+                  user: {
+                    from_user_id: result.resp.from_uid,
+                    avatar:
+                      result.resp.avatar ||
+                      "https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/default_avatar/%E5%A4%B4%E5%83%8Fxhdpi.png",
+                    display_name: result.resp.from_name
+                  },
+                  id: result.msg_id,
+                  created_at: this.dateParse(new Date()),
+                  msg_type: result.resp.type,
+                  content: result.resp.content
+                };
+                this.record.list.push(msg);
+              }
+              this.$emit('tips');
+              // this.getRecord({ id: this.toUser, username: this.userName });
+              if (result.resp.from_uid) this.notify(result, 2);
+            }
+            this.fixLocation();
+            break;
+          case "notice":
+            console.log(result);
+            this.$emit('tips');
+            this.$notify({ title: `您有一条来自${result.resp.from_name}的通知`, message: result.resp.content });
+            new Notification(`您有一条来自${result.resp.from_name}的通知`, { body: result.resp.content });
+
+            this.noticesList.list.unshift({
+              id: result.resp.notice_id,
+              from_user: {
+                last_name: result.resp.from_name || ""
+              },
+              message: result.resp.content,
+              type: result.resp.type,
+              user_id: result.resp.user_id
+            });
+            // this.getNotices();
+            break;
+          case "withdrawal":
+            if (result.msg_id) {
+              this.record.list.forEach((e, k) => {
+                if (e.id == result.msg_id) this.record.list.splice(k, 1);
+              });
+            }
+            break;
+          case "close":
+            this.webSocketClose();
+            break;
+          default:
+            console.log("抛出");
+            console.log(result);
+            break;
+        }
+      };
+      this.ws.onclose = this.ws.onerror = e => {
+        if (!this.inView) return false;
+        this.connectNum++;
+        this.reconnect(socketAddress);
+      };
     },
     reconnect(url) {
-      message.methods.reconnect.call(this, url);
+      if (this.lockReconnect) return false;
+      this.lockReconnect = true;
+      //没连接上会一直重连，设置延迟避免请求过多
+      setTimeout(
+        () => {
+          clearInterval(this.pong);
+          this.webSocket(url);
+          this.lockReconnect = false;
+        },
+        2000 * (this.connectNum + 1) > 64000
+          ? 64000
+          : 2000 * (this.connectNum + 1)
+      );
     },
     webSocketLogin() {
-      message.methods.webSocketLogin.call(this);
+      this.webSocketSend({
+        action: "login",
+        req: {
+          token: this.user.token,
+          client_type: "web"
+        }
+      });
     },
     webSocketSend(action) {
-      message.methods.webSocketSend.call(this, action);
+      this.ws.send(JSON.stringify(action));
     },
     webSocketClose() {
-      message.methods.webSocketClose.call(this);
-    },
-    finishingPictures() {
-      message.methods.finishingPictures.call(this);
+      this.inView = false;
+      clearInterval(this.pong);
+      this.ws.close();
     },
     fixLocation() {
-      message.methods.fixLocation.call(this);
+      popup.methods.fixLocation.call(this)
     },
-    close() {
-      this.$store.commit("changeModal", "chatModal");
-    }
   },
-  computed: mapState(["chatModal"]),
+  computed: mapState(["chatModal", "msg"]),
   watch: {
-    chatModal(newVal) {
-      if (!newVal) return false;
-      this.getServiceUser();
+    toUser() {
+      this.record.pagination = { total: 1, current_page: 0 };
     },
-    record: {
-      handler(val) {
-        this.$previewRefresh();
-      },
-      deep: true
+    state() {
+      this.record.pagination = { total: 1, current_page: 0 };
     }
   },
-  beforeDestroy() {
-    this.webSocketClose();
-  },
-  mounted() {
-    message.mounted.call(this);
-  },
+  beforeDestroy() {},
+  mounted() {},
   created() {
+    this.getChatList();
+    this.getFriendList();
+    this.getGroupList();
     this.webSocket();
+    this.getMembers();
+    this.getNotices();
+
+    if (this.user.slug) this.getBranch();
   }
 };
 </script>
 <style lang="less">
-@FFF: #ffffff;
-@white: #eeeeee;
+@grey: #d9d9d9;
 @gery: #666666;
+@smallGrey: #f6f6f6;
+@white: #ffffff;
+@eee: #eeeeee;
+@dedede: #dedede;
+@e6e6e6: #e6e6e6;
 @black: #1d1d1d;
-@blue: #0064db;
-@border: 1px solid @gery;
-@listBackground: @white;
-@hoverBackground: #e6e6e6;
-@background: #dedede;
-@chatBackground: #fffefe;
-@chatBorder: 1px solid #dedede;
-.Bubble() {
-  padding: 0;
-  margin: 0;
-  width: 0px;
-  height: 0px;
-  box-sizing: content-box;
-  position: absolute;
-  top: 3rem;
-}
-#customerChat {
-  .modalBox {
-    top: 180px;
-    @media screen and (max-width: 510px) {
-      top: 80px;
-    }
-    .modalBoxMain {
-      width: 500px;
-      max-width: 100%;
-      margin-top: 0px;
-      @media screen and (max-width: 510px) {
-        max-height: 100%;
+@shadow: 1px 1px 50px rgba(0, 0, 0, 0.3);
+@border: 1px solid @grey;
+
+#msgBox {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+  width: 300px;
+  height: 600px;
+  border: @border;
+  box-sizing: border-box;
+  border-radius: 2px;
+  box-shadow: @shadow;
+  background-color: @smallGrey;
+  .msgRise {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    color: @black;
+    .switch {
+      > i {
+        font-size: 2rem;
+        font-weight: bold;
       }
-      #chatMain {
-        overflow-y: auto;
-        height: 500px;
-        @media screen and (max-width: 510px) {
-          max-height: 130px;
+    }
+  }
+  .msgMain {
+    .msgSearch {
+      padding: 0 0.5rem;
+    }
+    .msgList {
+      height: 475px;
+      background-color: @white;
+      overflow-y: auto;
+      margin-top: 0.5rem;
+      .el-menu {
+        background-color: @white;
+        p {
+          padding: 1rem 1.5rem;
+          background-color: @white;
+          color: @gery;
+          border-bottom: @border;
         }
-        border-bottom: @chatBorder;
-        .chatMain {
-          padding: 2rem 1.5rem 1rem 1.5rem;
-          @media screen and (max-width: 820px) {
-            height: 15rem;
-            overflow-y: auto;
+        .el-menu-item {
+          color: @gery;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+          * {
+            vertical-align: unset;
           }
-          .chatMessage {
-            position: relative;
-            .messageImg {
-              max-width: 200px;
-              position: inherit;
-              background-color: #fff;
-            }
-            .formMessage {
-              display: flex;
-              align-items: center;
-              justify-content: flex-end;
-              > img {
-                width: 36px;
-                height: 36px;
-                position: absolute;
-                top: 1rem;
-              }
-              .messgaeBox {
-                position: relative;
-                box-sizing: border-box;
-                padding: 1rem;
-                padding-right: 1rem;
-                color: @FFF;
-                word-break: break-word;
-                margin-right: 36px;
-                .messageUser {
-                  color: @gery;
-                }
-                .messgaeCentent {
-                  background-color: @blue;
-                  border-radius: 8px;
-                  padding: 1rem;
-                  width: fit-content;
-                  float: right;
-                  .goodsMsg {
-                    display: flex;
-                    align-items: center;
-                    width: 250px;
-                    height: 100px;
-                    img {
-                      position: inherit;
-                      width: 5rem;
-                      height: 5rem;
-                    }
-                    div {
-                      padding: 0.5rem;
-                      span {
-                        max-height: 60px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        display: -webkit-box;
-                        word-wrap: break-word;
-                        -webkit-box-orient: vertical;
-                        -webkit-line-clamp: 3;
-                      }
-                      a {
-                        color: @white;
-                      }
-                    }
-                  }
-                }
-                .Bubble {
-                  .Bubble();
-                  right: 0;
-                  border-top: 0.5rem solid @FFF;
-                  border-left: 0.5rem solid @blue;
-                  border-right: 0.5rem solid @FFF;
-                  border-bottom: 0.5rem solid @FFF;
-                }
-              }
-            }
-            .toMessage {
-              display: flex;
-              align-items: center;
-              justify-content: flex-start;
-              > img {
-                width: 36px;
-                height: 36px;
-                position: absolute;
-                top: 1rem;
-              }
-              .messgaeBox {
-                position: relative;
-                box-sizing: border-box;
-                padding: 1rem;
-                padding-left: 1rem;
-                color: @FFF;
-                word-break: break-word;
-                margin-left: 36px;
-                .messageUser {
-                  color: @gery;
-                }
-                .messgaeCentent {
-                  background-color: @white;
-                  color: @gery;
-                  border-radius: 8px;
-                  padding: 1rem;
-                  width: fit-content;
-                  .goodsMsg {
-                    display: flex;
-                    align-items: center;
-                    width: 200px;
-                    height: 70px;
-                    img {
-                      position: inherit;
-                      width: 5rem;
-                      height: 5rem;
-                      margin-right: 0.5rem;
-                    }
-                    div {
-                      padding: 0.5rem;
-                      word-break: break-all;
-                      span {
-                        max-height: 60px;
-                        min-height: 50px;
-                        margin: 0.3rem 0;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        display: -webkit-box;
-                        word-wrap: break-word;
-                        -webkit-box-orient: vertical;
-                        -webkit-line-clamp: 3;
-                      }
-                      a {
-                        color: @gery;
-                      }
-                    }
-                  }
-                }
-                .Bubble {
-                  .Bubble();
-                  left: 0;
-                  border-top: 0.5rem solid @FFF;
-                  border-left: 0.5rem solid @FFF;
-                  border-right: 0.5rem solid @white;
-                  border-bottom: 0.5rem solid @FFF;
-                }
-              }
+          &:hover {
+            background-color: @e6e6e6;
+          }
+          .avatarBox {
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+            display: inline-block;
+
+            img {
+              width: 100%;
+              height: 100%;
+              border-radius: 50px;
             }
           }
+          .el-badge {
+            height: 40px;
+            .el-badge__content {
+              top: 5px;
+            }
+          }
+          > span {
+            margin-left: 1rem;
+            &:last-child {
+              display: block;
+              width: 120px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+          label {
+            display: block;
+            width: 85%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1.4rem;
+          }
+          button {
+            position: absolute;
+            right: 1rem;
+            top: 1.3rem;
+          }
         }
-        &::-webkit-scrollbar {
-          display: none !important;
-          width: 0 !important;
-          height: 0 !important;
+        .is-active {
+          background-color: @dedede;
         }
       }
     }
-    .modalBoxMainBtn {
+  }
+  .msgTail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 45px;
+    background-color: @smallGrey;
+    color: @gery;
+    .tailBox {
       box-sizing: border-box;
-      padding: 1rem 1.5rem 1rem 1.5rem;
-      position: relative;
-      .file-upload,
-      .avatar-uploader {
-        display: inline-block;
-        i {
-          font-size: 2rem;
-          margin: 0 0.5rem;
-        }
-      }
-      textarea {
-        border: none;
-        resize: none;
-      }
-      .btnBox {
-        margin-top: 1rem;
-        text-align: right;
-      }
+      text-align: center;
+      flex-grow: 2;
     }
   }
 }

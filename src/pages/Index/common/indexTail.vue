@@ -1,16 +1,16 @@
 <template>
   <footer>
     <span>联系电话：{{ tel }}</span>
-    <a href="http://new.cnzz.com/v1/login.php?siteid=1275180003">
-      <div class="text-center">站长统计</div>
-    </a>
+    <span>版权声明：{{ Copyright }}</span>
     <a href="http://www.miit.gov.cn/">
       <div class="text-center">
         <img :src="recordImgUrl">
         <span>{{ Record }}</span>
       </div>
     </a>
-    <span>版权声明：{{ Copyright }}</span>
+    <a href="http://new.cnzz.com/v1/login.php?siteid=1275180003">
+      <div class="text-center">站长统计</div>
+    </a>
   </footer>
 </template>
 <script>

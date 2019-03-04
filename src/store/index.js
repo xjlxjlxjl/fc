@@ -10,53 +10,67 @@ export default new Vuex.Store({
     // socketAddress: "ws://skyliu.cn/ws",
     msg: {
       interface: [{
+          index: 0,
           alt: "消息",
           id: "chat",
           icon: "font_family icon-liaotian",
           activeIcon: "font_family icon-liaotian_",
-          isDefault: true
+          isDefault: true,
+          isShow: true
         },
         {
+          index: 1,
           alt: "好友",
           id: "mail",
           icon: "font_family icon-haoyou_1",
           activeIcon: "font_family icon-haoyou_",
-          isDefault: false
+          isDefault: false,
+          isShow: true
         },
         {
+          index: 2,
           alt: "群聊",
           id: "group",
           icon: "font_family icon-qunliao1",
           activeIcon: "font_family icon-qunliao",
-          isDefault: false
+          isDefault: false,
+          isShow: true
         },
         {
+          index: 3,
           alt: "用户搜索",
           id: "search",
           icon: "el-input__icon el-icon-search",
           activeIcon: "el-input__icon el-icon-search",
-          isDefault: false
+          isDefault: false,
+          isShow: false
         },
         {
+          index: 4,
           alt: "群搜索",
           id: "search",
           icon: "el-input__icon el-icon-search",
           activeIcon: "el-input__icon el-icon-search",
-          isDefault: false
+          isDefault: false,
+          isShow: false
         },
         {
+          index: 5,
           alt: "同事",
           id: "member",
           icon: "font_family icon-tongshi_1",
           activeIcon: "font_family icon-tongshi_",
-          isDefault: false
+          isDefault: false,
+          isShow: true
         },
         {
+          index: 6,
           alt: "通知",
           id: "notices",
           icon: "font_family icon-tongzhi1",
           activeIcon: "font_family icon-tongzhi",
-          isDefault: false
+          isDefault: false,
+          isShow: true
         }
       ],
       popItems: [{

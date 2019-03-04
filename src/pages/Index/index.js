@@ -5,6 +5,8 @@ import router from "./router";
 import store from "@/store";
 import elementUi from "element-ui";
 import Http from "@/assets/js/http";
+import mouseMenu from "vue-mouse-menu";
+import preview from "vue-photo-preview";
 import "element-ui/lib/theme-chalk/index.css";
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
@@ -13,6 +15,8 @@ import "@/assets/css/init.css"; // 基础改动
 Vue.config.productionTip = false;
 Vue.use(elementUi);
 Vue.use(Http);
+Vue.use(mouseMenu);
+Vue.use(preview);
 
 Vue.prototype.$ifLogin = () => {
   if (!localStorage.getItem("user")) {

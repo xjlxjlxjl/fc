@@ -37,7 +37,7 @@
             <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
           </el-menu-item>
           <el-menu-item index="6">
-            <a href="/chart.html#/message">
+            <a href="javascript:;" @click="changeModal('modalShow')">
               <el-badge :value="messageTips" v-if="messageTips > 0" class="item">
                 <i class="el-icon-bell"></i>
               </el-badge>
@@ -127,13 +127,14 @@
         </el-menu-item>
       </el-menu>
     </el-main>
+    <msgBox :modal="modalShow" @change="changeModal" @tips="++messageTips" @clearTips="messageTips = 0"></msgBox>
   </el-container>
 </template>
 <script>
 import progress from "@/assets/img/progress.png";
 import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
-import companyRise from "@/pages/Process/common/companyRise";
+import msgBox from "@/pages/Chart/common/chatModal";
 import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 
 export default {
@@ -146,10 +147,14 @@ export default {
       progressHide: progressHide,
       progressLast: progressLast,
       menuShow: false,
+      modalShow: false,
       searchText: "",
       messageTips: 0,
       lockReconnect: false
     };
+  },
+  components: {
+    msgBox: msgBox
   },
   methods: {
     loginOut() {
@@ -179,23 +184,9 @@ export default {
         })
         .catch(error => loading.close());
     },
-    webSocket() {
-      companyRise.methods.webSocket.call(this);
-    },
-    reconnect(url) {
-      companyRise.methods.reconnect.call(this, url);
-    },
-    webSocketLogin() {
-      companyRise.methods.webSocketLogin.call(this);
-    },
-    webSocketSend(action) {
-      companyRise.methods.webSocketSend.call(this, action);
-    },
-    webSocketClose() {
-      companyRise.methods.webSocketClose.call(this);
-    },
-    getUnreadMessage() {
-      companyRise.methods.getUnreadMessage.call(this);
+    changeModal(name, state = null) {
+      if (state) this[name] = state;
+      else this[name] = !this[name];
     }
   },
   created() {
@@ -205,9 +196,7 @@ export default {
     localStorage.setItem = function(key, newValue) {
       orignalSetItem.apply(this, arguments);
       if (key == "user") that.getUserInfo();
-    };
-    
-    if(this.user) this.webSocket();
+    };    
   }
 };
 </script>
