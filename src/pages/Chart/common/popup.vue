@@ -1,8 +1,8 @@
 <template>
-  <div id="popup" ref="popup" v-show="modal" @mousemove="mousedown">
+  <div id="popup" ref="popup" v-show="modal">
     <fileListModal :toUser="toUser" :state="state"></fileListModal>
     <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
-    <div class="popRise">
+    <div class="popRise" @mousedown="isMove = true" @mouseup="isMove = false" @mousemove="mousemove">
       <div>
         <span>{{ userName }}</span>
       </div>
@@ -139,7 +139,9 @@ export default {
       members: {},
       popItems: this.$store.state.msg.popItems,
       mousePosition: [],
-      forwardData: {}
+      forwardData: {},
+      // 移动
+      isMove: false
     }
   },
   components: {
@@ -328,10 +330,11 @@ export default {
       this.$refs.popup.style.left = (window.innerWidth - 600) / 2 + 'px';
       this.$refs.popup.style.top = (window.innerHeight - 520) / 2 + 'px';
     },
-    mousedown(event) {
-      console.log(event.clientX)
-      this.$refs.popup.style.left = event.clientX - this.$refs.popup.offsetLeft + 'px';
-      this.$refs.popup.style.top = event.clientY - this.$refs.popup.offsetTop + 'px';
+    mousemove(event) {
+      if(this.isMove) {
+        this.$refs.popup.style.left = event.clientX - this.$refs.popup.offsetLeft + 'px';
+        this.$refs.popup.style.top = event.clientY - this.$refs.popup.offsetTop + 'px';
+      }
     }
   },
   watch: {

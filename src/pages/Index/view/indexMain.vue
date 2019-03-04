@@ -3324,6 +3324,13 @@ export default {
     > .el-container {
       height: auto;
       display: block;
+      
+      // 暂时隐藏
+      .homeMainAside,
+      .homeAsideList {
+        display: none !important;
+      }
+
       .homeMainContent {
         > .el-container {
           display: block;
