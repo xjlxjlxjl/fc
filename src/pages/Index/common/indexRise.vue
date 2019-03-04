@@ -36,8 +36,8 @@
           <el-menu-item index="5">
             <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
           </el-menu-item>
-          <el-menu-item index="6">
-            <a href="javascript:;" @click="changeModal('modalShow')">
+          <el-menu-item index="6" @click="changeModal('modalShow')">
+            <a href="javascript:;">
               <el-badge :value="messageTips" v-if="messageTips > 0" class="item">
                 <i class="el-icon-bell"></i>
               </el-badge>

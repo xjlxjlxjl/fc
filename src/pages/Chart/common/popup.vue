@@ -1,5 +1,5 @@
 <template>
-  <div id="popup" ref="popup" v-show="modal">
+  <div id="popup" ref="popup" v-show="modal" @mousemove="mousedown">
     <fileListModal :toUser="toUser" :state="state"></fileListModal>
     <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
     <div class="popRise">
@@ -323,6 +323,15 @@ export default {
         $chatMain.scrollTop = $chatMain.scrollHeight;
         chatMain.scrollTop = chatMain.scrollHeight;
       }, 100);
+    },
+    resizePosition() {
+      this.$refs.popup.style.left = (window.innerWidth - 600) / 2 + 'px';
+      this.$refs.popup.style.top = (window.innerHeight - 520) / 2 + 'px';
+    },
+    mousedown(event) {
+      console.log(event.clientX)
+      this.$refs.popup.style.left = event.clientX - this.$refs.popup.offsetLeft + 'px';
+      this.$refs.popup.style.top = event.clientY - this.$refs.popup.offsetTop + 'px';
     }
   },
   watch: {
@@ -334,9 +343,7 @@ export default {
     }
   },
   mounted() {
-    this.$refs.popup.style.left = (window.innerWidth - 600) / 2 + 'px';
-    this.$refs.popup.style.top = (window.innerHeight - 520) / 2 + 'px';
-
+    this.resizePosition();
     let $uploadBox = this.$refs["uploadBox"],
       $elTextarea = document.getElementById("el-textarea"),
       $chatMain = document.getElementById("chatMain"),
@@ -388,6 +395,7 @@ export default {
     Notification.requestPermission(status => console.log(status));
   },
   created() {
+    window.onresize = e => this.resizePosition();
   }
 }
 </script>
@@ -418,6 +426,7 @@ export default {
 
 #popup {
   position: fixed;
+  z-index: 12;
   width: 600px;
   height: 520px;
   background-color: @white;

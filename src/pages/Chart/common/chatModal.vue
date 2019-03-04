@@ -547,6 +547,7 @@ export default {
         .then(response => {
           if (response.status != 200) return false;
 
+          that.modalShow = true;
           if (response.pagination.current_page == 1) {
             that.record.list = response.data.list;
             that.fixLocation();
@@ -554,7 +555,6 @@ export default {
             if (response.data.list.length == 0) return false;
             response.data.list.reverse();
             response.data.list.forEach(e => that.record.list.unshift(e));
-            that.modalShow = true;
             setTimeout(() => {
               let $chatMain = document.getElementById("chatMain"),
                 chatMain = document.getElementsByClassName("chatMain")[0];
