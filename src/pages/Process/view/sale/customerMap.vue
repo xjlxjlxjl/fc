@@ -3,7 +3,7 @@
     <div id="Map" ref="map"></div>
     <el-form :model="params" size="mini" ref="form" label-width="140px">
       <el-form-item label="距离内客户（km）">
-        <el-input v-model="distance"></el-input>
+        <el-input v-model="distance" style="max-width: 300px;"></el-input>
         <el-button type="primary" @click="search" size="mini">搜索</el-button>
       </el-form-item>
     </el-form>
@@ -122,6 +122,7 @@ export default {
 <style lang="less">
 #customerMap {
   #Map {
+    margin-bottom: 1rem;
   }
   .el-form {
     .el-form-item {

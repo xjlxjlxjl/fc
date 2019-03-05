@@ -551,33 +551,50 @@ export default new Vuex.Store({
           url: "/System/enterprise"
         }
       ],
-      purchase: [{
+      purchase: [
+        {
           name: '待完成任务',
           url: '/Purchase'
         },
         {
-          name: '客服申请',
-          url: ''
+          name: '生产看板',
+          url: '/Purchase/product'
         },
         {
-          name: '客服报价',
-          url: ''
-        },
-        {
-          name: '采购计划',
-          url: ''
-        },
-        {
-          name: '外包计划',
-          url: ''
+          name: '供应商管理',
+          url: '/Purchase/supplier'
         },
         {
           name: '采购申请',
-          url: ''
+          url: '/Purchase/apply'
         },
         {
-          name: '供应商',
-          url: ''
+          name: '采购计划',
+          url: '/Purchase/plan'
+        },
+        {
+          name: '采购订单',
+          url: '/Purchase/order'
+        },
+        {
+          name: '委外订单',
+          url: '/Purchase/entrust'
+        },
+        {
+          name: '采购质检不良单',
+          url: '/Purchase/unhealthy'
+        },
+        {
+          name: '历史订单查询',
+          url: '/Purchase/history'
+        },
+        {
+          name: '物料价格调整分析',
+          url: '/Purchase/priceAnalysis'
+        },
+        {
+          name: '应付账单汇总分析',
+          url: '/Purchase/billAnalysis'
         },
       ]
     },
