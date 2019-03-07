@@ -1,0 +1,556 @@
+<template>
+  <div>
+    <div
+      class="modal fade bs-example-modal-lg"
+      id="addPlan"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+    >
+      <div class="modal-dialog modal-lg" style="width: 100%;max-width: 1280px;" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" style="font-size: 2.7rem;">&times;</span>
+            </button>
+            <h4 class="modal-title" id="myModalLabel">新建采购计划</h4>
+          </div>
+          <div class="modal-body">
+            <el-form :model="form" size="mini" ref="form" label-width="80px">
+              <el-form-item label="申请人" prop="applicant_id">
+                <el-select v-model="form.applicant_id" placeholder="申请人">
+                  <el-option
+                    v-for="item in userBranch"
+                    :key="item.id"
+                    :label="item.display_name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="部门" prop="branch_id">
+                <el-select v-model="form.branch_id" placeholder="部门">
+                  <el-option
+                    v-for="item in branch"
+                    :key="item.branch_id"
+                    :label="item.branch_name"
+                    :value="item.branch_id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item class="remarks" label="备注" prop="remark">
+                <el-input type="textarea" v-model="form.remark"></el-input>
+              </el-form-item>
+              <el-form-item label="申请日期" prop="applicant_at">
+                <el-date-picker
+                  type="datetime"
+                  v-model="form.applicant_at"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+              <el-form-item label="需求日期" prop="demand_at">
+                <el-date-picker
+                  type="datetime"
+                  v-model="form.demand_at"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+              <el-form-item class="table">
+                <el-table :data="form.items" size="mini" border style="width: 100%">
+                  <el-table-column prop="material_id" label="序号">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.material_id" placeholder="序号"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="purchaseApply" label="关联采购申请">
+                    <template slot-scope="{$index, row}">
+                      <el-input
+                        v-model="row.purchaseApply"
+                        placeholder="关联采购申请"
+                        @focus="getPurchaseApply"
+                      ></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="saleOrder" label="关联销售订单">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.saleOrder" placeholder="关联销售订单" @focus="getSaleOrder"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="code" label="料品编码">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.code" placeholder="料品编码"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="name" label="料品名称">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.name" placeholder="料品名称"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="specification" label="料品规格">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.specification" placeholder="料品规格"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="unit" label="单位">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.unit" placeholder="单位"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="quantity" label="数量">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.quantity" placeholder="数量"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="remarks" label="备注">
+                    <template slot-scope="{$index, row}">
+                      <el-input v-model="row.remarks" placeholder="备注"></el-input>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="onSubmit">立即创建</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 采购申请列表 -->
+    <div
+      class="modal fade bs-example-modal-lg applyList"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <el-table
+            :data="apply.data"
+            border
+            style="width: 100%"
+            height="500"
+            @selection-change="applyChange"
+          >
+            <el-table-column type="selection"></el-table-column>
+            <el-table-column prop="number" label="采购申请单号"></el-table-column>
+            <el-table-column prop="applicant" label="申请人"></el-table-column>
+            <el-table-column prop="applicant_at" label="申请日期"></el-table-column>
+            <el-table-column prop="demand_at" label="需求日期"></el-table-column>
+            <el-table-column prop="code" label="料品编码"></el-table-column>
+            <el-table-column prop="name" label="料品名称"></el-table-column>
+            <el-table-column prop="specification" label="料品规格"></el-table-column>
+            <el-table-column prop="unit" label="单位"></el-table-column>
+            <el-table-column prop="quantity" label="数量"></el-table-column>
+            <el-table-column prop="remark" label="备注"></el-table-column>
+          </el-table>
+          <div class="condition">
+            <div>
+              <span>查找关键字</span>
+              <el-input v-model="apply.search" @blur="getPurchaseApply" size="mini"></el-input>
+            </div>
+            <div>
+              <span>申请日期</span>
+              <el-date-picker
+                size="mini"
+                @change="getPurchaseApply"
+                type="datetimerange"
+                v-model="apply.date"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                align="right"
+              ></el-date-picker>
+            </div>
+            <div>
+              <button class="btn btn-primary btn-sm" @click="addApply">确定</button>
+              <button class="btn btn-default btn-sm">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 销售订单列表 -->
+    <div
+      class="modal fade bs-example-modal-lg orderList"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <el-table
+            :data="order.data"
+            border
+            style="width: 100%"
+            height="500"
+            @selection-change="orderChange"
+          >
+            <el-table-column type="selection"></el-table-column>
+            <el-table-column prop="date" label="订单号"></el-table-column>
+            <el-table-column prop="name" label="订单ID"></el-table-column>
+            <!-- <el-table-column prop="address" label="客户编码"></el-table-column> -->
+            <el-table-column prop="address" label="客户名称"></el-table-column>
+            <el-table-column prop="address" label="创建日期"></el-table-column>
+            <el-table-column prop="address" label="料品名称"></el-table-column>
+            <el-table-column prop="address" label="料品规格"></el-table-column>
+            <el-table-column prop="address" label="料品类别"></el-table-column>
+            <el-table-column prop="address" label="单位"></el-table-column>
+            <el-table-column prop="address" label="订单数量"></el-table-column>
+            <!-- <el-table-column prop="address" label="订单备品"></el-table-column>
+            <el-table-column prop="address" label="订单总数"></el-table-column>-->
+            <el-table-column prop="address" label="客户要求交期"></el-table-column>
+            <el-table-column prop="address" label="确认交期"></el-table-column>
+            <!-- <el-table-column prop="address" label="主计划数量"></el-table-column>
+            <el-table-column prop="address" label="主计划尚缺数"></el-table-column>
+            <el-table-column prop="address" label="制造单数"></el-table-column>
+            <el-table-column prop="address" label="制造单尚缺数"></el-table-column>
+            <el-table-column prop="address" label="通知备品"></el-table-column>
+            <el-table-column prop="address" label="通知尚欠数"></el-table-column>
+            <el-table-column prop="address" label="通知尚备品"></el-table-column>-->
+            <el-table-column prop="address" label="折扣"></el-table-column>
+            <el-table-column prop="address" label="含税"></el-table-column>
+            <!-- <el-table-column prop="address" label="币别"></el-table-column> -->
+            <el-table-column prop="address" label="发票类型"></el-table-column>
+            <el-table-column prop="address" label="仓库"></el-table-column>
+            <el-table-column prop="address" label="件数"></el-table-column>
+            <el-table-column prop="address" label="尾数"></el-table-column>
+            <el-table-column prop="address" label="总体积"></el-table-column>
+            <el-table-column prop="address" label="材料入库数量"></el-table-column>
+            <el-table-column prop="address" label="材料尚欠数量"></el-table-column>
+            <el-table-column prop="address" label="生产入库数量"></el-table-column>
+            <el-table-column prop="address" label="生产尚欠数量"></el-table-column>
+            <el-table-column prop="address" label="出货尚欠数量"></el-table-column>
+            <el-table-column prop="address" label="客户订单号"></el-table-column>
+            <el-table-column prop="address" label="客户料号"></el-table-column>
+            <el-table-column prop="address" label="客户料品名称"></el-table-column>
+            <el-table-column prop="address" label="产品说明"></el-table-column>
+            <el-table-column prop="address" label="维度"></el-table-column>
+            <el-table-column prop="address" label="维度描述"></el-table-column>
+            <el-table-column prop="address" label="采购数量"></el-table-column>
+            <el-table-column prop="address" label="采购备品"></el-table-column>
+          </el-table>
+          <div class="condition">
+            <div>
+              <span>查找关键字</span>
+              <el-input size="mini" @blur="getSaleOrder"></el-input>
+            </div>
+            <div>
+              <span>申请日期</span>
+              <el-date-picker
+                size="mini"
+                @change="getSaleOrder"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                align="right"
+              ></el-date-picker>
+            </div>
+            <div>
+              <button class="btn btn-primary btn-sm" @click="addOrder">确定</button>
+              <button class="btn btn-default btn-sm">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 料品编码 -->
+  </div>
+</template>
+<script>
+export default {
+  name: "addPlan",
+  data() {
+    return {
+      form: {
+        applicant_id: "",
+        branch_id: "",
+        demand_at: "",
+        applicant_at: "",
+        remark: "",
+        items: [
+          {
+            material_id: "",
+            purchaseApply: "",
+            saleOrder: "",
+            code: "",
+            name: "",
+            specification: "",
+            unit: "",
+            quantity: "",
+            remarks: ""
+          }
+        ]
+      },
+      rule: {},
+      branch: [],
+      userBranch: [],
+      apply: {
+        search: "",
+        date: ["", ""],
+        selection: [],
+        data: []
+      },
+      order: {
+        search: "",
+        date: ["", ""],
+        selection: [],
+        data: []
+      }
+    };
+  },
+  methods: {
+    applyChange(val) {
+      this.apply.selection = val;
+    },
+    orderChange(val) {
+      this.order.selection = val;
+    },
+    getPurchaseApply() {
+      let that = this;
+      that
+        .$get(`procurement/request`, {
+          search: that.apply.search,
+          start_time: that.apply.date[0],
+          end_time: that.apply.date[1]
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          let arr = [];
+          response.data.list.forEach(e =>
+            e.item.forEach(v =>
+              arr.push({
+                id: e.id,
+                number: e.number,
+                applicant: e.applicant,
+                applicant_at: e.applicant_at,
+                demand_at: e.demand_at,
+                code: v.code,
+                name: v.name,
+                unit: v.unit,
+                quantity: v.quantity,
+                specification: v.specification,
+                remark: v.remark
+              })
+            )
+          );
+          that.apply.data = arr;
+          $("#purchasePlan .applyList").modal("show");
+        })
+        .catch(err => console.error(err));
+    },
+    getSaleOrder() {
+      let that = this;
+      that
+        .$get(`orders/company`, {
+          search: that.order.search,
+          start_time: that.order.date[0],
+          end_time: that.order.date[1]
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          let arr = [];
+          response.data.list.forEach(e =>
+            e.products.forEach(v =>
+              arr.push({
+                numbering: e.numbering,
+                id: e.id,
+                consignee: e.consignee,
+                created_at: e.created_at,
+                product_name: v.product_name,
+                product_model: v.product_model,
+                product_type: v.product_type,
+                product_unit: v.product_unit,
+                quantity: v.quantity
+              })
+            )
+          );
+          that.order.data = arr;
+          $("#purchasePlan .orderList").modal("show");
+        })
+        .catch(err => console.error(err));
+    },
+    addApply() {
+      this.apply.selection.forEach(e =>
+        this.form.items.unshift({
+          material_id: e.id,
+          purchaseApply: e.number,
+          saleOrder: "",
+          code: e.code,
+          name: e.name,
+          specification: e.specification,
+          unit: e.unit,
+          quantity: e.quantity,
+          remarks: e.remarks
+        })
+      );
+      $("#purchasePlan .applyList").modal("hide");
+    },
+    addOrder() {
+      console.log(this.order.selection);
+    },
+    onSubmit() {
+      let that = this,
+        arr = [];
+      that.form.items.forEach(e => {
+        if (
+          e.material_id ||
+          e.code ||
+          e.name ||
+          e.specification ||
+          e.unit ||
+          e.quantity
+        )
+          arr.push(e);
+      });
+      that
+        .$post(`procurement/schedule/create`, {
+          applicant_id: that.form.applicant_id,
+          branch_id: that.form.branch_id,
+          demand_at: that.form.demand_at,
+          applicant_at: that.form.applicant_at,
+          remark: that.form.remark,
+          items: JSON.stringify(arr)
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.refresh($("#purchasePlan #table"));
+          $("#addPlan").modal("hide");
+          that.$refs["form"].resetFields();
+          that.form.items = [
+            {
+              material_id: "",
+              purchaseApply: "",
+              saleOrder: "",
+              code: "",
+              name: "",
+              specification: "",
+              unit: "",
+              quantity: "",
+              remarks: ""
+            }
+          ];
+        })
+        .catch(err => {});
+    }
+  },
+  watch: {
+    form: {
+      handler(val) {
+        let addRows = true,
+          lastRow = val.items[val.items.length - 1];
+        val.items.forEach(e => {
+          if (
+            !e.material_id ||
+            !e.code ||
+            !e.name ||
+            !e.specification ||
+            !e.unit ||
+            !e.quantity
+          )
+            addRows = false;
+        });
+        if (addRows)
+          this.form.items.push({
+            material_id: "",
+            purchaseApply: "",
+            saleOrder: "",
+            code: "",
+            name: "",
+            specification: "",
+            unit: "",
+            quantity: "",
+            remarks: ""
+          });
+        // else if (
+        //   !addRows &&
+        //   !lastRow.material_id &&
+        //   !lastRow.code &&
+        //   !lastRow.name &&
+        //   !lastRow.specification &&
+        //   !lastRow.unit &&
+        //   !lastRow.quantity
+        // )
+        //   this.form.items.pop();
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    let that = this;
+    $("#addPlan").on("show.bs.modal", function() {
+      let arr = [],member = [];
+      that.$store.state.userBranch.forEach(e => {
+        arr.push(e);
+        e.member.forEach(v => member.push(v));
+      });
+      that.branch = arr;
+      that.userBranch = member
+    });
+  }
+};
+</script>
+<style lang="less">
+#addPlan {
+  .modal-body {
+    .el-form {
+      display: flex;
+      flex-wrap: wrap;
+      .el-form-item {
+        width: 33%;
+        .remarks {
+          height: 28px;
+          textarea {
+            height: 60px;
+          }
+        }
+        .el-date-editor.el-input,
+        .el-date-editor.el-input__inner {
+          width: 100%;
+        }
+        &.table,
+        &:last-child {
+          width: 100%;
+          text-align: center;
+          .el-form-item__content {
+            margin-left: 0 !important;
+            .el-table {
+              .el-table__body-wrapper {
+                .el-table__body {
+                  .el-table__row {
+                    .cell {
+                      input {
+                        border: none;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.applyList,
+.orderList {
+  .condition {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    > div {
+      display: flex;
+      align-items: center;
+      button,
+      span {
+        white-space: nowrap;
+        margin-right: 5px;
+      }
+    }
+  }
+}
+</style>

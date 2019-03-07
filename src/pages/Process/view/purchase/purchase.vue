@@ -1,6 +1,6 @@
 <template>
   <el-container id="purchase">
-    <companyAside :aside="aside"></companyAside>
+    <!-- <companyAside :aside="aside"></companyAside> -->
     <el-main>
       <div class="global">
         <div>
@@ -30,7 +30,7 @@
   </el-container>
 </template>
 <script>
-import companyAside from "@/pages/Process/common/companyAside";
+// import companyAside from "@/pages/Process/control/tabs";
 
 export default {
   name: "purchase",
@@ -40,7 +40,7 @@ export default {
     };
   },
   components: {
-    companyAside: companyAside
+    // companyAside: companyAside
   }
 };
 </script>

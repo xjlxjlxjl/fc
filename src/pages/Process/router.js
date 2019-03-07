@@ -1,5 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
+
+// 基础标签
+import tabs from "@/pages/Process/control/tabs";
+
 // 销售
 import Sale from "@/pages/Process/view/sale/sale";
 import saleTasks from "@/pages/Process/view/sale/tasks";
@@ -15,7 +19,18 @@ import customerMap from '@/pages/Process/view/sale/customerMap';
 // 工程
 import Engineer from "@/pages/Process/view/engineer/engineer";
 // 采购
-import Purchase from "@/pages/Process/view/purchase/purchase";
+// import Purchase from "@/pages/Process/view/purchase/purchase";
+// import purchaseTasks from "@/pages/Process/view/purchase/tasks";
+// import purchaseApply from "@/pages/Process/view/purchase/apply";
+// import purchaseBillAnalysis from "@/pages/Process/view/purchase/billAnalysis";
+// import purchasEntrust from "@/pages/Process/view/purchase/entrust";
+// import purchaseHistory from "@/pages/Process/view/purchase/history";
+// import purchaseOrder from "@/pages/Process/view/purchase/order";
+// import purchasePlan from "@/pages/Process/view/purchase/plan";
+// import purchasePriceAnalysis from "@/pages/Process/view/purchase/priceAnalysis";
+// import purchaseProduct from "@/pages/Process/view/purchase/product";
+// import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
+// import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
 // IQC
 import IQC from "@/pages/Process/view/IQC/IQC";
 // 仓库
@@ -148,13 +163,55 @@ export default new Router({
     {
       path: "/Purchase",
       name: "Purchase",
-      component: Purchase,
-      children: [
-        {
-          path: "/Purchase",
-          component: saleTasks
-        }
-      ]
+      component: tabs,
+      /*
+        children: [
+          {
+            path: "/Purchase",
+            component: purchaseTasks
+          },
+          {
+            path: "/Purchase/apply",
+            component: purchaseApply
+          },
+          {
+            path: "/Purchase/billAnalysis",
+            component: purchaseBillAnalysis
+          },
+          {
+            path: "/Purchase/entrust",
+            component: purchasEntrust
+          },
+          {
+            path: "/Purchase/history",
+            component: purchaseHistory
+          },
+          {
+            path: "/Purchase/order",
+            component: purchaseOrder
+          },
+          {
+            path: "/Purchase/plan",
+            component: purchasePlan
+          },
+          {
+            path: "/Purchase/priceAnalysis",
+            component: purchasePriceAnalysis
+          },
+          {
+            path: "/Purchase/product",
+            component: purchaseProduct
+          },
+          {
+            path: "/Purchase/supplier",
+            component: purchaseSupplier
+          },
+          {
+            path: "/Purchase/unhealthy",
+            component: purchaseUnhealthy
+          }
+        ]
+      */
     },
     {
       path: "/IQC",

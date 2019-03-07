@@ -11,8 +11,6 @@
       <el-table :data="tableData" size="mini">
         <el-table-column prop="name" label="名称"></el-table-column>
         <el-table-column prop="member_name" label="客户名称"></el-table-column>
-        <el-table-column prop="company_company" label="公司名称"></el-table-column>
-        <el-table-column prop="customer_level" label="客户级别"></el-table-column>
         <el-table-column prop="address" label="地址"></el-table-column>
         <el-table-column prop="salesman" label="业务员"></el-table-column>
         <el-table-column prop="owner" label="所有者"></el-table-column>
@@ -110,6 +108,13 @@ export default {
         if (this.getStatus() == BMAP_STATUS_SUCCESS) {
           that.params.lng = r.point.lng;
           that.params.lat = r.point.lat;
+          var myIcon = new BMap.Icon(
+            "http://lbsyun.baidu.com/jsdemo/img/fox.gif",
+            new BMap.Size(300, 157)
+          );
+          var mk = new BMap.Marker(r.point, { icon: myIcon });
+          that.map.addOverlay(mk);
+
           that.map.panTo(r.point);
           that.search();
         } else alert("failed" + this.getStatus());

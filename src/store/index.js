@@ -581,6 +581,10 @@ export default new Vuex.Store({
           url: '/Purchase/entrust'
         },
         {
+          name: '委外领料单',
+          url: '/Purchase/receive'
+        },
+        {
           name: '采购质检不良单',
           url: '/Purchase/unhealthy'
         },
@@ -656,7 +660,20 @@ export default new Vuex.Store({
       order: 0,
       customerServiceApplication: 0,
       customerServiceQuotation: 0,
-      application: 0
+      application: 0,
+      // 采购
+      '/Purchase': 0,
+      '/Purchase/product': 0,
+      '/Purchase/supplier': 0,
+      '/Purchase/apply': 0,
+      '/Purchase/plan': 0,
+      '/Purchase/order': 0,
+      '/Purchase/entrust': 0,
+      '/Purchase/receive': 0,
+      '/Purchase/unhealthy': 0,
+      '/Purchase/history': 0,
+      '/Purchase/priceAnalysis': 0,
+      '/Purchase/billAnalysis': 0
     },
     apiKeys: {
       // baiduMap: "IjVLfQ6Tudo7LK8wCBeCPESmHl8doh61"
