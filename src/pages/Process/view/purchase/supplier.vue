@@ -3,6 +3,9 @@
     <addSupplier @refresh="refreshed"></addSupplier>
     <div id="toolbar">
       <el-button size="mini" @click="addSupplier">新建供应商</el-button>
+      <el-upload action :before-upload="upload">
+        <el-button size="mini">导入供应商</el-button>
+      </el-upload>
     </div>
     <table id="table"></table>
   </div>
@@ -454,6 +457,18 @@ export default {
         };
       $("#purchaseSupplier #table").bootstrapTable(data);
     },
+    upload(file) {
+      let that = this,
+        form = new FormData();
+      form.append("file", file);
+      that
+        .$upload(`procurement/supplier/import`, form)
+        .then(response => {
+          if(response.status != 200);
+          that.refreshed();
+        })
+        .catch(err => console.error(err));
+    },
     addSupplier() {
       $("#addSupplier").modal("show");
     },
@@ -466,7 +481,17 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="less">
 #purchaseSupplier {
+  #toolbar {
+    display: flex;
+    div {
+      margin-left: 5px;
+      display: flex;
+      input[type="file"] {
+        opacity: 0;
+      }
+    }
+  }
 }
 </style>

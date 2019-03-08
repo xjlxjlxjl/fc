@@ -79,7 +79,7 @@
                   </el-table-column>
                   <el-table-column prop="code" label="料品编码">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.code" placeholder="料品编码"></el-input>
+                      <el-input v-model="row.code" placeholder="料品编码" @focus="getMater"></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="name" label="料品名称">
@@ -257,7 +257,111 @@
         </div>
       </div>
     </div>
-    <!-- 料品编码 -->
+    <!-- 料品列表 -->
+    <div
+      class="modal fade bs-example-modal-lg materList"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <el-table
+            :data="mater.data"
+            border
+            style="width: 100%"
+            height="500"
+            @selection-change="materChange"
+          >
+            <el-table-column type="selection"></el-table-column>
+            <el-table-column prop="material_number" label="物料编码"></el-table-column>
+            <el-table-column prop="name" label="物料名称"></el-table-column>
+            <el-table-column prop="material_specification" label="料品规格"></el-table-column>
+            <el-table-column prop="material_category" label="料品类别"></el-table-column>
+            <el-table-column prop="item_unit" label="主单位"></el-table-column>
+            <el-table-column prop="image" label="图片"></el-table-column>
+            <el-table-column prop="drawing_pdf" label="工程图号"></el-table-column>
+            <el-table-column prop="date" label="条码"></el-table-column>
+            <el-table-column prop="date" label="颜色"></el-table-column>
+            <el-table-column prop="date" label="有效期"></el-table-column>
+            <el-table-column prop="max_inventory" label="最大库存"></el-table-column>
+            <el-table-column prop="min_inventory" label="最小库存"></el-table-column>
+            <el-table-column prop="date" label="生产厂家"></el-table-column>
+            <el-table-column prop="respository" label="仓库"></el-table-column>
+            <el-table-column prop="attributes" label="BOM单位"></el-table-column>
+            <el-table-column prop="date" label="料品类别" width="400px">
+              <template slot-scope="{}">
+                <div class="materialsType">
+                  <div>
+                    <input type="checkbox">采购件
+                  </div>
+                  <div>
+                    <input type="checkbox">自制件
+                  </div>
+                  <div>
+                    <input type="checkbox">委外件
+                  </div>
+                  <div>
+                    <input type="checkbox">销售件
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="attributes" label="料品属性"></el-table-column>
+            <el-table-column prop="date" label="损耗率"></el-table-column>
+            <el-table-column prop="weight" label="净重"></el-table-column>
+            <el-table-column prop="total_weight" label="毛重"></el-table-column>
+            <el-table-column prop="date" label="材积"></el-table-column>
+            <el-table-column prop="date" label="备注"></el-table-column>
+            <el-table-column prop="date" label="密度"></el-table-column>
+            <el-table-column prop="date" label="模具号"></el-table-column>
+            <el-table-column prop="date" label="料品等级"></el-table-column>
+            <el-table-column prop="date" label="材质"></el-table-column>
+            <el-table-column prop="date" label="进价"></el-table-column>
+            <el-table-column prop="date" label="售价"></el-table-column>
+            <el-table-column prop="date" label="标准价"></el-table-column>
+            <el-table-column prop="date" label="英文名称"></el-table-column>
+            <el-table-column prop="date" label="最小采购量"></el-table-column>
+            <el-table-column prop="date" label="最小批量"></el-table-column>
+            <el-table-column prop="date" label="采购提前期"></el-table-column>
+            <el-table-column prop="date" label="出货免检"></el-table-column>
+            <el-table-column prop="date" label="主供应商"></el-table-column>
+            <el-table-column prop="date" label="供应商简称"></el-table-column>
+            <el-table-column prop="created_at" label="生效"></el-table-column>
+            <el-table-column prop="pinyin_code" label="拼音码"></el-table-column>
+            <el-table-column prop="length" label="料品长"></el-table-column>
+            <el-table-column prop="width" label="料品宽"></el-table-column>
+            <el-table-column prop="height" label="料品高"></el-table-column>
+            <el-table-column prop="date" label="状态"></el-table-column>
+            <el-table-column prop="member" label="管理者"></el-table-column>
+            <el-table-column prop="date" label="修改日期"></el-table-column>
+            <el-table-column prop="date" label="修改用户"></el-table-column>
+          </el-table>
+          <div class="condition">
+            <div>
+              <span>查找关键字</span>
+              <el-input size="mini" @blur="getMater"></el-input>
+            </div>
+            <div>
+              <span>申请日期</span>
+              <el-date-picker
+                size="mini"
+                @change="getMater"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                align="right"
+              ></el-date-picker>
+            </div>
+            <div>
+              <button class="btn btn-primary btn-sm" @click="addMater">确定</button>
+              <button class="btn btn-default btn-sm">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -299,6 +403,10 @@ export default {
         date: ["", ""],
         selection: [],
         data: []
+      },
+      mater: {
+        data: [],
+        selection: []
       }
     };
   },
@@ -392,6 +500,34 @@ export default {
     addOrder() {
       console.log(this.order.selection);
     },
+    getMater() {
+      let that = this;
+      that
+        .$get(`respositories/materials/list`)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.mater.data = response.data.list;
+          $("#purchaseOrder .materList").modal("show");
+        })
+        .catch(err => console.error(err));
+    },
+    materChange(val) {
+      this.mater.selection = val;
+    },
+    addMater() {
+      this.mater.selection.forEach(e =>
+        this.form.items.unshift({
+          material_id: e.id,
+          code: e.material_number || "",
+          name: e.name || "",
+          specification: e.material_specification || "",
+          unit: e.item_unit || "",
+          quantity: e.quantity || "",
+          remarks: e.remarks || ""
+        })
+      );
+      $("#purchaseOrder .materList").modal("hide");
+    },
     onSubmit() {
       let that = this,
         arr = [];
@@ -482,13 +618,14 @@ export default {
   mounted() {
     let that = this;
     $("#addOrder").on("show.bs.modal", function() {
-      let arr = [],member = [];
+      let arr = [],
+        member = [];
       that.$store.state.userBranch.forEach(e => {
         arr.push(e);
         e.member.forEach(v => member.push(v));
       });
       that.branch = arr;
-      that.userBranch = member
+      that.userBranch = member;
     });
   }
 };

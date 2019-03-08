@@ -71,7 +71,7 @@
       </div>
     </div>
     <div
-      class="modal fade bs-example-modal-lg materList"
+      class="modal fade bs-example-modal-lg materielList"
       tabindex="-1"
       role="dialog"
       aria-labelledby="myLargeModalLabel"
@@ -86,21 +86,21 @@
             @selection-change="materChange"
           >
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="date" label="物料编码"></el-table-column>
-            <el-table-column prop="date" label="物料名称"></el-table-column>
-            <el-table-column prop="date" label="料品规格"></el-table-column>
-            <el-table-column prop="date" label="料品类别"></el-table-column>
-            <el-table-column prop="date" label="主单位"></el-table-column>
-            <el-table-column prop="date" label="图片"></el-table-column>
-            <el-table-column prop="date" label="工程图号"></el-table-column>
+            <el-table-column prop="material_number" label="物料编码"></el-table-column>
+            <el-table-column prop="name" label="物料名称"></el-table-column>
+            <el-table-column prop="material_specification" label="料品规格"></el-table-column>
+            <el-table-column prop="material_category" label="料品类别"></el-table-column>
+            <el-table-column prop="item_unit" label="主单位"></el-table-column>
+            <el-table-column prop="image" label="图片"></el-table-column>
+            <el-table-column prop="drawing_pdf" label="工程图号"></el-table-column>
             <el-table-column prop="date" label="条码"></el-table-column>
             <el-table-column prop="date" label="颜色"></el-table-column>
             <el-table-column prop="date" label="有效期"></el-table-column>
-            <el-table-column prop="date" label="最大库存"></el-table-column>
-            <el-table-column prop="date" label="最小库存"></el-table-column>
+            <el-table-column prop="max_inventory" label="最大库存"></el-table-column>
+            <el-table-column prop="min_inventory" label="最小库存"></el-table-column>
             <el-table-column prop="date" label="生产厂家"></el-table-column>
-            <el-table-column prop="date" label="仓库"></el-table-column>
-            <el-table-column prop="date" label="BOM单位"></el-table-column>
+            <el-table-column prop="respository" label="仓库"></el-table-column>
+            <el-table-column prop="attributes" label="BOM单位"></el-table-column>
             <el-table-column prop="date" label="料品类别" width="400px">
               <template slot-scope="{}">
                 <div class="materialsType">
@@ -119,10 +119,10 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="date" label="料品属性"></el-table-column>
+            <el-table-column prop="attributes" label="料品属性"></el-table-column>
             <el-table-column prop="date" label="损耗率"></el-table-column>
-            <el-table-column prop="date" label="净重"></el-table-column>
-            <el-table-column prop="date" label="毛重"></el-table-column>
+            <el-table-column prop="weight" label="净重"></el-table-column>
+            <el-table-column prop="total_weight" label="毛重"></el-table-column>
             <el-table-column prop="date" label="材积"></el-table-column>
             <el-table-column prop="date" label="备注"></el-table-column>
             <el-table-column prop="date" label="密度"></el-table-column>
@@ -139,13 +139,13 @@
             <el-table-column prop="date" label="出货免检"></el-table-column>
             <el-table-column prop="date" label="主供应商"></el-table-column>
             <el-table-column prop="date" label="供应商简称"></el-table-column>
-            <el-table-column prop="date" label="生效"></el-table-column>
-            <el-table-column prop="date" label="拼音码"></el-table-column>
-            <el-table-column prop="date" label="料品长"></el-table-column>
-            <el-table-column prop="date" label="料品宽"></el-table-column>
-            <el-table-column prop="date" label="料品高"></el-table-column>
+            <el-table-column prop="created_at" label="生效"></el-table-column>
+            <el-table-column prop="pinyin_code" label="拼音码"></el-table-column>
+            <el-table-column prop="length" label="料品长"></el-table-column>
+            <el-table-column prop="width" label="料品宽"></el-table-column>
+            <el-table-column prop="height" label="料品高"></el-table-column>
             <el-table-column prop="date" label="状态"></el-table-column>
-            <el-table-column prop="date" label="管理者"></el-table-column>
+            <el-table-column prop="member" label="管理者"></el-table-column>
             <el-table-column prop="date" label="修改日期"></el-table-column>
             <el-table-column prop="date" label="修改用户"></el-table-column>
           </el-table>
@@ -356,7 +356,7 @@ export default {
               },
               "click .get": function(e, value, row, index) {
                 that.mater.active = row;
-                $("#purchasEntrust .materList").modal("show");
+                that.getMater();
               }
             }
           }
@@ -443,11 +443,34 @@ export default {
     addEntrust() {
       $("#addEntrust").modal("show");
     },
-    getMater() {},
-    materChange(val) {
-      this.mater.data = val;
+    getMater() {
+      let that = this;
+      that
+        .$get(`respositories/materials/list`)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.mater.data = response.data.list;
+          $("#purchasEntrust .materielList").modal("show");
+        })
+        .catch(err => console.error(err));
     },
-    addMater() {},
+    materChange(val) {
+      this.mater.selection = val;
+    },
+    addMater() {
+      this.mater.selection.forEach(e =>
+        this.form.items.unshift({
+          material_id: e.id,
+          code: e.material_number || "",
+          name: e.name || "",
+          specification: e.material_specification || "",
+          unit: e.item_unit || "",
+          quantity: e.quantity || "",
+          remarks: e.remarks || ""
+        })
+      );
+      $("#purchasEntrust .materielList").modal("hide");
+    },
     refreshed() {
       this.refresh($("#purchasEntrust #table"));
     }
@@ -479,6 +502,7 @@ export default {
 </script>
 <style lang="less">
 #purchasEntrust {
+  .materielList,
   .materList {
     .el-table {
       td {

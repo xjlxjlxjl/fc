@@ -26,6 +26,8 @@
   </div>
 </template>
 <script>
+import img from "@/assets/img/local.png";
+
 export default {
   data() {
     return {
@@ -108,10 +110,7 @@ export default {
         if (this.getStatus() == BMAP_STATUS_SUCCESS) {
           that.params.lng = r.point.lng;
           that.params.lat = r.point.lat;
-          var myIcon = new BMap.Icon(
-            "http://lbsyun.baidu.com/jsdemo/img/fox.gif",
-            new BMap.Size(300, 157)
-          );
+          var myIcon = new BMap.Icon(img, new BMap.Size(30, 30));
           var mk = new BMap.Marker(r.point, { icon: myIcon });
           that.map.addOverlay(mk);
 
