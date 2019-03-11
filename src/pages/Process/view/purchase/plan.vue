@@ -286,7 +286,7 @@ export default {
             row.items.forEach(e =>
               html.push(`
                   <tr>
-                    <td>${e.code || ""}</td>
+                    <td>${e.material_code || ""}</td>
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>

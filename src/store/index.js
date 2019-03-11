@@ -92,6 +92,11 @@ export default new Vuex.Store({
     powerList: [],
     // 审批插件
     addonList: [],
+    // 供应商列表
+    supplierList: {
+      list: [],
+      pagination: {}
+    },
     appTypeList: [],
     riseProcess: [
       {

@@ -37,6 +37,11 @@ export default {
             name: "/Purchase/supplier",
             num: response.data.pagination.total
           });
+          // 存储进仓库
+          that.$store.commit("setStateData", {
+            name: 'supplierList',
+            arr: response.data
+          });
           params.success({
             total: response.data.pagination.total,
             rows: response.data.list
@@ -46,7 +51,7 @@ export default {
     },
     tableAjaxParams(params) {
       params.page = params.offset / params.limit + 1;
-      params.perPage = params.limit;
+      params.per_page = params.limit;
       return params;
     },
     init() {
@@ -461,11 +466,19 @@ export default {
       let that = this,
         form = new FormData();
       form.append("file", file);
+      form.append("slug", "images");
+      
       that
-        .$upload(`procurement/supplier/import`, form)
+        .$upload("files/upload", form)
         .then(response => {
-          if(response.status != 200);
-          that.refreshed();
+          if (response.status != 200) return false;
+          that
+            .$post(`procurement/supplier/import`, { url: response.data.url })
+            .then(result => {
+              if (result.status != 200);
+              that.refreshed();
+            })
+            .catch(err => console.error(err));
         })
         .catch(err => console.error(err));
     },

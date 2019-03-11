@@ -342,7 +342,7 @@ export default {
             formatter: (value, row, index) => {
               let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`;
               let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
-              return get + del;
+              return del;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -404,7 +404,7 @@ export default {
             row.items.forEach(e =>
               html.push(`
                   <tr>
-                    <td>${e.code || ""}</td>
+                    <td>${e.material_code || ""}</td>
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>

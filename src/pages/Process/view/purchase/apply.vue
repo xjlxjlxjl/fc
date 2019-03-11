@@ -199,7 +199,7 @@ export default {
             title: "申请日期"
           },
           {
-            field: "branch",
+            field: "branch_name",
             title: "部门"
           },
           {
@@ -283,7 +283,7 @@ export default {
             row.item.forEach(e =>
               html.push(`
                   <tr>
-                    <td>${e.code || ""}</td>
+                    <td>${e.material_code || ""}</td>
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>

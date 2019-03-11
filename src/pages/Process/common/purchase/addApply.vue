@@ -68,9 +68,11 @@
                       <el-input v-model="row.name" placeholder="料品名称"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="code" label="料品编码">
+                  <el-table-column prop="code" label="料品编码" width="180px">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.code" placeholder="料品编码" @focus="getMater"></el-input>
+                      <el-input v-model="row.code" placeholder="料品编码">
+                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater"></el-button>
+                      </el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="specification" label="料品规格">
@@ -208,7 +210,7 @@
             </div>
             <div>
               <button class="btn btn-primary btn-sm" @click="addMater">确定</button>
-              <button class="btn btn-default btn-sm">取消</button>
+              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
             </div>
           </div>
         </div>
@@ -221,6 +223,7 @@ export default {
   name: "addApply",
   data() {
     return {
+      request_id: 0,
       form: {
         applicant_id: "",
         branch_id: "",
@@ -257,38 +260,68 @@ export default {
       userBranch: [],
       mater: {
         data: [],
+        pagination: {
+          current_page: 0,
+          per_page: 10
+        },
+        search: "",
+        date: ["", ""],
         selection: []
-      }
+      },
     };
   },
   methods: {
-    getMater() {
-      let that = this;
+    getMater(page = 1) {
+      let that = this,
+        loading = this.$loading({ lock: true });
       that
-        .$get(`respositories/materials/list`)
+        .$get(`respositories/materials/list`, {
+          per_page: that.mater.pagination.per_page,
+          page: ++that.mater.pagination.current_page,
+          search: that.mater.search,
+          start_time: that.mater.date[0],
+          end_time: that.mater.date[1]
+        })
         .then(response => {
+          loading.close();
           if (response.status != 200) return false;
-          that.mater.data = response.data.list;
+          for (let item of response.data.list) {
+            that.mater.data.push(item);
+          }
+          that.mater.pagination = response.data.pagination;
           $("#purchaseApply .materList").modal("show");
         })
-        .catch(err => console.error(err));
+        .catch(err => loading.close());
     },
     materChange(val) {
       this.mater.selection = val;
     },
+    // 当选择数较多并且没有 requset_id 过滤
     addMater() {
-      this.mater.selection.forEach(e =>
-        this.form.items.unshift({
-          material_id: e.id,
-          code: e.material_number || "",
-          name: e.name || "",
-          specification: e.material_specification || "",
-          unit: e.item_unit || "",
-          quantity: e.quantity || "",
-          remarks: e.remarks || ""
-        })
-      );
-      $("#purchaseApply .materList").modal("hide");
+      let that = this;
+      if (this.mater.selection.length > 1 && !that.request_id) {
+        let param = this.mater.selection.shift(),
+          params = {
+            request_id: that.request_id || "",
+            code: param.material_number || "",
+            material_id: param.id,
+            name: param.name || "",
+            specification: param.material_specification || "",
+            unit: param.item_unit || "",
+            quantity: param.quantity || 1,
+            remarks: param.remarks || ""
+          };
+        that
+          .$post(`procurement/request/item/create`, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.request_id = response.data.request_id;
+            that.addItem();
+            params.id = response.data.id;
+            that.form.items.unshift(params);
+          })
+          .catch(err => console.error(err));
+      } else this.addItem();
     },
     getBranch() {
       if (this.$store.state.userBranch.length)
@@ -311,8 +344,38 @@ export default {
           .catch(err => console.error(err));
       }
     },
+    addItem() {
+      let that = this;
+      this.mater.selection.forEach(e => {
+        let params = {
+          request_id: that.request_id || "",
+          code: e.material_number || "",
+          material_id: e.id,
+          name: e.name || "",
+          specification: e.material_specification || "",
+          unit: e.item_unit || "",
+          quantity: e.quantity || 1,
+          remarks: e.remarks || ""
+        };
+        that
+          .$post(`procurement/request/item/create`, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.request_id = response.data.request_id;
+            params.id = response.data.id;
+            that.form.items.unshift(params);
+          })
+          .catch(err => console.error(err));
+      });
+      $("#purchaseApply .materList").modal("hide");
+    },
     delItems(index, row) {
-      this.form.items.splice(index, 1);
+      this.$get(`procurement/request/delete/${row.id}`)
+        .then(response => {
+          if (response.status != 200) return false;
+          this.form.items.splice(index, 1);
+        })
+        .catch(err => console.error(err));
     },
     onSubmit() {
       this.$refs["form"].validate(v => {
@@ -331,7 +394,7 @@ export default {
             arr.push(e);
         });
         that
-          .$post(`procurement/request/create`, {
+          .$post(`procurement/request/edit/${that.request_id}`, {
             applicant_id: that.form.applicant_id,
             branch_id: that.form.branch_id,
             demand_at: that.form.demand_at,
@@ -362,43 +425,101 @@ export default {
   },
   watch: {
     form: {
-      handler(val) {
-        let addRows = true,
-          lastRow = val.items[val.items.length - 1];
-        val.items.forEach(e => {
-          if (
-            !e.material_id ||
-            !e.name ||
-            !e.code ||
-            !e.specification ||
-            !e.unit ||
-            !e.quantity
-          )
-            addRows = false;
-        });
-        if (addRows)
-          this.form.items.push({
-            material_id: "",
-            name: "",
-            code: "",
-            specification: "",
-            unit: "",
-            quantity: "",
-            remark: ""
+      handler(val, oldVal) {
+        let that = this,
+          addRows = true,
+          lastRow = that.form.items[that.form.items.length - 1];
+        if (val.items.length - oldVal.items.length > 1) return false;
+        else {
+          val.items.forEach(e => {
+            if (
+              !e.material_id ||
+              !e.name ||
+              !e.code ||
+              !e.specification ||
+              !e.unit ||
+              !e.quantity
+            )
+              addRows = false;
           });
-        // else if (
-        //   !addRows &&
-        //   !lastRow.material_id &&
-        //   !lastRow.name &&
-        //   !lastRow.code &&
-        //   !lastRow.specification &&
-        //   !lastRow.unit &&
-        //   !lastRow.quantity
-        // )
-        //   this.form.items.pop();
+          // 新增
+          if (addRows) {
+            that.form.items.push({
+              material_id: "",
+              name: "",
+              code: "",
+              specification: "",
+              unit: "",
+              quantity: 1,
+              remark: ""
+            });
+            that
+              .$post(`procurement/request/item/create`, {
+                request_id: that.request_id || "",
+                code: lastRow.code || "",
+                material_id: lastRow.material_id,
+                name: lastRow.name || "",
+                specification: lastRow.specification || "",
+                unit: lastRow.unit || "",
+                quantity: lastRow.quantity || 1,
+                remarks: lastRow.remark || ""
+              })
+              .then(response => {
+                if (response.status != 200) return false;
+                lastRow.id = response.data.id;
+                that.request_id = response.data.request_id;
+              })
+              .catch(err => console.error(err));
+          } else {
+            // 修改
+            let i = 0,
+              id = 0;
+            // 全满
+            // 判断修改行数
+            while (i > val.items.length) {
+              i++;
+              if (val.items[i].request_id != oldVal.items[i].request_id)
+                id = val.items[i].id;
+              else if (val.items[i].code != oldVal.items[i].code)
+                id = val.items[i].id;
+              else if (val.items[i].material_id != oldVal.items[i].material_id)
+                id = val.items[i].id;
+              else if (val.items[i].name != oldVal.items[i].name)
+                id = val.items[i].id;
+              else if (
+                val.items[i].specification != oldVal.items[i].specification
+              )
+                id = val.items[i].id;
+              else if (val.items[i].unit != oldVal.items[i].unit)
+                id = val.items[i].id;
+              else if (val.items[i].quantity != oldVal.items[i].quantity)
+                id = val.items[i].id;
+              else if (val.items[i].remarks != oldVal.items[i].remarks)
+                id = val.items[i].id;
+            }
+            if (id)
+              that.$post(`procurement/request/item/edit/${id}`, {
+                request_id: that.request_id || "",
+                code: lastRow.code || "",
+                material_id: lastRow.material_id,
+                name: lastRow.name || "",
+                specification: lastRow.specification || "",
+                unit: lastRow.unit || "",
+                quantity: lastRow.quantity || 1,
+                remarks: lastRow.remarks || ""
+              });
+          }
+        }
       },
       deep: true
     }
+  },
+  mounted() {
+    let that = this;
+    $('#purchaseApply .materList .el-table__body-wrapper').scroll(function(e) {
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+        that.getMater();
+    });
   },
   created() {
     this.getBranch();

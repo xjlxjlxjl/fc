@@ -302,6 +302,9 @@ export default {
       > .bs-checkbox {
       min-width: auto;
     }
+    .el-input-group__append{
+      padding: 0 5px;
+    }
   }
 }
 </style>

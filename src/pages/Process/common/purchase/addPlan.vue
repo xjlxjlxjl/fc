@@ -63,23 +63,29 @@
                       <el-input v-model="row.material_id" placeholder="序号"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="purchaseApply" label="关联采购申请">
+                  <el-table-column prop="purchaseApply" label="关联采购申请" width="180px">
                     <template slot-scope="{$index, row}">
-                      <el-input
-                        v-model="row.purchaseApply"
-                        placeholder="关联采购申请"
-                        @focus="getPurchaseApply"
-                      ></el-input>
+                      <el-input v-model="row.purchaseApply" placeholder="关联采购申请">
+                        <el-button
+                          slot="append"
+                          icon="el-icon-arrow-down"
+                          @click="getPurchaseApply"
+                        ></el-button>
+                      </el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="saleOrder" label="关联销售订单">
+                  <el-table-column prop="saleOrder" label="关联销售订单" width="180px">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.saleOrder" placeholder="关联销售订单" @focus="getSaleOrder"></el-input>
+                      <el-input v-model="row.saleOrder" placeholder="关联销售订单">
+                        <el-button slot="append" icon="el-icon-arrow-down" @click="getSaleOrder"></el-button>
+                      </el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="code" label="料品编码">
+                  <el-table-column prop="code" label="料品编码" width="180px">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.code" placeholder="料品编码" @focus="getMater"></el-input>
+                      <el-input v-model="row.code" placeholder="料品编码">
+                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater"></el-button>
+                      </el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="name" label="料品名称">
@@ -166,7 +172,7 @@
             </div>
             <div>
               <button class="btn btn-primary btn-sm" @click="addApply">确定</button>
-              <button class="btn btn-default btn-sm">取消</button>
+              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
             </div>
           </div>
         </div>
@@ -251,7 +257,7 @@
             </div>
             <div>
               <button class="btn btn-primary btn-sm" @click="addOrder">确定</button>
-              <button class="btn btn-default btn-sm">取消</button>
+              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
             </div>
           </div>
         </div>
@@ -274,7 +280,7 @@
             @selection-change="materChange"
           >
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="material_number" label="物料编码"></el-table-column>
+            <el-table-column prop="material_code" label="物料编码"></el-table-column>
             <el-table-column prop="name" label="物料名称"></el-table-column>
             <el-table-column prop="material_specification" label="料品规格"></el-table-column>
             <el-table-column prop="material_category" label="料品类别"></el-table-column>
@@ -356,7 +362,7 @@
             </div>
             <div>
               <button class="btn btn-primary btn-sm" @click="addMater">确定</button>
-              <button class="btn btn-default btn-sm">取消</button>
+              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
             </div>
           </div>
         </div>
@@ -369,6 +375,7 @@ export default {
   name: "addPlan",
   data() {
     return {
+      request_id: 0,
       form: {
         applicant_id: "",
         branch_id: "",
@@ -394,18 +401,32 @@ export default {
       userBranch: [],
       apply: {
         search: "",
+        pagination: {
+          current_page: 0,
+          per_page: 10
+        },
         date: ["", ""],
         selection: [],
         data: []
       },
       order: {
         search: "",
+        pagination: {
+          current_page: 0,
+          per_page: 10
+        },
         date: ["", ""],
         selection: [],
         data: []
       },
       mater: {
         data: [],
+        pagination: {
+          current_page: 0,
+          per_page: 10
+        },
+        search: "",
+        date: ["", ""],
         selection: []
       }
     };
@@ -418,40 +439,44 @@ export default {
       this.order.selection = val;
     },
     getPurchaseApply() {
-      let that = this;
+      let that = this,
+        loading = this.$loading({ lock: true });
       that
         .$get(`procurement/request`, {
+          per_page: that.apply.pagination.per_page,
+          page: ++that.apply.pagination.current_page,
           search: that.apply.search,
           start_time: that.apply.date[0],
           end_time: that.apply.date[1]
         })
         .then(response => {
+          loading.close();
           if (response.status != 200) return false;
-          let arr = [];
+          that.apply.pagination = response.data.pagination;
           response.data.list.forEach(e =>
             e.item.forEach(v =>
-              arr.push({
+              that.apply.data.push({
                 id: e.id,
                 number: e.number,
                 applicant: e.applicant,
                 applicant_at: e.applicant_at,
                 demand_at: e.demand_at,
-                code: v.code,
+                material_code: v.material_code,
                 name: v.name,
                 unit: v.unit,
                 quantity: v.quantity,
-                specification: v.specification,
+                material_specification: v.specification,
                 remark: v.remark
               })
             )
           );
-          that.apply.data = arr;
           $("#purchasePlan .applyList").modal("show");
         })
-        .catch(err => console.error(err));
+        .catch(err => loading.close());
     },
     getSaleOrder() {
-      let that = this;
+      let that = this,
+        loading = this.$loading({ lock: true });
       that
         .$get(`orders/company`, {
           search: that.order.search,
@@ -459,6 +484,7 @@ export default {
           end_time: that.order.date[1]
         })
         .then(response => {
+          loading.close();
           if (response.status != 200) return false;
           let arr = [];
           response.data.list.forEach(e =>
@@ -479,54 +505,114 @@ export default {
           that.order.data = arr;
           $("#purchasePlan .orderList").modal("show");
         })
-        .catch(err => console.error(err));
+        .catch(err => loading.close());
     },
     addApply() {
-      this.apply.selection.forEach(e =>
-        this.form.items.unshift({
-          material_id: e.id,
-          purchaseApply: e.number,
-          saleOrder: "",
-          code: e.code,
-          name: e.name,
-          specification: e.specification,
-          unit: e.unit,
-          quantity: e.quantity,
-          remarks: e.remarks
-        })
-      );
-      $("#purchasePlan .applyList").modal("hide");
+      let that = this;
+      if (this.apply.selection.length > 1 && !that.request_id) {
+        let param = this.apply.selection.shift(),
+          params = {
+            purchaseApply: param.number,
+            schedule_id: that.request_id || "",
+            code: param.material_code || "",
+            material_id: param.id,
+            name: param.name || "",
+            specification: param.material_specification || "",
+            unit: param.item_unit || "",
+            quantity: param.quantity || 1,
+            remarks: param.remarks || ""
+          };
+        that
+          .$post(`procurement/schedule/item/create`, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.request_id = response.data.schedule_id;
+            that.addItem("apply", $("#purchasePlan .applyList"));
+            params.id = response.data.id;
+            that.form.items.unshift(params);
+          })
+          .catch(err => console.error(err));
+      } else this.addItem("apply", $("#purchasePlan .applyList"));
     },
     addOrder() {
       console.log(this.order.selection);
     },
     getMater() {
-      let that = this;
+      let that = this,
+        loading = this.$loading({ lock: true });
       that
-        .$get(`respositories/materials/list`)
+        .$get(`respositories/materials/list`,{
+          per_page: that.mater.pagination.per_page,
+          page: ++that.mater.pagination.current_page,
+          search: that.mater.search,
+          start_time: that.mater.date[0],
+          end_time: that.mater.date[1]
+        })
         .then(response => {
+          loading.close();
           if (response.status != 200) return false;
-          that.mater.data = response.data.list;
+          for (let item of response.data.list) {
+            that.mater.data.push(item);
+          }
+          that.mater.pagination = response.data.pagination;
           $("#purchasePlan .materList").modal("show");
         })
-        .catch(err => console.error(err));
+        .catch(err => loading.close());
     },
     materChange(val) {
       this.mater.selection = val;
     },
     addMater() {
-      this.mater.selection.forEach(e =>
-        this.form.items.unshift({
+      let that = this;
+      if (this.mater.selection.length > 1 && !that.request_id) {
+        let param = this.mater.selection.shift(),
+          params = {
+            schedule_id: that.request_id || "",
+            code: param.material_code || "",
+            material_id: param.id,
+            name: param.name || "",
+            specification: param.material_specification || "",
+            unit: param.item_unit || "",
+            quantity: param.quantity || 1,
+            remarks: param.remarks || ""
+          };
+        that
+          .$post(`procurement/schedule/item/create`, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.request_id = response.data.schedule_id;
+            that.addItem("mater", $("#purchasePlan .materList"));
+            params.id = response.data.id;
+            that.form.items.unshift(params);
+          })
+          .catch(err => console.error(err));
+      } else this.addItem("mater", $("#purchasePlan .materList"));
+    },
+    addItem(name, $modal) {
+      let that = this;
+      this[name].selection.forEach(e => {
+        let params = {
+          purchaseApply: e.number,
+          schedule_id: that.request_id || "",
+          code: e.material_code || "",
           material_id: e.id,
-          code: e.material_number || "",
           name: e.name || "",
           specification: e.material_specification || "",
           unit: e.item_unit || "",
-          quantity: e.quantity || "",
+          quantity: e.quantity || 1,
           remarks: e.remarks || ""
-        })
-      );
-      $("#purchasePlan .materList").modal("hide");
+        };
+        that
+          .$post(`procurement/schedule/item/create`, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.request_id = response.data.schedule_id;
+            params.id = response.data.id;
+            that.form.items.unshift(params);
+          })
+          .catch(err => console.error(err));
+      });
+      $modal.modal("hide");
     },
     onSubmit() {
       let that = this,
@@ -543,7 +629,7 @@ export default {
           arr.push(e);
       });
       that
-        .$post(`procurement/schedule/create`, {
+        .$post(`procurement/schedule/edit/${that.request_id}`, {
           applicant_id: that.form.applicant_id,
           branch_id: that.form.branch_id,
           demand_at: that.form.demand_at,
@@ -575,42 +661,90 @@ export default {
   },
   watch: {
     form: {
-      handler(val) {
-        let addRows = true,
-          lastRow = val.items[val.items.length - 1];
-        val.items.forEach(e => {
-          if (
-            !e.material_id ||
-            !e.code ||
-            !e.name ||
-            !e.specification ||
-            !e.unit ||
-            !e.quantity
-          )
-            addRows = false;
-        });
-        if (addRows)
-          this.form.items.push({
-            material_id: "",
-            purchaseApply: "",
-            saleOrder: "",
-            code: "",
-            name: "",
-            specification: "",
-            unit: "",
-            quantity: "",
-            remarks: ""
+      handler(val, oldVal) {
+        let that = this,
+          addRows = true,
+          lastRow = that.form.items[that.form.items.length - 1];
+        if (val.items.length - oldVal.items.length > 1) return false;
+        else {
+          val.items.forEach(e => {
+            if (
+              !e.material_id ||
+              !e.name ||
+              !e.code ||
+              !e.specification ||
+              !e.unit ||
+              !e.quantity
+            )
+              addRows = false;
           });
-        // else if (
-        //   !addRows &&
-        //   !lastRow.material_id &&
-        //   !lastRow.code &&
-        //   !lastRow.name &&
-        //   !lastRow.specification &&
-        //   !lastRow.unit &&
-        //   !lastRow.quantity
-        // )
-        //   this.form.items.pop();
+          if (addRows) {
+            // 新增
+            that.form.items.push({
+              material_id: "",
+              name: "",
+              code: "",
+              specification: "",
+              unit: "",
+              quantity: 1,
+              remark: ""
+            });
+            that
+              .$post(`procurement/schedule/item/create`, {
+                schedule_id: that.request_id || "",
+                code: lastRow.code || "",
+                material_id: lastRow.material_id,
+                name: lastRow.name || "",
+                specification: lastRow.specification || "",
+                unit: lastRow.unit || "",
+                quantity: lastRow.quantity || 1,
+                remarks: lastRow.remark || ""
+              })
+              .then(response => {
+                if (response.status != 200) return false;
+                lastRow.id = response.data.id;
+                that.request_id = response.data.schedule_id;
+              })
+              .catch(err => console.error(err));
+          } else {
+            // 修改
+            let i = 0,
+              id = 0;
+            // 判断修改行数
+            while (i > val.items.length) {
+              i++;
+              if (val.items[i].request_id != oldVal.items[i].request_id)
+                id = val.items[i].id;
+              else if (val.items[i].code != oldVal.items[i].code)
+                id = val.items[i].id;
+              else if (val.items[i].material_id != oldVal.items[i].material_id)
+                id = val.items[i].id;
+              else if (val.items[i].name != oldVal.items[i].name)
+                id = val.items[i].id;
+              else if (
+                val.items[i].specification != oldVal.items[i].specification
+              )
+                id = val.items[i].id;
+              else if (val.items[i].unit != oldVal.items[i].unit)
+                id = val.items[i].id;
+              else if (val.items[i].quantity != oldVal.items[i].quantity)
+                id = val.items[i].id;
+              else if (val.items[i].remarks != oldVal.items[i].remarks)
+                id = val.items[i].id;
+            }
+            if (id)
+              that.$post(`procurement/schedule/item/edit/${id}`, {
+                schedule_id: that.request_id || "",
+                code: lastRow.code || "",
+                material_id: lastRow.material_id,
+                name: lastRow.name || "",
+                specification: lastRow.specification || "",
+                unit: lastRow.unit || "",
+                quantity: lastRow.quantity || 1,
+                remarks: lastRow.remarks || ""
+              });
+          }
+        }
       },
       deep: true
     }
@@ -626,6 +760,21 @@ export default {
       });
       that.branch = arr;
       that.userBranch = member;
+    });
+
+    $('#purchasePlan .materList .el-table__body-wrapper').scroll(function(e) {
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+        that.getMater();
+    });
+
+    $('#purchasePlan .orderList .el-table__body-wrapper').scroll(function(e) {
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+        that.getSaleOrder();
+    });
+
+    $('#purchasePlan .applyList .el-table__body-wrapper').scroll(function(e) {
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+        that.getPurchaseApply();
     });
   }
 };
