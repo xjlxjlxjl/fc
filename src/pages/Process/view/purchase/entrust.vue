@@ -86,20 +86,20 @@
             @selection-change="materChange"
           >
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="material_number" label="物料编码"></el-table-column>
+            <el-table-column prop="material_code" label="物料编码"></el-table-column>
             <el-table-column prop="name" label="物料名称"></el-table-column>
-            <el-table-column prop="material_specification" label="料品规格"></el-table-column>
-            <el-table-column prop="material_category" label="料品类别"></el-table-column>
+            <el-table-column prop="specification" label="料品规格"></el-table-column>
+            <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
             <el-table-column prop="item_unit" label="主单位"></el-table-column>
             <el-table-column prop="image" label="图片"></el-table-column>
             <el-table-column prop="drawing_pdf" label="工程图号"></el-table-column>
-            <el-table-column prop="date" label="条码"></el-table-column>
+            <el-table-column prop="barcode" label="条码"></el-table-column>
             <el-table-column prop="date" label="颜色"></el-table-column>
             <el-table-column prop="date" label="有效期"></el-table-column>
             <el-table-column prop="max_inventory" label="最大库存"></el-table-column>
             <el-table-column prop="min_inventory" label="最小库存"></el-table-column>
-            <el-table-column prop="date" label="生产厂家"></el-table-column>
-            <el-table-column prop="respository" label="仓库"></el-table-column>
+            <el-table-column prop="manufacturer" label="生产厂家"></el-table-column>
+            <el-table-column prop="respository.name" label="仓库"></el-table-column>
             <el-table-column prop="attributes" label="BOM单位"></el-table-column>
             <el-table-column prop="date" label="料品类别" width="400px">
               <template slot-scope="{}">
@@ -123,58 +123,57 @@
             <el-table-column prop="date" label="损耗率"></el-table-column>
             <el-table-column prop="weight" label="净重"></el-table-column>
             <el-table-column prop="total_weight" label="毛重"></el-table-column>
-            <el-table-column prop="date" label="材积"></el-table-column>
-            <el-table-column prop="date" label="备注"></el-table-column>
-            <el-table-column prop="date" label="密度"></el-table-column>
-            <el-table-column prop="date" label="模具号"></el-table-column>
-            <el-table-column prop="date" label="料品等级"></el-table-column>
+            <el-table-column prop="dimension" label="材积"></el-table-column>
+            <el-table-column prop="remark" label="备注"></el-table-column>
+            <el-table-column prop="density" label="密度"></el-table-column>
+            <el-table-column prop="standard_model" label="模具号"></el-table-column>
+            <el-table-column prop="material_level" label="料品等级"></el-table-column>
             <el-table-column prop="date" label="材质"></el-table-column>
-            <el-table-column prop="date" label="进价"></el-table-column>
-            <el-table-column prop="date" label="售价"></el-table-column>
-            <el-table-column prop="date" label="标准价"></el-table-column>
+            <el-table-column prop="standard_cost_price" label="进价"></el-table-column>
+            <el-table-column prop="standard_uniform_price" label="售价"></el-table-column>
+            <el-table-column prop="standard_single_price" label="标准价"></el-table-column>
             <el-table-column prop="date" label="英文名称"></el-table-column>
-            <el-table-column prop="date" label="最小采购量"></el-table-column>
+            <el-table-column prop="minimum_purchase_quantity" label="最小采购量"></el-table-column>
             <el-table-column prop="date" label="最小批量"></el-table-column>
             <el-table-column prop="date" label="采购提前期"></el-table-column>
             <el-table-column prop="date" label="出货免检"></el-table-column>
-            <el-table-column prop="date" label="主供应商"></el-table-column>
+            <el-table-column prop="suppler_name" label="主供应商"></el-table-column>
             <el-table-column prop="date" label="供应商简称"></el-table-column>
             <el-table-column prop="created_at" label="生效"></el-table-column>
             <el-table-column prop="pinyin_code" label="拼音码"></el-table-column>
             <el-table-column prop="length" label="料品长"></el-table-column>
             <el-table-column prop="width" label="料品宽"></el-table-column>
             <el-table-column prop="height" label="料品高"></el-table-column>
-            <el-table-column prop="date" label="状态"></el-table-column>
+            <el-table-column prop="state" label="状态"></el-table-column>
             <el-table-column prop="member" label="管理者"></el-table-column>
-            <el-table-column prop="date" label="修改日期"></el-table-column>
-            <el-table-column prop="date" label="修改用户"></el-table-column>
+            <el-table-column prop="updated_at" label="修改日期"></el-table-column>
+            <el-table-column prop="updated_by" label="修改用户"></el-table-column>
           </el-table>
           <div class="condition">
-            <div>
+            <!-- <div>
               <span>查找关键字</span>
-              <el-input size="mini" @blur="getMater"></el-input>
+              <el-input size="mini"></el-input>
             </div>
             <div>
               <span>申请日期</span>
               <el-date-picker
                 size="mini"
-                @change="getMater"
                 type="datetimerange"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 align="right"
               ></el-date-picker>
-            </div>
+            </div> -->
+            <div></div>
             <div>
               <button class="btn btn-primary btn-sm" @click="addMater">确定</button>
-              <button class="btn btn-default btn-sm">取消</button>
+              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <div id="toolbar">
       <el-button size="mini" @click="addEntrust">新建委外订单</el-button>
       <el-select v-model="params.status" size="mini" @change="refreshed">
@@ -206,8 +205,8 @@ export default {
         status: 0
       },
       mater: {
-        active: {},
-        data: [{}]
+        data: [],
+        selection: []
       }
     };
   },
@@ -308,14 +307,14 @@ export default {
             field: "demand_at",
             title: "需求日期"
           },
-          {
-            field: "number",
-            title: "关联采购申请单号"
-          },
-          {
-            field: "number",
-            title: "关联销售单号"
-          },
+          // {
+          //   field: "",
+          //   title: "关联采购申请单号"
+          // },
+          // {
+          //   field: "",
+          //   title: "关联销售单号"
+          // },
           {
             field: "remark",
             title: "备注",
@@ -342,7 +341,7 @@ export default {
             formatter: (value, row, index) => {
               let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`;
               let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
-              return del;
+              return get + del;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -355,8 +354,12 @@ export default {
                   .catch(err => console.error(err));
               },
               "click .get": function(e, value, row, index) {
-                that.mater.active = row;
-                that.getMater();
+                let arr = [];
+                for (let item of row.items) {
+                  arr.push(Object.assign(item, row));
+                }
+                that.mater.data = arr;
+                $("#purchasEntrust .materielList").modal("show");
               }
             }
           }
@@ -443,32 +446,29 @@ export default {
     addEntrust() {
       $("#addEntrust").modal("show");
     },
-    getMater() {
-      let that = this;
-      that
-        .$get(`respositories/materials/list`)
-        .then(response => {
-          if (response.status != 200) return false;
-          that.mater.data = response.data.list;
-          $("#purchasEntrust .materielList").modal("show");
-        })
-        .catch(err => console.error(err));
-    },
     materChange(val) {
       this.mater.selection = val;
     },
     addMater() {
-      this.mater.selection.forEach(e =>
-        this.form.items.unshift({
-          material_id: e.id,
-          code: e.material_number || "",
-          name: e.name || "",
-          specification: e.material_specification || "",
-          unit: e.item_unit || "",
-          quantity: e.quantity || "",
-          remarks: e.remarks || ""
+      let that = this,
+        param = this.mater.selection.shift();
+      that
+        .$post(`procurement/out_picking_material/item/create`, {
+          out_picking_material_id: that.requset_id || '',
+          outsourcing_id: param.id,
+          material_id: param.material_id,
+          name: param.name,
+          specification: param.specification,
+          unit: param.unit,
+          quantity: param.quantity,
+          is_closed: param.is_closed
         })
-      );
+        .then(response => {
+          if(response.status != 200) return false;
+          that.requset_id = response.data.out_picking_material;
+          if(this.mater.selection.length) that.addMater();
+        })
+        .catch(err => console.error(err));
       $("#purchasEntrust .materielList").modal("hide");
     },
     refreshed() {

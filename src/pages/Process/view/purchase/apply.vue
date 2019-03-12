@@ -202,10 +202,10 @@ export default {
             field: "branch_name",
             title: "部门"
           },
-          {
-            field: "demand_at",
-            title: "需求日期"
-          },
+          // {
+          //   field: "demand_at",
+          //   title: "需求日期"
+          // },
           {
             field: "remark",
             title: "备注",
@@ -275,6 +275,7 @@ export default {
                   <th>料品名称</th>
                   <th>料品规格</th>
                   <th>单位</th>
+                  <th>需求日期</th>
                   <th>数量</th>
                   <th>备注</th>
                   <th>结案</th>
@@ -287,6 +288,7 @@ export default {
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>
+                    <td>${e.demand_at || ""}</td>
                     <td>${e.quantity || ""}</td>
                     <td>${e.remark || ""}</td>
                     <td><input type="checkbox" aid="${

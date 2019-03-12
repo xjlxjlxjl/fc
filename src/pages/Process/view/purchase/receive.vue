@@ -1,6 +1,6 @@
 <template>
   <div id="purchasReceive">
-    <addReceiveModal></addReceiveModal>
+    <!-- <addReceiveModal></addReceiveModal> -->
     <div
       class="modal fade"
       id="purchasReceivePrintModal"
@@ -83,7 +83,7 @@
 </template>
 <script>
 import QRCode from "qrcode";
-import addReceiveModal from "@/pages/Process/common/purchase/addReceive";
+// import addReceiveModal from "@/pages/Process/common/purchase/addReceive";
 
 export default {
   name: "purchasReceive",
@@ -103,7 +103,7 @@ export default {
     };
   },
   components: {
-    addReceiveModal: addReceiveModal
+    // addReceiveModal: addReceiveModal
   },
   methods: {
     tableAjaxData(params) {
@@ -113,7 +113,7 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("procurement/outsourcing/item", params.data)
+        .$get("procurement/out_picking_material", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -203,14 +203,14 @@ export default {
             field: "type",
             title: "需求日期"
           },
-          {
-            field: "status",
-            title: "关联采购计划单号"
-          },
-          {
-            field: "status",
-            title: "关联销售单号"
-          },
+          // {
+          //   field: "status",
+          //   title: "关联采购计划单号"
+          // },
+          // {
+          //   field: "status",
+          //   title: "关联销售单号"
+          // },
           {
             field: "remark",
             title: "备注",
@@ -241,7 +241,7 @@ export default {
             events: {
               "click .del": function(e, value, row, index) {
                 that
-                  .$get(`procurement/outsourcing/item/delete/${row.id}`)
+                  .$get(`procurement/out_picking_material/delete/${row.id}`)
                   .then(response => {
                     if (response.status != 200) return false;
                     that.delTable($("#purchasReceive #table"), "id", [row.id]);
@@ -331,9 +331,11 @@ export default {
       this.$print(this.$refs.purchasReceivePrint);
       $("#purchasReceivePrintModal").modal("hide");
     },
-    addReceive() {
-      $("#addReceive").modal("show");
-    },
+    /*
+      addReceive() {
+        $("#addReceive").modal("show");
+      },
+    */
     refreshed() {
       this.refresh($("#purchasReceive #table"));
     }

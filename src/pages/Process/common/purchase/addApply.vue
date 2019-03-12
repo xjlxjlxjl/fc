@@ -7,7 +7,7 @@
       role="dialog"
       aria-labelledby="myLargeModalLabel"
     >
-      <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-lg" style="width: 100%;max-width: 1280px;" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -16,9 +16,9 @@
             <h4 class="modal-title" id="myModalLabel">新建采购申请</h4>
           </div>
           <div class="modal-body">
-            <el-form :model="form" :rules="rule" size="mini" ref="form" label-width="80px">
+            <el-form :model="form" size="mini" ref="form" label-width="80px">
               <el-form-item label="申请人" prop="applicant_id">
-                <el-select v-model="form.applicant_id" placeholder="申请人">
+                <el-select v-model="form.applicant_id" placeholder="申请人" disabled>
                   <el-option
                     v-for="item in userBranch"
                     :key="item.id"
@@ -28,7 +28,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="部门" prop="branch_id">
-                <el-select v-model="form.branch_id" placeholder="部门">
+                <el-select v-model="form.branch_id" placeholder="部门" disabled>
                   <el-option
                     v-for="item in branch"
                     :key="item.branch_id"
@@ -42,57 +42,59 @@
               </el-form-item>
               <el-form-item label="申请日期" prop="applicant_at">
                 <el-date-picker
-                  type="datetime"
+                  type="date"
+                  disabled
                   v-model="form.applicant_at"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择日期"
-                ></el-date-picker>
-              </el-form-item>
-              <el-form-item label="需求日期" prop="demand_at">
-                <el-date-picker
-                  type="datetime"
-                  v-model="form.demand_at"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd"
                   placeholder="选择日期"
                 ></el-date-picker>
               </el-form-item>
               <el-form-item class="table">
                 <el-table :data="form.items" border style="width: 100%">
                   <el-table-column prop="material_id" label="序号">
-                    <template slot-scope="{$index, row}">
-                      <el-input v-model="row.material_id" placeholder="序号"></el-input>
-                    </template>
+                    <template slot-scope="{$index}"><div>{{ $index + 1 }}</div></template>
                   </el-table-column>
                   <el-table-column prop="name" label="料品名称">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.name" placeholder="料品名称"></el-input>
+                      <el-input v-model="row.name" placeholder="料品名称" @blur="editItems(row)"></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="code" label="料品编码" width="180px">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.code" placeholder="料品编码">
+                      <el-input v-model="row.code" placeholder="料品编码" @blur="editItems(row)">
                         <el-button slot="append" icon="el-icon-arrow-down" @click="getMater"></el-button>
                       </el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="specification" label="料品规格">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.specification" placeholder="料品规格"></el-input>
+                      <el-input v-model="row.specification" placeholder="料品规格" @blur="editItems(row)"></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="unit" label="单位">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.unit" placeholder="单位"></el-input>
+                      <el-input v-model="row.unit" placeholder="单位" @blur="editItems(row)"></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="quantity" label="数量">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.quantity" placeholder="数量"></el-input>
+                      <el-input v-model="row.quantity" placeholder="数量" @blur="editItems(row)"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="demand_at" label="需求日期" width="150px">
+                    <template slot-scope="{$index, row}">
+                      <el-date-picker
+                        type="date"
+                        @change="editItems(row)"
+                        v-model="row.demand_at"
+                        value-format="yyyy-MM-dd"
+                        placeholder="需求日期"
+                      ></el-date-picker>
                     </template>
                   </el-table-column>
                   <el-table-column prop="remark" label="备注">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.remark" placeholder="备注"></el-input>
+                      <el-input v-model="row.remark" placeholder="备注" @blur="editItems(row)"></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column label="操作">
@@ -118,7 +120,7 @@
       role="dialog"
       aria-labelledby="myLargeModalLabel"
     >
-      <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table
             :data="mater.data"
@@ -131,17 +133,21 @@
             <el-table-column prop="material_number" label="物料编码"></el-table-column>
             <el-table-column prop="name" label="物料名称"></el-table-column>
             <el-table-column prop="material_specification" label="料品规格"></el-table-column>
-            <el-table-column prop="material_category" label="料品类别"></el-table-column>
+            <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
             <el-table-column prop="item_unit" label="主单位"></el-table-column>
             <el-table-column prop="image" label="图片"></el-table-column>
-            <el-table-column prop="drawing_pdf" label="工程图号"></el-table-column>
-            <el-table-column prop="date" label="条码"></el-table-column>
+            <el-table-column prop="drawing_pdf" label="工程图号">
+              <template slot-scope="{ row }">
+                <a v-for="item in row.drawing_pdf" :key="item" :href="item" :download="item.split('/').pop()" target="_blank">{{ item.split('/').pop() }}</a>
+              </template>
+            </el-table-column>
+            <el-table-column prop="barcode" label="条码"></el-table-column>
             <el-table-column prop="date" label="颜色"></el-table-column>
             <el-table-column prop="date" label="有效期"></el-table-column>
             <el-table-column prop="max_inventory" label="最大库存"></el-table-column>
             <el-table-column prop="min_inventory" label="最小库存"></el-table-column>
-            <el-table-column prop="date" label="生产厂家"></el-table-column>
-            <el-table-column prop="respository" label="仓库"></el-table-column>
+            <el-table-column prop="manufacturer" label="生产厂家"></el-table-column>
+            <el-table-column prop="respository.name" label="仓库"></el-table-column>
             <el-table-column prop="attributes" label="BOM单位"></el-table-column>
             <el-table-column prop="date" label="料品类别" width="400px">
               <template slot-scope="{}">
@@ -165,17 +171,17 @@
             <el-table-column prop="date" label="损耗率"></el-table-column>
             <el-table-column prop="weight" label="净重"></el-table-column>
             <el-table-column prop="total_weight" label="毛重"></el-table-column>
-            <el-table-column prop="date" label="材积"></el-table-column>
-            <el-table-column prop="date" label="备注"></el-table-column>
-            <el-table-column prop="date" label="密度"></el-table-column>
-            <el-table-column prop="date" label="模具号"></el-table-column>
-            <el-table-column prop="date" label="料品等级"></el-table-column>
+            <el-table-column prop="dimension" label="材积"></el-table-column>
+            <el-table-column prop="remark" label="备注"></el-table-column>
+            <el-table-column prop="density" label="密度"></el-table-column>
+            <el-table-column prop="standard_model" label="模具号"></el-table-column>
+            <el-table-column prop="material_level" label="料品等级"></el-table-column>
             <el-table-column prop="date" label="材质"></el-table-column>
-            <el-table-column prop="date" label="进价"></el-table-column>
-            <el-table-column prop="date" label="售价"></el-table-column>
-            <el-table-column prop="date" label="标准价"></el-table-column>
+            <el-table-column prop="standard_cost_price" label="进价"></el-table-column>
+            <el-table-column prop="standard_uniform_price" label="售价"></el-table-column>
+            <el-table-column prop="standard_single_price" label="标准价"></el-table-column>
             <el-table-column prop="date" label="英文名称"></el-table-column>
-            <el-table-column prop="date" label="最小采购量"></el-table-column>
+            <el-table-column prop="minimum_purchase_quantity" label="最小采购量"></el-table-column>
             <el-table-column prop="date" label="最小批量"></el-table-column>
             <el-table-column prop="date" label="采购提前期"></el-table-column>
             <el-table-column prop="date" label="出货免检"></el-table-column>
@@ -186,10 +192,10 @@
             <el-table-column prop="length" label="料品长"></el-table-column>
             <el-table-column prop="width" label="料品宽"></el-table-column>
             <el-table-column prop="height" label="料品高"></el-table-column>
-            <el-table-column prop="date" label="状态"></el-table-column>
+            <el-table-column prop="state" label="状态"></el-table-column>
             <el-table-column prop="member" label="管理者"></el-table-column>
-            <el-table-column prop="date" label="修改日期"></el-table-column>
-            <el-table-column prop="date" label="修改用户"></el-table-column>
+            <el-table-column prop="update_at" label="修改日期"></el-table-column>
+            <el-table-column prop="update_by" label="修改用户"></el-table-column>
           </el-table>
           <div class="condition">
             <div>
@@ -200,8 +206,10 @@
               <span>申请日期</span>
               <el-date-picker
                 size="mini"
+                v-model="mater.date"
                 @change="getMater"
-                type="datetimerange"
+                type="daterange"
+                value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
@@ -222,13 +230,14 @@
 export default {
   name: "addApply",
   data() {
+    const user = JSON.parse(localStorage.getItem('user')) || { user: { id: 0, current_branch: [] } };
     return {
       request_id: 0,
       form: {
-        applicant_id: "",
-        branch_id: "",
-        demand_at: "",
-        applicant_at: "",
+        applicant_id: user.user.id,
+        branch_id: user.user.current_branch.length ? user.user.current_branch[0].id : '',
+        // demand_at: "",
+        applicant_at: this.dateParse(new Date()),
         remark: "",
         items: [
           {
@@ -238,6 +247,7 @@ export default {
             specification: "",
             unit: "",
             quantity: "",
+            demand_at: "",
             remark: ""
           }
         ]
@@ -369,13 +379,31 @@ export default {
       });
       $("#purchaseApply .materList").modal("hide");
     },
+    editItems(row) {
+      if(row.id){
+        let that = this;
+        that.$post(`procurement/request/item/edit/${row.id}`, {
+          request_id: that.request_id || "",
+          code: row.code || "",
+          material_id: row.material_id,
+          name: row.name || "",
+          specification: row.specification || "",
+          unit: row.unit || "",
+          quantity: row.quantity || 1,
+          demand_at: row.demand_at || "",
+          remarks: row.remarks || ""
+        });
+      }
+    },
     delItems(index, row) {
-      this.$get(`procurement/request/delete/${row.id}`)
-        .then(response => {
-          if (response.status != 200) return false;
-          this.form.items.splice(index, 1);
-        })
-        .catch(err => console.error(err));
+      if(row.id) {
+        this.$get(`procurement/request/item/delete/${row.id}`)
+          .then(response => {
+            if (response.status != 200) return false;
+            this.form.items.splice(index, 1);
+          })
+          .catch(err => console.error(err));
+      }
     },
     onSubmit() {
       this.$refs["form"].validate(v => {
@@ -397,7 +425,7 @@ export default {
           .$post(`procurement/request/edit/${that.request_id}`, {
             applicant_id: that.form.applicant_id,
             branch_id: that.form.branch_id,
-            demand_at: that.form.demand_at,
+            // demand_at: that.form.demand_at,
             applicant_at: that.form.applicant_at,
             remark: that.form.remark,
             items: JSON.stringify(arr)
@@ -425,6 +453,7 @@ export default {
   },
   watch: {
     form: {
+      // val 与 oldVal 参数内容相同
       handler(val, oldVal) {
         let that = this,
           addRows = true,
@@ -438,6 +467,7 @@ export default {
               !e.code ||
               !e.specification ||
               !e.unit ||
+              !e.demand_at ||
               !e.quantity
             )
               addRows = false;
@@ -451,6 +481,7 @@ export default {
               specification: "",
               unit: "",
               quantity: 1,
+              demand_at: "",
               remark: ""
             });
             that
@@ -462,6 +493,7 @@ export default {
                 specification: lastRow.specification || "",
                 unit: lastRow.unit || "",
                 quantity: lastRow.quantity || 1,
+                demand_at: lastRow.demand_at || "",
                 remarks: lastRow.remark || ""
               })
               .then(response => {
@@ -470,44 +502,6 @@ export default {
                 that.request_id = response.data.request_id;
               })
               .catch(err => console.error(err));
-          } else {
-            // 修改
-            let i = 0,
-              id = 0;
-            // 全满
-            // 判断修改行数
-            while (i > val.items.length) {
-              i++;
-              if (val.items[i].request_id != oldVal.items[i].request_id)
-                id = val.items[i].id;
-              else if (val.items[i].code != oldVal.items[i].code)
-                id = val.items[i].id;
-              else if (val.items[i].material_id != oldVal.items[i].material_id)
-                id = val.items[i].id;
-              else if (val.items[i].name != oldVal.items[i].name)
-                id = val.items[i].id;
-              else if (
-                val.items[i].specification != oldVal.items[i].specification
-              )
-                id = val.items[i].id;
-              else if (val.items[i].unit != oldVal.items[i].unit)
-                id = val.items[i].id;
-              else if (val.items[i].quantity != oldVal.items[i].quantity)
-                id = val.items[i].id;
-              else if (val.items[i].remarks != oldVal.items[i].remarks)
-                id = val.items[i].id;
-            }
-            if (id)
-              that.$post(`procurement/request/item/edit/${id}`, {
-                request_id: that.request_id || "",
-                code: lastRow.code || "",
-                material_id: lastRow.material_id,
-                name: lastRow.name || "",
-                specification: lastRow.specification || "",
-                unit: lastRow.unit || "",
-                quantity: lastRow.quantity || 1,
-                remarks: lastRow.remarks || ""
-              });
           }
         }
       },

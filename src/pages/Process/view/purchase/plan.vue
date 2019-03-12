@@ -195,18 +195,18 @@ export default {
             field: "created_at",
             title: "创建日期"
           },
-          {
-            field: "demand_at",
-            title: "需求日期"
-          },
-          {
-            field: "number",
-            title: "关联采购申请单号"
-          },
-          {
-            field: "order_number",
-            title: "关联销售单号"
-          },
+          // {
+          //   field: "demand_at",
+          //   title: "需求日期"
+          // },
+          // {
+          //   field: "number",
+          //   title: "关联采购申请单号"
+          // },
+          // {
+          //   field: "order_number",
+          //   title: "关联销售单号"
+          // },
           {
             field: "remark",
             title: "备注",
@@ -278,6 +278,7 @@ export default {
                   <th>料品名称</th>
                   <th>料品规格</th>
                   <th>单位</th>
+                  <th>需求日期</th>
                   <th>数量</th>
                   <th>备注</th>
                   <th>结案</th>
@@ -290,6 +291,7 @@ export default {
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>
+                    <td>${e.demand_at || ""}</td>
                     <td>${e.quantity || ""}</td>
                     <td>${e.remark || ""}</td>
                     <td><input type="checkbox" aid="${
