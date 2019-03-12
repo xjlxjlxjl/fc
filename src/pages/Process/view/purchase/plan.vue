@@ -143,7 +143,10 @@ export default {
           {
             field: "id",
             title: "序号",
-            sortable: true
+            sortable: true,
+            formatter: (value, row, index) => {
+              return index + 1;
+            }
           },
           {
             field: "img",

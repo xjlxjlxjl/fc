@@ -145,7 +145,7 @@
             <el-table-column prop="applicant" label="申请人"></el-table-column>
             <el-table-column prop="applicant_at" label="申请日期"></el-table-column>
             <el-table-column prop="demand_at" label="需求日期"></el-table-column>
-            <el-table-column prop="code" label="料品编码"></el-table-column>
+            <el-table-column prop="material_code" label="料品编码"></el-table-column>
             <el-table-column prop="name" label="料品名称"></el-table-column>
             <el-table-column prop="specification" label="料品规格"></el-table-column>
             <el-table-column prop="unit" label="单位"></el-table-column>
@@ -464,7 +464,7 @@ export default {
                 number: e.number,
                 applicant: e.applicant,
                 applicant_at: e.applicant_at,
-                demand_at: e.demand_at,
+                demand_at: v.demand_at,
                 material_code: v.material_code,
                 name: v.name,
                 unit: v.unit,
@@ -522,7 +522,8 @@ export default {
             material_id: param.id,
             name: param.name || "",
             specification: param.material_specification || "",
-            unit: param.item_unit || "",
+            unit: param.item_unit ? param.item_unit : param.unit,
+            demand_at: param.demand_at || "",
             quantity: param.quantity || 1,
             remarks: param.remarks || ""
           };
@@ -602,7 +603,7 @@ export default {
           material_id: e.id,
           name: e.name || "",
           specification: e.material_specification || "",
-          unit: e.item_unit || "",
+          unit: e.item_unit ? e.item_unit : e.unit,
           demand_at: e.demand_at || "",
           quantity: e.quantity || 1,
           remarks: e.remarks || ""
@@ -757,17 +758,17 @@ export default {
     });
 
     $('#purchasePlan .materList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.mater.data.length > that.mater.pagination.per_page)
         that.getMater();
     });
 
     $('#purchasePlan .orderList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.order.data.length > that.order.pagination.per_page)
         that.getSaleOrder();
     });
 
     $('#purchasePlan .applyList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.apply.data.length > that.apply.pagination.per_page)
         that.getPurchaseApply();
     });
   }

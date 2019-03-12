@@ -511,7 +511,7 @@ export default {
   mounted() {
     let that = this;
     $('#purchaseApply .materList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.mater.data.length > that.mater.pagination.per_page)
         that.getMater();
     });
   },

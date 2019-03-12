@@ -50,7 +50,7 @@
                 ></el-date-picker>
               </el-form-item>
               <el-form-item class="table">
-                <el-table :data="form.items" size="mini" border style="width: 100%">
+                <el-table :data="form.items" ref="table" size="mini" border style="width: 100%">
                   <el-table-column prop="material_id" label="序号" width="50px">
                     <template slot-scope="{$index}"><div>{{ $index + 1 }}</div></template>
                   </el-table-column>
@@ -157,7 +157,7 @@
             <el-table-column prop="applicant" label="申请人"></el-table-column>
             <el-table-column prop="applicant_at" label="申请日期"></el-table-column>
             <el-table-column prop="demand_at" label="需求日期"></el-table-column>
-            <el-table-column prop="code" label="料品编码"></el-table-column>
+            <el-table-column prop="material_code" label="料品编码"></el-table-column>
             <el-table-column prop="name" label="料品名称"></el-table-column>
             <el-table-column prop="specification" label="料品规格"></el-table-column>
             <el-table-column prop="unit" label="单位"></el-table-column>
@@ -567,7 +567,7 @@ export default {
                 number: e.number,
                 applicant: e.applicant,
                 applicant_at: e.applicant_at,
-                demand_at: e.demand_at,
+                demand_at: v.demand_at,
                 material_code: v.material_code,
                 name: v.name,
                 unit: v.unit,
@@ -625,7 +625,7 @@ export default {
             material_id: param.id,
             name: param.name || "",
             specification: param.material_specification || "",
-            unit: param.item_unit || "",
+            unit: param.item_unit ? param.item_unit : param.unit,
             quantity: param.quantity || 1,
             remarks: param.remarks || ""
           };
@@ -723,6 +723,8 @@ export default {
     },
     addSupplier() {
       this.form.items[this.index].supplier = this.supplier.selection.abbreviation || this.supplier.selection.name;
+      this.form.items.push({});
+      this.form.items.pop();
       this.editItem(this.form.items[this.index]);
       $('#purchasEntrust .supplier').modal('hide');
     },
@@ -735,11 +737,11 @@ export default {
         let params = {
           outsourcing_id: that.request_id || "",
           purchaseApply: e.number,
-          code: e.material_number || "",
+          code: e.material_number ? e.material_number : e.material_code,
           material_id: e.id,
           name: e.name || "",
           specification: e.material_specification || "",
-          unit: e.item_unit || "",
+          unit: e.item_unit ? e.item_unit : e.unit,
           quantity: e.quantity || 1,
           remarks: e.remarks || ""
         };
@@ -899,22 +901,22 @@ export default {
     });
 
     $('#purchasEntrust .supplier .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.supplier.data.length > that.supplier.pagination.per_page)
         that.getSupplier();
     });
 
     $('#purchasEntrust .materList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.mater.data.length > that.mater.pagination.per_page)
         that.getMater();
     });
 
     $('#purchasEntrust .orderList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.order.data.length > that.order.pagination.per_page)
         that.getSaleOrder();
     });
 
     $('#purchasEntrust .applyList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight)
+      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.apply.data.length > that.apply.pagination.per_page)
         that.getPurchaseApply();
     });
   }
