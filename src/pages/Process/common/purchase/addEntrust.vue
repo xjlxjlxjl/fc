@@ -627,6 +627,7 @@ export default {
             specification: param.material_specification || "",
             unit: param.item_unit ? param.item_unit : param.unit,
             quantity: param.quantity || 1,
+            delivery_period: param.demand_at || "",
             remarks: param.remarks || ""
           };
         that
@@ -743,6 +744,7 @@ export default {
           specification: e.material_specification || "",
           unit: e.item_unit ? e.item_unit : e.unit,
           quantity: e.quantity || 1,
+          delivery_period: e.demand_at || "",
           remarks: e.remarks || ""
         };
         that

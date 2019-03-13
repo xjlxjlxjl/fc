@@ -626,6 +626,7 @@ export default {
             specification: param.material_specification || "",
             unit: param.item_unit ? param.item_unit : param.unit,
             quantity: param.quantity || 1,
+            delivery_period: param.demand_at || "",
             remarks: param.remarks || ""
           };
         that
@@ -745,7 +746,7 @@ export default {
           remarks: e.remarks || "",
           supplier: e.supplier || "",
           price: e.price || "",
-          delivery_period: e.delivery_period || ""
+          delivery_period: e.demand_at || ""
         };
         that
           .$post(`procurement/order/item/create`, params)
