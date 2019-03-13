@@ -559,7 +559,11 @@ export default new Vuex.Store({
       purchase: [
         {
           name: '待完成任务',
-          url: '/Purchase'
+          url: '/tasks'
+        },
+        {
+          name: '审核表',
+          url: '/approval'
         },
         {
           name: '生产看板',
@@ -667,7 +671,8 @@ export default new Vuex.Store({
       customerServiceQuotation: 0,
       application: 0,
       // 采购
-      '/Purchase': 0,
+      '/tasks': 0,
+      '/approval': 0,
       '/Purchase/product': 0,
       '/Purchase/supplier': 0,
       '/Purchase/apply': 0,

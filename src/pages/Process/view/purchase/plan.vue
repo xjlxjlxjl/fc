@@ -73,9 +73,9 @@
     <div id="toolbar">
       <el-button size="mini" @click="addPlan">新建采购计划</el-button>
       <el-select v-model="params.status" size="mini" @change="refreshed">
-        <el-option label="未完成" :value="0"></el-option>
-        <el-option label="已完成" :value="1"></el-option>
-        <el-option label="全部" :value="2"></el-option>
+        <el-option label="全部" :value="undefined"></el-option>
+        <el-option label="未审核" :value="0"></el-option>
+        <el-option label="已审核" :value="1"></el-option>
       </el-select>
     </div>
     <table id="table"></table>
@@ -131,7 +131,7 @@ export default {
     tableAjaxParams(params) {
       params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
-      params.status = this.params.status;
+      params.checks = this.params.status;
       return params;
     },
     init() {
@@ -244,7 +244,21 @@ export default {
                   })
                   .catch(err => console.error(err));
               },
-              "click .closeCase": function(e, value, row, index) {}
+              "click .closeCase": function(e, value, row, index) {
+                that
+                  .$post(`approvals/checks`, {
+                    ids: '',
+                    check_status: '',
+                    check_remark: '',
+                    is_end_status: '',
+                    end_remark: '',
+                    remark: ''
+                  })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                  })
+                  .catch(err => console.error(err));
+              }
             }
           }
         ],
@@ -334,20 +348,28 @@ export default {
   mounted() {
     const that = this;
     this.init();
-
     $("#purchasePlan").on("change", ".closeCase", function() {
       let self = $(this),
         id = self.attr("index"),
-        data = that.getRow($("#purchasePlan #table"), id);
+        data = that.getRow($("#purchasePlan #table"), id),
+        params = {};
+
       for (let item of data.items) {
-        if (item.id == self.val())
+        if (item.id == self.val()) {
           if (item.is_closed) item.is_closed = 0;
           else item.is_closed = 1;
+
+          if(isNaN(item.demand_at))
+            item.demand_at = undefined;
+          else 
+            item.demand_at = that.dateParse(new Date(item.demand_at || null));
+            
+          params = item;
+        }
       }
-      let params = data;
-      params.item = JSON.stringify(params.item);
+
       that
-        .$post(`procurement/schedule/edit/${id}`, params)
+        .$post(`procurement/schedule/item/edit/${params.id}`, params)
         .then(response => {
           if (response.status != 200) return false;
           that.editRow($("#purchasePlan #table"), id, data);

@@ -19,7 +19,9 @@
         </el-tab-pane>
       </el-tabs>
       <div class="global"></div>
-      <purchaseTasks v-show="activeTabs == '/Purchase'" @change="menuSelect"></purchaseTasks>
+      <tasks v-show="activeTabs == '/tasks'" @change="menuSelect"></tasks>
+      <approval v-show="activeTabs == '/approval'"></approval>
+
       <purchaseApply v-show="activeTabs == '/Purchase/apply'"></purchaseApply>
       <purchaseBillAnalysis v-show="activeTabs == '/Purchase/billAnalysis'"></purchaseBillAnalysis>
       <purchasEntrust v-show="activeTabs == '/Purchase/entrust'"></purchasEntrust>
@@ -39,7 +41,9 @@ import { mapState } from "vuex";
 import createdWork from "@/pages/Process/common/createdWork";
 
 // import Purchase from "@/pages/Process/view/purchase/purchase";
-import purchaseTasks from "@/pages/Process/view/purchase/tasks";
+import tasks from "@/pages/Process/control/tasks";
+import approval from "@/pages/Process/control/approval";
+
 import purchaseApply from "@/pages/Process/view/purchase/apply";
 import purchaseBillAnalysis from "@/pages/Process/view/purchase/billAnalysis";
 import purchasEntrust from "@/pages/Process/view/purchase/entrust";
@@ -58,13 +62,15 @@ export default {
     let url = this.$route.name.toLowerCase();
     return {
       aside: this.$store.state.process[url],
-      activeTabs: "/Purchase",
-      tabItems: [{ name: "待完成任务", label: "/Purchase", num: 0 }]
+      activeTabs: "/tasks",
+      tabItems: [{ name: "待完成任务", label: "/tasks", num: 0 }]
     };
   },
   components: {
     createdWork: createdWork,
-    purchaseTasks: purchaseTasks,
+    tasks: tasks,
+    approval: approval,
+
     purchaseApply: purchaseApply,
     purchaseBillAnalysis: purchaseBillAnalysis,
     purchasEntrust: purchasEntrust,

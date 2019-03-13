@@ -52,7 +52,9 @@
               <el-form-item class="table">
                 <el-table :data="form.items" border style="width: 100%">
                   <el-table-column prop="material_id" label="序号">
-                    <template slot-scope="{$index}"><div>{{ $index + 1 }}</div></template>
+                    <template slot-scope="{$index}">
+                      <div>{{ $index + 1 }}</div>
+                    </template>
                   </el-table-column>
                   <el-table-column prop="name" label="料品名称">
                     <template slot-scope="{$index, row}">
@@ -62,13 +64,17 @@
                   <el-table-column prop="code" label="料品编码" width="180px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.code" placeholder="料品编码" @blur="editItems(row)">
-                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater"></el-button>
+                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater(true)"></el-button>
                       </el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="specification" label="料品规格">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.specification" placeholder="料品规格" @blur="editItems(row)"></el-input>
+                      <el-input
+                        v-model="row.specification"
+                        placeholder="料品规格"
+                        @blur="editItems(row)"
+                      ></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="unit" label="单位">
@@ -138,7 +144,13 @@
             <el-table-column prop="image" label="图片"></el-table-column>
             <el-table-column prop="drawing_pdf" label="工程图号">
               <template slot-scope="{ row }">
-                <a v-for="item in row.drawing_pdf" :key="item" :href="item" :download="item.split('/').pop()" target="_blank">{{ item.split('/').pop() }}</a>
+                <a
+                  v-for="item in row.drawing_pdf"
+                  :key="item"
+                  :href="item"
+                  :download="item.split('/').pop()"
+                  target="_blank"
+                >{{ item.split('/').pop() }}</a>
               </template>
             </el-table-column>
             <el-table-column prop="barcode" label="条码"></el-table-column>
@@ -200,14 +212,14 @@
           <div class="condition">
             <div>
               <span>查找关键字</span>
-              <el-input size="mini" @blur="getMater"></el-input>
+              <el-input size="mini" v-model="mater.search" @blur="getMater(true)"></el-input>
             </div>
             <div>
               <span>申请日期</span>
               <el-date-picker
                 size="mini"
                 v-model="mater.date"
-                @change="getMater"
+                @change="getMater(true)"
                 type="daterange"
                 value-format="yyyy-MM-dd"
                 range-separator="至"
@@ -230,12 +242,16 @@
 export default {
   name: "addApply",
   data() {
-    const user = JSON.parse(localStorage.getItem('user')) || { user: { id: 0, current_branch: [] } };
+    const user = JSON.parse(localStorage.getItem("user")) || {
+      user: { id: 0, current_branch: [] }
+    };
     return {
       request_id: 0,
       form: {
         applicant_id: user.user.id,
-        branch_id: user.user.current_branch.length ? user.user.current_branch[0].id : '',
+        branch_id: user.user.current_branch.length
+          ? user.user.current_branch[0].id
+          : "",
         // demand_at: "",
         applicant_at: this.dateParse(new Date()),
         remark: "",
@@ -277,17 +293,17 @@ export default {
         search: "",
         date: ["", ""],
         selection: []
-      },
+      }
     };
   },
   methods: {
-    getMater(page = 1) {
+    getMater(search) {
       let that = this,
         loading = this.$loading({ lock: true });
       that
         .$get(`respositories/materials/list`, {
           per_page: that.mater.pagination.per_page,
-          page: ++that.mater.pagination.current_page,
+          page: search ? 1 : ++that.mater.pagination.current_page,
           search: that.mater.search,
           start_time: that.mater.date[0],
           end_time: that.mater.date[1]
@@ -295,9 +311,11 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          for (let item of response.data.list) {
-            that.mater.data.push(item);
-          }
+          if (search) that.mater.data = response.data.list;
+          else
+            for (let item of response.data.list) {
+              that.mater.data.push(item);
+            }
           that.mater.pagination = response.data.pagination;
           $("#purchaseApply .materList").modal("show");
         })
@@ -380,7 +398,7 @@ export default {
       $("#purchaseApply .materList").modal("hide");
     },
     editItems(row) {
-      if(row.id){
+      if (row.id) {
         let that = this;
         that.$post(`procurement/request/item/edit/${row.id}`, {
           request_id: that.request_id || "",
@@ -396,7 +414,7 @@ export default {
       }
     },
     delItems(index, row) {
-      if(row.id) {
+      if (row.id) {
         this.$get(`procurement/request/item/delete/${row.id}`)
           .then(response => {
             if (response.status != 200) return false;
@@ -406,49 +424,46 @@ export default {
       }
     },
     onSubmit() {
-      this.$refs["form"].validate(v => {
-        if (!v) return false;
-        let that = this,
-          arr = [];
-        that.form.items.forEach((e, k) => {
-          if (
-            e.material_id ||
-            e.name ||
-            e.code ||
-            e.specification ||
-            e.unit ||
-            e.quantity
-          )
-            arr.push(e);
-        });
-        that
-          .$post(`procurement/request/edit/${that.request_id}`, {
-            applicant_id: that.form.applicant_id,
-            branch_id: that.form.branch_id,
-            // demand_at: that.form.demand_at,
-            applicant_at: that.form.applicant_at,
-            remark: that.form.remark,
-            items: JSON.stringify(arr)
-          })
-          .then(response => {
-            if (response.status != 200) return false;
-            that.refresh($("#purchaseApply #table"));
-            $("#addApply").modal("hide");
-            that.$refs["form"].resetFields();
-            that.form.items = [
-              {
-                material_id: "",
-                name: "",
-                code: "",
-                specification: "",
-                unit: "",
-                quantity: "",
-                remark: ""
-              }
-            ];
-          })
-          .catch(err => console.error(err));
+      let that = this,
+        arr = [];
+      that.form.items.forEach((e, k) => {
+        if (
+          e.material_id ||
+          e.name ||
+          // e.code ||
+          e.specification ||
+          e.unit ||
+          e.quantity
+        )
+          arr.push(e);
       });
+      that
+        .$post(`procurement/request/edit/${that.request_id}`, {
+          applicant_id: that.form.applicant_id,
+          branch_id: that.form.branch_id,
+          // demand_at: that.form.demand_at,
+          applicant_at: that.form.applicant_at,
+          remark: that.form.remark,
+          items: JSON.stringify(arr)
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.refresh($("#purchaseApply #table"));
+          $("#addApply").modal("hide");
+          that.$refs["form"].resetFields();
+          that.form.items = [
+            {
+              material_id: "",
+              name: "",
+              code: "",
+              specification: "",
+              unit: "",
+              quantity: "",
+              remark: ""
+            }
+          ];
+        })
+        .catch(err => console.error(err));
     }
   },
   watch: {
@@ -462,9 +477,8 @@ export default {
         else {
           val.items.forEach(e => {
             if (
-              !e.material_id ||
               !e.name ||
-              !e.code ||
+              // !e.code ||
               !e.specification ||
               !e.unit ||
               !e.demand_at ||
@@ -487,8 +501,8 @@ export default {
             that
               .$post(`procurement/request/item/create`, {
                 request_id: that.request_id || "",
-                code: lastRow.code || "",
-                material_id: lastRow.material_id,
+                code: lastRow.code || undefined,
+                material_id: lastRow.material_id || undefined,
                 name: lastRow.name || "",
                 specification: lastRow.specification || "",
                 unit: lastRow.unit || "",
@@ -510,8 +524,12 @@ export default {
   },
   mounted() {
     let that = this;
-    $('#purchaseApply .materList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.mater.data.length > that.mater.pagination.per_page)
+    $("#purchaseApply .materList .el-table__body-wrapper").scroll(function(e) {
+      if (
+        $(this)[0].scrollTop ===
+          $(this)[0].scrollHeight - $(this)[0].clientHeight &&
+        that.mater.data.length >= that.mater.pagination.per_page
+      )
         that.getMater();
     });
   },

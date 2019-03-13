@@ -75,9 +75,9 @@
     <div id="toolbar">
       <el-button size="mini" @click="addApply">新建采购申请</el-button>
       <el-select v-model="params.status" size="mini" @change="refreshed">
-        <el-option label="未完成" :value="0"></el-option>
-        <el-option label="已完成" :value="1"></el-option>
-        <el-option label="全部" :value="2"></el-option>
+        <el-option label="全部" :value="undefined"></el-option>
+        <el-option label="未审核" :value="0"></el-option>
+        <el-option label="已审核" :value="1"></el-option>
       </el-select>
     </div>
     <table id="table"></table>
@@ -134,7 +134,7 @@ export default {
     tableAjaxParams(params) {
       params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
-      params.status = this.params.status;
+      params.checks = this.params.status;
       return params;
     },
     init() {
@@ -298,7 +298,7 @@ export default {
                       row.id
                     }" class="closeCase" index="${row.id}" value="${e.id}" ${
                 e.is_closed ? 'checked="checked"' : ""
-              }></td>
+              } disabled></td>
                   </tr>
                 `)
             );
@@ -333,19 +333,21 @@ export default {
     const that = this;
     this.init();
     $("#purchaseApply").on("change", ".closeCase", function() {
-      console.log(123);
       let self = $(this),
         id = self.attr("index"),
-        data = that.getRow($("#purchaseApply #table"), id);
+        data = that.getRow($("#purchaseApply #table"), id),
+        params = {};
+        
       for (let item of data.item) {
-        if (item.id == self.val())
+        if (item.id == self.val()) {
           if (item.is_closed) item.is_closed = 0;
           else item.is_closed = 1;
+          params = item;
+        }
       }
-      let params = data;
-      params.item = JSON.stringify(params.item);
+
       that
-        .$post(`procurement/request/edit/${id}`, params)
+        .$post(`procurement/request/item/edit/${params.id}`, params)
         .then(response => {
           if (response.status != 200) return false;
           that.editRow($("#purchaseApply #table"), id, data);

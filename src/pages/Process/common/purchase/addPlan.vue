@@ -52,15 +52,21 @@
               <el-form-item class="table">
                 <el-table :data="form.items" size="mini" border style="width: 100%">
                   <el-table-column prop="material_id" label="序号">
-                    <template slot-scope="{$index}"><div>{{ $index + 1 }}</div></template>
+                    <template slot-scope="{$index}">
+                      <div>{{ $index + 1 }}</div>
+                    </template>
                   </el-table-column>
                   <el-table-column prop="purchaseApply" label="关联采购申请" width="180px">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.purchaseApply" placeholder="关联采购申请" @blur="editItem(row)">
+                      <el-input
+                        v-model="row.purchaseApply"
+                        placeholder="关联采购申请"
+                        @blur="editItem(row)"
+                      >
                         <el-button
                           slot="append"
                           icon="el-icon-arrow-down"
-                          @click="getPurchaseApply"
+                          @click="getPurchaseApply(true)"
                         ></el-button>
                       </el-input>
                     </template>
@@ -68,14 +74,18 @@
                   <el-table-column prop="saleOrder" label="关联销售订单" width="180px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.saleOrder" placeholder="关联销售订单" @blur="editItem(row)">
-                        <el-button slot="append" icon="el-icon-arrow-down" @click="getSaleOrder"></el-button>
+                        <el-button
+                          slot="append"
+                          icon="el-icon-arrow-down"
+                          @click="getSaleOrder(true)"
+                        ></el-button>
                       </el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="code" label="料品编码" width="180px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.code" placeholder="料品编码" @blur="editItem(row)">
-                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater"></el-button>
+                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater(true)"></el-button>
                       </el-input>
                     </template>
                   </el-table-column>
@@ -86,7 +96,11 @@
                   </el-table-column>
                   <el-table-column prop="specification" label="料品规格">
                     <template slot-scope="{$index, row}">
-                      <el-input v-model="row.specification" placeholder="料品规格" @blur="editItem(row)"></el-input>
+                      <el-input
+                        v-model="row.specification"
+                        placeholder="料品规格"
+                        @blur="editItem(row)"
+                      ></el-input>
                     </template>
                   </el-table-column>
                   <el-table-column prop="unit" label="单位">
@@ -101,7 +115,13 @@
                   </el-table-column>
                   <el-table-column prop="demand_at" label="需求日期" width="150px">
                     <template slot-scope="{$index, row}">
-                      <el-date-picker v-model="row.demand_at" type="date" value-format="yyyy-MM-dd" @change="editItem(row)" placeholder="需求日期"></el-date-picker>
+                      <el-date-picker
+                        v-model="row.demand_at"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        @change="editItem(row)"
+                        placeholder="需求日期"
+                      ></el-date-picker>
                     </template>
                   </el-table-column>
                   <el-table-column prop="remarks" label="备注">
@@ -155,16 +175,16 @@
           <div class="condition">
             <div>
               <span>查找关键字</span>
-              <el-input v-model="apply.search" @blur="getPurchaseApply" size="mini"></el-input>
+              <el-input v-model="apply.search" @blur="getPurchaseApply(true)" size="mini"></el-input>
             </div>
             <div>
               <span>申请日期</span>
               <el-date-picker
                 size="mini"
-                @change="getPurchaseApply"
+                @change="getPurchaseApply(true)"
                 type="daterange"
                 v-model="apply.date"
-                value-format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
@@ -242,15 +262,16 @@
           <div class="condition">
             <div>
               <span>查找关键字</span>
-              <el-input size="mini" v-model="order.search" @blur="getSaleOrder"></el-input>
+              <el-input size="mini" v-model="order.search" @blur="getSaleOrder(true)"></el-input>
             </div>
             <div>
               <span>申请日期</span>
               <el-date-picker
                 size="mini"
                 v-model="order.date"
-                @change="getSaleOrder"
+                @change="getSaleOrder(true)"
                 type="daterange"
+                value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
@@ -288,7 +309,17 @@
             <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
             <el-table-column prop="item_unit" label="主单位"></el-table-column>
             <el-table-column prop="image" label="图片"></el-table-column>
-            <el-table-column prop="drawing_pdf" label="工程图号"></el-table-column>
+            <el-table-column prop="drawing_pdf" label="工程图号">
+              <template slot-scope="{ row }">
+                <a
+                  v-for="item in row.drawing_pdf"
+                  :key="item"
+                  :href="item"
+                  :download="item.split('/').pop()"
+                  target="_blank"
+                >{{ item.split('/').pop() }}</a>
+              </template>
+            </el-table-column>
             <el-table-column prop="barcode" label="条码"></el-table-column>
             <el-table-column prop="date" label="颜色"></el-table-column>
             <el-table-column prop="date" label="有效期"></el-table-column>
@@ -348,15 +379,16 @@
           <div class="condition">
             <div>
               <span>查找关键字</span>
-              <el-input size="mini" v-model="mater.search" @blur="getMater"></el-input>
+              <el-input size="mini" v-model="mater.search" @blur="getMater(true)"></el-input>
             </div>
             <div>
               <span>申请日期</span>
               <el-date-picker
                 size="mini"
                 v-model="mater.date"
-                @change="getMater"
+                @change="getMater(true)"
                 type="daterange"
+                value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
@@ -377,12 +409,16 @@
 export default {
   name: "addPlan",
   data() {
-    const user = JSON.parse(localStorage.getItem('user')) || { user: { id: 0, current_branch: [] } };
+    const user = JSON.parse(localStorage.getItem("user")) || {
+      user: { id: 0, current_branch: [] }
+    };
     return {
       request_id: 0,
       form: {
         applicant_id: user.user.id,
-        branch_id: user.user.current_branch.length ? user.user.current_branch[0].id : '',
+        branch_id: user.user.current_branch.length
+          ? user.user.current_branch[0].id
+          : "",
         // demand_at: "",
         applicant_at: this.dateParse(new Date()),
         remark: "",
@@ -442,43 +478,44 @@ export default {
     orderChange(val) {
       this.order.selection = val;
     },
-    getPurchaseApply() {
+    getPurchaseApply(search) {
       let that = this,
         loading = this.$loading({ lock: true });
       that
-        .$get(`procurement/request`, {
+        .$get(`procurement/request/item`, {
           per_page: that.apply.pagination.per_page,
-          page: ++that.apply.pagination.current_page,
-          search: that.apply.search,
+          page: search ? 1 : ++that.apply.pagination.current_page,
+          keyword: that.apply.search,
           start_time: that.apply.date[0],
-          end_time: that.apply.date[1]
+          end_time: that.apply.date[1],
+          is_closed: 0
         })
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          that.apply.pagination = response.data.pagination;
+          if (search) that.apply.data = [];
           response.data.list.forEach(e =>
-            e.item.forEach(v =>
-              that.apply.data.push({
-                id: e.id,
-                number: e.number,
-                applicant: e.applicant,
-                applicant_at: e.applicant_at,
-                demand_at: v.demand_at,
-                material_code: v.material_code,
-                name: v.name,
-                unit: v.unit,
-                quantity: v.quantity,
-                material_specification: v.specification,
-                remark: v.remark
-              })
-            )
+            that.apply.data.push({
+              request_item_id: e.id,
+              id: e.request_id,
+              number: e.request_number,
+              applicant: e.created_by,
+              applicant_at: e.created_at,
+              demand_at: e.demand_at,
+              material_code: e.material_code,
+              name: e.name,
+              unit: e.unit,
+              quantity: e.quantity,
+              material_specification: e.specification,
+              remark: e.remark
+            })
           );
+          that.apply.pagination = response.data.pagination;
           $("#purchasePlan .applyList").modal("show");
         })
         .catch(err => loading.close());
     },
-    getSaleOrder() {
+    getSaleOrder(search) {
       let that = this,
         loading = this.$loading({ lock: true });
       that
@@ -516,6 +553,7 @@ export default {
       if (this.apply.selection.length > 1 && !that.request_id) {
         let param = this.apply.selection.shift(),
           params = {
+            request_item_id: param.request_item_id || undefined,
             purchaseApply: param.number,
             schedule_id: that.request_id || "",
             code: param.material_code || "",
@@ -542,13 +580,13 @@ export default {
     addOrder() {
       console.log(this.order.selection);
     },
-    getMater() {
+    getMater(search) {
       let that = this,
         loading = this.$loading({ lock: true });
       that
-        .$get(`respositories/materials/list`,{
+        .$get(`respositories/materials/list`, {
           per_page: that.mater.pagination.per_page,
-          page: ++that.mater.pagination.current_page,
+          page: search ? 1 : ++that.mater.pagination.current_page,
           search: that.mater.search,
           start_time: that.mater.date[0],
           end_time: that.mater.date[1]
@@ -556,9 +594,11 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          for (let item of response.data.list) {
-            that.mater.data.push(item);
-          }
+          if (search) that.mater.data = response.data.list;
+          else
+            for (let item of response.data.list) {
+              that.mater.data.push(item);
+            }
           that.mater.pagination = response.data.pagination;
           $("#purchasePlan .materList").modal("show");
         })
@@ -597,6 +637,7 @@ export default {
       let that = this;
       this[name].selection.forEach(e => {
         let params = {
+          request_item_id: e.request_item_id || undefined,
           purchaseApply: e.number,
           schedule_id: that.request_id || "",
           code: e.material_code || "",
@@ -621,10 +662,11 @@ export default {
       $modal.modal("hide");
     },
     editItem(row) {
-      if(row.id) {
+      if (row.id) {
         let that = this;
         that.$post(`procurement/schedule/item/edit/${row.id}`, {
           schedule_id: that.request_id || "",
+          request_item_id: row.request_item_id || undefined,
           code: row.code || "",
           material_id: row.material_id,
           name: row.name || "",
@@ -637,7 +679,7 @@ export default {
       }
     },
     delItem(index, row) {
-      if(row.id) {
+      if (row.id) {
         this.$get(`procurement/schedule/item/delete/${row.id}`)
           .then(response => {
             if (response.status != 200) return false;
@@ -652,7 +694,7 @@ export default {
       that.form.items.forEach(e => {
         if (
           e.material_id ||
-          e.code ||
+          // e.code ||
           e.name ||
           e.specification ||
           e.unit ||
@@ -701,9 +743,8 @@ export default {
         else {
           val.items.forEach(e => {
             if (
-              !e.material_id ||
               !e.name ||
-              !e.code ||
+              // !e.code ||
               !e.specification ||
               !e.unit ||
               !e.quantity
@@ -724,8 +765,8 @@ export default {
             that
               .$post(`procurement/schedule/item/create`, {
                 schedule_id: that.request_id || "",
-                code: lastRow.code || "",
-                material_id: lastRow.material_id,
+                code: lastRow.code || undefined,
+                material_id: lastRow.material_id || undefined,
                 name: lastRow.name || "",
                 specification: lastRow.specification || "",
                 unit: lastRow.unit || "",
@@ -757,18 +798,30 @@ export default {
       that.userBranch = member;
     });
 
-    $('#purchasePlan .materList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.mater.data.length > that.mater.pagination.per_page)
+    $("#purchasePlan .materList .el-table__body-wrapper").scroll(function(e) {
+      if (
+        $(this)[0].scrollTop ===
+          $(this)[0].scrollHeight - $(this)[0].clientHeight &&
+        that.mater.data.length >= that.mater.pagination.per_page
+      )
         that.getMater();
     });
 
-    $('#purchasePlan .orderList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.order.data.length > that.order.pagination.per_page)
+    $("#purchasePlan .orderList .el-table__body-wrapper").scroll(function(e) {
+      if (
+        $(this)[0].scrollTop ===
+          $(this)[0].scrollHeight - $(this)[0].clientHeight &&
+        that.order.data.length >= that.order.pagination.per_page
+      )
         that.getSaleOrder();
     });
 
-    $('#purchasePlan .applyList .el-table__body-wrapper').scroll(function(e) {
-      if($(this)[0].scrollTop === $(this)[0].scrollHeight - $(this)[0].clientHeight && that.apply.data.length > that.apply.pagination.per_page)
+    $("#purchasePlan .applyList .el-table__body-wrapper").scroll(function(e) {
+      if (
+        $(this)[0].scrollTop ===
+          $(this)[0].scrollHeight - $(this)[0].clientHeight &&
+        that.apply.data.length >= that.apply.pagination.per_page
+      )
         that.getPurchaseApply();
     });
   }

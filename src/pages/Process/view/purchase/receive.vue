@@ -73,9 +73,9 @@
     <div id="toolbar">
       <!-- <el-button size="mini" @click="addReceive">新建委外领料单</el-button> -->
       <el-select v-model="params.status" size="mini" @change="refreshed">
-        <el-option label="未完成" :value="0"></el-option>
-        <el-option label="已完成" :value="1"></el-option>
-        <el-option label="全部" :value="2"></el-option>
+        <el-option label="全部" :value="undefined"></el-option>
+        <el-option label="未审核" :value="0"></el-option>
+        <el-option label="已审核" :value="1"></el-option>
       </el-select>
     </div>
     <table id="table"></table>
@@ -131,7 +131,7 @@ export default {
     tableAjaxParams(params) {
       params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
-      params.status = this.params.status;
+      params.checks = this.params.status;
       return params;
     },
     init() {
@@ -320,7 +320,7 @@ export default {
           onEditableSave: (field, mrow, oldValue, $el) => {
             mrow.items = JSON.stringify(mrow.items);
             that
-              .$post(`procurement/outsourcing/item/edit/${mrow.id}`, mrow)
+              .$post(`procurement/out_picking_material/edit/${mrow.id}`, mrow)
               .then(response => {
                 if (response.status != 200) return false;
                 console.log(response);

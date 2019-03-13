@@ -466,19 +466,12 @@ export default {
       let that = this,
         form = new FormData();
       form.append("file", file);
-      form.append("slug", "images");
-      
       that
-        .$upload("files/upload", form)
+        .$upload("procurement/supplier/import", form)
         .then(response => {
           if (response.status != 200) return false;
-          that
-            .$post(`procurement/supplier/import`, { url: response.data.url })
-            .then(result => {
-              if (result.status != 200);
-              that.refreshed();
-            })
-            .catch(err => console.error(err));
+          that.$message({ message: '导入成功', type: 'success' });
+          that.refreshed();
         })
         .catch(err => console.error(err));
     },
