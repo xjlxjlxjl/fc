@@ -4,8 +4,8 @@
       传递聊天记录
       当前用户聊天名称 id
       发送消息方法
-     -->
-    <popup 
+    -->
+    <popup
       :record="record"
       :toUser="toUser"
       :userName="userName"
@@ -25,7 +25,6 @@
       @send="menuClick"
       @refresh="getChatList"
     ></groupUserCheckBox>
-
     <div class="msgRise">
       <div class="avatar"></div>
       <div class="switch">
@@ -34,20 +33,22 @@
     </div>
     <div class="msgMain">
       <div class="msgSearch">
-        <el-input 
-          size="mini" 
-          v-if="msg.interface[2].isDefault || msg.interface[4].isDefault" 
+        <el-input
+          size="mini"
+          v-if="msg.interface[2].isDefault || msg.interface[4].isDefault"
           v-model="searchId"
-          placeholder="搜索群组" 
+          placeholder="搜索群组"
           @keyup.13.native="changeView(4)"
-          prefix-icon="el-icon-search"></el-input>
-        <el-input 
-          size="mini" 
-          v-else 
+          prefix-icon="el-icon-search"
+        ></el-input>
+        <el-input
+          size="mini"
+          v-else
           v-model="searchId"
-          placeholder="搜索用户" 
+          placeholder="搜索用户"
           @keyup.13.native="changeView(3)"
-          prefix-icon="el-icon-search"></el-input>
+          prefix-icon="el-icon-search"
+        ></el-input>
       </div>
       <!-- 消息 -->
       <div class="msgList" v-if="msg.interface[0].isDefault">
@@ -57,11 +58,13 @@
             v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
             :key="index"
             :index="index.toString()"
-            @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true">
+            @click="state = item.friend_uid ? 1 : 2;getRecord({ id: item.friend_uid || item.group_id, username: item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name, index: index });mainDisplay = true"
+          >
             <el-badge
               :value="item.unread_message_num"
               class="item"
-              v-if="parseInt(item.unread_message_num)">
+              v-if="parseInt(item.unread_message_num)"
+            >
               <div class="avatarBox">
                 <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
               </div>
@@ -69,7 +72,9 @@
             <div class="avatarBox" v-else>
               <img :src="item.friend_user ? item.friend_user.avatar : item.group.avatar">
             </div>
-            <span slot="title">{{ item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name }}</span>
+            <span
+              slot="title"
+            >{{ item.friend_user ? item.friend_user.remark || item.friend_user.display_name : item.group.group_name }}</span>
             <el-popover placement="right" trigger="hover">
               <el-button
                 type="danger"
@@ -84,18 +89,8 @@
                 @click="delGroup(item.group_id, index);chatList.list.splice(index, 1);"
               >退出</el-button>
               <!-- @click="delGroup(item.group_id, index);delChat(item.id, index)" -->
-              <el-button
-                type="primary"
-                size="mini"
-                v-if="item.friend_user"
-                @click="joinGroup"
-              >创建群聊</el-button>
-              <el-button
-                size="mini"
-                type="info"
-                v-else
-                @click="getGroupUser(item.group_id)"
-              >查看群成员</el-button>
+              <el-button type="primary" size="mini" v-if="item.friend_user" @click="joinGroup">创建群聊</el-button>
+              <el-button size="mini" type="info" v-else @click="getGroupUser(item.group_id)">查看群成员</el-button>
               <el-button size="mini" slot="reference">操作</el-button>
             </el-popover>
           </el-menu-item>
@@ -109,7 +104,8 @@
             v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
             :key="index"
             :index="index.toString()"
-            @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true">
+            @click="state = 1;getRecord({id: item.id, username: item.remark || item.display_name, index: index });mainDisplay = true"
+          >
             <div class="avatarBox">
               <img :src="item.avatar">
             </div>
@@ -130,7 +126,8 @@
             v-for="(item,index) in groupList.list"
             :key="index"
             :index="index.toString()"
-            @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index });mainDisplay = true">
+            @click="state = 2;getRecord({id: item.id, username: item.group_name, index: index });mainDisplay = true"
+          >
             <div class="avatarBox">
               <img :src="item.avatar">
             </div>
@@ -168,7 +165,8 @@
             v-if="item.friend_uid != 1 && item.friend_uid != user.user.id"
             :key="index"
             :index="index.toString()"
-            @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true">
+            @click="state = 1;getRecord({id: item.id, username: item.last_name || item.display_name, index: index });mainDisplay = true"
+          >
             <div class="avatarBox">
               <img :src="item.avatar">
             </div>
@@ -183,10 +181,7 @@
       <!-- 群搜索 -->
       <div class="msgList" v-else-if="msg.interface[4].isDefault">
         <el-menu default-active="0">
-          <el-menu-item
-            v-for="(item,index) in searchList"
-            :key="index"
-            :index="index.toString()">
+          <el-menu-item v-for="(item,index) in searchList" :key="index" :index="index.toString()">
             <div class="avatarBox">
               <img :src="item.avatar">
             </div>
@@ -208,9 +203,12 @@
               :key="index"
               :index="item.id.toString()"
               v-if="item.id != user.user.id"
-              @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true">
+              @click="state = 1;getRecord({id: item.id, username: item.display_name, index: index });mainDisplay = true"
+            >
               <div class="avatarBox">
-                <img :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'">
+                <img
+                  :src="item.url || 'https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/chat/logo.png'"
+                >
               </div>
               <span slot="title">{{ item.display_name }}</span>
               <el-popover placement="right" trigger="hover">
@@ -229,7 +227,8 @@
             v-for="(item,index) in noticesList.list"
             :key="index"
             :index="index.toString()"
-            @click="getNoticesDetail(item, index)">
+            @click="getNoticesDetail(item, index)"
+          >
             <label
               slot="title"
             >{{ item.from_user ? `${ item.from_user ? item.from_user.last_name ? item.from_user.last_name: item.from_user.display_name ? item.from_user.display_name : '通知' : '通知' }：${ item.message }`: item.message }}</label>
@@ -257,11 +256,13 @@
       </div>
     </div>
     <div class="msgTail">
-      <div v-for="item in msg.interface" 
-          :key="item.index" 
-          v-show="item.isShow"
-          @click="changeView(item.index)"
-          class="tailBox">
+      <div
+        v-for="item in msg.interface"
+        :key="item.index"
+        v-show="item.isShow"
+        @click="changeView(item.index)"
+        class="tailBox"
+      >
         <i :class="item.isDefault ? item.activeIcon : item.icon"></i>
         <p>{{ item.alt }}</p>
       </div>
@@ -272,7 +273,7 @@
 import { mapState, mapMutations } from "vuex";
 import fileImg from "@/assets/img/file.png";
 import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
-import popup from '@/pages/Chart/common/popup';
+import popup from "@/pages/Chart/common/popup";
 
 export default {
   name: "chatModal",
@@ -325,7 +326,7 @@ export default {
       groupState: 0,
       groupUserList: [],
       // socket
-      lockReconnect: false,
+      lockReconnect: false
     };
   },
   components: {
@@ -464,7 +465,7 @@ export default {
           if (response.status != 200) return false;
           that.chatList = response.data;
           if (!that.chatList.list.length) return false;
-          if(that.messageTips == 0){
+          if (that.messageTips == 0) {
             for (const item of that.chatList.list) {
               that.messageTips += parseInt(item.unread_message_num);
             }
@@ -713,17 +714,17 @@ export default {
           params.req.msg_id = response.data.msg_id;
           that.webSocketSend(params);
           let msg = {
+            from_user_id: that.user.user.id,
+            from_user: {
               from_user_id: that.user.user.id,
-              from_user: {
-                from_user_id: that.user.user.id,
-                avatar: that.user.user.avatar,
-                display_name: that.user.user.display_name
-              },
-              created_at: that.dateParse(new Date()),
-              msg_type: type,
-              id: response.data.msg_id,
-              content: data.content
-            };
+              avatar: that.user.user.avatar,
+              display_name: that.user.user.display_name
+            },
+            created_at: that.dateParse(new Date()),
+            msg_type: type,
+            id: response.data.msg_id,
+            content: data.content
+          };
 
           if (data.to_uid == that.toUser || data.to_group_id == that.toUser)
             that.record.list.push(msg);
@@ -809,16 +810,12 @@ export default {
           this.$message({ message: "复制成功", type: "success" });
           break;
         case 2:
-          let msgSendId =
-            forwardData.from_user_id || forwardData.user_id;
+          let msgSendId = forwardData.from_user_id || forwardData.user_id;
           if (msgSendId != this.user.user.id) {
             this.$message({ message: "只能撤回个人消息", type: "error" });
             return false;
           }
-          if (
-            new Date() - new Date(forwardData.created_at) >
-            2 * 60 * 1000
-          ) {
+          if (new Date() - new Date(forwardData.created_at) > 2 * 60 * 1000) {
             this.$message({
               message: "只能撤回不超过2分钟的消息",
               type: "error"
@@ -844,7 +841,14 @@ export default {
                 let msg = this.forwardData,
                   type = msg.msg_type || msg.type,
                   state = item == "user" ? 1 : 2;
-                popup.methods.sendMessage.call(this, 0, e, type, msg.content, state);
+                popup.methods.sendMessage.call(
+                  this,
+                  0,
+                  e,
+                  type,
+                  msg.content,
+                  state
+                );
               }, 500)
             );
           }
@@ -862,8 +866,13 @@ export default {
           1: () => this.getFriendList(),
           2: () => this.getGroupList()
         };
-      this.$notify({ title: `${result.resp.from_name}`, message: title[result.resp.type] });
-      new Notification(`${result.resp.from_name}`, { body: title[result.resp.type] });
+      this.$notify({
+        title: `${result.resp.from_name}`,
+        message: title[result.resp.type]
+      });
+      new Notification(`${result.resp.from_name}`, {
+        body: title[result.resp.type]
+      });
 
       clearTimeout(this.timeOut);
       this.timeOut = setTimeout(() => {
@@ -927,13 +936,13 @@ export default {
                 };
                 this.record.list.push(msg);
               }
-              this.$emit('tips');
+              this.$emit("tips");
               // this.getRecord({ id: this.toUser, username: this.userName });
               if (result.resp.from_uid) this.notify(result, 1);
             }
             this.fixLocation();
             break;
-              this.$emit('messageTips');
+            this.$emit("messageTips");
           case "group":
             console.log(result);
             if (result.resp_event == 200) {
@@ -954,7 +963,7 @@ export default {
                 };
                 this.record.list.push(msg);
               }
-              this.$emit('tips');
+              this.$emit("tips");
               // this.getRecord({ id: this.toUser, username: this.userName });
               if (result.resp.from_uid) this.notify(result, 2);
             }
@@ -962,9 +971,14 @@ export default {
             break;
           case "notice":
             console.log(result);
-            this.$emit('tips');
-            this.$notify({ title: `您有一条来自${result.resp.from_name}的通知`, message: result.resp.content });
-            new Notification(`您有一条来自${result.resp.from_name}的通知`, { body: result.resp.content });
+            this.$emit("tips");
+            this.$notify({
+              title: `您有一条来自${result.resp.from_name}的通知`,
+              message: result.resp.content
+            });
+            new Notification(`您有一条来自${result.resp.from_name}的通知`, {
+              body: result.resp.content
+            });
 
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
@@ -1032,8 +1046,8 @@ export default {
       this.ws.close();
     },
     fixLocation() {
-      popup.methods.fixLocation.call(this)
-    },
+      popup.methods.fixLocation.call(this);
+    }
   },
   computed: mapState(["chatModal", "msg"]),
   watch: {
@@ -1046,7 +1060,9 @@ export default {
   },
   beforeDestroy() {},
   mounted() {
-    this.$on('send', (url, data, params, msgType) => this.send(url, data, params, msgType))
+    this.$on("send", (url, data, params, msgType) =>
+      this.send(url, data, params, msgType)
+    );
   },
   created() {
     this.getChatList();

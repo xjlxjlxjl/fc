@@ -13,6 +13,8 @@ import elementUi from "element-ui";
 import Http from "@/assets/js/http";
 import Print from "@/assets/js/print";
 import Config from "@/assets/js/config";
+import mouseMenu from "vue-mouse-menu";
+import preview from "vue-photo-preview";
 import "element-ui/lib/theme-chalk/index.css";
 import "element-ui/lib/theme-chalk/display.css"; // 响应式
 import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
@@ -23,6 +25,8 @@ Vue.use(elementUi);
 Vue.use(Http);
 Vue.use(Print);
 Vue.use(Config);
+Vue.use(mouseMenu);
+Vue.use(preview);
 
 /* eslint-disable no-new */
 new Vue({

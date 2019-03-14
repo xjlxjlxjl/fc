@@ -515,6 +515,7 @@ export default {
             margin-right: 36px;
             .messageUser {
               color: @gery;
+              margin-bottom: 0;
             }
             .messgaeCentent {
               background-color: @blue;
@@ -527,6 +528,9 @@ export default {
                 align-items: center;
                 width: 250px;
                 height: 100px;
+                h1 {
+                  font-size: 12px;
+                }
                 img {
                   position: inherit;
                   width: 5rem;
@@ -579,6 +583,7 @@ export default {
             margin-left: 36px;
             .messageUser {
               color: @gery;
+              margin-bottom: 0;
             }
             .messgaeCentent {
               background-color: @eee;
@@ -591,6 +596,9 @@ export default {
                 align-items: center;
                 width: 200px;
                 height: 70px;
+                h1 {
+                  font-size: 12px;
+                }
                 img {
                   position: inherit;
                   width: 5rem;
@@ -642,6 +650,9 @@ export default {
         font-size: 2rem;
         margin: 0 0.5rem;
         color: @black;
+      }
+      input[type=file] {
+        display: none;
       }
     }
     .el-textarea {

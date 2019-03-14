@@ -37,8 +37,8 @@
           <el-menu-item index="5">
             <a href="https://factoryun.com/updated/download" target="_blank">APP下载</a>
           </el-menu-item>
-          <el-menu-item index="6">
-            <a href="/chart.html#/message">
+          <el-menu-item index="6" @click="changeModal('modalShow')">
+            <a href="javascript:;">
               <el-badge :value="messageTips" v-if="messageTips > 0" class="item">
                 <i class="el-icon-bell"></i>
               </el-badge>
@@ -135,13 +135,19 @@
         </el-menu-item>
       </el-menu>
     </el-main>
+    <msgBox
+      :modal="modalShow"
+      @change="changeModal"
+      @tips="++messageTips"
+      @clearTips="messageTips = 0"
+    ></msgBox>
   </el-container>
 </template>
 <script>
 import progress from "@/assets/img/progress.png";
 import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
-import message from "@/pages/Chart/view/message";
+import msgBox from "@/pages/Chart/common/chatModal";
 import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 
 export default {
@@ -154,10 +160,14 @@ export default {
       progressHide: progressHide,
       progressLast: progressLast,
       menuShow: false,
+      modalShow: false,
       searchText: "",
       messageTips: 0,
       lockReconnect: false
     };
+  },
+  components: {
+    msgBox: msgBox
   },
   methods: {
     loginOut() {
@@ -184,104 +194,9 @@ export default {
         else e.active = false;
       });
     },
-    webSocket() {
-      this.getUnreadMessage();
-      let socketAddress = this.$store.state.socketAddress;
-      this.ws = new WebSocket(socketAddress);
-      this.ws.onmessage = event => {
-        let result = JSON.parse(event.data);
-        switch (result.action) {
-          case "init":
-            this.webSocketLogin();
-            break;
-          case "login":
-            if (result.resp.code != 200) this.webSocketLogin();
-            else {
-              this.connectNum = 0;
-              clearInterval(this.pong);
-              this.pong = setInterval(() => {
-                this.webSocketSend({
-                  action: "pong",
-                  req: {
-                    message: "hello"
-                  }
-                });
-              }, 5000);
-            }
-            break;
-          case "pong":
-            break;
-          case "close":
-            this.webSocketClose();
-            break;
-          case "notice":
-          case "chat":
-          case "group":
-            console.log(result);
-            switch (result.resp.slug) {
-              case "service":
-                this.refresh($("#customerServiceApplication #table"));
-              case "service_assign":
-                this.refresh($("#application #afterSaleTable"));
-                break;
-              case "service_quote":
-                this.refresh($("#application #afterSaleTable"));
-                break;
-              case "order":
-                this.refresh($("#order #table"));
-                break;
-              case "worker":
-                this.refresh($("#tasks #table"));
-                break;
-            }
-            
-            if(result.resp.from_uid != this.user.user.id){
-              ++this.messageTips;
-              let info = {
-                user: result.resp.from_name
-              }
-              switch(result.resp.type) {
-                case 2:
-                  info.content = '[图片]';
-                  break;
-                case 3:
-                  info.content = '[文件]';
-                  break;
-                case 1:
-                default:
-                  info.content = result.resp.content;
-                  break;
-              }
-
-              this.$notify({ title: `您有一条来自${info.user}的通知`, message: info.content });
-              new Notification(`您有一条来自${info.user}的通知`, { body: info.content });
-            }
-            break;
-          default:
-            console.log("抛出");
-            console.log(result);
-            break;
-        }
-      };
-      this.ws.onclose = this.ws.onerror = e => {
-        this.connectNum++;
-        this.reconnect(socketAddress);
-      };
-    },
-    reconnect(url) {
-      message.methods.reconnect.call(this, url);
-    },
-    webSocketLogin() {
-      message.methods.webSocketLogin.call(this);
-    },
-    webSocketSend(action) {
-      message.methods.webSocketSend.call(this, action);
-    },
-    webSocketClose() {
-      message.methods.webSocketClose.call(this);
-    },
-    getUnreadMessage() {
-      message.methods.getChatList.call(this, false);
+    changeModal(name, state = null) {
+      if (state) this[name] = state;
+      else this[name] = !this[name];
     }
   },
   mounted() {
@@ -289,9 +204,6 @@ export default {
     this.process.forEach(e => {
       if (e.url == `/${route}`) e.active = true;
     });
-  },
-  created() {
-    if(this.user) this.webSocket();
   }
 };
 </script>
