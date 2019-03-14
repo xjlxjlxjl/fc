@@ -5,6 +5,17 @@ String.prototype.removeNumber = function () {
 Array.prototype.inArray = function (n) {
   return this.includes(n);
 };
+/**
+ * n: 是否存在于数组内元素
+ * attr: 判断字段名
+ * name: 需要返回字段名
+ */
+Array.prototype.onArray = function (n, attr, name) {
+  for (const item of this) {
+    if (item[attr] == n) return item[name];
+  }
+  return false;
+}
 
 // 数组去重
 Array.prototype.rep = function () {
@@ -92,6 +103,10 @@ export default {
     Vue.prototype.getData = $el => {
       return $el.bootstrapTable("getSelections");
     };
+    Vue.prototype.getRow = ($el, params) => {
+      return $el.bootstrapTable('getRowByUniqueId', params);
+    }
+
     Vue.prototype.addTable = ($el, index, data) => {
       $el.bootstrapTable("insertRow", {
         index: index,
@@ -113,6 +128,9 @@ export default {
         index: index,
         row: data
       });
+    };
+    Vue.prototype.editRow = ($el, params) => {
+      $el.bootstrapTable("updateByUniqueId", params);
     };
     Vue.prototype.refresh = ($el, data = {}) => {
       $el.bootstrapTable("refresh", data);

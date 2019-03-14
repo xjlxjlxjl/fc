@@ -3,7 +3,7 @@
     <div id="Map" ref="map"></div>
     <el-form :model="params" size="mini" ref="form" label-width="140px">
       <el-form-item label="距离内客户（km）">
-        <el-input v-model="distance"></el-input>
+        <el-input v-model="distance" style="max-width: 300px;"></el-input>
         <el-button type="primary" @click="search" size="mini">搜索</el-button>
       </el-form-item>
     </el-form>
@@ -11,8 +11,6 @@
       <el-table :data="tableData" size="mini">
         <el-table-column prop="name" label="名称"></el-table-column>
         <el-table-column prop="member_name" label="客户名称"></el-table-column>
-        <el-table-column prop="company_company" label="公司名称"></el-table-column>
-        <el-table-column prop="customer_level" label="客户级别"></el-table-column>
         <el-table-column prop="address" label="地址"></el-table-column>
         <el-table-column prop="salesman" label="业务员"></el-table-column>
         <el-table-column prop="owner" label="所有者"></el-table-column>
@@ -28,6 +26,8 @@
   </div>
 </template>
 <script>
+import img from "@/assets/img/local.png";
+
 export default {
   data() {
     return {
@@ -110,6 +110,10 @@ export default {
         if (this.getStatus() == BMAP_STATUS_SUCCESS) {
           that.params.lng = r.point.lng;
           that.params.lat = r.point.lat;
+          var myIcon = new BMap.Icon(img, new BMap.Size(30, 30));
+          var mk = new BMap.Marker(r.point, { icon: myIcon });
+          that.map.addOverlay(mk);
+
           that.map.panTo(r.point);
           that.search();
         } else alert("failed" + this.getStatus());
@@ -122,6 +126,7 @@ export default {
 <style lang="less">
 #customerMap {
   #Map {
+    margin-bottom: 1rem;
   }
   .el-form {
     .el-form-item {

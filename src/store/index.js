@@ -106,6 +106,11 @@ export default new Vuex.Store({
     powerList: [],
     // 审批插件
     addonList: [],
+    // 供应商列表
+    supplierList: {
+      list: [],
+      pagination: {}
+    },
     appTypeList: [],
     riseProcess: [
       {
@@ -565,33 +570,58 @@ export default new Vuex.Store({
           url: "/System/enterprise"
         }
       ],
-      purchase: [{
+      purchase: [
+        {
           name: '待完成任务',
-          url: '/Purchase'
+          url: '/tasks'
         },
         {
-          name: '客服申请',
-          url: ''
+          name: '审核表',
+          url: '/approval'
         },
         {
-          name: '客服报价',
-          url: ''
+          name: '生产看板',
+          url: '/Purchase/product'
         },
         {
-          name: '采购计划',
-          url: ''
-        },
-        {
-          name: '外包计划',
-          url: ''
+          name: '供应商管理',
+          url: '/Purchase/supplier'
         },
         {
           name: '采购申请',
-          url: ''
+          url: '/Purchase/apply'
         },
         {
-          name: '供应商',
-          url: ''
+          name: '采购计划',
+          url: '/Purchase/plan'
+        },
+        {
+          name: '采购订单',
+          url: '/Purchase/order'
+        },
+        {
+          name: '委外订单',
+          url: '/Purchase/entrust'
+        },
+        {
+          name: '委外领料单',
+          url: '/Purchase/receive'
+        },
+        {
+          name: '采购质检不良单',
+          url: '/Purchase/unhealthy'
+        },
+        {
+          name: '历史订单查询',
+          url: '/Purchase/history'
+        },
+        {
+          name: '物料价格调整分析',
+          url: '/Purchase/priceAnalysis'
+        },
+        {
+          name: '应付账单汇总分析',
+          url: '/Purchase/billAnalysis'
         },
       ]
     },
@@ -653,7 +683,21 @@ export default new Vuex.Store({
       order: 0,
       customerServiceApplication: 0,
       customerServiceQuotation: 0,
-      application: 0
+      application: 0,
+      // 采购
+      '/tasks': 0,
+      '/approval': 0,
+      '/Purchase/product': 0,
+      '/Purchase/supplier': 0,
+      '/Purchase/apply': 0,
+      '/Purchase/plan': 0,
+      '/Purchase/order': 0,
+      '/Purchase/entrust': 0,
+      '/Purchase/receive': 0,
+      '/Purchase/unhealthy': 0,
+      '/Purchase/history': 0,
+      '/Purchase/priceAnalysis': 0,
+      '/Purchase/billAnalysis': 0
     },
     apiKeys: {
       // baiduMap: "IjVLfQ6Tudo7LK8wCBeCPESmHl8doh61"

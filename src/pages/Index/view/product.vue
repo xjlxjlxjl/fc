@@ -83,7 +83,7 @@
               </el-tab-pane>
               <el-tab-pane label="2D图纸">
                 <div class="model2D">
-                  <embed :src="assigned.drawing_2d" type="application/pdf">
+                  <embed v-for="item in assigned.drawing_2d_v2" :key="item" :src="item" type="application/pdf">
                 </div>
               </el-tab-pane>
               <el-tab-pane label="型号列表">

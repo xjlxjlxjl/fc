@@ -31,8 +31,8 @@
               </el-form-item>
               <el-form-item label="是否调休">
                 <el-radio-group v-model="form.working_days_off">
-                  <el-radio :label="1">有</el-radio>
-                  <el-radio :label="0">无</el-radio>
+                  <el-radio :label="1">是</el-radio>
+                  <el-radio :label="0">否</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="加班说明">

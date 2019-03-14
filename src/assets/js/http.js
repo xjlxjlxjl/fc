@@ -11,14 +11,14 @@ axios.defaults.baseURL = "https://api.factoryun.com/";
 axios.interceptors.request.use(
   config => {
     if (config.method == "get") config.params = config.data;
-    let user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : null;
+    let user = localStorage.getItem("user") ?
+      JSON.parse(localStorage.getItem("user")) :
+      null;
     if (user) {
       axios.defaults.headers.common["Accept"] = "application/json";
-      axios.defaults.headers.common["Authorization"] = user
-        ? "Bearer " + user.token
-        : "";
+      axios.defaults.headers.common["Authorization"] = user ?
+        "Bearer " + user.token :
+        "";
       axios.defaults.headers.common["Company-Code"] = user.slug;
     }
     return config;
@@ -45,10 +45,9 @@ axios.interceptors.response.use(
           case "#/Logistics":
           case "#/AfterSale":
           case "#/Finance":
-            break;
           default:
             elementUi.Message({
-              message: response.data.message,
+              message: response.data.message || '未知错误',
               type: "error"
             });
             break;
@@ -60,21 +59,31 @@ axios.interceptors.response.use(
   error => {
     switch (error.request.status) {
       case 401:
-        elementUi.Notification({ message: "令牌失效" });
+        elementUi.Notification({
+          message: "令牌失效"
+        });
         localStorage.clear();
         setTimeout(() => (window.location.href = "/login.html#/login"), 1500);
         break;
       case 403:
-        elementUi.Notification({ message: "暂无操作权限" });
+        elementUi.Notification({
+          message: "暂无操作权限"
+        });
         break;
       case 404:
-        elementUi.Notification({ message: "资源不见啦，请联系管理员" });
+        elementUi.Notification({
+          message: "资源不见啦，请联系管理员"
+        });
         break;
       case 500:
-        elementUi.Notification({ message: "服务器内部错误，请联系管理员" });
+        elementUi.Notification({
+          message: "服务器内部错误，请联系管理员"
+        });
         break;
       default:
-        elementUi.Notification({ message: "网络错误，请检查网络连接" });
+        elementUi.Notification({
+          message: "网络错误，请检查网络连接"
+        });
         break;
     }
     return Promise.reject(error);
@@ -82,9 +91,11 @@ axios.interceptors.response.use(
 );
 
 function get(url, data = new Object()) {
-  let user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : { token: "", slig: "" };
+  let user = localStorage.getItem("user") ?
+    JSON.parse(localStorage.getItem("user")) : {
+      token: "",
+      slig: ""
+    };
   return new Promise((resolve, reject) => {
     axios({
       method: "get",
@@ -100,16 +111,18 @@ function get(url, data = new Object()) {
 }
 
 function post(url, data = new Object()) {
-  let user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : { token: "", slig: "" };
+  let user = localStorage.getItem("user") ?
+    JSON.parse(localStorage.getItem("user")) : {
+      token: "",
+      slig: ""
+    };
   return new Promise((resolve, reject) => {
     axios({
       method: "post",
       url: url,
       data: data,
       transformRequest: [
-        function(data) {
+        function (data) {
           data = qs.stringify(data);
           return data;
         }
@@ -124,9 +137,11 @@ function post(url, data = new Object()) {
 }
 
 function upload(url, data = new Object()) {
-  let user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : { token: "", slig: "" };
+  let user = localStorage.getItem("user") ?
+    JSON.parse(localStorage.getItem("user")) : {
+      token: "",
+      slig: ""
+    };
   return new Promise((resolve, reject) => {
     axios({
       method: "post",
@@ -162,7 +177,7 @@ function put(url, data = {}) {
 }
 
 const MyPlugin = {};
-MyPlugin.install = function(Vue, options) {
+MyPlugin.install = function (Vue, options) {
   Vue.prototype.$post = post;
   Vue.prototype.$get = get;
   Vue.prototype.$upload = upload;

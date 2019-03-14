@@ -32,7 +32,7 @@
                       :style="`border: 1px solid #000;width: 150px;font-weight: bold;text-align: center;font-size: 22px;line-height: 30px;`"
                     >型号</div>
                     <div
-                      :style="`border: 1px solid #000;width: ${parseInt(width) - 312}px;height: 33px;font-weight: bold;line-height: 30px;font-size: 22px;padding-left: 5px;`"
+                      :style="`border: 1px solid #000;width: ${parseInt(width) - 312}px;height: 33px;font-weight: bold;line-height: 30px;font-size: ${ print.model.length < 28 ? '22px' : print.model.length < 34 ? '17px' : print.model.length < 41 ? '14px' : '12px' };padding-left: 5px;`"
                     >{{ print.model }}</div>
                   </div>
                   <div style="display: flex;">

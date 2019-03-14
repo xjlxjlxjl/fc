@@ -4,7 +4,12 @@
     <login-modal></login-modal>
     <!-- <supplier-modal title="选择供应商" :demand="nonstandard" @onSubmit="createNon"></supplier-modal> -->
     <el-container>
-      <el-aside class="homeMainAside" width="200px">
+      <el-menu v-if="!menuControl">
+        <el-menu-item index="1" @click="menuShow = !menuShow">
+          <span slot="title">分类导航</span>
+        </el-menu-item>
+      </el-menu>
+      <el-aside class="homeMainAside" width="200px" v-show="menuShow">
         <el-menu :default-active="productIndex.toString()">
           <el-menu-item
             v-for="(item,index) in product"
@@ -18,7 +23,7 @@
       </el-aside>
       <el-main class="homeMainContent">
         <el-container>
-          <el-aside class="homeAsideList" width="120px">
+          <el-aside class="homeAsideList" width="120px" v-show="menuShow">
             <el-menu :default-active="selectedCateIndex.toString()">
               <el-menu-item
                 v-for="(item,index) in selectedCate"
@@ -419,15 +424,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -679,15 +684,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -879,15 +884,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -949,15 +954,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1134,15 +1139,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1204,15 +1209,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1274,15 +1279,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1344,15 +1349,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1535,15 +1540,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1725,15 +1730,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1929,15 +1934,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -2147,15 +2152,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -2255,15 +2260,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -2325,15 +2330,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -2395,15 +2400,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -2465,15 +2470,15 @@
                 <el-table-column label="图纸">
                   <template slot-scope="{ row }">
                     <div class="drawing">
-                      <div v-if="row.drawing_2d">
+                      <div v-for="item in row.drawing_2d_v2" :key="item">
                         <i class="font_family icon-d2twig"></i>
-                        <a target="_blank" :href="row.drawing_2d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_3d">
+                      <div v-for="item in row.drawing_3d_v2" :key="item">
                         <i class="font_family icon-d3twig"></i>
-                        <a target="_blank" :href="row.drawing_3d">下载</a>
+                        <a target="_blank" :href="item">下载</a>
                       </div>
-                      <div v-if="row.drawing_2d == '' && row.drawing_3d == ''">无</div>
+                      <div v-if="row.drawing_2d_v2.length == 0 && row.drawing_3d_v2.length == 0">无</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -2601,7 +2606,8 @@ export default {
         requirements: "",
         images_ids: [],
         fileUrl: []
-      }
+      },
+      menuShow: false
     };
   },
   components: {
@@ -3004,6 +3010,15 @@ export default {
       });
       delArr.forEach((e, k) => this.nonstandard.images_ids.splice(k, 1));
       this.nonstandard.fileUrl = fileList;
+    },
+    windowResize(){
+      if (window.innerWidth > 820) {
+        this.menuShow = true;
+        this.menuControl = true;
+      } else {
+        this.menuShow = false;
+        this.menuControl = false;
+      }
     }
   },
   watch: {
@@ -3071,7 +3086,11 @@ export default {
       deep: true
     }
   },
+  mounted() {
+  },
   created() {
+    this.windowResize();
+    window.onresize = e => this.windowResize()
     this.firstJoin = true;
     this.getCategory();
   }
