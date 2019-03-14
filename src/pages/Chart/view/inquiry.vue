@@ -113,7 +113,7 @@
 <script>
 import supplier from "@/pages/Chart/common/supplier";
 import demand from "@/pages/Chart/common/demand";
-import chatModal from "@/pages/Chart/common/chatModal";
+import chatModal from "@/pages/Chart/common/consu";
 
 export default {
   name: "inquiry",

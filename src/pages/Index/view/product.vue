@@ -121,7 +121,7 @@
 import indexChart from "@/pages/Index/common/indexChart";
 import joinProjectModel from "@/pages/Index/common/joinProject";
 import loginModal from "@/pages/Index/common/loginModal";
-import chatModal from "@/pages/Chart/common/chatModal";
+import chatModal from "@/pages/Chart/common/consu";
 
 export default {
   name: "product",
