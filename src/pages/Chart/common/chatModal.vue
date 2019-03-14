@@ -470,51 +470,8 @@ export default {
               that.messageTips += parseInt(item.unread_message_num);
             }
           }
-          // if (state) that.recordTo();
         })
         .catch(err => console.error(err));
-    },
-    // 中间过滤显示聊天显示第一个
-    recordTo() {
-      let that = this;
-      switch (that.chatList.list[0].friend_uid) {
-        case 0:
-          // 群聊
-          that.state = 2;
-          that.getRecord({
-            id: that.chatList.list[0].group_id,
-            username: that.chatList.list[0].group.group_name
-          });
-          break;
-        case 1:
-          // 私聊 用户 id = 1，选择第二个
-          if (that.chatList.list[1].friend_uid) {
-            that.state = 1;
-            that.getRecord({
-              id: that.chatList.list[1].friend_uid,
-              username:
-                that.chatList.list[1].friend_user.remark ||
-                that.chatList.list[1].friend_user.display_name
-            });
-          } else {
-            that.state = 2;
-            that.getRecord({
-              id: that.chatList.list[1].group.group_id,
-              username: that.chatList.list[1].group.group_name
-            });
-          }
-          break;
-        default:
-          // 其他用户
-          that.state = 1;
-          that.getRecord({
-            id: that.chatList.list[0].friend_uid,
-            username:
-              that.chatList.list[0].friend_user.remark ||
-              that.chatList.list[0].friend_user.display_name
-          });
-          break;
-      }
     },
     getRecord({ id, username, index = 0 }) {
       if (id != this.toUser || username != this.userName)
