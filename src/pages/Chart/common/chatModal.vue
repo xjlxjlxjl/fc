@@ -470,7 +470,7 @@ export default {
               that.messageTips += parseInt(item.unread_message_num);
             }
           }
-          if (state) that.recordTo();
+          // if (state) that.recordTo();
         })
         .catch(err => console.error(err));
     },
