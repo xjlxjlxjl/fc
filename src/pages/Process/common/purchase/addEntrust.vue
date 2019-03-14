@@ -228,16 +228,16 @@
             @selection-change="orderChange"
           >
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="date" label="订单号"></el-table-column>
-            <el-table-column prop="name" label="订单ID"></el-table-column>
-            <!-- <el-table-column prop="address" label="客户编码"></el-table-column> -->
-            <el-table-column prop="address" label="客户名称"></el-table-column>
-            <el-table-column prop="address" label="创建日期"></el-table-column>
-            <el-table-column prop="address" label="料品名称"></el-table-column>
-            <el-table-column prop="address" label="料品规格"></el-table-column>
-            <el-table-column prop="address" label="料品类别"></el-table-column>
-            <el-table-column prop="address" label="单位"></el-table-column>
-            <el-table-column prop="address" label="订单数量"></el-table-column>
+            <el-table-column prop="numbering" label="订单号"></el-table-column>
+            <!-- <el-table-column prop="name" label="订单ID"></el-table-column> -->
+            <!-- <el-table-column prop="consignee_code" label="客户编码"></el-table-column> -->
+            <el-table-column prop="consignee" label="客户名称"></el-table-column>
+            <el-table-column prop="created_at" label="创建日期"></el-table-column>
+            <el-table-column prop="name" label="料品名称"></el-table-column>
+            <el-table-column prop="material_specification" label="料品规格"></el-table-column>
+            <el-table-column prop="type" label="料品类别"></el-table-column>
+            <el-table-column prop="unit" label="单位"></el-table-column>
+            <el-table-column prop="quantity" label="订单数量"></el-table-column>
             <!-- <el-table-column prop="address" label="订单备品"></el-table-column>
             <el-table-column prop="address" label="订单总数"></el-table-column>-->
             <el-table-column prop="address" label="客户要求交期"></el-table-column>
@@ -623,6 +623,8 @@ export default {
         loading = this.$loading({ lock: true });
       that
         .$get(`orders/company`, {
+          per_page: that.order.pagination.per_page,
+          page: search ? 1 : ++that.order.pagination.current_page,
           search: that.order.search,
           start_time: that.order.date[0],
           end_time: that.order.date[1]
@@ -630,23 +632,23 @@ export default {
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
-          let arr = [];
+          if (search) that.order.data = [];
           response.data.list.forEach(e =>
             e.products.forEach(v =>
-              arr.push({
-                numbering: e.numbering,
+              that.order.data.push({
                 id: e.id,
+                numbering: e.numbering,
                 consignee: e.consignee,
                 created_at: e.created_at,
-                product_name: v.product_name,
-                product_model: v.product_model,
-                product_type: v.product_type,
-                product_unit: v.product_unit,
-                quantity: v.quantity
+                name: v.product_name,
+                type: v.product_type,
+                unit: v.product_unit,
+                quantity: v.quantity,
+                material_specification: v.product_model
               })
             )
           );
-          that.order.data = arr;
+          that.order.pagination = response.data.pagination;
           $("#purchasEntrust .orderList").modal("show");
         })
         .catch(err => loading.close());
@@ -681,7 +683,33 @@ export default {
       } else this.addItem("apply", $("#purchasEntrust .applyList"));
     },
     addOrder() {
-      console.log(this.order.selection);
+      let that = this;
+      if (this.order.selection.length > 1 && !that.request_id) {
+        let param = this.order.selection.shift(),
+          params = {
+            schedule_item_id: param.schedule_item_id || undefined,
+            saleOrder: param.numbering,
+            outsourcing_id: that.request_id || "",
+            code: param.material_code || "",
+            material_id: param.id,
+            name: param.name || "",
+            specification: param.material_specification || "",
+            unit: param.item_unit ? param.item_unit : param.unit,
+            quantity: param.quantity || 1,
+            delivery_period: param.demand_at || "",
+            remarks: param.remarks || ""
+          };
+        that
+          .$post(`procurement/order/item/create`, params)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.request_id = response.data.schedule_id;
+            that.addItem("order", $("#purchasEntrust .orderList"));
+            params.id = response.data.id;
+            that.form.items.unshift(params);
+          })
+          .catch(err => console.error(err));
+      } else this.addItem("order", $("#purchasEntrust .orderList"));
     },
     getMater(search) {
       let that = this,
@@ -781,6 +809,7 @@ export default {
           schedule_item_id: e.schedule_item_id || undefined,
           outsourcing_id: that.request_id || "",
           purchaseApply: e.number,
+          saleOrder: param.numbering,
           code: e.material_number ? e.material_number : e.material_code,
           material_id: e.id,
           name: e.name || "",
