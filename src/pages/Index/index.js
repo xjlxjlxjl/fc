@@ -5,6 +5,7 @@ import router from "./router";
 import store from "@/store";
 import elementUi from "element-ui";
 import Http from "@/assets/js/http";
+import Config from "@/assets/js/config";
 import mouseMenu from "vue-mouse-menu";
 import preview from "vue-photo-preview";
 import "element-ui/lib/theme-chalk/index.css";
@@ -15,6 +16,7 @@ import "@/assets/css/init.css"; // 基础改动
 Vue.config.productionTip = false;
 Vue.use(elementUi);
 Vue.use(Http);
+Vue.use(Config);
 Vue.use(mouseMenu);
 Vue.use(preview);
 

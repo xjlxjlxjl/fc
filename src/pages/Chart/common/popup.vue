@@ -2,7 +2,7 @@
   <div id="popup" ref="popup" v-show="modal">
     <fileListModal :toUser="toUser" :state="state"></fileListModal>
     <right-menu :pop-items="popItems" :mouse="mousePosition" @ListItemClick="menuClick"></right-menu>
-    <div class="popRise" @mousedown="isMove = true" @mouseup="isMove = false" @mousemove="mousemove">
+    <div class="popRise" @mousemove="mousemove">
       <div>
         <span>{{ userName }}</span>
       </div>
@@ -330,11 +330,11 @@ export default {
       this.$refs.popup.style.left = (window.innerWidth - 600) / 2 + 'px';
       this.$refs.popup.style.top = (window.innerHeight - 520) / 2 + 'px';
     },
+    // 长按移动
     mousemove(event) {
-      if(this.isMove) {
-        this.$refs.popup.style.left = event.clientX - this.$refs.popup.offsetLeft + 'px';
-        this.$refs.popup.style.top = event.clientY - this.$refs.popup.offsetTop + 'px';
-      }
+      if(!this.isMove) return false;
+      this.$refs.popup.style.top = Math.abs(event.clientY) - 30 + 'px';
+      this.$refs.popup.style.left = Math.abs(event.clientX) - 300 + 'px';
     }
   },
   watch: {
@@ -347,10 +347,17 @@ export default {
   },
   mounted() {
     this.resizePosition();
-    let $uploadBox = this.$refs["uploadBox"],
+    let that = this,
+      $uploadBox = this.$refs["uploadBox"],
       $elTextarea = document.getElementById("el-textarea"),
       $chatMain = document.getElementById("chatMain"),
-      chatMain = document.getElementsByClassName("chatMain")[0];
+      chatMain = document.getElementsByClassName("chatMain")[0],
+      popRise = document.querySelector('.popRise'),
+      body = document.querySelector('body');
+
+    body.onclick = e => (that.mousePosition = ["close"]);
+    popRise.onmousedown = e => (this.isMove = true);
+    popRise.onmouseup = popRise.onmouseout = e => (this.isMove = false);
 
     $uploadBox.ondragover = $uploadBox.ondragleave = $uploadBox.ondragenter = e => {
       if (e.preventDefault) e.preventDefault();
@@ -395,6 +402,8 @@ export default {
           index: this.key
         });
     };
+
+
     Notification.requestPermission(status => console.log(status));
   },
   created() {

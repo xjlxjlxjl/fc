@@ -1,6 +1,6 @@
 <template>
   <transition name="el-fade-in-linear">
-    <div id="groupUserCheckBox" v-show="ModalShow">
+    <div id="groupUserCheckBox" v-show="userCheckBoxModal">
       <div class="Curtain"></div>
       <div class="modalBox">
         <div class="modalBoxMain">
@@ -136,12 +136,12 @@ export default {
       this.groupList = [];
     },
     close() {
-      this.$store.commit("change");
+      this.$store.commit("changeModal", "userCheckBoxModal");
     }
   },
-  computed: mapState(["ModalShow"]),
+  computed: mapState(["userCheckBoxModal"]),
   watch: {
-    ModalShow(val) {
+    userCheckBoxModal(val) {
       this.clearForm();
     }
   }

@@ -660,6 +660,7 @@ export default new Vuex.Store({
       baiduMap: "davD7QtGgnBgqrfET20iwKHlWTL5g8GT"
     },
     ModalShow: false,
+    userCheckBoxModal: false,
     joinModal: false,
     supplierModal: false,
     demandModal: false,

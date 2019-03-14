@@ -838,7 +838,6 @@ export default {
           break;
         default:
           // 转发
-          this.$on('send', (url, data, params, msgType) => this.send(url, data, params, msgType))
           for (const item in i) {
             i[item].forEach(e =>
               setTimeout(() => {
@@ -1046,7 +1045,9 @@ export default {
     }
   },
   beforeDestroy() {},
-  mounted() {},
+  mounted() {
+    this.$on('send', (url, data, params, msgType) => this.send(url, data, params, msgType))
+  },
   created() {
     this.getChatList();
     this.getFriendList();
