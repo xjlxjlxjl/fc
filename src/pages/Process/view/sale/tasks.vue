@@ -32,10 +32,12 @@
       </div>
       <table id="table"></table>
     </div>
-    <order v-show="activeTabs == 'order'"></order>
-    <customerServiceApplication v-show="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
-    <application v-show="activeTabs == 'application'"></application>
-    <customerServiceQuotation v-show="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
+    <keep-alive>
+      <order v-if="activeTabs == 'order'"></order>
+      <customerServiceApplication v-else-if="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
+      <application v-else-if="activeTabs == 'application'"></application>
+      <customerServiceQuotation v-else-if="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
+    </keep-alive>
   </div>
 </template>
 <script>

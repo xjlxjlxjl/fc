@@ -19,20 +19,22 @@
         </el-tab-pane>
       </el-tabs>
       <div class="global"></div>
-      <tasks v-show="activeTabs == '/tasks'" @change="menuSelect"></tasks>
-      <approval v-show="activeTabs == '/approval'"></approval>
+      <keep-alive :max="10">
+        <tasks v-if="activeTabs == '/tasks'" @change="menuSelect"></tasks>
+        <approval v-else-if="activeTabs == '/approval'"></approval>
 
-      <purchaseApply v-show="activeTabs == '/Purchase/apply'"></purchaseApply>
-      <purchaseBillAnalysis v-show="activeTabs == '/Purchase/billAnalysis'"></purchaseBillAnalysis>
-      <purchasEntrust v-show="activeTabs == '/Purchase/entrust'"></purchasEntrust>
-      <purchasReceive v-show="activeTabs == '/Purchase/receive'"></purchasReceive>
-      <purchaseHistory v-show="activeTabs == '/Purchase/history'"></purchaseHistory>
-      <purchaseOrder v-show="activeTabs == '/Purchase/order'"></purchaseOrder>
-      <purchasePlan v-show="activeTabs == '/Purchase/plan'"></purchasePlan>
-      <purchasePriceAnalysis v-show="activeTabs == '/Purchase/priceAnalysis'"></purchasePriceAnalysis>
-      <purchaseProduct v-show="activeTabs == '/Purchase/product'"></purchaseProduct>
-      <purchaseSupplier v-show="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
-      <purchaseUnhealthy v-show="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+        <purchaseApply v-else-if="activeTabs == '/Purchase/apply'"></purchaseApply>
+        <purchaseBillAnalysis v-else-if="activeTabs == '/Purchase/billAnalysis'"></purchaseBillAnalysis>
+        <purchasEntrust v-else-if="activeTabs == '/Purchase/entrust'"></purchasEntrust>
+        <purchasReceive v-else-if="activeTabs == '/Purchase/receive'"></purchasReceive>
+        <purchaseHistory v-else-if="activeTabs == '/Purchase/history'"></purchaseHistory>
+        <purchaseOrder v-else-if="activeTabs == '/Purchase/order'"></purchaseOrder>
+        <purchasePlan v-else-if="activeTabs == '/Purchase/plan'"></purchasePlan>
+        <purchasePriceAnalysis v-else-if="activeTabs == '/Purchase/priceAnalysis'"></purchasePriceAnalysis>
+        <purchaseProduct v-else-if="activeTabs == '/Purchase/product'"></purchaseProduct>
+        <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
+        <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+      </keep-alive>
     </el-main>
   </el-container>
 </template>
