@@ -169,13 +169,14 @@ export default {
           content: message,
           msg_type: msgType
         },
+        req = {
+          type: msgType,
+          content: message,
+          from_name: this.user.user.display_name,
+          avatar: this.user.user.avatar
+        },
         params = {
-          req: {
-            type: msgType,
-            content: message,
-            from_name: this.user.user.display_name,
-            avatar: this.user.user.avatar
-          }
+          req: req
         };
 
       if (msgType == 1) {
@@ -206,7 +207,6 @@ export default {
     },
     // 发文件
     uploadFile(file) {
-      console.log(file)
       let form = new FormData(),
         that = this;
 
@@ -243,15 +243,7 @@ export default {
       }
       reader.readAsDataURL(file);
       reader.onload = e => {
-        this.$alert(
-          `<img src="${
-            reader.result
-          }" style="max-height: 500px;max-width: 100%;">`,
-          "上传",
-          {
-            dangerouslyUseHTMLString: true
-          }
-        )
+        this.$alert(`<img src="${reader.result}" style="max-height: 500px;max-width: 100%;">`, "上传", { dangerouslyUseHTMLString: true })
           .then(result => {
             form.append("file", file);
             that.upload(form, 2);
@@ -265,12 +257,13 @@ export default {
         data = {
           msg_type: type
         },
+        req = {
+          type: type,
+          from_name: this.user.user.display_name,
+          avatar: this.user.user.avatar
+        },
         params = {
-          req: {
-            type: type,
-            from_name: this.user.user.display_name,
-            avatar: this.user.user.avatar
-          }
+          req: req
         };
       that
         .$upload("chat/upload_file", form)
@@ -313,7 +306,7 @@ export default {
       this.mousePosition = ["close"];
     },
     galleryShow() {
-      this.$preview.on("imageLoadComplete", (e, item) => console.log());
+      this.$preview.on("imageLoadComplete", (e, item) => console.log('打开图片'));
     },
     showFileList() {
       fileList.methods.close.call(this);
@@ -402,7 +395,6 @@ export default {
           index: this.key
         });
     };
-
 
     Notification.requestPermission(status => console.log(status));
   },

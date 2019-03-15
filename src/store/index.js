@@ -9,7 +9,8 @@ export default new Vuex.Store({
     socketAddress: "wss://factoryun.com/wss",
     // socketAddress: "ws://skyliu.cn/ws",
     msg: {
-      interface: [{
+      interface: [
+        {
           index: 0,
           alt: "消息",
           id: "chat",
@@ -73,7 +74,8 @@ export default new Vuex.Store({
           isShow: true
         }
       ],
-      popItems: [{
+      popItems: [
+        {
           txt: "转发"
         },
         {

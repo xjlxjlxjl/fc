@@ -567,7 +567,7 @@ export default {
             })
             .catch(err => console.error(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => console.log(err));
     },
     acceptGroup(id) {
       let that = this;
@@ -710,13 +710,15 @@ export default {
     },
     getBranch() {
       let that = this;
-      that
-        .$get("members/company/branch")
-        .then(response => {
-          if (response.status != 200) return false;
-          that.mailList = response.data.list;
-        })
-        .catch(error => console.error(error));
+      if (that.$store.state.userBranch.length) that.mailList = that.$store.state.userBranch;
+      else
+        that
+          .$get("members/company/branch")
+          .then(response => {
+            if (response.status != 200) return false;
+            that.mailList = response.data.list;
+          })
+          .catch(error => console.error(error));
     },
     getNotices() {
       let that = this;
@@ -728,19 +730,13 @@ export default {
         })
         .then(response => {
           if (response.status != 200) return false;
-
           response.data.list.forEach(e => that.noticesList.list.push(e));
-          // response.data.list.forEach(e => that.noticesList.list.unshift(e));
           that.noticesList.pagination = response.pagination;
         })
         .catch(error => console.error(error));
     },
     getNoticesDetail(item, key) {
-      this.$alert(
-        `${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} 
-          <p>通知内容：<b>${item.message}</b>
-        </p>`,
-        "通知",
+      this.$alert(`${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} <p>通知内容：<b>${item.message}</b> </p>`, "通知",
         {
           confirmButtonText: "确定",
           dangerouslyUseHTMLString: true,
@@ -798,14 +794,7 @@ export default {
                 let msg = this.forwardData,
                   type = msg.msg_type || msg.type,
                   state = item == "user" ? 1 : 2;
-                popup.methods.sendMessage.call(
-                  this,
-                  0,
-                  e,
-                  type,
-                  msg.content,
-                  state
-                );
+                popup.methods.sendMessage.call(this, 0, e, type, msg.content, state);
               }, 500)
             );
           }
@@ -857,6 +846,7 @@ export default {
               }
               this.webSocketLogin();
             } else {
+              console.log('%c 链接成功!', 'color: #359028;background:#a6dc9e;')
               clearInterval(this.pong);
               this.connectNum = 0;
               this.pong = setInterval(
@@ -893,13 +883,11 @@ export default {
                 };
                 this.record.list.push(msg);
               }
-              this.$emit("tips");
-              // this.getRecord({ id: this.toUser, username: this.userName });
+              if (!this.modal) this.$emit("tips");
               if (result.resp.from_uid) this.notify(result, 1);
             }
             this.fixLocation();
             break;
-            this.$emit("messageTips");
           case "group":
             console.log(result);
             if (result.resp_event == 200) {
@@ -920,23 +908,16 @@ export default {
                 };
                 this.record.list.push(msg);
               }
-              this.$emit("tips");
-              // this.getRecord({ id: this.toUser, username: this.userName });
+              if (!this.modal) this.$emit("tips");
               if (result.resp.from_uid) this.notify(result, 2);
             }
             this.fixLocation();
             break;
           case "notice":
             console.log(result);
-            this.$emit("tips");
-            this.$notify({
-              title: `您有一条来自${result.resp.from_name}的通知`,
-              message: result.resp.content
-            });
-            new Notification(`您有一条来自${result.resp.from_name}的通知`, {
-              body: result.resp.content
-            });
-
+            if (!this.modal) this.$emit("tips");
+            this.$notify({ title: `您有一条来自${result.resp.from_name}的通知`, message: result.resp.content });
+            new Notification(`您有一条来自${result.resp.from_name}的通知`, { body: result.resp.content });
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
               from_user: {
@@ -976,6 +957,7 @@ export default {
       //没连接上会一直重连，设置延迟避免请求过多
       setTimeout(
         () => {
+          console.error(`断线重连中：${this.connectNum}`)
           clearInterval(this.pong);
           this.webSocket(url);
           this.lockReconnect = false;
@@ -1015,7 +997,6 @@ export default {
       this.record.pagination = { total: 1, current_page: 0 };
     }
   },
-  beforeDestroy() {},
   mounted() {
     this.$on("send", (url, data, params, msgType) =>
       this.send(url, data, params, msgType)

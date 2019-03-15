@@ -195,6 +195,7 @@ export default {
       });
     },
     changeModal(name, state = null) {
+      this.messageTips = 0;
       if (state) this[name] = state;
       else this[name] = !this[name];
     }
