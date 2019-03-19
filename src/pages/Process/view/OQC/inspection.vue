@@ -96,6 +96,29 @@
       </div>
     </div>
     <!--endprint-->
+    <!-- 查看报告 -->
+    <div
+      id="reportPage"
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" style="font-size: 3rem;">&times;</span>
+              </button>
+              <h4 class="modal-title">质检报告</h4>
+            </div>
+            <div id="canvasBox"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="OQCtoolbar">
       <span class="lead">生产送检表</span>
       <!-- <el-button size="mini">上传质检报告</el-button> -->
@@ -106,6 +129,7 @@
 <script>
 import QRCode from "qrcode";
 import editOqcModal from "@/pages/Process/common/editOqc";
+import PDFJS from "pdfjs-dist";
 
 export default {
   name: "inspection",
@@ -149,7 +173,12 @@ export default {
         sn: ""
       },
       width: 670,
-      height: 462
+      height: 462,
+      pdfDoc: null,
+      pageNum: 1,
+      pageRendering: false,
+      pageNumPending: null,
+      scale: 1
     };
   },
   components: {
@@ -281,12 +310,15 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let edit = [
-                `<button class="btn btn-success btn-sm edit">上传报告</button>`
-              ];
-              let print = [
-                `<button class="btn btn-primary btn-sm print">打　　印</button>`
-              ];
-              return edit + print;
+                  `<button class="btn btn-success btn-sm edit">上传报告</button>`
+                ],
+                print = [
+                  `<button class="btn btn-primary btn-sm print">打　　印</button>`
+                ],
+                report = [
+                  `<button class="btn btn-warning btn-sm report">查看报告</button>`
+                ];
+              return report + edit + print;
             },
             events: {
               "click .edit": (e, value, row, index) => {
@@ -333,6 +365,15 @@ export default {
                     $("#myModal").modal("show");
                   })
                   .catch(err => {});
+              },
+              "click .report": (e, value, row, index) => {
+                if (row.report_url.length || row.images_url.length) {
+                  $("#canvasBox").empty();
+                  for (let item of row.report_url) that.showPDF(item.url);
+                  for (let item of row.images_url) $("#canvasBox").append(`<img src="${item.url}">`);
+                  $("#reportPage").modal("show");
+                } else
+                  that.$message({ message: "尚未上传报告", type: "error" });
               }
             }
           }
@@ -396,6 +437,43 @@ export default {
     },
     refreshed() {
       this.refresh($("#OQCtable"));
+    },
+    showPDF(url) {
+      let _this = this;
+      PDFJS.getDocument(url).then(function(pdf) {
+        _this.pdfDoc = pdf;
+        for (let i = 1; i < pdf.numPages + 1; i++) {
+          _this.renderPage(i);
+        }
+      });
+    },
+    renderPage(num) {
+      this.pageRendering = true;
+      let _this = this;
+      this.pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport(_this.scale);
+        // let canvas = document.getElementById("the-canvas");
+        let canvas = document.createElement("canvas");
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render PDF page into canvas context
+        var renderContext = {
+          canvasContext: canvas.getContext("2d"),
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+        document.getElementById("canvasBox").appendChild(canvas);
+        // Wait for rendering to finish
+        renderTask.promise.then(function() {
+          _this.pageRendering = false;
+          if (_this.pageNumPending !== null) {
+            // New page rendering is pending
+            _this.renderPage(_this.pageNumPending);
+            _this.pageNumPending = null;
+          }
+        });
+      });
     }
   },
   mounted() {
@@ -421,3 +499,17 @@ export default {
   }
 };
 </script>
+<style lang="less">
+.modal-lg {
+  width: 100%;
+  max-width: 1280px;
+  #canvasBox{
+    img,
+    canvas {
+      display: block;
+      margin: auto;
+      max-width: 100%;
+    }
+  }
+}
+</style>
