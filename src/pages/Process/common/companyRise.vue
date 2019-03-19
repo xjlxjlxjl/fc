@@ -120,6 +120,17 @@
         <span>系统设置</span>
       </router-link>
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
+        <el-menu-item index="-2" @click="changeModal('modalShow')">
+          <a href="javascript:;">
+            <div class="whiteRoundBox" style="padding: 0;">
+              <a href="javascript:;">
+                <i class="font_family icon-pingtouge" style="font-size: 1.85rem;"></i>
+                <span style="color: #fff;">聊天</span>
+              </a>
+              <img :src="progressHide">
+            </div>
+          </a>
+        </el-menu-item>
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
           <router-link :to="val.url">
             <div
@@ -193,6 +204,7 @@ export default {
         if (e.url == route) e.active = true;
         else e.active = false;
       });
+      0
     },
     changeModal(name, state = null) {
       this.messageTips = 0;

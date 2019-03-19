@@ -1,6 +1,13 @@
 <template>
   <div id="approval">
-    <div id="toolbar"></div>
+    <div id="toolbar">
+      <el-select v-model="check_status" size="mini">
+        <el-option label="全部" :value="undefined"></el-option>
+        <el-option label="待审核" value="0"></el-option>
+        <el-option label="审核成功" value="1"></el-option>
+        <el-option label="审核失败" value="2"></el-option>
+      </el-select>
+    </div>
     <table id="table"></table>
   </div>
 </template>
@@ -8,35 +15,42 @@
 export default {
   name: "approval",
   data() {
-    return {};
+    return {
+      check_status: undefined
+    };
   },
   methods: {
     tableAjaxData(params) {
-      this.$store.commit('changeTasks', {
-        name: '/approval',
-        num: 2
-      })
-      params.success({
-        rows: [{ id: 1 }, { id: 2 }],
-        total: 2
-      })
+      let that = this,
+        loading = this.$loading({ lock: true });
+      that
+        .$get(`approvals/checks/list`, params.data)
+        .then(response => {
+          loading.close();
+          if (response.status != 200) return false;
+          this.$store.commit("changeTasks", {
+            name: "/approval",
+            num: response.data.pagination.total
+          });
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => loading.close());
     },
     tableAjaxParams(params) {
       params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
+      params.check_status = this.check_status;
       return params;
     },
     init() {
       let that = this,
         columns = [
           {
-            field: "work_no",
-            title: "任务编号",
-            sortable: true
-          },
-          {
-            field: "number",
-            title: "单号",
+            field: "entry.entry_name",
+            title: "审核类型",
             sortable: true
           },
           {
@@ -45,32 +59,75 @@ export default {
             sortable: true
           },
           {
-            field: "created_by",
+            field: "created_member.last_name",
             title: "创建人",
             sortable: true
           },
           {
-            field: "check",
+            field: "check_status",
             title: "审核状态",
-            sortable: true
-          },
-          {
-            field: "slug",
-            title: "操作",
-            formatter: function(value, row, index) {
-              let pass = `<button class="btn btn-success btn-sm pass">审核通过</button>`,
-                refuse = `<button class="btn btn-danger btn-sm refuse" style="margin-left: 5px;">审核通过</button>`;
-              return pass + refuse;
-            },
-            event: {
-              'click .pass': function(e, value, row, index) {
-
-              },
-              'click .refuse': function(e, value, row, index) {
-
-              },
+            sortable: true,
+            formatter: (value, row, index) => {
+              let status = {
+                0: "待审核",
+                1: "审核通过",
+                2: "审核失败"
+              };
+              return status[value];
             }
           },
+          {
+            field: "check_members",
+            title: "审核人",
+            sortable: true,
+            formatter: (value, row, index) => {
+              let nameArr = [];
+              value.forEach(e => nameArr.push(e.check_last));
+              return nameArr.join(",");
+            }
+          },
+          {
+            field: "id",
+            title: "操作",
+            formatter: (value, row, index) => {
+              let pass = `<button class="btn btn-success btn-sm pass">审核通过</button>`,
+                refuse = `<button class="btn btn-danger btn-sm refuse" style="margin-left: 5px;">审核不通过</button>`;
+              return pass + refuse;
+            },
+            events: {
+              "click .pass": function(e, value, row, index) {
+                that
+                  .$post(`approvals/checks`, {
+                    id: value,
+                    check_status: 1
+                  })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(err => console.error(err));
+              },
+              "click .refuse": function(e, valued, row, index) {
+                that
+                  .$prompt("请输入审核失败理由", "提示", {
+                    confirmButtonText: "确定"
+                  })
+                  .then(({ value }) => {
+                    that
+                      .$post(`approvals/checks`, {
+                        id: valued,
+                        check_status: 2,
+                        check_remark: value
+                      })
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.refreshed();
+                      })
+                      .catch(err => console.error(err));
+                  });
+              }
+            }
+          }
         ],
         data = {
           toolbar: "#approval #toolbar",
@@ -104,150 +161,166 @@ export default {
       $("#approval #table").bootstrapTable(data);
     },
     createTableDom(data) {
-      let dom = {
-        1: () => {
-          return `
-            <table class="table">
-              <tr>
-                <td>客服报价单</td>
-                <td>KFBJ20181010-002</td>
-              </tr>
-              <tr>
-                <td>创建日期</td>
-                <td>2018-10-10 15:00</td>
-              </tr>
-              <tr>
-                <td>创建人</td>
-                <td>客服_小余</td>
-              </tr>
-              <tr>
-                <td>关联客服申请单</td>
-                <td>KFSQ20181010-002</td>
-              </tr>
-              <tr>
-                <td>客户公司名</td>
-                <td>深圳大族激光科技有限公司</td>
-              </tr>
-              <tr>
-                <td>联系人</td>
-                <td>小族</td>
-              </tr>
-              <tr>
-                <td>联系电话</td>
-                <td>13600001112</td>
-              </tr>
-              <tr>
-                <td>报价明细</td>
-                <td>
-                  <table class="table">
-                    <tr>
-                      <th>序号</th>
-                      <th>料品编码</th>
-                      <th>规格</th>
-                      <th>品名</th>
-                      <th>数量</th>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>DT0001</td>
-                      <td>10-20</td>
-                      <td>读头</td>
-                      <td>1</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>DT0001</td>
-                      <td>10-20</td>
-                      <td>读头</td>
-                      <td>1</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>DT0001</td>
-                      <td>10-20</td>
-                      <td>读头</td>
-                      <td>1</td>
-                    </tr>
-                    <tr>
-                      <td>4</td>
-                      <td>DT0001</td>
-                      <td>10-20</td>
-                      <td>读头</td>
-                      <td>1</td>
-                    </tr>
-                    <tr>
-                      <td>5</td>
-                      <td>DT0001</td>
-                      <td>10-20</td>
-                      <td>读头</td>
-                      <td>1</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td>总金额</td>
-                <td>未报价</td>
-              </tr>
-              <tr>
-                <td>优惠金额</td>
-                <td>0</td>
-              </tr>
-              <tr>
-                <td>应收金额</td>
-                <td>未报价</td>
-              </tr>
-              <tr>
-                <td>发送状态</td>
-                <td>未发送</td>
-              </tr>
-              <tr>
-                <td>审核状态</td>
-                <td>未审核</td>
-              </tr>
-            </table>
-          `
-        },
-        2: () => {
-          return `
-            <table class="table">
-              <tr>
-                <td>请假单号</td>
-                <td>QJSQ20181010-001</td>
-              </tr>
-              <tr>
-                <td>创建日期</td>
-                <td>2018-10-10 13：00</td>
-              </tr>
-              <tr>
-                <td>截至日期</td>
-                <td>2018-10-10 18：30</td>
-              </tr>
-              <tr>
-                <td>创建人</td>
-                <td>小杨_业务助理</td>
-              </tr>
-              <tr>
-                <td>请假原因</td>
-                <td>身体不舒服回家看病</td>
-              </tr>
-              <tr>
-                <td>请假类型</td>
-                <td>病假</td>
-              </tr>
-              <tr>
-                <td>审核状态</td>
-                <td>未审核</td>
-              </tr>
-              <tr>
-                <td>审核失败说明</td>
-                <td>假的 面色红润有光泽拒绝通过</td>
-              </tr>
-            </table>
-          `
-        }
+      let that = this,
+        url = "",
+        dom = "";
+      switch (data.entry.entry_stream) {
+        // 采购申请
+        case "request":
+          url = `procurement/request/detail/${data.entry.entry_id}`;
+          break;
+        // 客服申请
+        case "service":
+          url = `service/detail/${data.entry.entry_id}`;
+          break;
+        // 客服报价
+        case "quoted_price":
+          url = `/service/quoted_price/detail/${data.entry.entry_id}`;
+          break;
+        case "schedule":
+          url = `procurement/schedule/detail/${data.entry.entry_id}`;
+          break;
+        case "order":
+          url = `procurement/order/detail/${data.entry.entry_id}`;
+          break;
+        case "outsourcing":
+          url = `procurement/outsourcing/detail/${data.entry.entry_id}`;
+          break;
       }
-      return dom[data.id]();
+      that
+        .$get(url)
+        .then(response => {
+          if(response.status != 200) return false;
+          switch(data.entry.entry_stream) {
+            case "request":
+              dom = `
+                <table class="table">
+                  <tr><td>采购申请单号</td><td>${response.data.number}</td></tr>
+                  <tr><td>创建日期</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>创建人</td><td>${response.data.created_by}</td></tr>
+                  <tr><td>部门</td><td>${response.data.branch_name}</td></tr>
+                  <tr><td>备注</td><td>${response.data.remark}</td></tr>
+                  <tr><td>物料</td><td style="padding: 0;">
+                    <table class="table">
+                      <tr><th>料品编码</th><th>料品名称</th><th>料品规格</th><th>单位</th><th>需求日期</th><th>数量</th><th>备注</th><th>结案</th></tr>`;
+                        if (response.data.item && response.data.item.length)
+                          response.data.item.forEach((e, k) => (dom += `<tr><td>${e.material_code}</td><td>${e.name}</td><td>${e.specification}</td><td>${e.unit}</td><td>${e.demand_at}</td><td>${e.quantity}</td><td>${e.remark}</td><td>${e.is_closed ? '是' : '否'}</td></tr>`));
+                      dom += `</table>
+                    </td>
+                  </tr>
+                </table>`;
+              break;
+            case "service":
+              dom = `
+                <table class="table">
+                  <tr><td>客服申请单号</td><td>${response.data.service_number}</td></tr>
+                  <tr><td>创建日期</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>申请联系人</td><td>${response.data.business_man_name}</td></tr>
+                  <tr><td>问题描述</td><td>${response.data.customer_demand}</td></tr>
+                  <tr><td>客户联系人</td><td>${response.data.customer_linkman}</td></tr>
+                  <tr><td>客户联系方式</td><td>${response.data.customer_contact}</td></tr>
+                  <tr><td>客户其他联系方式</td><td>${response.data.customer_other_contact}</td></tr>
+                  <tr><td>规格</td><td>${response.data.specification}</td></tr>
+                  <tr><td>订单处理状态</td><td>${response.data.process_name}</td></tr>
+                  <tr><td>委派人员</td><td>${response.data.deal_mans.join(',')}</td></tr>
+                  <tr><td>总价</td><td>${response.data.price || '未报价'}</td></tr>
+                  <tr><td>优惠价</td><td>${response.data.discount_price || '未报价'}</td></tr>
+                  <tr><td>应收价</td><td>${response.data.price ? response.data.price - response.data.discount_price : "未报价"}</td></tr>
+                  <tr><td>服务状态</td><td>${response.data.service_status_name}</td></tr>
+                  <tr><td>备注</td><td>${response.data.remark}</td></tr>
+                </table>`;
+              break;
+            case "quoted_price":
+              dom = `
+                <table class="table">
+                  <tr><td>客服报价单号</td><td>${response.data.quoted_price_number}</td></tr>
+                  <tr><td>创建日期</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>创建人</td><td>${response.data.created_by}</td></tr>
+                  <tr><td>客户公司名称</td><td>${response.data.customer_company_name}</td></tr>
+                  <tr><td>客户联系方式</td><td>${response.data.customer_contact}</td></tr>
+                  <tr><td>物料</td><td style="padding: 0;">
+                    <table class="table">
+                      <tr><th>料品编码</th><th>料品名称</th><th>料品规格</th><th>单位</th><th>数量</th></tr>`;
+                        if (response.data.detail && response.data.detail.length)
+                          response.data.detail.forEach((e, k) => (dom += `<tr><td>${e.code}</td><td>${e.name}</td><td>${e.info}</td><td>${e.unit}</td><td>${e.number}</td></tr>`));
+                      dom += `</table>
+                    </td>
+                  </tr>
+                  <tr><td>总金额</td><td>${response.data.price}</td></tr>
+                  <tr><td>优惠</td><td>${response.data.discount_price}</td></tr>
+                  <tr><td>应收</td><td>${response.data.price}</td></tr>
+                  <tr><td>联系人</td><td>${response.data.linkman}</td></tr>
+                  <tr><td>报价人</td><td>${response.data.member_name}</td></tr>
+                  <tr><td>销售订单</td><td>${response.data.order_number}</td></tr>
+                  <tr><td>是否过保</td><td>${response.data.whether_warranty ? "在保质期" : "不在保质期"}</td></tr>
+                </table>`;
+              break;
+            case "schedule":
+              console.log(response);
+              dom = `
+                <table class="table">
+                  <tr><td>采购计划单号</td><td>${response.data.number}</td></tr>
+                  <tr><td>创建日期</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>创建人</td><td>${response.data.created_by}</td></tr>
+                  <tr><td>备注</td><td>${response.data.remark}</td></tr>
+                  <tr><td>物料</td><td style="padding: 0;">
+                    <table class="table">
+                      <tr><th>料品编码</th><th>料品名称</th><th>料品规格</th><th>单位</th><th>需求日期</th><th>数量</th><th>备注</th><th>结案</th></tr>`;
+                        if (response.data.items && response.data.items.length)
+                          response.data.items.forEach((e, k) => (dom += `<tr><td>${e.material_code}</td><td>${e.name}</td><td>${e.specification}</td><td>${e.unit}</td><td>${e.demand_at}</td><td>${e.quantity}</td><td>${e.remark}</td><td>${e.is_closed ? '是' : '否'}</td></tr>`));
+                      dom += `</table>
+                    </td>
+                  </tr>
+                </table>`;
+              break;
+            case "order":
+              console.log(response);
+              dom = `
+                <table class="table">
+                  <tr><td>采购订单单号</td><td>${response.data.number}</td></tr>
+                  <tr><td>创建日期</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>创建人</td><td>${response.data.created_by}</td></tr>
+                  <tr><td>备注</td><td>${response.data.remark}</td></tr>
+                  <tr><td>供应商</td><td>${response.data.supplier || '无'}</td></tr>
+                  <tr><td>联系电话</td><td>${response.data.phone}</td></tr>
+                  <tr><td>物料</td><td style="padding: 0;">
+                    <table class="table">
+                      <tr><th>料品编码</th><th>料品名称</th><th>料品规格</th><th>单位</th><th>数量</th><th>备注</th><th>单价</th><th>交期</th><th>结案</th></tr>`;
+                        if (response.data.items && response.data.items.length)
+                          response.data.items.forEach((e, k) => (dom += `<tr><td>${e.material_code}</td><td>${e.name}</td><td>${e.specification}</td><td>${e.unit}</td><td>${e.quantity}</td><td>${e.remark}</td><td>${e.price}</td><td>${e.delivery_date}</td><td>${e.is_closed ? '是' : '否'}</td></tr>`));
+                      dom += `</table>
+                    </td>
+                  </tr>
+                </table>`;
+              break;
+            case "outsourcing":
+              dom = `
+                <table class="table">
+                  <tr><td>委外订单单号</td><td>${response.data.number}</td></tr>
+                  <tr><td>创建日期</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>创建人</td><td>${response.data.created_by}</td></tr>
+                  <tr><td>需求日期</td><td>${response.data.demand_at}</td></tr>
+                  <tr><td>备注</td><td>${response.data.remark}</td></tr>
+                  <tr><td>供应商</td><td>${response.data.supplier}</td></tr>
+                  <tr><td>联系电话</td><td>${response.data.phone}</td></tr>
+                  <tr><td>物料</td><td style="padding: 0;">
+                    <table class="table">
+                      <tr><th>料品编码</th><th>料品名称</th><th>料品规格</th><th>单位</th><th>数量</th><th>备注</th><th>单价</th><th>交期</th><th>结案</th></tr>`;
+                        if (response.data.items && response.data.items.length)
+                          response.data.items.forEach((e, k) => (dom += `<tr><td>${e.material_code}</td><td>${e.name}</td><td>${e.specification}</td><td>${e.unit}</td><td>${e.quantity}</td><td>${e.remark}</td><td>${e.price}</td><td>${e.delivery_date}</td><td>${e.is_closed ? '是' : '否'}</td></tr>`));
+                      dom += `</table>
+                    </td>
+                  </tr>
+                </table>`;
+              break;
+          }
+          $(`.waitEntry${data.id}`).html(dom);
+        })
+        .catch(err => console.error(err));
+      return `<div class="waitEntry${data.id}">`;
+    },
+    refreshed() {
+      this.refresh($("#approval #table"));
     }
   },
   mounted() {

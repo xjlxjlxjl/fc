@@ -22,7 +22,13 @@
       <keep-alive :max="10">
         <tasks v-if="activeTabs == '/tasks'" @change="menuSelect"></tasks>
         <approval v-else-if="activeTabs == '/approval'"></approval>
-
+        <!-- 销售 -->
+        <saleOrder v-else-if="activeTabs == '/Sale/order'"></saleOrder>
+        <saleCustomerServiceApplication v-else-if="activeTabs == '/Sale/customerServiceApplication'"></saleCustomerServiceApplication>
+        <saleCustomerServiceQuotation v-else-if="activeTabs == '/Sale/customerServiceQuotation'"></saleCustomerServiceQuotation>
+        <!-- 售后 -->
+        <saleApplication v-else-if="activeTabs == '/AfterSale/application'"></saleApplication>
+        <!-- 采购 -->
         <purchaseApply v-else-if="activeTabs == '/Purchase/apply'"></purchaseApply>
         <purchaseBillAnalysis v-else-if="activeTabs == '/Purchase/billAnalysis'"></purchaseBillAnalysis>
         <purchasEntrust v-else-if="activeTabs == '/Purchase/entrust'"></purchasEntrust>
@@ -34,6 +40,13 @@
         <purchaseProduct v-else-if="activeTabs == '/Purchase/product'"></purchaseProduct>
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+        <!-- 财务 -->
+        <financeIncomeDetail v-else-if="activeTabs == '/Finance/incomeDetail'"></financeIncomeDetail>
+        <financePayableDetail v-else-if="activeTabs == '/Finance/payableDetail'"></financePayableDetail>
+        <financeReceiveSummary v-else-if="activeTabs == '/Finance/receiveSummary'"></financeReceiveSummary>
+        <financeMeetSummary v-else-if="activeTabs == '/Finance/meetSummary'"></financeMeetSummary>
+        <financeReceiveDebt v-else-if="activeTabs == '/Finance/receiveDebt'"></financeReceiveDebt>
+        <financeMeetDebt v-else-if="activeTabs == '/Finance/meetDebt'"></financeMeetDebt>
       </keep-alive>
     </el-main>
   </el-container>
@@ -46,6 +59,15 @@ import createdWork from "@/pages/Process/common/createdWork";
 import tasks from "@/pages/Process/control/tasks";
 import approval from "@/pages/Process/control/approval";
 
+// 销售
+import saleOrder from "@/pages/Process/view/sale/order";
+import saleCustomerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
+import saleCustomerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
+
+// 售后
+import saleApplication from "@/pages/Process/view/afterSale/application";
+
+// 采购
 import purchaseApply from "@/pages/Process/view/purchase/apply";
 import purchaseBillAnalysis from "@/pages/Process/view/purchase/billAnalysis";
 import purchasEntrust from "@/pages/Process/view/purchase/entrust";
@@ -58,11 +80,20 @@ import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
 
+// 财务
+import financeIncomeDetail from "@/pages/Process/view/finance/incomeDetail";
+import financePayableDetail from "@/pages/Process/view/finance/payableDetail";
+import financeReceiveSummary from "@/pages/Process/view/finance/receiveSummary";
+import financeMeetSummary from "@/pages/Process/view/finance/meetSummary";
+import financeReceiveDebt from "@/pages/Process/view/finance/receiveDebt";
+import financeMeetDebt from "@/pages/Process/view/finance/meetDebt";
+
 export default {
   name: "tabs",
   data() {
     let url = this.$route.name.toLowerCase();
     return {
+      process: this.$store.state.process,
       aside: this.$store.state.process[url],
       activeTabs: "/tasks",
       tabItems: [{ name: "待完成任务", label: "/tasks", num: 0 }]
@@ -72,6 +103,11 @@ export default {
     createdWork: createdWork,
     tasks: tasks,
     approval: approval,
+
+    saleOrder: saleOrder,
+    saleCustomerServiceApplication: saleCustomerServiceApplication,
+    saleApplication: saleApplication,
+    saleCustomerServiceQuotation: saleCustomerServiceQuotation,
 
     purchaseApply: purchaseApply,
     purchaseBillAnalysis: purchaseBillAnalysis,
@@ -83,7 +119,14 @@ export default {
     purchasePriceAnalysis: purchasePriceAnalysis,
     purchaseProduct: purchaseProduct,
     purchaseSupplier: purchaseSupplier,
-    purchaseUnhealthy: purchaseUnhealthy
+    purchaseUnhealthy: purchaseUnhealthy,
+
+    financeIncomeDetail: financeIncomeDetail,
+    financePayableDetail: financePayableDetail,
+    financeReceiveSummary: financeReceiveSummary,
+    financeMeetSummary: financeMeetSummary,
+    financeReceiveDebt: financeReceiveDebt,
+    financeMeetDebt: financeMeetDebt
   },
   methods: {
     // 整理添加或者打开tab
@@ -206,8 +249,7 @@ export default {
         .catch(err => loading.close());
     }
   },
-  computed: mapState(["createdWorkModal", "tasksPendingNum"]),
-  created() {}
+  computed: mapState(["createdWorkModal", "tasksPendingNum"])
 };
 </script>
 <style lang="less">
@@ -261,6 +303,14 @@ export default {
       }
     }
   }
+  #toolbar {
+    display: none;
+    &:first-child {
+      display: block;
+    }
+  }
+
+  #finance,
   #purchase {
     .el-tabs__header {
       margin-bottom: 0;
@@ -286,6 +336,7 @@ export default {
       }
     }
 
+    #financeToolbar,
     #purchaseToolbar {
       display: flex;
       align-items: center;
@@ -310,7 +361,7 @@ export default {
       > .bs-checkbox {
       min-width: auto;
     }
-    .el-input-group__append{
+    .el-input-group__append {
       padding: 0 5px;
     }
   }

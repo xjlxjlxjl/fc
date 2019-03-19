@@ -1,21 +1,16 @@
 <template>
-  <div id="purchaseHistory">
-    111
-  </div>
+  <div id="purchaseHistory">111</div>
 </template>
 
 <script>
 export default {
-  name: 'purchaseHistory',
+  name: "purchaseHistory",
   data() {
-    return {
-
-    };
+    return {};
   }
-}
+};
 </script>
 <style>
-  #purchaseHistory {
-    
-  }
+#purchaseHistory {
+}
 </style>

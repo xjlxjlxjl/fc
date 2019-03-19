@@ -1,21 +1,16 @@
 <template>
-  <div id="purchaseBillAnalysis">
-    111
-  </div>
+  <div id="purchaseBillAnalysis">111</div>
 </template>
 
 <script>
 export default {
-  name: 'purchaseBillAnalysis',
+  name: "purchaseBillAnalysis",
   data() {
-    return {
-
-    };
+    return {};
   }
-}
+};
 </script>
 <style>
-  #purchaseBillAnalysis {
-    
-  }
+#purchaseBillAnalysis {
+}
 </style>

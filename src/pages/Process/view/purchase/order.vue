@@ -166,9 +166,7 @@ export default {
                   ),
                 500
               );
-              return `<div id="purchaseOrderQrcode${
-                row.id
-              }" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+              return `<div id="purchaseOrderQrcode${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
@@ -189,7 +187,7 @@ export default {
           },
           {
             field: "number",
-            title: "采购计划单号"
+            title: "采购订单单号"
           },
           {
             field: "created_by",
@@ -235,8 +233,9 @@ export default {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
-              return del;
+              let del = `<button class="del btn btn-danger btn-sm">删除</button>`,
+                print = `<button class="print btn btn-success btn-sm">打印</button>`;
+              return del + print;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -247,6 +246,9 @@ export default {
                     that.delTable($("#purchaseOrder #table"), "id", [row.id]);
                   })
                   .catch(err => console.error(err));
+              },
+              'click .print': function(e, value, row, index) {
+                window.open(`/print.html#/purchaseOrder/${row.id}`);
               }
             }
           }

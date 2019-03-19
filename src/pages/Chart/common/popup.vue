@@ -440,12 +440,14 @@ export default {
     justify-content: space-between;
     background-color: @smallGrey;
     color: @black;
-    padding: 1.5rem;
+    padding: .5rem 1.5rem .5rem 1.5rem;
     cursor: move;
     div {
+      display: flex;
+      align-items: center;
       span,
       i {
-        font-size: 2rem;
+        font-size: 3rem;
         font-weight: bold;
       }
       span {
@@ -522,6 +524,8 @@ export default {
                 height: 100px;
                 h1 {
                   font-size: 12px;
+                  margin-top: 0;
+                  margin-bottom: 0;
                 }
                 img {
                   position: inherit;
@@ -590,6 +594,8 @@ export default {
                 height: 70px;
                 h1 {
                   font-size: 12px;
+                  margin-top: 0;
+                  margin-bottom: 0;
                 }
                 img {
                   position: inherit;

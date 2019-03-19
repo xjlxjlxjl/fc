@@ -1,5 +1,6 @@
 <template>
   <div id="task">
+    <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
     <div id="toolbar">
       <!-- <span class="lead">未完成任务</span> -->
       <el-select v-model="tasksStatus" size="mini" placeholder="任务状态">
@@ -25,15 +26,22 @@
 </template>
 
 <script>
+import dateTimePick from "@/pages/Process/common/dateTimePick";
 export default {
   name: 'task',
   data() {
+    const user = JSON.parse(localStorage.getItem('user')) || { user: {id: 0} };
     return {
+      user: user,
       options: this.$store.state.tasksType,
       // 默认未完成（全部）
       tasksStatus: "undone",
-      date: []
+      date: [],
+      activeId: 0
     };
+  },
+  components: {
+    dateTimePick: dateTimePick,
   },
   methods: {
     tableAjaxData(params) {
@@ -123,19 +131,17 @@ export default {
             field: "#",
             title: "操作",
             formatter: (value, row, index) => {
-            return '<button class="btn btn-primary">跳转</button>'
-            /*
               let accept = [
-                  '<button class="btn btn-info accept">接受</button>'
+                  '<button class="btn btn-info btn-sm accept">接受</button>'
                 ].join(""),
                 complete = [
-                  '<button class="btn btn-success complete">完成</button>'
+                  '<button class="btn btn-success btn-sm complete">完成</button>'
                 ].join(""),
                 invalid = [
-                  '<button class="btn btn-danger invalid">作废</button>'
+                  '<button class="btn btn-danger btn-sm invalid">作废</button>'
                 ].join(""),
                 turn = [
-                  '<button class="btn btn-default turn">跳转</button>'
+                  '<button class="btn btn-default btn-sm turn">跳转</button>'
                 ].join(""),
                 taskState = null;
               row.members.forEach(e => {
@@ -146,6 +152,7 @@ export default {
                 case "service_assign":
                 case "service_quote":
                 case "order":
+                case "check":
                   // 已废弃任务不做操作
                   if (row.status == 4) return "";
                   // 自己是任务发起者并且是成员
@@ -199,17 +206,12 @@ export default {
                   else return "";
                   break;
               }
-            */
             },
             events: {
-              'click .btn': function(params) {
-                that.$emit('change', '/Purchase/apply');
-              }
-            /*
               "click .turn": (e, value, row, index) => {
                 let sign = row.redirect_slug,
                   // let sign = row.numbering.removeNumber(),
-                  sort = that.tasksItems[sign];
+                  sort = that.$store.state.tasksItems[sign];
                 switch (sign) {
                   // 提交客服
                   case "service":
@@ -241,20 +243,12 @@ export default {
                   case "order":
                     // this.refresh($("#order #table"));
                     break;
+                  case "check":
+                    that.refresh($("#approval #table"));
+                    break;
                 }
-                if (sort) {
-                  let inArr = true;
-                  that.tabItems.forEach(e => {
-                    if (e.label == sort.label) inArr = false;
-                  });
-                  if (inArr)
-                    that.tabItems.push({
-                      name: sort.name,
-                      label: sort.label,
-                      num: that.tasksPendingNum[sort.label]
-                    });
-                  that.activeTabs = sort.label;
-                } else {
+                if (sort) that.$emit('change', sort.label);        
+                else {
                   that.$message({
                     message: "该订单编号尚未注册，请联系管理员后处理",
                     type: "error"
@@ -283,7 +277,6 @@ export default {
                   })
                   .catch(err => console.error(err));
               }
-            */
             }
           }
         ],

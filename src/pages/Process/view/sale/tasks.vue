@@ -33,10 +33,11 @@
       <table id="table"></table>
     </div>
     <keep-alive>
-      <order v-if="activeTabs == 'order'"></order>
-      <customerServiceApplication v-else-if="activeTabs == 'customerServiceApplication'"></customerServiceApplication>
-      <application v-else-if="activeTabs == 'application'"></application>
-      <customerServiceQuotation v-else-if="activeTabs == 'customerServiceQuotation'"></customerServiceQuotation>
+      <order v-if="activeTabs == '/Sale/order'"></order>
+      <customerServiceApplication v-else-if="activeTabs == '/Sale/customerServiceApplication'"></customerServiceApplication>
+      <application v-else-if="activeTabs == '/AfterSale/application'"></application>
+      <customerServiceQuotation v-else-if="activeTabs == '/Sale/customerServiceQuotation'"></customerServiceQuotation>
+      <approval v-else-if="activeTabs == '/approval'"></approval>
     </keep-alive>
   </div>
 </template>
@@ -47,6 +48,7 @@ import order from "@/pages/Process/view/sale/order";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import application from "@/pages/Process/view/afterSale/application";
 import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
+import approval from "@/pages/Process/control/approval";
 
 export default {
   name: "tasks",
@@ -73,7 +75,8 @@ export default {
     order: order,
     customerServiceApplication: customerServiceApplication,
     application: application,
-    customerServiceQuotation: customerServiceQuotation
+    customerServiceQuotation: customerServiceQuotation,
+    approval: approval
   },
   methods: {
     removeTab(tagIndex) {
@@ -192,6 +195,7 @@ export default {
                 case "service_assign":
                 case "service_quote":
                 case "order":
+                case "check":
                   // 已废弃任务不做操作
                   if (row.status == 4) return "";
                   // 自己是任务发起者并且是成员
@@ -281,6 +285,9 @@ export default {
                     break;
                   case "order":
                     // this.refresh($("#order #table"));
+                    break;
+                  case "check":
+                    that.refresh($("#approval #table"));
                     break;
                 }
                 if (sort) {

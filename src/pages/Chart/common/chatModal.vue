@@ -90,7 +90,12 @@
                   @click="delGroup(item.group_id, index);chatList.list.splice(index, 1);"
                 >退出</el-button>
                 <!-- @click="delGroup(item.group_id, index);delChat(item.id, index)" -->
-                <el-button type="primary" size="mini" v-if="item.friend_user" @click="joinGroup">创建群聊</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  v-if="item.friend_user"
+                  @click="joinGroup"
+                >创建群聊</el-button>
                 <el-button size="mini" type="info" v-else @click="getGroupUser(item.group_id)">查看群成员</el-button>
                 <el-button size="mini" slot="reference">操作</el-button>
               </el-popover>
@@ -272,7 +277,7 @@
   </div>
 </template>
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState } from "vuex";
 import fileImg from "@/assets/img/file.png";
 import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
 import popup from "@/pages/Chart/common/popup";
@@ -426,7 +431,7 @@ export default {
             })
             .catch(error => console.error(error));
         })
-        .catch(err => console.log("添加取消"));
+        .catch(err);
     },
     acceptFriend(noticeId) {
       let that = this;
@@ -471,7 +476,7 @@ export default {
           that.chatList = response.data;
           if (!that.chatList.list.length) return false;
           if (that.messageTips == 0) {
-            for (const item of that.chatList.list) {
+            for (let item of that.chatList.list) {
               that.messageTips += parseInt(item.unread_message_num);
             }
           }
@@ -715,13 +720,15 @@ export default {
     },
     getBranch() {
       let that = this;
-      if (that.$store.state.userBranch.length) that.mailList = that.$store.state.userBranch;
+      if (that.$store.state.userBranch.length)
+        that.mailList = that.$store.state.userBranch;
       else
         that
           .$get("members/company/branch")
           .then(response => {
             if (response.status != 200) return false;
             that.mailList = response.data.list;
+            that.$store.commit("getUserBranch", response.data.list);
           })
           .catch(error => console.error(error));
     },
@@ -741,7 +748,11 @@ export default {
         .catch(error => console.error(error));
     },
     getNoticesDetail(item, key) {
-      this.$alert(`${item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""} <p>通知内容：<b>${item.message}</b> </p>`, "通知",
+      this.$alert(
+        `${
+          item.created_at ? "<p>通知时间：" + item.created_at + "</p>" : ""
+        } <p>通知内容：<b>${item.message}</b> </p>`,
+        "通知",
         {
           confirmButtonText: "确定",
           dangerouslyUseHTMLString: true,
@@ -799,7 +810,14 @@ export default {
                 let msg = this.forwardData,
                   type = msg.msg_type || msg.type,
                   state = item == "user" ? 1 : 2;
-                popup.methods.sendMessage.call(this, 0, e, type, msg.content, state);
+                popup.methods.sendMessage.call(
+                  this,
+                  0,
+                  e,
+                  type,
+                  msg.content,
+                  state
+                );
               }, 500)
             );
           }
@@ -824,7 +842,6 @@ export default {
       new Notification(`${result.resp.from_name}`, {
         body: title[result.resp.type]
       });
-
       clearTimeout(this.timeOut);
       this.timeOut = setTimeout(() => {
         this.getChatList(false);
@@ -851,7 +868,7 @@ export default {
               }
               this.webSocketLogin();
             } else {
-              console.log('%c 链接成功!', 'color: #359028;background:#a6dc9e;')
+              console.log("%c 链接成功!", "color: #359028;background:#a6dc9e;");
               clearInterval(this.pong);
               this.connectNum = 0;
               this.pong = setInterval(
@@ -921,8 +938,13 @@ export default {
           case "notice":
             console.log(result);
             if (!this.modal) this.$emit("tips");
-            this.$notify({ title: `您有一条来自${result.resp.from_name}的通知`, message: result.resp.content });
-            new Notification(`您有一条来自${result.resp.from_name}的通知`, { body: result.resp.content });
+            this.$notify({
+              title: `您有一条来自${result.resp.from_name}的通知`,
+              message: result.resp.content
+            });
+            new Notification(`您有一条来自${result.resp.from_name}的通知`, {
+              body: result.resp.content
+            });
             this.noticesList.list.unshift({
               id: result.resp.notice_id,
               from_user: {
@@ -962,7 +984,7 @@ export default {
       //没连接上会一直重连，设置延迟避免请求过多
       setTimeout(
         () => {
-          console.error(`断线重连中：${this.connectNum}`)
+          console.error(`断线重连中：${this.connectNum}`);
           clearInterval(this.pong);
           this.webSocket(url);
           this.lockReconnect = false;
@@ -1029,11 +1051,12 @@ export default {
 
 #msgBox {
   position: fixed;
-  bottom: 0;
-  right: 0;
+  bottom: 10%;
+  left: 0;
   z-index: 10;
   width: 300px;
-  height: 600px;
+  // height: 600px;
+  height: 730px;
   border: @border;
   box-sizing: border-box;
   border-radius: 2px;
@@ -1046,7 +1069,8 @@ export default {
     color: @black;
     .switch {
       > i {
-        font-size: 2rem;
+        cursor: pointer;
+        font-size: 3rem;
         font-weight: bold;
       }
     }
@@ -1056,7 +1080,8 @@ export default {
       padding: 0 0.5rem;
     }
     .msgList {
-      height: 475px;
+      // height: 475px;
+      height: 600px;
       background-color: @white;
       overflow-y: auto;
       margin-top: 0.5rem;
@@ -1067,6 +1092,8 @@ export default {
           background-color: @white;
           color: @gery;
           border-bottom: @border;
+          margin-bottom: 0;
+          background-color: #eeeeee;
         }
         .el-menu-item {
           color: @gery;

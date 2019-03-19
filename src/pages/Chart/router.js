@@ -20,27 +20,42 @@ export default new Router({
           path: "/project",
           component: project
         }
-      ]
+      ],
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: "/contrast",
       name: "contrast",
-      component: contrast
+      component: contrast,
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: "/inquiry",
       name: "inquiry",
-      component: inquiry
+      component: inquiry,
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: "/message",
       name: "message",
-      component: message
+      component: message,
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: "/checkOrder",
       name: "checkOrder",
-      component: checkOrder
+      component: checkOrder,
+      meta: {
+        keepAlive: true
+      }
     }
   ]
 });

@@ -115,6 +115,17 @@
     </el-header>
     <el-main class="headerProcess hidden-md-and-down">
       <el-menu background-color="transparent" class="el-menu-demo" mode="horizontal">
+        <el-menu-item index="-2" @click="changeModal('modalShow')">
+          <a href="javascript:;">
+            <div class="whiteRoundBox" style="padding: 0;">
+              <a href="javascript:;">
+                <i class="font_family icon-pingtouge" style="font-size: 1.85rem;"></i>
+                <span style="color: #fff;">聊天</span>
+              </a>
+              <img :src="progressHide">
+            </div>
+          </a>
+        </el-menu-item>
         <el-menu-item v-for="(val,key) in process" :index="key.toString()" :key="key">
           <a href="javascript:;" @click="locationTo(val.indexUrl)">
             <div class="whiteRoundBox">

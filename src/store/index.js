@@ -114,13 +114,13 @@ export default new Vuex.Store({
       pagination: {}
     },
     appTypeList: [],
-    riseProcess: [
-      {
+    riseProcess: [{
         name: "销售",
         url: "/Sale",
         indexUrl: "/process.html#/Sale",
         active: false,
-        child: [{
+        child: [
+          {
             name: "客户管理",
             url: "customers"
           },
@@ -139,7 +139,8 @@ export default new Vuex.Store({
         url: "/Engineer",
         indexUrl: "/process.html#/Engineer",
         active: false,
-        child: [{
+        child: [
+          {
             name: "Bom",
             url: "project"
           },
@@ -154,7 +155,8 @@ export default new Vuex.Store({
         url: "/Purchase",
         indexUrl: "/process.html#/Purchase",
         active: false,
-        child: [{
+        child: [
+          {
             name: "采购计划",
             url: "project"
           },
@@ -169,17 +171,20 @@ export default new Vuex.Store({
         url: "/IQC",
         indexUrl: "/process.html#/IQC",
         active: false,
-        child: [{
-          name: "来料检测",
-          url: "project"
-        }]
+        child: [
+          {
+            name: "来料检测",
+            url: "project"
+          }
+        ]
       },
       {
         name: "仓库",
         url: "/WareHouse",
         indexUrl: "/process.html#/WareHouse",
         active: false,
-        child: [{
+        child: [
+          {
             name: "料品管理",
             url: "project"
           },
@@ -198,7 +203,8 @@ export default new Vuex.Store({
         url: "/Produce",
         indexUrl: "/process.html#/Produce",
         active: false,
-        child: [{
+        child: [
+          {
             name: "生产计划",
             url: "project"
           },
@@ -217,7 +223,8 @@ export default new Vuex.Store({
         url: "/OQC",
         indexUrl: "/process.html#/OQC",
         active: false,
-        child: [{
+        child: [
+          {
             name: "成品检测",
             url: "project"
           },
@@ -232,17 +239,20 @@ export default new Vuex.Store({
         url: "/Logistics",
         indexUrl: "/process.html#/Logistics",
         active: false,
-        child: [{
-          name: "物流管理",
-          url: "project"
-        }]
+        child: [
+          {
+            name: "物流管理",
+            url: "project"
+          }
+        ]
       },
       {
         name: "售后",
         url: "/AfterSale",
         indexUrl: "/process.html#/AfterSale",
         active: false,
-        child: [{
+        child: [
+          {
             name: "售后计划",
             url: "project"
           },
@@ -257,20 +267,24 @@ export default new Vuex.Store({
         url: "/Finance",
         indexUrl: "/process.html#/Finance",
         active: false,
-        child: [{
-          name: "财务",
-          url: "project"
-        }]
+        child: [
+          {
+            name: "财务",
+            url: "project"
+          }
+        ]
       },
       {
         name: "人事",
         url: "/Matters",
         indexUrl: "/process.html#/Matters",
         active: false,
-        child: [{
-          name: "人事",
-          url: "Matters"
-        }]
+        child: [
+          {
+            name: "人事",
+            url: "Matters"
+          }
+        ]
       }
     ],
     process: {
@@ -624,7 +638,129 @@ export default new Vuex.Store({
         {
           name: '应付账单汇总分析',
           url: '/Purchase/billAnalysis'
+        }
+      ],
+      finance: [
+        {
+          name: '待完成任务',
+          url: '/tasks'
         },
+        {
+          name: '应收明细',
+          url: '/Finance/incomeDetail'
+        },
+        {
+          name: '应付明细',
+          url: '/Finance/payableDetail'
+        },
+        {
+          name: '应收负债表',
+          url: '/Finance/receiveDebt'
+        },
+        {
+          name: '应付负债表',
+          url: '/Finance/meetDebt'
+        },
+        {
+          name: '利润表',
+          url: '/Finance/profit'
+        },
+        {
+          name: '现金流量表',
+          url: '/Finance/cashFlow'
+        },
+        {
+          name: '不良商品问题归类',
+          url: '/Finance/badClassify'
+        },
+        {
+          name: '预收定金冲账表',
+          url: '/Finance/downPayment'
+        },
+        {
+          name: '坏账',
+          url: '/Finance/badDebt'
+        },
+        {
+          name: '日记账',
+          url: '/Finance/journal'
+        },
+        {
+          name: '其他私账表',
+          url: '/Finance/otherSecretBill'
+        },
+        {
+          name: '应收票据统计',
+          url: '/Finance/receiveBillCount'
+        },
+        {
+          name: '应付发票统计',
+          url: '/Finance/meetBillCount'
+        },
+        {
+          name: '支票记录提醒',
+          url: '/Finance/checkRecord'
+        },
+        {
+          name: '固定资产',
+          url: '/Finance/fixedAssets'
+        },
+        {
+          name: '库存金额分类汇总报表',
+          url: '/Finance/storeSumSubtotal'
+        },
+        {
+          name: '应收汇总表',
+          url: '/Finance/receiveSummary'
+        },
+        {
+          name: '应付汇总表',
+          url: '/Finance/meetSummary'
+        },
+        {
+          name: '委外明细表',
+          url: '/Finance/entrustDetail'
+        },
+        {
+          name: '委外汇总表',
+          url: '/Finance/entrustSummary'
+        },
+        {
+          name: '料品组合表',
+          url: '/Finance/matterGroup'
+        },
+        {
+          name: '生产领退料明细',
+          url: '/Finance/productMatterDetail'
+        },
+        {
+          name: '料品出入库明细',
+          url: '/Finance/matterLaidUpDetail'
+        },
+        {
+          name: '料品历史库存表',
+          url: '/Finance/matterHistoryStock'
+        },
+        {
+          name: '其他出入库明细',
+          url: '/Finance/otherLaidUpDetail'
+        },
+        {
+          name: '每月科目余额表',
+          url: '/Finance/monthBalance'
+        },
+        {
+          name: '部门费用分析',
+          url: '/Finance/branchCostAnalysis'
+        },
+        {
+          name: '费用分析',
+          url: '/Finance/CostAnalysis'
+        },
+        {
+          name: '汇总科目余额表',
+          url: '/Finance/poolBalance'
+        }
       ]
     },
     // 任务
@@ -665,19 +801,23 @@ export default new Vuex.Store({
       },
       service: {
         name: "客服申请",
-        label: "customerServiceApplication"
+        label: "/Sale/customerServiceApplication"
       },
       service_assign: {
         name: "客服报价",
-        label: "application"
+        label: "/AfterSale/application"
       },
       service_quote: {
         name: "客服报价",
-        label: "application"
+        label: "/AfterSale/application"
       },
       order: {
         name: "销售订单",
-        label: "order"
+        label: "/Sale/order"
+      },
+      check: {
+        name: "审核表",
+        label: "/approval"
       }
     },
     tasksPendingNum: {
@@ -699,7 +839,14 @@ export default new Vuex.Store({
       '/Purchase/unhealthy': 0,
       '/Purchase/history': 0,
       '/Purchase/priceAnalysis': 0,
-      '/Purchase/billAnalysis': 0
+      '/Purchase/billAnalysis': 0,
+      // 财务
+      '/Finance/incomeDetail': 0,
+      '/Finance/payableDetail': 0,
+      '/Finance/receiveSummary': 0,
+      '/Finance/meetSummary': 0,
+      '/Finance/receiveDebt': 0,
+      '/Finance/meetDebt': 0
     },
     apiKeys: {
       // baiduMap: "IjVLfQ6Tudo7LK8wCBeCPESmHl8doh61"

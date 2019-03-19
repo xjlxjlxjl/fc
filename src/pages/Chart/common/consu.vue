@@ -270,7 +270,7 @@ export default {
 }
 #customerChat {
   .modalBox {
-    top: 180px;
+    // top: 180px;
     @media screen and (max-width: 510px) {
       top: 80px;
     }
@@ -285,7 +285,7 @@ export default {
         overflow-y: auto;
         height: 500px;
         @media screen and (max-width: 510px) {
-          max-height: 130px;
+          max-height: 225px;
         }
         border-bottom: @chatBorder;
         .chatMain {

@@ -28,6 +28,18 @@ Vue.use(Config);
 Vue.use(mouseMenu);
 Vue.use(preview);
 
+Vue.prototype.$ifLogin = () => {
+  if (!localStorage.getItem("user")) {
+    store.commit("change");
+    Vue.prototype.$notify({
+      title: "警告",
+      message: "请登陆后再作操作",
+      type: "warning"
+    });
+    return false;
+  } else return true;
+};
+
 /* eslint-disable no-new */
 new Vue({
   el: "#app",

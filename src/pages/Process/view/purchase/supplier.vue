@@ -1,7 +1,7 @@
 <template>
   <div id="purchaseSupplier">
     <addSupplier @refresh="refreshed"></addSupplier>
-    <div id="toolbar">
+    <div id="toolbar" style="display: flex;">
       <el-button size="mini" @click="addSupplier">新建供应商</el-button>
       <el-upload action :before-upload="upload">
         <el-button size="mini">导入供应商</el-button>

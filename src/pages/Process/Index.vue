@@ -61,9 +61,7 @@ export default {
     // "index-chart": indexChart,
     // companyAside: companyAside,
     "index-tail": indexTail
-  },
-  methods: {},
-  created() {}
+  }
 };
 </script>
 <style lang="less">

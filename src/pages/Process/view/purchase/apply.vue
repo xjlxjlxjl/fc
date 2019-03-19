@@ -222,15 +222,16 @@ export default {
             }
           },
           {
-            field: "address",
+            field: "check_status",
             title: "审核状态"
           },
           {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = `<button class="del btn btn-danger btm-sm">删除</button>`;
-              return del;
+              let del = `<button class="del btn btn-danger btn-sm">删除</button>`,
+                print = `<button class="print btn btn-success btn-sm" style="margin-left: 5px;">打印</button>`;
+              return del + print;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -241,6 +242,10 @@ export default {
                     that.delTable($("#purchaseApply #table"), "id", [row.id]);
                   })
                   .catch(err => {});
+              },
+              "click .print": function(e, value, row, index) {
+                window.open(`/print.html#/purchaseApply/${row.id}`);
+                // window.open('www.baidu.html','alwaysLowered=yes','depended=yes','menubar=no','toolbar=no');
               }
             }
           }
@@ -326,7 +331,7 @@ export default {
       $("#addApply").modal("show");
     },
     refreshed() {
-      this.refresh($('#purchaseApply #table'));
+      this.refresh($("#purchaseApply #table"));
     }
   },
   mounted() {
@@ -337,7 +342,7 @@ export default {
         id = self.attr("index"),
         data = that.getRow($("#purchaseApply #table"), id),
         params = {};
-        
+
       for (let item of data.item) {
         if (item.id == self.val()) {
           if (item.is_closed) item.is_closed = 0;

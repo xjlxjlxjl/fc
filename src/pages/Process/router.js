@@ -2,7 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 
 // 基础标签
-import tabs from "@/pages/Process/control/tabs";
+// import tabs from "@/pages/Process/control/tabs";
 
 // 销售
 import Sale from "@/pages/Process/view/sale/sale";
@@ -19,23 +19,12 @@ import customerMap from '@/pages/Process/view/sale/customerMap';
 // 工程
 import Engineer from "@/pages/Process/view/engineer/engineer";
 // 采购
-// import Purchase from "@/pages/Process/view/purchase/purchase";
-// import purchaseTasks from "@/pages/Process/view/purchase/tasks";
-// import purchaseApply from "@/pages/Process/view/purchase/apply";
-// import purchaseBillAnalysis from "@/pages/Process/view/purchase/billAnalysis";
-// import purchasEntrust from "@/pages/Process/view/purchase/entrust";
-// import purchaseHistory from "@/pages/Process/view/purchase/history";
-// import purchaseOrder from "@/pages/Process/view/purchase/order";
-// import purchasePlan from "@/pages/Process/view/purchase/plan";
-// import purchasePriceAnalysis from "@/pages/Process/view/purchase/priceAnalysis";
-// import purchaseProduct from "@/pages/Process/view/purchase/product";
-// import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
-// import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
+import Purchase from "@/pages/Process/control/tabs?v=1";
 // IQC
 import IQC from "@/pages/Process/view/IQC/IQC";
 // 仓库
 import WareHouse from "@/pages/Process/view/wareHouse/wareHouse";
-import wareTasks from "@/pages/Process/view/wareHouse/tasks";
+// import wareTasks from "@/pages/Process/view/wareHouse/tasks";
 import wareProduct from "@/pages/Process/view/wareHouse/product";
 import wareMaterial from "@/pages/Process/view/wareHouse/material";
 import wareOutStock from "@/pages/Process/view/wareHouse/outStock";
@@ -47,7 +36,7 @@ import wareSplit from "@/pages/Process/view/wareHouse/split";
 import wareSparePart from "@/pages/Process/view/wareHouse/spareParts";
 // 生产
 import Produce from "@/pages/Process/view/produce/produce";
-import produceTasks from "@/pages/Process/view/produce/tasks";
+// import produceTasks from "@/pages/Process/view/produce/tasks";
 import produceProduct from "@/pages/Process/view/produce/product";
 import producePicking from "@/pages/Process/view/produce/picking";
 import produceMateriel from "@/pages/Process/view/produce/materiel";
@@ -57,7 +46,7 @@ import produceTime from "@/pages/Process/view/produce/time";
 
 // OQC
 import OQC from "@/pages/Process/view/OQC/OQC";
-import OQCTasks from "@/pages/Process/view/OQC/tasks";
+// import OQCTasks from "@/pages/Process/view/OQC/tasks";
 import OQCProduct from "@/pages/Process/view/OQC/product";
 import OQCInspection from "@/pages/Process/view/OQC/inspection";
 import OQCRules from "@/pages/Process/view/OQC/rules";
@@ -67,7 +56,7 @@ import OQCHistory from "@/pages/Process/view/OQC/history";
 import Logistics from "@/pages/Process/view/logistics/logistics";
 // 售后
 import AfterSale from "@/pages/Process/view/afterSale/afterSale";
-import afterSaleTasks from "@/pages/Process/view/afterSale/tasks";
+// import afterSaleTasks from "@/pages/Process/view/afterSale/tasks";
 import application from "@/pages/Process/view/afterSale/application";
 import afterSaleReport from "@/pages/Process/view/afterSale/report";
 import picking from "@/pages/Process/view/afterSale/picking";
@@ -77,7 +66,7 @@ import badProblem from "@/pages/Process/view/afterSale/badProblem";
 import praise from "@/pages/Process/view/afterSale/praise";
 import sharedFiles from "@/pages/Process/view/afterSale/sharedFiles";
 // 财务
-import Finance from "@/pages/Process/view/finance/finance";
+import Finance from "@/pages/Process/control/tabs?v=2";
 // 人事
 import Matters from "@/pages/Process/view/matters/matters";
 import staff from "@/pages/Process/view/matters/staff";
@@ -163,55 +152,7 @@ export default new Router({
     {
       path: "/Purchase",
       name: "Purchase",
-      component: tabs,
-      /*
-        children: [
-          {
-            path: "/Purchase",
-            component: purchaseTasks
-          },
-          {
-            path: "/Purchase/apply",
-            component: purchaseApply
-          },
-          {
-            path: "/Purchase/billAnalysis",
-            component: purchaseBillAnalysis
-          },
-          {
-            path: "/Purchase/entrust",
-            component: purchasEntrust
-          },
-          {
-            path: "/Purchase/history",
-            component: purchaseHistory
-          },
-          {
-            path: "/Purchase/order",
-            component: purchaseOrder
-          },
-          {
-            path: "/Purchase/plan",
-            component: purchasePlan
-          },
-          {
-            path: "/Purchase/priceAnalysis",
-            component: purchasePriceAnalysis
-          },
-          {
-            path: "/Purchase/product",
-            component: purchaseProduct
-          },
-          {
-            path: "/Purchase/supplier",
-            component: purchaseSupplier
-          },
-          {
-            path: "/Purchase/unhealthy",
-            component: purchaseUnhealthy
-          }
-        ]
-      */
+      component: Purchase
     },
     {
       path: "/IQC",

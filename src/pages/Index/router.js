@@ -15,7 +15,10 @@ export default new Router({
     {
       path: "/company",
       name: "company",
-      component: company
+      component: company,
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: "/product/:slug/:model/:code",
@@ -42,7 +45,10 @@ export default new Router({
           name: "DetailMain",
           component: indexMain
         }
-      ]
+      ],
+      meta: {
+        keepAlive: true
+      }
     }
   ]
 });

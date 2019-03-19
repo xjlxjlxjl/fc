@@ -809,7 +809,7 @@ export default {
           schedule_item_id: e.schedule_item_id || undefined,
           outsourcing_id: that.request_id || "",
           purchaseApply: e.number,
-          saleOrder: param.numbering,
+          saleOrder: e.numbering,
           code: e.material_number ? e.material_number : e.material_code,
           material_id: e.id,
           name: e.name || "",

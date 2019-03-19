@@ -223,7 +223,7 @@ export default {
             }
           },
           {
-            field: "checks",
+            field: "check_status",
             title: "审核状态"
           },
           {
@@ -231,8 +231,9 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
-              let closeCase = `<button class="closeCase btn btn-warning btn-sm">结案</button>`;
-              return del + closeCase;
+              let closeCase = `<button class="closeCase btn btn-warning btn-sm" style="margin-left: 5px;">结案</button>`;
+              let print = `<button class="print btn btn-success btn-sm" style="margin-left: 5px;">打印</button>`;
+              return del + closeCase + print;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -247,17 +248,20 @@ export default {
               "click .closeCase": function(e, value, row, index) {
                 that
                   .$post(`approvals/checks`, {
-                    ids: '',
-                    check_status: '',
-                    check_remark: '',
-                    is_end_status: '',
-                    end_remark: '',
-                    remark: ''
+                    ids: "",
+                    check_status: "",
+                    check_remark: "",
+                    is_end_status: "",
+                    end_remark: "",
+                    remark: ""
                   })
                   .then(response => {
                     if (response.status != 200) return false;
                   })
                   .catch(err => console.error(err));
+              },
+              "click .print": function(e, value, row, index) {
+                window.open(`/print.html#/purchasePlan/${row.id}`);
               }
             }
           }
@@ -342,7 +346,7 @@ export default {
       $("#addPlan").modal("show");
     },
     refreshed() {
-      this.refresh($('#purchasePlan #table'));
+      this.refresh($("#purchasePlan #table"));
     }
   },
   mounted() {
@@ -359,11 +363,10 @@ export default {
           if (item.is_closed) item.is_closed = 0;
           else item.is_closed = 1;
 
-          if(isNaN(item.demand_at))
-            item.demand_at = undefined;
-          else 
+          if (isNaN(item.demand_at)) item.demand_at = undefined;
+          else
             item.demand_at = that.dateParse(new Date(item.demand_at || null));
-            
+
           params = item;
         }
       }

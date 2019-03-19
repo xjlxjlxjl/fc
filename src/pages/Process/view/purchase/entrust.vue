@@ -296,7 +296,7 @@ export default {
           },
           {
             field: "number",
-            title: "采购计划单号"
+            title: "委外订单单号"
           },
           {
             field: "created_by",
@@ -342,9 +342,10 @@ export default {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`;
-              let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
-              return get + del;
+              let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`,
+                del = `<button class="del btn btn-danger btn-sm">删除</button>`,
+                print = `<button class="print btn btn-success btn-sm">打印</button>`;
+              return get + del + print;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -363,6 +364,9 @@ export default {
                 }
                 that.mater.data = arr;
                 $("#purchasEntrust .materielList").modal("show");
+              },
+              'click .print':function (e, value, row, index) {
+                window.open(`/print.html#/purchasEntrust/${row.id}`);
               }
             }
           }

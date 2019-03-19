@@ -123,8 +123,6 @@ export default {
             field: "#",
             title: "操作",
             formatter: (value, row, index) => {
-            return '<button class="btn btn-primary">跳转</button>'
-            /*
               let accept = [
                   '<button class="btn btn-info accept">接受</button>'
                 ].join(""),
@@ -146,6 +144,7 @@ export default {
                 case "service_assign":
                 case "service_quote":
                 case "order":
+                case "check":
                   // 已废弃任务不做操作
                   if (row.status == 4) return "";
                   // 自己是任务发起者并且是成员
@@ -199,13 +198,8 @@ export default {
                   else return "";
                   break;
               }
-            */
             },
             events: {
-              'click .btn': function(params) {
-                that.$emit('change', '/Purchase/apply');
-              }
-            /*
               "click .turn": (e, value, row, index) => {
                 let sign = row.redirect_slug,
                   // let sign = row.numbering.removeNumber(),
@@ -241,20 +235,12 @@ export default {
                   case "order":
                     // this.refresh($("#order #table"));
                     break;
+                  case "check":
+                    that.refresh($("#approval #table"))
+                    break;
                 }
-                if (sort) {
-                  let inArr = true;
-                  that.tabItems.forEach(e => {
-                    if (e.label == sort.label) inArr = false;
-                  });
-                  if (inArr)
-                    that.tabItems.push({
-                      name: sort.name,
-                      label: sort.label,
-                      num: that.tasksPendingNum[sort.label]
-                    });
-                  that.activeTabs = sort.label;
-                } else {
+                if (sort) that.$emit('change', sort.label);        
+                else {
                   that.$message({
                     message: "该订单编号尚未注册，请联系管理员后处理",
                     type: "error"
@@ -283,7 +269,6 @@ export default {
                   })
                   .catch(err => console.error(err));
               }
-            */
             }
           }
         ],
