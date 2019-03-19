@@ -56,7 +56,7 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           that.$store.commit("changeTasks", {
-            name: "/Purchase",
+            name: "/tasks",
             num: response.data.total
           });
           params.success({

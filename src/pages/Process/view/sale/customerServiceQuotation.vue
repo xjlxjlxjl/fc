@@ -41,7 +41,7 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           that.$store.commit("changeTasks", {
-            name: "customerServiceQuotation",
+            name: "/Sale/customerServiceQuotation",
             num: response.data.pagination.total
           });
           params.success({

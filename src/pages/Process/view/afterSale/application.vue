@@ -58,7 +58,7 @@ export default {
           if (response.status != 200) return false;
           that.tableData = response.data.list;
           that.$store.commit("changeTasks", {
-            name: "application",
+            name: "/AfterSale/application",
             num: response.data.pagination.total
           });
           params.success({

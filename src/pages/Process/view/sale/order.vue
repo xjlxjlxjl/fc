@@ -45,7 +45,7 @@ export default {
             return false;
           }
           that.$store.commit("changeTasks", {
-            name: "order",
+            name: "/Sale/order",
             num: response.data.pagination.total
           });
           params.success({

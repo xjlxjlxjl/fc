@@ -46,7 +46,7 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           that.$store.commit("changeTasks", {
-            name: "customerServiceApplication",
+            name: "/Sale/customerServiceApplication",
             num: response.data.pagination.total
           });
           that.tableData = response.data.list;

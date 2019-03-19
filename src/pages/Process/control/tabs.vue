@@ -91,9 +91,13 @@ import financeMeetDebt from "@/pages/Process/view/finance/meetDebt";
 export default {
   name: "tabs",
   data() {
-    let url = this.$route.name.toLowerCase();
+    let url = this.$route.name.toLowerCase(),
+      process = [];
+    Object.keys(this.$store.state.process).forEach(label =>
+      this.$store.state.process[label].forEach(e => process.push(e))
+    );
     return {
-      process: this.$store.state.process,
+      process: process,
       aside: this.$store.state.process[url],
       activeTabs: "/tasks",
       tabItems: [{ name: "待完成任务", label: "/tasks", num: 0 }]
@@ -134,7 +138,7 @@ export default {
       if (isNaN(Number(key))) url = key;
       else url = this.aside[key].url;
       let name = null;
-      this.aside.filter(e => {
+      this.process.filter(e => {
         if (e.url == url) name = e.name;
       });
       if (!this.tabItems.onArray(url, "label", "name"))
@@ -143,6 +147,7 @@ export default {
           label: url,
           num: this.tasksPendingNum[url]
         });
+      this.getLabelNums();
       this.activeTabs = url;
     },
     removeTab(tagIndex) {
@@ -247,9 +252,22 @@ export default {
           // that.aside = response.data.list;
         })
         .catch(err => loading.close());
+    },
+    getLabelNums() {
+      // 设置 label 上数量
+      setTimeout(() => 
+        Object.keys(this.tasksPendingNum).forEach(e => {
+          for (let item of this.tabItems) {
+            if(item.label == e) item.num = this.tasksPendingNum[e];
+          }
+        }),
+      1000);
     }
   },
-  computed: mapState(["createdWorkModal", "tasksPendingNum"])
+  computed: mapState(["createdWorkModal", "tasksPendingNum"]),
+  mounted() {
+    this.getLabelNums();
+  }
 };
 </script>
 <style lang="less">

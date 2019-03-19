@@ -822,10 +822,13 @@ export default new Vuex.Store({
     },
     tasksPendingNum: {
       tasks: 0,
-      order: 0,
-      customerServiceApplication: 0,
-      customerServiceQuotation: 0,
-      application: 0,
+      '/tasks': 0,
+      // 销售
+      '/Sale/order': 0,
+      '/Sale/customerServiceApplication': 0,
+      '/Sale/customerServiceQuotation': 0,
+      // 售后
+      '/AfterSale/application': 0,
       // 采购
       '/tasks': 0,
       '/approval': 0,
