@@ -326,11 +326,15 @@ export default {
     // 长按移动
     mousemove(event) {
       if(!this.isMove) return false;
-      this.$refs.popup.style.top = Math.abs(event.clientY) - 30 + 'px';
+      this.$refs.popup.style.top = event.pageY - 30 + 'px';
       this.$refs.popup.style.left = Math.abs(event.clientX) - 300 + 'px';
     }
   },
   watch: {
+    isMove(val) {
+      if (val) document.querySelector('body').style.userSelect = 'none';
+      else document.querySelector('body').style.userSelect = 'inherit';
+    },
     record: {
       handler(val) {
         this.$previewRefresh();
@@ -427,7 +431,6 @@ export default {
   position: absolute;
   top: 3rem;
 }
-
 #popup {
   position: fixed;
   z-index: 12;
