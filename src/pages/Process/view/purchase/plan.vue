@@ -1,10 +1,9 @@
 <template>
   <div id="purchasePlan">
-    <addPlanModal></addPlanModal>
+    <addPlanModal :row="row"></addPlanModal>
     <div
       class="modal fade"
       id="purchasePlanPrintModal"
-      tabindex="-1"
       role="dialog"
       aria-labelledby="myModalLabel"
     >
@@ -71,7 +70,7 @@
       </div>
     </div>
     <div id="toolbar">
-      <el-button size="mini" @click="addPlan">新建采购计划</el-button>
+      <!-- <el-button size="mini" @click="addPlan">新建采购计划</el-button> -->
       <el-select v-model="params.status" size="mini" @change="refreshed">
         <el-option label="全部" :value="undefined"></el-option>
         <el-option label="未审核" :value="0"></el-option>
@@ -99,11 +98,15 @@ export default {
       },
       params: {
         status: 0
+      },
+      row: {
+        id: 0,
+        items: []
       }
     };
   },
   components: {
-    addPlanModal: addPlanModal
+    addPlanModal: addPlanModal,
   },
   methods: {
     tableAjaxData(params) {
@@ -230,10 +233,12 @@ export default {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
-              let closeCase = `<button class="closeCase btn btn-warning btn-sm" style="margin-left: 5px;">结案</button>`;
-              let print = `<button class="print btn btn-success btn-sm" style="margin-left: 5px;">打印</button>`;
-              return del + closeCase + print;
+              let del = `<button class="del btn btn-danger btn-sm">删除</button>`,
+                closeCase = `<button class="closeCase btn btn-warning btn-sm" style="margin-left: 5px;">结案</button>`,
+                print = `<button class="print btn btn-success btn-sm" style="margin-left: 5px;">打印</button>`,
+                create = `<button class="create btn btn-primary btn-sm" style="margin-left: 5px;">生成订单</button>`,
+                edit = `<button class="edit btn btn-info btn-sm" style="margin-left: 5px;">编辑</button>`;
+              return del + closeCase + print + create + edit;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -262,6 +267,13 @@ export default {
               },
               "click .print": function(e, value, row, index) {
                 window.open(`/print.html#/purchasePlan/${row.id}`);
+              },
+              "click .create": function(e, value, row, index) {
+                console.log($(`.selectCase${row.id}:checked`))
+              },
+              "click .edit": function(e, value, row, index) {
+                that.row = row;
+                that.addPlan();
               }
             }
           }
@@ -293,33 +305,61 @@ export default {
           columns: columns,
           detailFormatter: (index, row, $el) => {
             let html = [
-              `<table class="table table-bordered">
+              `<table class="table table-bordered" style="white-space: nowrap;">
                 <tr>
+                  <th>序号</th>
+                  <th>是否生成订单</th>
+                  <th>关联采购计划</th>
+                  <th>关联销售订单</th>
                   <th>料品编码</th>
                   <th>料品名称</th>
                   <th>料品规格</th>
                   <th>单位</th>
-                  <th>需求日期</th>
                   <th>数量</th>
+                  <th>需求日期</th>
                   <th>备注</th>
+                  <th>供应商</th>
+                  <th>单价</th>
+                  <th>交期</th>
+                  <th>料品类别</th>                  
                   <th>结案</th>
                 </tr>`
             ];
-            row.items.forEach(e =>
+            row.items.forEach((e, k) =>
               html.push(`
                   <tr>
+                    <td>${k + 1}</td>
+                    <td>
+                      <input 
+                        type="checkbox" 
+                        class="selectCase${row.id}" 
+                        value="${e.id}"
+                        ${e.is_closed ? 'disabled="disabled"' : ""}
+                      >
+                    </td>
+                    <td>${row.number || ""}</td>
+                    <td>${e.saleOrder || ""}</td>
                     <td>${e.material_code || ""}</td>
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>
-                    <td>${e.demand_at || ""}</td>
                     <td>${e.quantity || ""}</td>
+                    <td>${e.demand_at || ""}</td>
                     <td>${e.remark || ""}</td>
-                    <td><input type="checkbox" aid="${
-                      row.id
-                    }" class="closeCase" index="${row.id}" value="${e.id}" ${
-                e.is_closed ? 'checked="checked"' : ""
-              }></td>
+                    <td>${e.supplier || ""}</td>
+                    <td>${e.price || ""}</td>
+                    <td>${e.delivery_date || ""}</td>
+                    <td>${e.type || ""}</td>
+                    <td>
+                      <input 
+                        type="checkbox" 
+                        aid="${row.id}" 
+                        class="closeCase" 
+                        index="${row.id}" 
+                        value="${e.id}" 
+                        ${e.is_closed ? 'checked="checked"' : ""}
+                      >
+                    </td>
                   </tr>
                 `)
             );
@@ -384,6 +424,11 @@ export default {
 </script>
 <style lang="less">
 #purchasePlan {
+  .detail-view {
+    > td {
+      padding: 0;
+    }
+  }
   .img {
     width: 100%;
   }

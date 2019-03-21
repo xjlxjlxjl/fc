@@ -257,14 +257,15 @@ export default {
       // 设置 label 上数量
       setTimeout(() => 
         Object.keys(this.tasksPendingNum).forEach(e => {
-          for (let item of this.tabItems) {
-            if(item.label == e) item.num = this.tasksPendingNum[e];
-          }
+          for (let item of this.tabItems) 
+            if (item.label == e) item.num = this.tasksPendingNum[e];
         }),
       1000);
     }
   },
-  computed: mapState(["createdWorkModal", "tasksPendingNum"]),
+  computed: {
+    ...mapState(["createdWorkModal", "tasksPendingNum"])
+  },
   mounted() {
     this.getLabelNums();
   }
@@ -276,6 +277,7 @@ export default {
 @border: solid 1px @background;
 @white: #ffffff;
 @gery: #666666;
+@lightGrey: #999999;
 @sky: #2288ff;
 @orange: #ff9900;
 @orgBorder: solid 1px @orange;
@@ -381,6 +383,16 @@ export default {
     }
     .el-input-group__append {
       padding: 0 5px;
+    }
+  }
+  .modal-content {
+    p.lead {
+      width: 100%;
+      padding-bottom: 10px;
+      border-bottom: 1px solid @lightGrey;
+    }
+    .widthFull {
+      width: 100%;
     }
   }
 }

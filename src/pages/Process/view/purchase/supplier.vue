@@ -1,6 +1,18 @@
 <template>
   <div id="purchaseSupplier">
-    <addSupplier @refresh="refreshed"></addSupplier>
+    <addSupplier :id="row.id" :row="row" @refresh="refreshed"></addSupplier>
+
+    <div class="modal fade" id="contract" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div id="toolbar-container"></div>
+            <div id="editor"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="toolbar" style="display: flex;">
       <el-button size="mini" @click="addSupplier">新建供应商</el-button>
       <el-upload action :before-upload="upload">
@@ -11,12 +23,18 @@
   </div>
 </template>
 <script>
+import CKEditor from "@ckeditor/ckeditor5-build-classic";
+import "@ckeditor/ckeditor5-build-classic/build/translations/zh-cn";
 import addSupplier from "@/pages/Process/common/purchase/addSupplier";
 
 export default {
   name: "purchaseSupplier",
   data() {
-    return {};
+    return {
+      row: {
+        id: 0
+      }
+    };
   },
   components: {
     addSupplier: addSupplier
@@ -39,7 +57,7 @@ export default {
           });
           // 存储进仓库
           that.$store.commit("setStateData", {
-            name: 'supplierList',
+            name: "supplierList",
             arr: response.data
           });
           params.success({
@@ -109,6 +127,11 @@ export default {
                 if (!v) return "不能为空";
               }
             }
+          },
+          {
+            field: "product",
+            title: "供应产品",
+            sortable: true
           },
           {
             field: "status",
@@ -293,6 +316,10 @@ export default {
             }
           },
           {
+            field: "businesslicenseNumber",
+            title: "营业执照号"
+          },
+          {
             field: "delivery_method",
             title: "送货方式",
             editable: {
@@ -413,14 +440,46 @@ export default {
             }
           },
           {
+            field: "invoiceDate",
+            title: "开票日期"
+          },
+          {
+            field: "reconciliationDate",
+            title: "对账日期"
+          },
+          {
+            field: "contracTerms",
+            title: "合同条款",
+            formatter: (value, row, index) => {
+              return `<button class="btn btn-default btn-sm getTerms">查看条款</button>`;
+            },
+            events: {
+              "click .getTerms": (e, value, row, index) => {
+                that.editor.setData(`
+                  <p>合同条款：</p>
+                  <ul>
+                    <li>1、收到订单后必须在当天签回，否则将视为供方已默认收到磁采购订单；</li>
+                    <li>2、送货单请详细填写采购单号、产品料号、品名规格、数量（勿填价格）等；</li>
+                    <li>3、必须按期保质保量交换，因逾期交货或品质问题影响需方产生进度的，则当天扣除按该订单总货款的0.1%，未如期完成对账及发票开具的，将延至下月付款；</li>
+                    <li>4、廉政条约：如发现我司员工与供应商有利益关系，立即取消供应商资格，并扣除所有货款。</li>
+                  </ul>
+                `)
+                $("#contract").modal("show");
+              }
+            }
+          },
+          {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let html = "";
-              return html;
+              let edit = `<button class="btn btn-success btn-sm edit">修改</button>`
+              return edit;
             },
             events: {
-              "": function(e, value, row, index) {}
+              "click .edit": function(e, value, row, index) {
+                that.row = row;
+                $("#addSupplier").modal("show");
+              }
             }
           }
         ],
@@ -450,7 +509,6 @@ export default {
           columns: columns,
           detailFormatter: (index, row, $el) => {},
           onEditableSave: (field, mrow, oldValue, $el) => {
-            console.log(mrow);
             that
               .$post(`procurement/supplier/edit/${mrow.id}`, mrow)
               .then(response => {
@@ -462,6 +520,43 @@ export default {
         };
       $("#purchaseSupplier #table").bootstrapTable(data);
     },
+    initCKEditor() {
+      const that = this;
+      class UploadAdapter {
+        constructor(loader) {
+          this.loader = loader;
+        }
+        upload() {
+          //重置上传路径
+          return new Promise((resolve, reject) => {
+            let form = new FormData();
+            form.append('imageFile', this.loader.file);
+            console.log(form);
+          });
+        }
+        abort() {}
+      }
+      //初始化编辑器
+      CKEditor.create(document.querySelector("#editor"), {
+        removePlugins: ["MediaEmbed"], //除去视频按钮
+        language: "zh-cn", // 中文
+        ckfinder: {
+          uploaded: 1,
+          url: "/"
+          // 后端处理上传逻辑返回json数据,包括uploaded(选项true/false)和url两个字段
+        }
+      })
+        .then(editor => {
+          const toolbarContainer = document.querySelector("#toolbar-container");
+          toolbarContainer.appendChild(editor.ui.view.toolbar.element);
+          // 加载了适配器
+          editor.plugins.get("FileRepository").createUploadAdapter = loader => {
+            return new UploadAdapter(loader);
+          };
+          this.editor = editor; // 将编辑器保存起来，用来随时获取编辑器中的内容等，执行一些操作
+        })
+        .catch(error => console.error(error));
+    },
     upload(file) {
       let that = this,
         form = new FormData();
@@ -470,24 +565,32 @@ export default {
         .$upload("procurement/supplier/import", form)
         .then(response => {
           if (response.status != 200) return false;
-          that.$message({ message: '导入成功', type: 'success' });
+          that.$message({ message: "导入成功", type: "success" });
           that.refreshed();
         })
         .catch(err => console.error(err));
     },
     addSupplier() {
+      this.row = { id: 0 };
       $("#addSupplier").modal("show");
     },
     refreshed() {
+      this.row = { id: 0 };
       this.refresh($("#purchaseSupplier #table"));
     }
   },
   mounted() {
     this.init();
+    this.initCKEditor();
   }
 };
 </script>
 <style lang="less">
+.ck.ck-reset_all {
+  >div {
+    z-index: 1051;
+  }
+}
 #purchaseSupplier {
   #toolbar {
     display: flex;

@@ -3,7 +3,6 @@
     <div
       class="modal fade bs-example-modal-lg"
       id="addPlan"
-      tabindex="-1"
       role="dialog"
       aria-labelledby="myLargeModalLabel"
     >
@@ -137,7 +136,7 @@
                 </el-table>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="onSubmit">立即创建</el-button>
+                <el-button type="primary" @click="onSubmit">保存</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -147,7 +146,6 @@
     <!-- 采购申请列表 -->
     <div
       class="modal fade bs-example-modal-lg applyList"
-      tabindex="-1"
       role="dialog"
       aria-labelledby="myLargeModalLabel"
     >
@@ -202,7 +200,6 @@
     <!-- 销售订单列表 -->
     <div
       class="modal fade bs-example-modal-lg orderList"
-      tabindex="-1"
       role="dialog"
       aria-labelledby="myLargeModalLabel"
     >
@@ -289,7 +286,6 @@
     <!-- 料品列表 -->
     <div
       class="modal fade bs-example-modal-lg materList"
-      tabindex="-1"
       role="dialog"
       aria-labelledby="myLargeModalLabel"
     >
@@ -470,6 +466,9 @@ export default {
         selection: []
       }
     };
+  },
+  props: {
+    row: Object
   },
   methods: {
     applyChange(val) {
@@ -694,7 +693,7 @@ export default {
       if (row.id) {
         let that = this;
         that.$post(`procurement/schedule/item/edit/${row.id}`, {
-          schedule_id: that.request_id || "",
+          schedule_id: that.request_id || undefined,
           request_item_id: row.request_item_id || undefined,
           code: row.code || "",
           material_id: row.material_id,
@@ -731,8 +730,9 @@ export default {
         )
           arr.push(e);
       });
+
       that
-        .$post(`procurement/schedule/edit/${that.request_id}`, {
+        .$post(`procurement/schedule/edit/${that.request_id || that.row.id}`, {
           applicant_id: that.form.applicant_id,
           branch_id: that.form.branch_id,
           // demand_at: that.form.demand_at,
@@ -770,6 +770,7 @@ export default {
           lastRow = that.form.items[that.form.items.length - 1];
         if (val.items.length - oldVal.items.length > 1) return false;
         else {
+          if (that.row.id) return false;
           val.items.forEach(e => {
             if (
               !e.name ||
@@ -816,7 +817,9 @@ export default {
   },
   mounted() {
     let that = this;
-    $("#addPlan").on("show.bs.modal", function() {
+    $("#addPlan").on("shown.bs.modal", function() {
+      that.form = that.row;
+
       let arr = [],
         member = [];
       that.$store.state.userBranch.forEach(e => {

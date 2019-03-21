@@ -4,7 +4,6 @@
     <div
       class="modal fade"
       id="purchaseOrderPrintModal"
-      tabindex="-1"
       role="dialog"
       aria-labelledby="myModalLabel"
     >
@@ -70,6 +69,43 @@
         </div>
       </div>
     </div>
+    <div class="modal fade contract" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <table class="table table-bordered" style="margin-bottom: 0;">
+              <tbody>
+                <tr>
+                  <th>合同</th>
+                  <th>上传日期</th>
+                </tr>
+                <tr>
+                  <td><button class="btn btn-link" @click="showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/non_standard_requirements/Using%20the%20i-20190109045615.pdf')">1111111</button></td>
+                  <td>2019-01-17</td>
+                </tr>
+                <tr>
+                  <td><button class="btn btn-link" @click="showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/non_standard_requirements/Using%20the%20i-20190109045615.pdf')">1111111</button></td>
+                  <td>2019-01-17</td>
+                </tr>
+                <tr>
+                  <td><button class="btn btn-link" @click="showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/non_standard_requirements/Using%20the%20i-20190109045615.pdf')">1111111</button></td>
+                  <td>2019-01-17</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 查看报告 -->
+    <div class="modal fade report" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div id="canvasBox"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="toolbar">
       <el-button size="mini" @click="addOrder">新建采购订单</el-button>
       <el-select v-model="params.status" size="mini" @change="refreshed">
@@ -84,6 +120,7 @@
 
 <script>
 import QRCode from "qrcode";
+import PDFJS from "pdfjs-dist";
 import addOrderModal from "@/pages/Process/common/purchase/addOrder";
 
 export default {
@@ -100,7 +137,12 @@ export default {
       },
       params: {
         status: 0
-      }
+      },
+      pdfDoc: null,
+      pageNum: 1,
+      pageRendering: false,
+      pageNumPending: null,
+      scale: 1
     };
   },
   components: {
@@ -166,7 +208,9 @@ export default {
                   ),
                 500
               );
-              return `<div id="purchaseOrderQrcode${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+              return `<div id="purchaseOrderQrcode${
+                row.id
+              }" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
@@ -230,6 +274,19 @@ export default {
             title: "联系电话"
           },
           {
+            field: "contract",
+            title: "合同",
+            formatter: () => {
+              let getContract = `<button class="btn btn-link getContract">查看合同</button>`;
+              return getContract;
+            },
+            events: {
+              "click .getContract": function(e, value, row, index) {
+                $("#purchaseOrder .contract").modal("show");
+              }
+            }
+          },
+          {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
@@ -247,7 +304,7 @@ export default {
                   })
                   .catch(err => console.error(err));
               },
-              'click .print': function(e, value, row, index) {
+              "click .print": function(e, value, row, index) {
                 window.open(`/print.html#/purchaseOrder/${row.id}`);
               }
             }
@@ -335,8 +392,47 @@ export default {
     addOrder() {
       $("#addOrder").modal("show");
     },
+    showPDF(url) {
+      let _this = this;
+      $("#canvasBox").empty();
+      $(".report").modal("show");
+      PDFJS.getDocument(url).then(function(pdf) {
+        _this.pdfDoc = pdf;
+        for (let i = 1; i < pdf.numPages + 1; i++) {
+          _this.renderPage(i);
+        }
+      });
+    },
+    renderPage(num) {
+      this.pageRendering = true;
+      let _this = this;
+      this.pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport(_this.scale);
+        // let canvas = document.getElementById("the-canvas");
+        let canvas = document.createElement("canvas");
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render PDF page into canvas context
+        var renderContext = {
+          canvasContext: canvas.getContext("2d"),
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+        document.getElementById("canvasBox").appendChild(canvas);
+        // Wait for rendering to finish
+        renderTask.promise.then(function() {
+          _this.pageRendering = false;
+          if (_this.pageNumPending !== null) {
+            // New page rendering is pending
+            _this.renderPage(_this.pageNumPending);
+            _this.pageNumPending = null;
+          }
+        });
+      });
+    },
     refreshed() {
-      this.refresh($('#purchaseOrder #table'))
+      this.refresh($("#purchaseOrder #table"));
     }
   },
   mounted() {
@@ -347,7 +443,6 @@ export default {
         id = self.attr("index"),
         data = that.getRow($("#purchaseOrder #table"), id),
         params = {};
-
       for (let item of data.items) {
         if (item.id == self.val()) {
           if (item.is_closed) item.is_closed = 0;
@@ -355,7 +450,6 @@ export default {
           params = item;
         }
       }
-
       that
         .$post(`procurement/order/item/edit/${params.id}`, params)
         .then(response => {
@@ -369,6 +463,21 @@ export default {
 </script>
 <style lang="less">
 #purchaseOrder {
+  .report {
+    #canvasBox {
+      text-align: center;
+      canvas {
+        max-width: 100%;
+      }
+    }
+  }
+  #table {
+    .detail-view {
+      > td {
+        padding: 0;
+      }
+    }
+  }
   .img {
     width: 100%;
   }
