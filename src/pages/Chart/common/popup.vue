@@ -326,7 +326,7 @@ export default {
     // 长按移动
     mousemove(event) {
       if(!this.isMove) return false;
-      this.$refs.popup.style.top = event.pageY - 30 + 'px';
+      this.$refs.popup.style.top = event.pageY - 27 + 'px';
       this.$refs.popup.style.left = Math.abs(event.clientX) - 300 + 'px';
     }
   },
