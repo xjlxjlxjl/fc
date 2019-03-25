@@ -393,7 +393,6 @@ import fileImg from "@/assets/img/file.png";
 import groupUserCheckBox from "@/pages/Chart/common/groupUserCheckBox";
 import fileList from "@/pages/Chart/common/fileList";
 // import gallery from "@/pages/Chart/common/gallery";
-import "vue-photo-preview/dist/skin.css";
 
 export default {
   name: "message",
@@ -1398,6 +1397,8 @@ export default {
 };
 </script>
 <style lang="less">
+@import "vue-photo-preview/dist/skin.css";
+
 @FFF: #ffffff;
 @white: #eeeeee;
 @gery: #666666;

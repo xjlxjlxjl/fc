@@ -127,7 +127,6 @@
 <script>
 import fileImg from "@/assets/img/file.png";
 import fileList from "@/pages/Chart/common/fileList";
-import "vue-photo-preview/dist/skin.css";
 
 export default {
   data() {
@@ -408,6 +407,7 @@ export default {
 }
 </script>
 <style lang="less">
+@import "vue-photo-preview/dist/skin.css";
 @grey: #d9d9d9;
 @gery: #666666;
 @smallGrey: #f6f6f6;

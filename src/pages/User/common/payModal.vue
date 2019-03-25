@@ -30,7 +30,6 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import "@/assets/css/modal.css";
 import icon from "@/assets/icon/iconfont.js";
 
 export default {
@@ -104,6 +103,7 @@ export default {
 };
 </script>
 <style lang="less">
+@import "../../../assets/css/modal.css";
 #payModal {
   #payment {
     width: 100%;

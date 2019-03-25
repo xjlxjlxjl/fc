@@ -116,7 +116,6 @@
 import { mapState, mapMutations } from "vuex";
 import fileImg from "@/assets/img/file.png";
 import message from "@/pages/Chart/view/message";
-import "vue-photo-preview/dist/skin.css";
 
 export default {
   name: "consu",
@@ -247,6 +246,8 @@ export default {
 };
 </script>
 <style lang="less">
+@import "vue-photo-preview/dist/skin.css";
+
 @FFF: #ffffff;
 @white: #eeeeee;
 @gery: #666666;

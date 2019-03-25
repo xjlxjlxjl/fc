@@ -43,6 +43,10 @@ export default {
 };
 </script>
 <style lang="less">
+@import "element-ui/lib/theme-chalk/index.css";
+@import "../../assets/css/init.css"; // 基础改动
+@import "element-ui/lib/theme-chalk/display.css"; // 响应式
+@import "../../assets/css/transform.css"; // 过渡效果 缩放 淡入
 .el-header,
 .el-main,
 .el-footer {

@@ -150,7 +150,6 @@
 <script>
 import { AreaCascader } from "vue-area-linkage";
 import { pca, pcaa } from "area-data";
-import "vue-area-linkage/dist/index.css";
 export default {
   name: "addressManage",
   data() {
@@ -268,6 +267,7 @@ export default {
 };
 </script> 
 <style lang="less">
+@import "vue-area-linkage/dist/index.css";
 #addressManage {
   padding: 2rem;
   color: #666666;

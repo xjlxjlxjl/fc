@@ -7,15 +7,7 @@ import elementUi from "element-ui";
 import Http from "@/assets/js/http";
 import mouseMenu from "vue-mouse-menu";
 import preview from "vue-photo-preview";
-import "element-ui/lib/theme-chalk/index.css";
-// 地址
-import VueAreaLinkage from "vue-area-linkage";
-// 响应式
-import "element-ui/lib/theme-chalk/display.css";
-// 过渡效果 缩放 淡入
-import "element-ui/lib/theme-chalk/base.css";
-
-import "@/assets/css/init.css";
+import VueAreaLinkage from "vue-area-linkage"; // 地址
 
 Vue.config.productionTip = false;
 Vue.use(elementUi);

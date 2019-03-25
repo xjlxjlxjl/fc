@@ -14,3 +14,8 @@ export default {
   }
 };
 </script>
+<style>
+@import "element-ui/lib/theme-chalk/index.css";
+@import "../../assets/icon/iconfont.css";
+@import "../../assets/css/init.css";
+</style>

@@ -146,7 +146,6 @@ import progress from "@/assets/img/progress.png";
 import progressHide from "@/assets/img/progressHide.png";
 import progressLast from "@/assets/img/progressLast.png";
 import msgBox from "@/pages/Chart/common/chatModal";
-import "@/assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 
 export default {
   name: "indexRise",
@@ -213,6 +212,7 @@ export default {
 };
 </script>
 <style lang="less">
+@import "../../../assets/css/transform.css"; // 过渡效果 左滑动 右滑动
 @white: #ffffff;
 @aBule: #0064db;
 @bBule: #0057bf;

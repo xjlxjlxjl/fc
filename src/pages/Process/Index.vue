@@ -38,12 +38,9 @@ import indexTail from "@/pages/Index/common/indexTail";
 import "jquery/dist/jquery.min.js";
 import "tablednd/dist/jquery.tablednd.min.js";
 
-import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
-import "bootstrap-table/dist/bootstrap-table.min.css";
 import "bootstrap-table/dist/bootstrap-table.min.js";
 
-import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
 import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js";
 import "bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js";
 import "bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js";
@@ -65,6 +62,14 @@ export default {
 };
 </script>
 <style lang="less">
+@import "element-ui/lib/theme-chalk/index.css";
+@import "element-ui/lib/theme-chalk/display.css"; // 响应式
+@import "element-ui/lib/theme-chalk/base.css"; // 过渡效果 缩放 淡入
+@import "../../assets/css/init.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-table/dist/bootstrap-table.min.css";
+@import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
+
 .el-header,
 .el-main,
 .el-footer {

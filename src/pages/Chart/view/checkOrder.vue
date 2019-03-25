@@ -182,10 +182,8 @@
   </div>
 </template>
 <script>
-import "@/assets/css/modal.css";
 import { AreaCascader } from "vue-area-linkage";
 import { pca, pcaa } from "area-data";
-import "vue-area-linkage/dist/index.css";
 
 export default {
   name: "checkOrder",
@@ -387,6 +385,9 @@ export default {
 };
 </script>
 <style lang="less">
+@import "../../../assets/css/modal.css";
+@import "vue-area-linkage/dist/index.css";
+
 @org: #ff9900;
 @gery: #e2e2e2;
 @border: 1px solid @org;

@@ -5,8 +5,6 @@ import store from "@/store";
 import elementUi from "element-ui";
 import Http from "@/assets/js/http";
 import Config from "@/assets/js/config";
-import "element-ui/lib/theme-chalk/index.css";
-import "element-ui/lib/theme-chalk/display.css";
 
 Vue.use(Http);
 Vue.use(Config);

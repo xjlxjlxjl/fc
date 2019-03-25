@@ -8,14 +8,8 @@ import mouseMenu from "vue-mouse-menu";
 import Http from "@/assets/js/http";
 import Config from "@/assets/js/config";
 import preview from "vue-photo-preview";
-import "element-ui/lib/theme-chalk/index.css";
-import "@/assets/css/init.css"; // 基础改动
 // 地址
 import VueAreaLinkage from "vue-area-linkage";
-// 响应式
-import "element-ui/lib/theme-chalk/display.css";
-// 过渡效果 缩放 淡入
-import "@/assets/css/transform.css";
 
 Vue.config.productionTip = false;
 Vue.use(elementUi);
