@@ -1,19 +1,80 @@
 <template>
   <div id="customer">
-    <addCustomer @refresh="refreshed"></addCustomer>
-    <addVisit :slug="slug" @refresh="refreshed"></addVisit>
-    <div
-      class="modal fade bs-example-modal-lg"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
-      <div class="modal-dialog modal-lg" role="document">
+    <addCustomer @refresh="refreshed" :rows="rows"></addCustomer>
+    <addVisit :rows="rows" @refresh="refreshed"></addVisit>
+
+    <div class="modal fade contactModal" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div id="childToolbar">
-            <span class="lead">拜访记录</span>
-          </div>
-          <table id="childTable"></table>
+          <el-table :data="contact" border style="width: 100%">
+            <el-table-column prop="name" label="联系人"></el-table-column>
+            <el-table-column prop="position" label="职务"></el-table-column>
+            <el-table-column prop="mobile" label="手机号"></el-table-column>
+            <el-table-column prop="email" label="邮箱"></el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade payment_termsModal" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <el-table :data="payment_terms" border style="width: 100%">
+            <el-table-column label="付款条件" width="100">
+              <template slot-scope="{ row, $index}">
+                <div>付款条件{{$index + 1}}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="text" label="详细"></el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade visitModal" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document" style="width: 100%;max-width: 1280px;">
+        <div class="modal-content">
+          <el-table :data="visit" border style="width: 100%">
+            <el-table-column prop="client_company" label="公司"></el-table-column>
+            <el-table-column prop="contact_v1.name" label="联系人"></el-table-column>
+            <el-table-column prop="contact_v1.mobile" label="电话"></el-table-column>
+            <el-table-column prop="contact_v1.position" label="职位"></el-table-column>
+            <el-table-column prop="created_member.last_name" label="创建人"></el-table-column>
+            <el-table-column prop="access_at" label="拜访时间"></el-table-column>
+            <el-table-column prop="visiting_content" label="拜访内容"></el-table-column>
+            <el-table-column prop="images" label="图片">
+              <template slot-scope="{ row }">
+                <div>
+                  <img 
+                    v-for="(item, index) in row.images"
+                    :key="index" 
+                    :src="item" 
+                    style="max-width: 50px;max-height: 50px;">
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="together" label="同行人"></el-table-column>
+            <el-table-column prop="supervisor_reply" label="主管回复">
+              <template slot-scope="{ row }">
+                <p class="text-muted">{{ row.supervisor_reply }}</p>
+                <el-button v-if="row.is_reply" type="primary" size="mini" @click="slug = row.slug;addReply()">主管回复</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column prop="reply_at" label="回复时间"></el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade sigininModal" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <el-table :data="siginin" border style="width: 100%">
+            <el-table-column prop="customer_name" label="客户公司名"></el-table-column>
+            <el-table-column prop="full_name" label="打卡人"></el-table-column>
+            <el-table-column prop="created_at" label="打卡时间"></el-table-column>
+            <el-table-column prop="email" label="打卡地址"></el-table-column>
+          </el-table>
         </div>
       </div>
     </div>
@@ -29,15 +90,22 @@
   </div>
 </template>
 <script>
-import addCustomer from "@/pages/Process/common/addCustomer";
-import addVisit from "@/pages/Process/common/addVisit";
+import addCustomer from "@/pages/Process/common/sale/addCustomer";
+import addVisit from "@/pages/Process/common/sale/addVisit";
 
 export default {
   name: "customer",
   data() {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
-      slug: ""
+      slug: "",
+      contact: [],
+      payment_terms: [],
+      visit: [],
+      siginin: [],
+      rows: {
+        id: 0
+      }
     };
   },
   components: {
@@ -66,36 +134,38 @@ export default {
       return params;
     },
     add() {
+      this.rows = {
+        id: 0
+      }
       addCustomer.methods.close.call(this);
     },
+    addReply() {
+      let that = this;
+      that
+        .$prompt("主管回复内容", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        })
+        .then(({ value }) => {
+          that
+            .$post(`customers/visit/reply`, {
+              slug: that.slug,
+              supervisor_reply: value
+            })
+            .then(response => {
+              if (response.status != 200) return false;
+              that.$message({ message: "回复成功", type: "success" });
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
+    },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#customer #table"));
     },
     tableInit() {
-      let that = this;
-      $("#table").bootstrapTable({
-        toolbar: "#toolbar",
-        ajax: this.tableAjaxData,
-        queryParams: this.tableAjaxParams,
-        search: true,
-        strictSearch: true,
-        showRefresh: true,
-        sidePagination: "server",
-        pagination: true,
-        striped: true,
-        clickToSelect: true,
-        showColumns: true,
-        sortName: "createTime",
-        sortOrder: "desc",
-        idField: "id",
-        showToggle: true,
-        showExport: true,
-        exportDataType: "all",
-        exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-        classes: "table",
-        pageList: [10, 25, 50, 100, "All"],
-        // detailView: true,
-        columns: [
+      let that = this,
+        columns = [
           {
             checkbox: true
           },
@@ -105,12 +175,41 @@ export default {
             sortable: true
           },
           {
+            field: "created_by",
+            title: "创建人",
+            sortable: true
+          },
+          {
+            field: "created_at",
+            title: "创建时间",
+            sortable: true
+          },
+          {
             field: "name",
-            title: "客户名称",
+            title: "客户公司全称",
             sortable: true,
             editable: {
               type: "text",
-              title: "客户名称",
+              title: "客户公司全称",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "abbreviation",
+            title: "客户公司简称",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "客户公司简称",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "customer_level",
+            title: "客户级别",
+            editable: {
+              type: "text",
+              title: "客户级别",
               emptytext: "空"
             }
           },
@@ -118,6 +217,16 @@ export default {
             field: "salesman",
             title: "业务员",
             sortable: true
+          },
+          {
+            field: "business_license_number",
+            title: "工商营业执照号码",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "工商营业执照号码",
+              emptytext: "空"
+            }
           },
           {
             field: "legal_representative",
@@ -130,12 +239,132 @@ export default {
             }
           },
           {
-            field: "address",
-            title: "地址",
+            field: "registered_capital",
+            title: "注册资金",
             sortable: true,
             editable: {
               type: "text",
-              title: "地址",
+              title: "注册资金",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "establish_at",
+            title: "成立日期",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "成立日期",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "url",
+            title: "网址",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "网址",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "phone",
+            title: "座机号码",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "座机号码",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "fax",
+            title: "传真",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "传真",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "enabled",
+            title: "状态",
+            editable: {
+              type: "select",
+              title: "状态",
+              source: [{ text: "启用", value: 1 }, { text: "禁用", value: 0 }],
+              emptytext: "空"
+            }
+          },
+          {
+            field: "market_status",
+            title: "市场状况",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "市场状况",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "product_used",
+            title: "所用产品",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "所用产品",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "purchase_quantity_year",
+            title: "年采购量",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "年采购量",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "business_content",
+            title: "营业内容",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "营业内容",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "area",
+            title: "区域",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "区域",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "tags",
+            title: "标签",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "标签",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "remark",
+            title: "备注",
+            sortable: true,
+            editable: {
+              type: "textarea",
+              title: "备注",
               emptytext: "空"
             }
           },
@@ -150,43 +379,18 @@ export default {
             }
           },
           {
-            field: "phone",
-            title: "电话",
+            field: "contact",
+            title: "联系人",
             sortable: true,
-            editable: {
-              type: "text",
-              title: "电话",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "mobile",
-            title: "手机号",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "手机号",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "logistics_code",
-            title: "物流编码",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "物流编码",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "invoice_head",
-            title: "发票抬头",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "发票抬头",
-              emptytext: "空"
+            formatter: (value, row, index) => {
+              let contact = `<button class="btn btn-sm btn-primary">查看联系人</button>`;
+              return contact;
+            },
+            events: {
+              'click .btn': function(e, value, row, index) {
+                that.contact = row.contact;
+                $('#customer .contactModal').modal('show');
+              }
             }
           },
           {
@@ -230,22 +434,77 @@ export default {
             }
           },
           {
-            field: "business_license_number",
-            title: "工商营业执照号码",
+            field: "account_period_type",
+            title: "账期类型",
             sortable: true,
             editable: {
               type: "text",
-              title: "工商营业执照号码",
+              title: "账期类型",
               emptytext: "空"
             }
           },
           {
-            field: "url",
-            title: "网址",
+            field: "payment_type",
+            title: "付款方式",
             sortable: true,
             editable: {
               type: "text",
-              title: "网址",
+              title: "付款方式",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "invoice_type",
+            title: "发票类型",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "发票类型",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "invoice_head",
+            title: "发票抬头",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "发票抬头",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "payment_terms",
+            title: "付款条件",
+            sortable: true,
+            formatter: (value, row, index) => {
+              let payment_terms = `<button class="btn btn-sm btn-primary">查看条件</button>`;
+              return payment_terms;
+            },
+            events: {
+              'click .btn': function(e, value, row, index) {
+                that.payment_terms = row.payment_terms_vl;
+                $('#customer .payment_termsModal').modal('show');
+              }
+            }
+          },
+          {
+            field: "logistics_code",
+            title: "物流编码",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "物流编码",
+              emptytext: "空"
+            }
+          },
+          {
+            field: "delivery_methods",
+            title: "送货方式",
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "送货方式",
               emptytext: "空"
             }
           },
@@ -260,325 +519,138 @@ export default {
             }
           },
           {
-            field: "registered_capital",
-            title: "注册资金",
+            field: "recent_contacts_at",
+            title: "最近联系日期",
             sortable: true,
             editable: {
               type: "text",
-              title: "注册资金",
+              title: "最近联系日期",
               emptytext: "空"
             }
           },
           {
-            field: "establish_at",
-            title: "成立日期",
+            field: "recent_contacts_record",
+            title: "近一次联系记录",
             sortable: true,
             editable: {
               type: "text",
-              title: "成立日期",
+              title: "近一次联系记录",
               emptytext: "空"
             }
           },
           {
-            field: "email",
-            title: "电子邮件",
+            field: "recent_service_at",
+            title: "最近服务日期",
             sortable: true,
             editable: {
               type: "text",
-              title: "电子邮件",
+              title: "最近服务日期",
               emptytext: "空"
             }
           },
           {
-            field: "created_at",
-            title: "新建日期",
-            sortable: true
-          },
-          {
-            field: "enabled",
-            title: "状态",
-            editable: {
-              type: "select",
-              title: "状态",
-              source: [{ text: "启用", value: 1 }, { text: "禁用", value: 0 }],
-              emptytext: "空"
-            }
-          },
-          {
-            field: "remark",
-            title: "备注",
+            field: "recent_shipping_at",
+            title: "最近出货日期",
             sortable: true,
             editable: {
-              type: "textarea",
-              title: "备注",
+              type: "text",
+              title: "最近出货日期",
               emptytext: "空"
             }
           },
           {
-            field: "slug",
-            title: "操作",
+            field: "visit",
+            title: "拜访记录",
             formatter: (value, row, index) => {
-              let visit = [
-                  `<button class="btn btn-success btn-sm visit">添加访问</button>`
-                ],
-                list = [
-                  `<button class="btn btn-primary btn-sm list">访问记录</button>`
-                ];
-              return visit + list;
+              let list = `<button class="btn btn-primary btn-sm list">查看记录</button>`;
+              return list;
             },
             events: {
-              "click .visit": (e, value, row, index) => {
-                that.slug = value;
-                addVisit.methods.close.call(this);
-              },
-              "click .list": (e, value, row, index) => {
-                $("#childTable").bootstrapTable("load", row.visit);
-                $(".bs-example-modal-lg").modal("show");
+              "click .btn": function(e, value, row, index) {
+                that.visit = row.visit;
+                $("#customer .visitModal").modal("show");
               }
             }
-          }
-        ],
-        onEditableSave(field, mrow, oldValue, $el) {
-          that
-            .$post(`customers/edit`, mrow)
-            .then(response => {
-              if (response.status != 200) return false;
-            })
-            .catch(err => {});
-        },
-        detailFormatter(field, mrow, oldValue, $el) {}
-      });
-
-      $("#childTable").bootstrapTable({
-        toolbar: "#childToolbar",
-        search: true,
-        strictSearch: true,
-        showRefresh: true,
-        pagination: true,
-        striped: true,
-        clickToSelect: true,
-        showColumns: true,
-        sortName: "createTime",
-        sortOrder: "desc",
-        idField: "id",
-        showToggle: true,
-        showExport: true,
-        exportDataType: "all",
-        exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-        classes: "table",
-        pageList: [10, 25, 50, 100, "All"],
-        columns: [
-          {
-            field: "created_at",
-            title: "创建时间",
-            sortable: true
           },
           {
-            field: "access_at",
-            title: "拜访时间",
-            sortable: true
-          },
-          {
-            field: "address",
-            title: "拜访地点",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "拜访地点",
-              emptytext: "空"
+            field: "siginin",
+            title: "打卡记录",
+            formatter: (value, row, index) => {
+              let list = `<button class="btn btn-primary btn-sm list">查看记录</button>`;
+              return list;
+            },
+            events: {
+              "click .list": function(e, value, row, index) {
+                that.siginin = row.siginin;
+                $("#customer .sigininModal").modal("show");
+              }
             }
-          },
-          {
-            field: "together",
-            title: "同行人",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "client_company",
-            title: "公司名称",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "product_used",
-            title: "所用产品",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "purchase_quantity_year",
-            title: "年采购量",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "payment_method",
-            title: "付款方式",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "business_content",
-            title: "营业内容",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "contact",
-            title: "联系人",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "mobile",
-            title: "电话",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "customer_level",
-            title: "客户等级",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "visiting_content",
-            title: "拜访内容",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "market_status",
-            title: "市场状态",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "suggestions",
-            title: "建议事项",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "同行人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "supervisor_reply",
-            title: "主管回复",
-            sortable: true
-          },
-          {
-            field: "reply_at",
-            title: "回复时间",
-            sortable: true
           },
           {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = [
-                  `<button class="btn btn-danger btn-sm del">删除记录</button>`
-                ],
-                reply = [
-                  `<button class="btn btn-primary btn-sm reply">主管回复</button>`
-                ];
-              if (row.is_reply) return reply;
-              else return "";
+              let visit = `<button class="btn btn-success btn-sm visit">添加访问</button>`,
+                del = `<button class="btn btn-danger btn-sm del">删除</button>`,
+                edit = `<button class="btn btn-warning btn-sm edit">编辑</button>`;
+              return visit + del + edit;
             },
             events: {
-              "click .reply": (e, slug, row, index) => {
-                $(".bs-example-modal-lg").modal("hide");
-                that
-                  .$prompt("主管回复内容", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消"
-                  })
-                  .then(({ value }) => {
-                    that
-                      .$post(`customers/visit/reply`, {
-                        slug: slug,
-                        supervisor_reply: value
-                      })
-                      .then(response => {
-                        $(".bs-example-modal-lg").modal("show");
-                        if (response.status != 200) return false;
-                        that.$message({ message: "回复成功", type: "success" });
-                      })
-                      .catch(err => {});
-                  })
-                  .catch(() => {});
+              "click .visit": function (e, value, row, index) {
+                that.rows = row;
+                addVisit.methods.close.call(that);
               },
-              "click .del": (e, value, row, index) => {
+              "click .del": function (e, value, row, index) {
                 that
-                  .$post(`customers/visit/delete`, {
-                    slug: value
-                  })
+                  .$post(`customers/delete`, { slug: value })
                   .then(response => {
                     if (response.status != 200) return false;
-                    that.delTable($("#childTable"), "id", [row.id]);
+                    that.delTable($("#table"), 'id', [row.id]);
                   })
-                  .catch(err => {});
+                  .catch(err => console.error(err));
+                
+              },
+              "click .edit": function (e, value, row, index) {
+                that.add();
+                that.rows = row;
               }
             }
           }
         ],
-        onEditableSave(field, mrow, oldValue, $el) {
-          mrow.access_at = that.miniDateParse(new Date(mrow.access_at));
-          that
-            .$post(`customers/visit/edit`, mrow)
-            .then(response => {
-              if (response.status != 200) return false;
-              this.$message({ message: "修改成功", type: "success" });
-            })
-            .catch(err => {});
-        }
-      });
+        data = {
+          toolbar: "#toolbar",
+          ajax: this.tableAjaxData,
+          queryParams: this.tableAjaxParams,
+          search: true,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          sortName: "createTime",
+          sortOrder: "desc",
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          // detailView: true,
+          columns: columns,
+          onEditableSave(field, mrow, oldValue, $el) {
+            that
+              .$post(`customers/edit`, mrow)
+              .then(response => {
+                if (response.status != 200) return false;
+              })
+              .catch(err => {});
+          },
+          detailFormatter(field, mrow, oldValue, $el) {}
+        };
+      $("#customer #table").bootstrapTable(data);
     }
   },
   mounted() {

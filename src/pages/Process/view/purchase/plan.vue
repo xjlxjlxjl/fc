@@ -158,8 +158,8 @@ export default {
               setTimeout(
                 () =>
                   QRCode.toString(
-                    `https://www.factoryun.com/procurement/schedule/detail/${
-                      row.id
+                    `https://www.factoryun.com/procurement/schedule/${
+                      row.number
                     }`,
                     (err, string) =>
                       (document.getElementById(
@@ -177,8 +177,8 @@ export default {
                 that.modalData = row;
                 that.modalData.company = that.user.user.current_company;
                 QRCode.toString(
-                  `https://www.factoryun.com/procurement/schedule/detail/${
-                    row.id
+                  `https://www.factoryun.com/procurement/schedule/${
+                    row.number
                   }`,
                   (err, string) =>
                     (document.getElementById(
@@ -270,6 +270,18 @@ export default {
               },
               "click .create": function(e, value, row, index) {
                 console.log($(`.selectCase${row.id}:checked`))
+                let arr = [];
+                $(`.selectCase${row.id}:checked`).forEach(function(e) {
+                  arr.push($(this).val());
+                })
+                that.$post(`procurement/schedule/order/${row.id}`, {
+                  ids: arr.join(',')
+                })
+                .then(response => {
+                  if (response.status != 200) return false;
+                  that.$messgae({ message: '订单生成成功', type: 'success' });
+                })
+                .catch(err => console.error(err));
               },
               "click .edit": function(e, value, row, index) {
                 that.row = row;

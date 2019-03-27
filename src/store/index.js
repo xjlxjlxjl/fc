@@ -114,7 +114,8 @@ export default new Vuex.Store({
       pagination: {}
     },
     appTypeList: [],
-    riseProcess: [{
+    riseProcess: [
+      {
         name: "销售",
         url: "/Sale",
         indexUrl: "/process.html#/Sale",

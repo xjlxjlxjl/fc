@@ -27,10 +27,15 @@
 
 <script>
 import dateTimePick from "@/pages/Process/common/dateTimePick";
+import "dhtmlx-gantt";
+import "dhtmlx-gantt/codebase/locale/locale_cn.js";
+
 export default {
-  name: 'task',
+  name: "task",
   data() {
-    const user = JSON.parse(localStorage.getItem('user')) || { user: {id: 0} };
+    const user = JSON.parse(localStorage.getItem("user")) || {
+      user: { id: 0 }
+    };
     return {
       user: user,
       options: this.$store.state.tasksType,
@@ -41,7 +46,7 @@ export default {
     };
   },
   components: {
-    dateTimePick: dateTimePick,
+    dateTimePick: dateTimePick
   },
   methods: {
     tableAjaxData(params) {
@@ -247,7 +252,7 @@ export default {
                     that.refresh($("#approval #table"));
                     break;
                 }
-                if (sort) that.$emit('change', sort.label);        
+                if (sort) that.$emit("change", sort.label);
                 else {
                   that.$message({
                     message: "该订单编号尚未注册，请联系管理员后处理",
@@ -305,6 +310,22 @@ export default {
           detailView: true,
           columns: columns,
           detailFormatter: (index, row, $el) => {
+            $("#task #table").bootstrapTable("resetView");
+            setTimeout(() => {
+              gantt.init(`aaa${index}`);
+              gantt.parse({
+                data:[
+                  {id:1, text:"Project #2", start_date:"01-04-2013", duration:18, 123123:123, 33333:222, 33333333: 333},
+                  {id:2, text:"Task #1", start_date:"02-04-2013", duration:8, progress:0.6, 123123:123, 33333:222, 33333333: 333, parent:1},
+                  {id:3, text:"Task #2", start_date:"11-04-2013", duration:8, progress:0.8, 123123:123, 33333:222, 33333333: 333, parent:1}
+                ],
+                links:[
+                  { id:1, source:1, target:2, type:1},
+                  { id:2, source:2, target:3, type:0}
+                ]
+              });
+            }, 1000);
+            return `<div id="aaa${index}"></div>`;
             let html = [
               "<table class='table'>",
               "<tr><th>成员姓名</th><th>完成状态</th></tr>"
@@ -333,11 +354,25 @@ export default {
   },
   mounted() {
     this.init();
+    gantt.config.autofit = true;
+    gantt.config.autosize = "xy";
+    gantt.config.autosize_min_width = 800;
+
+    gantt.config.columns = [
+      { name: "text", tree: true, width: 150 },
+      { name: "start_date", align: "center", resize: true, width: 70 },
+      { name: "duration", align: "center", resize: true, width: 70 },
+      { name: "123123", label: "123123", align: "center", resize: true, width: 70 },
+      { name: "33333", label: "33333", align: "center", resize: true, width: 70 },
+      { name: "33333", label: "33333", align: "center", resize: true, width: 70 },
+      { name: "33333333", label: "33333333", align: "center", resize: true, width: 70 },
+      { name: "add", resize: true, width: 50 }
+    ];
   }
-}
+};
 </script>
 <style>
-  #task {
-
-  }
+@import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
+#task {
+}
 </style>

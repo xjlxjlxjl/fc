@@ -55,21 +55,21 @@
               </el-form-item>
 
               <p class="lead">联系人信息</p>
-              <div class="linkManItem" v-for="(item, index) in form.items" :key="index">
-                <el-form-item label="联系人" prop="items.linkman">
-                  <el-input v-model="item.linkman"></el-input>
+              <div class="linkManItem" v-for="(item, index) in form.contracts" :key="index">
+                <el-form-item label="联系人" prop="contracts.name">
+                  <el-input v-model="item.name"></el-input>
                 </el-form-item>
-                <el-form-item label="职务" prop="items.work">
-                  <el-input v-model="item.work"></el-input>
+                <el-form-item label="职务" prop="contracts.position">
+                  <el-input v-model="item.position"></el-input>
                 </el-form-item>
-                <el-form-item label="手机号" prop="items.mobile">
+                <el-form-item label="手机号" prop="contracts.mobile">
                   <el-input v-model="item.mobile"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱" prop="items.email">
+                <el-form-item label="邮箱" prop="contracts.email">
                   <el-input v-model="item.email"></el-input>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="danger" size="mini" @click="form.items.splice(index, 1)">
+                  <el-button type="danger" size="mini" @click="form.contracts.splice(index, 1)">
                     <i class="el-icon-delete"></i>
                   </el-button>
                 </el-form-item>
@@ -79,7 +79,7 @@
                 type="info" 
                 size="mini" 
                 style="margin-bottom: 20px;"
-                @click="form.items.push({ linkman: '', work: '', mobile: '', email: '' })">+ 添加</el-button>
+                @click="form.contracts.push({ linkman: '', position: '', mobile: '', email: '' })">+ 添加</el-button>
               
               <p class="lead">其他</p>
               <el-form-item label="法定代表人" prop="legal_representative">
@@ -137,21 +137,21 @@
               <el-form-item label="账期类型" prop="account_period_type">
                 <el-input v-model="form.account_period_type"></el-input>
               </el-form-item>
-              <el-form-item label="对账日期" prop="reconciliation_date">
+              <el-form-item label="对账日期" prop="date_of_reconciliation">
                 <span>每月</span>
-                <el-select style="width: 60%;" v-model="form.reconciliation_date">
+                <el-select style="width: 60%;" v-model="form.date_of_reconciliation">
                   <el-option v-for="item in date" :key="item" :value="item"></el-option>
                 </el-select>
                 <span>日</span>
               </el-form-item>
-              <el-form-item label="开票日期" prop="invoice_date">
+              <el-form-item label="开票日期" prop="invoicing_date">
                 <span>每月</span>
-                <el-select style="width: 60%;" v-model="form.invoice_date">
+                <el-select style="width: 60%;" v-model="form.invoicing_date">
                   <el-option v-for="item in date" :key="item" :value="item"></el-option>
                 </el-select>
                 <span>日</span>
               </el-form-item>
-              <el-form-item label="合同条款" prop="contracTerms">
+              <el-form-item label="合同条款" prop="terms_of_contract">
                 <el-button size="mini" @click="createTerms">编辑条款</el-button>
               </el-form-item>
               <el-form-item>
@@ -195,10 +195,10 @@ export default {
       form: {
         name: "",
         abbreviation: "",
-        items: [
+        contracts: [
           {
-            linkman: "",
-            work: "",
+            name: "",
+            position: "",
             mobile: "",
             email: "",
           }
@@ -227,8 +227,8 @@ export default {
         terms_of_payment: "",
         payment_method: "",
         account_period_type: "",
-        reconciliation_date: 1,
-        invoice_date: 1,
+        date_of_reconciliation: 1,
+        invoicing_date: 1,
         account_period_type: ""
       },
       rules: {
@@ -276,8 +276,23 @@ export default {
     },
     onSubmit() {
       let that = this,
-        url = that.id ? `procurement/supplier/edit/${that.id}` : `procurement/supplier/create`;
-        console.log(url)
+        url = that.id ? `procurement/supplier/edit/${that.id}` : `procurement/supplier/create`,
+        arr = [];
+      that.form.contracts.forEach(e => {
+        if (
+          e.name &&
+          e.position &&
+          e.mobile &&
+          e.email
+        )
+        arr.push(e);
+      });
+      that.form.terms_of_contract = that.editor.getData();
+      that.form.contracts = arr;
+      if(!that.form.contracts.length) {
+        that.$message({ message: '请填写联系人', type: 'error' });
+        return false;
+      }
       this.$refs["form"].validate(v => {
         if (!v) return false;
         that
@@ -337,7 +352,7 @@ export default {
             return new UploadAdapter(loader);
           };
           this.editor = editor; // 将编辑器保存起来，用来随时获取编辑器中的内容等，执行一些操作
-          this.editor.setData(this.form.contracTerms || `
+          this.editor.setData(this.form.terms_of_contract || `
             <p>合同条款：</p>
             <ul>
               <li>1、收到订单后必须在当天签回，否则将视为供方已默认收到磁采购订单；</li>

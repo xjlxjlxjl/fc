@@ -773,8 +773,10 @@ export default {
           break;
         case 1:
           var save = e => {
-            e.clipboardData.setData("text/plain", text.target.innerText); //下面会说到clipboardData对象
-            e.preventDefault(); //阻止默认行为
+            let fousTxt = window.getSelection(),
+              fousText = fousTxt.anchorNode.textContent.slice(fousTxt.anchorOffset, fousTxt.extentOffset);
+            e.clipboardData.setData("text/plain", fousText || text.target.innerText); // 下面会说到clipboardData对象
+            e.preventDefault(); // 阻止默认行为
           };
           document.addEventListener("copy", save);
           document.execCommand("copy");

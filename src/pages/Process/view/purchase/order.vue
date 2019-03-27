@@ -198,8 +198,8 @@ export default {
               setTimeout(
                 () =>
                   QRCode.toString(
-                    `https://www.factoryun.com/procurement/order/item/detail/${
-                      row.id
+                    `https://www.factoryun.com/procurement/order/${
+                      row.number
                     }`,
                     (err, string) =>
                       (document.getElementById(
@@ -217,8 +217,8 @@ export default {
                 that.modalData = row;
                 that.modalData.company = that.user.user.current_company;
                 QRCode.toString(
-                  `https://www.factoryun.com/procurement/order/item/detail/${
-                    row.id
+                  `https://www.factoryun.com/procurement/order/${
+                    row.number
                   }`,
                   (err, string) =>
                     (document.getElementById(

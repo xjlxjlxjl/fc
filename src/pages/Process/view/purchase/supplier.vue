@@ -30,10 +30,24 @@ import addSupplier from "@/pages/Process/common/purchase/addSupplier";
 export default {
   name: "purchaseSupplier",
   data() {
+    let i = 0,arr = [];
+    while (i < 30) {
+      i++;
+      arr.push({text: `${i}号`, value: i});
+    };
     return {
       row: {
-        id: 0
-      }
+        id: 0,
+        contracts: [
+          {
+            name: "",
+            position: "",
+            mobile: "",
+            email: "",
+          }
+        ]
+      },
+      date: arr
     };
   },
   components: {
@@ -440,30 +454,34 @@ export default {
             }
           },
           {
-            field: "invoiceDate",
-            title: "开票日期"
+            field: "invoicing_date",
+            title: "开票日期",
+            editable: {
+              type: "select",
+              source: that.date,
+              title: "开票日期",
+              emptytext: "空"
+            }
           },
           {
-            field: "reconciliationDate",
-            title: "对账日期"
+            field: "date_of_reconciliation",
+            title: "对账日期",
+            editable: {
+              type: "select",
+              source: that.date,
+              title: "对账日期",
+              emptytext: "空"
+            }
           },
           {
-            field: "contracTerms",
+            field: "terms_of_contract",
             title: "合同条款",
             formatter: (value, row, index) => {
               return `<button class="btn btn-default btn-sm getTerms">查看条款</button>`;
             },
             events: {
               "click .getTerms": (e, value, row, index) => {
-                that.editor.setData(`
-                  <p>合同条款：</p>
-                  <ul>
-                    <li>1、收到订单后必须在当天签回，否则将视为供方已默认收到磁采购订单；</li>
-                    <li>2、送货单请详细填写采购单号、产品料号、品名规格、数量（勿填价格）等；</li>
-                    <li>3、必须按期保质保量交换，因逾期交货或品质问题影响需方产生进度的，则当天扣除按该订单总货款的0.1%，未如期完成对账及发票开具的，将延至下月付款；</li>
-                    <li>4、廉政条约：如发现我司员工与供应商有利益关系，立即取消供应商资格，并扣除所有货款。</li>
-                  </ul>
-                `)
+                that.editor.setData(row.terms_of_contract);
                 $("#contract").modal("show");
               }
             }
@@ -571,11 +589,31 @@ export default {
         .catch(err => console.error(err));
     },
     addSupplier() {
-      this.row = { id: 0 };
+      this.row = { 
+        id: 0,
+        contracts: [
+          {
+            name: "",
+            position: "",
+            mobile: "",
+            email: "",
+          }
+        ]
+      };
       $("#addSupplier").modal("show");
     },
     refreshed() {
-      this.row = { id: 0 };
+      this.row = { 
+        id: 0,
+        contracts: [
+          {
+            name: "",
+            position: "",
+            mobile: "",
+            email: "",
+          }
+        ]
+      };
       this.refresh($("#purchaseSupplier #table"));
     }
   },

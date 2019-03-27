@@ -339,16 +339,16 @@ export default {
             quantity: param.quantity || 1,
             remarks: param.remarks || ""
           };
-        that
-          .$post(`procurement/request/item/create`, params)
-          .then(response => {
-            if (response.status != 200) return false;
-            that.request_id = response.data.request_id;
-            that.addItem();
-            params.id = response.data.id;
+        // that
+        //   .$post(`procurement/request/item/create`, params)
+        //   .then(response => {
+        //     if (response.status != 200) return false;
+        //     that.request_id = response.data.request_id;
+        //     that.addItem();
+        //     params.id = response.data.id;
             that.form.items.unshift(params);
-          })
-          .catch(err => console.error(err));
+          // })
+          // .catch(err => console.error(err));
       } else this.addItem();
     },
     getBranch() {
@@ -385,19 +385,20 @@ export default {
           quantity: e.quantity || 1,
           remarks: e.remarks || ""
         };
-        that
-          .$post(`procurement/request/item/create`, params)
-          .then(response => {
-            if (response.status != 200) return false;
-            that.request_id = response.data.request_id;
-            params.id = response.data.id;
+        // that
+        //   .$post(`procurement/request/item/create`, params)
+        //   .then(response => {
+        //     if (response.status != 200) return false;
+        //     that.request_id = response.data.request_id;
+        //     params.id = response.data.id;
             that.form.items.unshift(params);
-          })
-          .catch(err => console.error(err));
+          // })
+          // .catch(err => console.error(err));
       });
       $("#purchaseApply .materList").modal("hide");
     },
     editItems(row) {
+      /**
       if (row.id) {
         let that = this;
         that.$post(`procurement/request/item/edit/${row.id}`, {
@@ -412,6 +413,7 @@ export default {
           remarks: row.remarks || ""
         });
       }
+      */
     },
     delItems(index, row) {
       if (row.id) {
@@ -427,24 +429,26 @@ export default {
       let that = this,
         arr = [];
       that.form.items.forEach((e, k) => {
+        if (!e.material_id) e.material_id = undefined;
         if (
-          e.material_id ||
-          e.name ||
+          // e.material_id ||
+          e.name &&
           // e.code ||
-          e.specification ||
-          e.unit ||
-          e.quantity
+          e.specification &&
+          e.unit &&
+          e.quantity &&
+          e.demand_at
         )
           arr.push(e);
       });
       that
-        .$post(`procurement/request/edit/${that.request_id}`, {
+        .$post(`procurement/request/create`, {
           applicant_id: that.form.applicant_id,
           branch_id: that.form.branch_id,
           // demand_at: that.form.demand_at,
           applicant_at: that.form.applicant_at,
           remark: that.form.remark,
-          items: JSON.stringify(arr)
+          items: arr
         })
         .then(response => {
           if (response.status != 200) return false;
@@ -498,6 +502,7 @@ export default {
               demand_at: "",
               remark: ""
             });
+            /**
             that
               .$post(`procurement/request/item/create`, {
                 request_id: that.request_id || "",
@@ -516,6 +521,7 @@ export default {
                 that.request_id = response.data.request_id;
               })
               .catch(err => console.error(err));
+            */
           }
         }
       },
