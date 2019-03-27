@@ -22,10 +22,27 @@
                 <el-input v-model="form.name" placeholder="审批条件名称"></el-input>
               </el-form-item>
               <el-form-item label="审批条件规则" prop="condition_rule">
-                <el-input v-model="form.condition_rule" placeholder="审批条件规则"></el-input>
+                <el-select v-model="form.condition_rule" placeholder="审批条件规则">
+                  <el-option label="小于" value="<"></el-option>
+                  <el-option label="大于" value=">"></el-option>
+                  <el-option label="小于等于" value="<="></el-option>
+                  <el-option label="大于等于" value=">="></el-option>
+                  <el-option label="小于" value="<"></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="审批条件单位" prop="condition_unit">
-                <el-input v-model="form.condition_unit" placeholder="审批条件单位"></el-input>
+                <el-select v-model="form.condition_unit" placeholder="审批条件单位">
+                  <el-option label="米（M）" value="length_m"></el-option>
+                  <el-option label="千米（KM）" value="length_km"></el-option>
+                  <el-option label="克（G）" value="weight_g"></el-option>
+                  <el-option label="千克（KG）" value="weight_kg"></el-option>
+                  <el-option label="吨（T）" value="weight_t"></el-option>
+                  <el-option label="人民币（元）" value="currency_cny"></el-option>
+                  <el-option label="时（Hours）" value="date_h"></el-option>
+                  <el-option label="天（Day）" value="date_d"></el-option>
+                  <el-option label="月（Month）" value="date_m"></el-option>
+                  <el-option label="年（Year）" value="date_y"></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="审批条件值" prop="condition_value">
                 <el-input type="number" v-model="form.condition_value" placeholder="审批条件值"></el-input>
