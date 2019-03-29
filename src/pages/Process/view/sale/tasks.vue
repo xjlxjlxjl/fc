@@ -44,6 +44,9 @@
 <script>
 import { mapState } from "vuex";
 import dateTimePick from "@/pages/Process/common/dateTimePick";
+import "dhtmlx-gantt";
+import "dhtmlx-gantt/codebase/locale/locale_cn.js";
+
 import order from "@/pages/Process/view/sale/order";
 import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import application from "@/pages/Process/view/afterSale/application";
@@ -67,7 +70,11 @@ export default {
       options: this.$store.state.tasksType,
       // 默认未完成（全部）
       tasksStatus: "undone",
-      date: []
+      date: [],
+      // 表格过渡
+      jsonGantt: {},
+      rowId: 0,
+      index: undefined
     };
   },
   components: {
@@ -359,23 +366,42 @@ export default {
           detailView: true,
           columns: columns,
           detailFormatter: (index, row, $el) => {
-            let html = [
-              "<table class='table'>",
-              "<tr><th>成员姓名</th><th>完成状态</th></tr>"
-            ];
-            row.members.forEach(e =>
-              html.push(
-                `<tr><td>${e.user.display_name}</td><td>${
-                  e.status_text
-                }</td></tr>`
-              )
-            );
-            html.push("</table>");
-            return html.join("");
+            $("#task #table").bootstrapTable("collapseRow", [that.index]);
+            that.rowId = row.id, that.index = index;
+            let jsonGantt = JSON.parse(row.gantt) || {
+                data:[],
+                links:[]
+              };
+            setTimeout(() => {
+              gantt.init(`gantt${index}`);
+              for (let item of jsonGantt.data) {
+                item.start_date = new Date(item.start_date);
+                item.end_date = new Date(item.end_date);
+              }
+              that.jsonGantt = jsonGantt;
+              gantt.clearAll();
+              gantt.parse(jsonGantt);
+            }, 100);
+            return `<div id="gantt${index}"></div>`;
           },
-          onEditableSave: (field, mrow, oldValue, $el) => {}
         };
       $("#tasks #table").bootstrapTable(data);
+    },
+    editGantt(id, item) {
+      let that = this;
+      this.jsonGantt.data = [];
+      for (let item in gantt.getDatastore("task").pull)
+        this.jsonGantt.data.push(gantt.getDatastore("task").pull[item]);
+
+      that
+        .$post(`job/edit_gantt/${that.rowId}`, {
+          id: that.rowId,
+          gantt: JSON.stringify(this.jsonGantt)
+        }).then(response => {
+          if (response.status != 200) return false;
+
+        })
+        .catch(err => console.error(err));
     },
     changeDate(item) {
       this.date = item;
@@ -403,10 +429,105 @@ export default {
   },
   mounted() {
     this.init();
+    gantt.config.autofit = true;
+    gantt.config.autosize = "xy";
+    gantt.config.autosize_min_width = 800;
+    gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
+
+    let
+      colHeader = '<div class="gantt_grid_head_cell gantt_grid_head_add contral" type="addGantt"></div>',
+      colContent = function (task) {
+        return (`
+          <button class="btn btn-xs btn-default contral" type="feedback" tid="${task.id}">反馈</button>
+          <button class="btn btn-xs btn-default contral" type="reply" tid="${task.id}">回复</button>
+          <button class="btn btn-xs btn-info contral" type="addGantt" tid="${task.id}">
+            <i class="el-icon-plus"></i>
+          </button>` +
+          `<button class="btn btn-xs btn-danger contral" type="delGantt" tid="${task.id}">
+            <i class="el-icon-close"></i>
+          </button>
+        `);
+      };
+
+    gantt.config.columns = [
+      { name: "id", label: "序号", tree: true, width: 150 },
+      { name: "create_by", label: "创建人", align: "center", width: 70 },
+      { name: "create_at", label: "创建时间", align: "center", width: 70 },
+      { name: "together", label: "协同人", align: "center", editor: { type: "text", map_to: "together" }, width: 70 },
+      { name: "text", label: "工作内容规划", align: "center", editor: { type: "text", map_to: "text" }, width: 120 },
+      { name: "start_date", label: "预计开始时间", align: "center", width: 120 },
+      { name: "end_date", label: "实际完成时间", align: "center", width: 120 },
+      { name: "duration", label: "耗时", align: "center", width: 70 },
+      { name: "progress", label: "进度", align: "center", width: 70 },
+      { name: "feedback", label: "遇到问题反馈", resize: true, align: "center", width: 120 },
+      { name: "reply", label: "主管回复", resize: true, align: "center", width: 120 },
+      { name: "buttons", label: colHeader, template: colContent, width: 160 }
+    ];
+
+    gantt.config.lightbox.sections = [
+      { name: "together", height: 38, map_to: "together", type: "textarea" },
+      { name: "text", height: 38, map_to: "text", type: "textarea" },
+      { name: "strat_at", height: 38, map_to: "auto", type: "time" },
+      // { name: "progress", height: 38, map_to: "progress", type: "textarea" }
+    ];
+
+    gantt.attachEvent("onBeforeTaskAdd", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onBeforeTaskUpdate", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onBeforeTaskDelete", (id, item) => this.editGantt(id, item));
+  },
+  created() {
+    let that = this;
+    $(document).on("click", ".contral", function(e) {
+      let self = $(this);
+      switch(self.attr('type')) {
+        case "addGantt":
+          gantt.createTask({
+            create_by: that.user.user.display_name,
+            create_at: that.dateParse(new Date()),
+            progress: 0,
+            feedback: '',
+            reply: ''
+          }, self.attr('tid') || 0);
+          break;
+        case "delGantt":
+          gantt.confirm({
+            title: gantt.locale.labels.confirm_deleting_title,
+            text: gantt.locale.labels.confirm_deleting,
+            callback: function (res) {
+              if (res) gantt.deleteTask(self.attr('tid'));
+            }
+          });
+          break;
+        case "feedback":
+          that
+            .$prompt('反馈内容', '反馈')
+            .then(({ value }) => {
+              gantt.getTask(self.attr('tid')).feedback = `${that.user.user.display_name}：${value}`;
+              gantt.updateTask(self.attr('tid'));
+            });
+          break;
+        case "reply":
+          that
+            .$prompt('回复内容', '回复')
+            .then(({ value }) => {
+              gantt.getTask(self.attr('tid')).reply = `${that.user.user.display_name}：${value}`;
+              gantt.updateTask(self.attr('tid'));
+            });
+          break;
+      }
+    });
+
+    setInterval(() => {
+      $($('.gantt_cal_lsection > label')[0]).text('协同人');
+      $($('.gantt_cal_lsection > label')[1]).text('工作内容规划');
+      $($('.gantt_cal_lsection > label')[2]).text('预计开始时间 - 实际完成时间');
+      // $($('.gantt_cal_lsection > label')[3]).text('进度 (0-1)');
+    }, 1000)
   }
 };
 </script>
 <style lang="less">
+@import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 #tasks {
   .el-tabs__header {
     margin: 0;

@@ -1,7 +1,7 @@
 <template>
   <div id="approval">
     <div id="toolbar">
-      <el-select v-model="check_status" size="mini">
+      <el-select v-model="check_status" @change="refreshed" size="mini">
         <el-option label="全部" :value="undefined"></el-option>
         <el-option label="待审核" value="0"></el-option>
         <el-option label="审核成功" value="1"></el-option>

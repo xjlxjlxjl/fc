@@ -123,7 +123,7 @@ export default {
     };
   },
   created() {
-    let url = `procurement/outsourcing/detail/${this.$route.params.id}`;
+    let url = `procurement/outsourcing/print/${this.$route.params.id}`;
     this.$get(url)
       .then(response => {
         if (response.status != 200) return false;

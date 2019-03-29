@@ -6,15 +6,15 @@
         style="display: flex;justify-content: space-between;border-bottom: 1px solid rgb(121, 121, 121);font-size: 10px;padding: 20px 0;"
       >
         <div>
-          <p>公司：深圳市克洛诺斯科技有限公司</p>
-          <p>地址：深圳市宝安区石岩街道水田社区宝石东路268-3号伟兴科技园A栋1层</p>
+          <p>公司：{{ data.company.name }}</p>
+          <p>地址：{{ data.company.address }}</p>
           <p>
-            <span style="margin-right: 25px;">电话：0755- 86090058</span>
-            <span>传真：0755- 86090058</span>
+            <span style="margin-right: 25px;">电话：{{ data.company.phone }}</span>
+            <span>传真：{{ data.company.fax }}</span>
           </p>
           <p>
-            <span style="margin-right: 25px;">网址：xyz.factoryun.com</span>
-            <span>邮箱：yangguang@factoryun.com</span>
+            <span style="margin-right: 25px;">网址：{{ data.company.website }}</span>
+            <span>邮箱：{{ data.company.email }}</span>
           </p>
         </div>
         <div id="QrCode" style="width: 80px;height: 80px;"></div>
@@ -25,7 +25,7 @@
           <span style="width: 50%;">创建日期：{{ data.created_at.split(' ')[0] }}</span>
         </p>
         <p style="display: flex;justify-content: space-between;">
-          <span style="width: 50%;">创建人：{{ data.created_by }}</span>
+          <span style="width: 50%;">申请人：{{ data.applicant_name }}</span>
           <!-- <span style="width: 50%;">部门：{{ data.branch_name }}</span> -->
         </p>
         <table
@@ -41,7 +41,7 @@
             <td style="border-right: 1px solid rgb(215, 215, 215)">需求日期</td>
             <td>备注</td>
           </tr>
-          <tr v-for="(item,index) in data.items" :key="index">
+          <tr v-for="(item,index) in data.item" :key="index">
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
             >{{ index + 1 }}</td>
@@ -82,15 +82,16 @@ export default {
     };
   },
   created() {
-    let url = `procurement/schedule/detail/${this.$route.params.id}`;
+    let url = `procurement/schedule/print/${this.$route.params.id}`;
     this.$get(url)
       .then(response => {
         if (response.status != 200) return false;
+        console.log(response.data)
         this.data = response.data;
         setTimeout(
           () =>
             QRCode.toString(
-              `https://www.factoryun.com/${url}`,
+              `https://www.factoryun.com/print.html#/purchasePlan/${this.$route.params.id}`,
               (err, string) =>
                 (document.getElementById(`QrCode`).innerHTML = string)
             ),

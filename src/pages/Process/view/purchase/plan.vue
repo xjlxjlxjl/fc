@@ -97,7 +97,7 @@ export default {
         number: ""
       },
       params: {
-        status: 0
+        status: undefined
       },
       row: {
         id: 0,
@@ -269,19 +269,22 @@ export default {
                 window.open(`/print.html#/purchasePlan/${row.id}`);
               },
               "click .create": function(e, value, row, index) {
-                console.log($(`.selectCase${row.id}:checked`))
-                let arr = [];
-                $(`.selectCase${row.id}:checked`).forEach(function(e) {
-                  arr.push($(this).val());
-                })
-                that.$post(`procurement/schedule/order/${row.id}`, {
-                  ids: arr.join(',')
-                })
-                .then(response => {
-                  if (response.status != 200) return false;
-                  that.$messgae({ message: '订单生成成功', type: 'success' });
-                })
-                .catch(err => console.error(err));
+                  let arr = [];
+                  if ($(`.selectCase${row.id}:checked`).length) {
+                    for (let e of $(`.selectCase${row.id}:checked`))
+                      arr.push($(e).val());
+                  } else {
+                    that.$message({ message: '请打开详情选择生成订单料品', type: 'error' });
+                    return false;
+                  }
+                  that.$post(`procurement/schedule/order/${row.id}`, {
+                    ids: arr.join(',')
+                  })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.$message({ message: '订单生成成功', type: 'success' });
+                  })
+                  .catch(err => console.error(err));
               },
               "click .edit": function(e, value, row, index) {
                 that.row = row;

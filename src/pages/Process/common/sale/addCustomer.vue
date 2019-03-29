@@ -408,7 +408,6 @@ export default {
           pay_rate: ''
         },
         shipment_before: {
-          day: '',
           pay_rate: ''
         },
         shipment_after: [
@@ -626,7 +625,6 @@ export default {
           pay_rate: ''
         },
         shipment_before: {
-          day: '',
           pay_rate: ''
         },
         shipment_after: [

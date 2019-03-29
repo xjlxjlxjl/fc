@@ -130,7 +130,7 @@ export default {
     };
   },
   created() {
-    let url = `procurement/order/detail/${this.$route.params.id}`;
+    let url = `procurement/order/print/${this.$route.params.id}`;
     this.$get(url)
       .then(response => {
         if (response.status != 200) return false;
@@ -138,7 +138,7 @@ export default {
         setTimeout(
           () =>
             QRCode.toString(
-              `https://www.factoryun.com/${url}`,
+              `https://www.factoryun.com/purchaseOrder/${this.$route.params.id}`,
               (err, string) =>
                 (document.getElementById(`QrCode`).innerHTML = string)
             ),
