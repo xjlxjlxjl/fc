@@ -70,10 +70,10 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <el-table :data="siginin" border style="width: 100%">
-            <el-table-column prop="customer_name" label="客户公司名"></el-table-column>
+            <el-table-column prop="customer.name" label="客户公司名"></el-table-column>
             <el-table-column prop="full_name" label="打卡人"></el-table-column>
             <el-table-column prop="created_at" label="打卡时间"></el-table-column>
-            <el-table-column prop="email" label="打卡地址"></el-table-column>
+            <el-table-column prop="signin_address.address" label="打卡地址"></el-table-column>
           </el-table>
         </div>
       </div>
@@ -130,6 +130,7 @@ export default {
       params.page = params.offset / 10 + 1;
       params.per_page = params.limit;
       params.address = params.search;
+      params.work = "visit";
       // params.salesman_id = this.user.user.id;
       return params;
     },

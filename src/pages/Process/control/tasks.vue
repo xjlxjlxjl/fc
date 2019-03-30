@@ -311,8 +311,8 @@ export default {
           detailView: true,
           columns: columns,
           detailFormatter: (index, row, $el) => {
-            $("#task #table").bootstrapTable("collapseRow", [that.index]);
-            that.rowId = row.id, that.index = index;
+            $("#task #table").bootstrapTable("collapseRow", [ that.index ? that.index : index != 0 ? 0 : undefined ]);
+            that.rowId = row.id, that.index = index || undefined;
             let jsonGantt = JSON.parse(row.gantt) || {
                 data:[],
                 links:[]
@@ -338,7 +338,6 @@ export default {
       this.jsonGantt.data = [];
       for (let item in gantt.getDatastore("task").pull)
         this.jsonGantt.data.push(gantt.getDatastore("task").pull[item]);
-
       that
         .$post(`job/edit_gantt/${that.rowId}`, {
           id: that.rowId,
@@ -401,9 +400,9 @@ export default {
       // { name: "progress", height: 38, map_to: "progress", type: "textarea" }
     ];
 
-    gantt.attachEvent("onBeforeTaskAdd", (id, item) => this.editGantt(id, item));
-    gantt.attachEvent("onBeforeTaskUpdate", (id, item) => this.editGantt(id, item));
-    gantt.attachEvent("onBeforeTaskDelete", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onAfterTaskAdd", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onAfterTaskUpdate", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onAfterTaskDelete", (id, item) => this.editGantt(id, item));
   },
   created() {
     let that = this;

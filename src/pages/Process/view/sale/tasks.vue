@@ -366,7 +366,7 @@ export default {
           detailView: true,
           columns: columns,
           detailFormatter: (index, row, $el) => {
-            $("#task #table").bootstrapTable("collapseRow", [that.index]);
+            $("#task #table").bootstrapTable("collapseRow", [ that.index ? that.index : index != 0 ? 0 : undefined ]);
             that.rowId = row.id, that.index = index;
             let jsonGantt = JSON.parse(row.gantt) || {
                 data:[],
@@ -471,9 +471,9 @@ export default {
       // { name: "progress", height: 38, map_to: "progress", type: "textarea" }
     ];
 
-    gantt.attachEvent("onBeforeTaskAdd", (id, item) => this.editGantt(id, item));
-    gantt.attachEvent("onBeforeTaskUpdate", (id, item) => this.editGantt(id, item));
-    gantt.attachEvent("onBeforeTaskDelete", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onAfterTaskAdd", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onAfterTaskUpdate", (id, item) => this.editGantt(id, item));
+    gantt.attachEvent("onAfterTaskDelete", (id, item) => this.editGantt(id, item));
   },
   created() {
     let that = this;
