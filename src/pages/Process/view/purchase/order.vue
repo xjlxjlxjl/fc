@@ -69,6 +69,7 @@
         </div>
       </div>
     </div>
+    <!-- 合同列表 -->
     <div class="modal fade contract" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -79,17 +80,9 @@
                   <th>合同</th>
                   <th>上传日期</th>
                 </tr>
-                <tr>
-                  <td><button class="btn btn-link" @click="showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/non_standard_requirements/Using%20the%20i-20190109045615.pdf')">1111111</button></td>
-                  <td>2019-01-17</td>
-                </tr>
-                <tr>
-                  <td><button class="btn btn-link" @click="showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/non_standard_requirements/Using%20the%20i-20190109045615.pdf')">1111111</button></td>
-                  <td>2019-01-17</td>
-                </tr>
-                <tr>
-                  <td><button class="btn btn-link" @click="showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/aliyun_oss/non_standard_requirements/Using%20the%20i-20190109045615.pdf')">1111111</button></td>
-                  <td>2019-01-17</td>
+                <tr v-for="item in contracts" :key="item.id">
+                  <td><button class="btn btn-link" @click="showPDF(item.url)">{{ item.name }}</button></td>
+                  <td>{{ item.created_at.split(' ')[0] }}</td>
                 </tr>
               </tbody>
             </table>
@@ -107,7 +100,7 @@
     </div>
 
     <div id="toolbar">
-      <el-button size="mini" @click="addOrder">新建采购订单</el-button>
+      <!-- <el-button size="mini" @click="addOrder">新建采购订单</el-button> -->
       <el-select v-model="params.status" size="mini" @change="refreshed">
         <el-option label="全部" :value="undefined"></el-option>
         <el-option label="未审核" :value="0"></el-option>
@@ -142,7 +135,8 @@ export default {
       pageNum: 1,
       pageRendering: false,
       pageNumPending: null,
-      scale: 1
+      scale: 1,
+      contracts: []
     };
   },
   components: {
@@ -282,6 +276,7 @@ export default {
             },
             events: {
               "click .getContract": function(e, value, row, index) {
+                that.contracts = row.contracts;
                 $("#purchaseOrder .contract").modal("show");
               }
             }
@@ -291,8 +286,10 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let del = `<button class="del btn btn-danger btn-sm">删除</button>`,
-                print = `<button class="print btn btn-success btn-sm">打印</button>`;
-              return del + print;
+                print = `<button class="print btn btn-success btn-sm">打印</button>`,
+                upload = `<input class="upload" style="display: inline-block;width: 0px;position: relative;opacity: 0;" type="file" multiple="multiple" />
+                          <button class="btn btn-warning btn-sm">上传文件</button>`;
+              return del + print + upload;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -306,6 +303,29 @@ export default {
               },
               "click .print": function(e, value, row, index) {
                 window.open(`/print.html#/purchaseOrder/${row.id}`);
+              },
+              "change .upload": function(e, value, row, index) {
+                  let arr = [];
+                  for (let e of row.contracts) arr.push(e.id);
+                for (let k in $(this)[0].files) {
+                  if(isNaN(parseInt(k))) return false;
+                  let form = new FormData();
+                  form.append("upload", $(this)[0].files[k]);
+                  form.append("slug", "procurement");
+                  that
+                    .$upload("files/upload", form)
+                    .then(response => {
+                      if (response.status != 200) return false;
+                      arr.push(response.data.upload.id);
+                      if (k == $(this)[0].files.length - 1)
+                        that.editOrder(row.id, {
+                          supplier_id: row.supplier_id,
+                          supplier_contract_id: row.supplier_contract_id,
+                          contract_ids: arr.join(','),
+                        });
+                    })
+                    .catch(err => console.error(err));
+                }
               }
             }
           }
@@ -389,6 +409,15 @@ export default {
       this.$print(this.$refs.purchaseOrderPrint);
       $("#purchaseOrderPrintModal").modal("hide");
     },
+    editOrder(id, params) {
+      let that = this;
+      that.
+        $post(`procurement/order/edit/${id}`, params)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.refreshed();
+        }).catch(err => console.error(err));
+    },
     addOrder() {
       $("#addOrder").modal("show");
     },
@@ -396,12 +425,22 @@ export default {
       let _this = this;
       $("#canvasBox").empty();
       $(".report").modal("show");
-      PDFJS.getDocument(url).then(function(pdf) {
-        _this.pdfDoc = pdf;
-        for (let i = 1; i < pdf.numPages + 1; i++) {
-          _this.renderPage(i);
-        }
-      });
+      switch(url.split('.').pop()) {
+        case 'pdf':
+          PDFJS.getDocument(url).then(function(pdf) {
+            _this.pdfDoc = pdf;
+            for (let i = 1; i < pdf.numPages + 1; i++) {
+              _this.renderPage(i);
+            }
+          });
+          break;
+        default:
+          let img = new Image();
+          img.style.width = '100%';
+          img.src = url;
+          document.getElementById("canvasBox").appendChild(img);
+          break;
+      }
     },
     renderPage(num) {
       this.pageRendering = true;

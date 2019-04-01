@@ -3,18 +3,18 @@
     <div
       style="width: 100%;min-height: 840px;box-sizing: border-box;border: 1px solid rgba(121, 121, 121, 1);padding: 30px;position: relative;"
     >
-      <p style="text-align: center;font-size: 18px;">采购申请</p>
+      <p style="text-align: center;font-size: 18px;">委外订单</p>
       <div style="display: flex;justify-content: space-between;font-size: 10px;padding-top: 20px;">
         <div>
-          <p>公司：深圳市克洛诺斯科技有限公司</p>
-          <p>地址：深圳市宝安区石岩街道水田社区宝石东路268-3号伟兴科技园A栋1层</p>
+          <p>公司：{{ data.company.name }}</p>
+          <p>地址：{{ data.company.address }}</p>
           <p>
-            <span style="margin-right: 25px;">电话：0755- 86090058</span>
-            <span>传真：0755- 86090058</span>
+            <span style="margin-right: 25px;">电话：{{ data.company.phone }}</span>
+            <span>传真：{{ data.company.fax }}</span>
           </p>
           <p>
-            <span style="margin-right: 25px;">网址：xyz.factoryun.com</span>
-            <span>邮箱：yangguang@factoryun.com</span>
+            <span style="margin-right: 25px;">网址：{{ data.company.website }}</span>
+            <span>邮箱：{{ data.company.email }}</span>
           </p>
         </div>
         <div id="QrCode" style="width: 80px;height: 80px;"></div>
@@ -25,17 +25,17 @@
       >
         <div>
           <p>
-            <span style="margin-right: 25px;">供应商：深圳市克洛诺斯科技有限公司</span>
-            <span>联系人：摸摸摸</span>
+            <span style="margin-right: 25px;">供应商：{{ data.supplier.name }}</span>
+            <span>联系人：{{ data.supplier.contract.name }}</span>
           </p>
-          <p>地址：深圳市宝安区石岩街道水田社区宝石东路268-3号伟兴科技园A栋1层</p>
+          <p>地址：{{ data.supplier.address }}</p>
           <p>
-            <span style="margin-right: 25px;">电话：0755- 86090058</span>
-            <span>传真：0755- 86090058</span>
+            <span style="margin-right: 25px;">电话：{{ data.supplier.phone }}</span>
+            <span>传真：{{ data.supplier.fax }}</span>
           </p>
           <p>
-            <span style="margin-right: 25px;">网址：xyz.factoryun.com</span>
-            <span>邮箱：yangguang@factoryun.com</span>
+            <span style="margin-right: 25px;">网址：{{ data.supplier.website }}</span>
+            <span>邮箱：{{ data.supplier.email }}</span>
           </p>
         </div>
       </div>
@@ -46,7 +46,7 @@
           <span style="width: 50%;">创建日期：{{ data.created_at.split(' ')[0] }}</span>
         </p>
         <p style="display: flex;justify-content: space-between;">
-          <span style="width: 50%;">创建人：{{ data.created_by }}</span>
+          <span style="width: 50%;">创建人：{{ data.applicant_name }}</span>
           <span style="width: 50%;">部门：{{ data.branch_name }}</span>
         </p>
         <table
@@ -88,14 +88,14 @@
             >{{ item.price }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
-            >{{ item.price * item.quantity }}</td>
+            >{{ parseFloat(item.price) * parseInt(item.quantity) }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
             >{{ item.delivery_period.split(' ')[0] }}</td>
             <td style="border-top: 1px solid rgb(215, 215, 215);">{{ item.remark }}</td>
           </tr>
           <tr>
-            <td colspan="10" align="right" style="border-top: 1px solid rgb(215, 215, 215);">合计：</td>
+            <td colspan="10" align="right" style="border-top: 1px solid rgb(215, 215, 215);">合计：{{ data.total }}</td>
           </tr>
         </table>
         <div
@@ -131,7 +131,7 @@ export default {
         setTimeout(
           () =>
             QRCode.toString(
-              `https://www.factoryun.com/${url}`,
+              `https://www.factoryun.com/print.html#/purchasEntrust/${this.$route.params.id}`,
               (err, string) =>
                 (document.getElementById(`QrCode`).innerHTML = string)
             ),

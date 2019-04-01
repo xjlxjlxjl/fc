@@ -203,18 +203,6 @@ export default {
             title: "创建日期"
           },
           {
-            field: "type",
-            title: "需求日期"
-          },
-          // {
-          //   field: "status",
-          //   title: "关联采购计划单号"
-          // },
-          // {
-          //   field: "status",
-          //   title: "关联销售单号"
-          // },
-          {
             field: "remark",
             title: "备注",
             editable: {
@@ -228,17 +216,18 @@ export default {
           },
           {
             field: "suppler_name",
-            title: "供应商"
+            title: "委外商"
           },
           {
-            field: "address",
+            field: "phone",
             title: "联系电话"
           },
           {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = `<button class="del btn btn-danger btn-sm">删除</button>`;
+              let del = `<button class="del btn btn-danger btn-sm">删除</button>`,
+                print = `<button class="del btn btn-success btn-sm">打印</button>`;
               return del;
             },
             events: {
@@ -250,7 +239,10 @@ export default {
                     that.delTable($("#purchasReceive #table"), "id", [row.id]);
                   })
                   .catch(err => console.error(err));
-              }
+              },
+              'click .print':function (e, value, row, index) {
+                window.open(`/print.html#/purchasReceive/${row.id}`);
+              },
             }
           }
         ],
@@ -283,34 +275,30 @@ export default {
             let html = [
               `<table class="table table-bordered">
                 <tr>
+                  <th>序号</th>
                   <th>料品编码</th>
                   <th>料品名称</th>
                   <th>料品规格</th>
                   <th>单位</th>
                   <th>数量</th>
+                  <th>长度</th>
+                  <th>仓库</th>
                   <th>备注</th>
-                  <th>单价</th>
-                  <th>交期</th>
-                  <th>结案</th>
                 </tr>`
             ];
             if (row.items)
-              row.items.forEach(e =>
+              row.items.forEach((e, k) =>
                 html.push(`
                   <tr>
+                    <td>${ k + 1 }</td>
                     <td>${e.material_code || ""}</td>
                     <td>${e.name || ""}</td>
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>
                     <td>${e.quantity || ""}</td>
+                    <td>${e.length || ""}</td>
+                    <td>${e.store || ""}</td>
                     <td>${e.remark || ""}</td>
-                    <td>${e.price || ""}</td>
-                    <td>${e.delivery_date || ""}</td>
-                    <td><input type="checkbox" aid="${
-                      row.id
-                    }" class="closeCase" index="${row.id}" value="${e.id}" ${
-                  e.is_closed ? 'checked="checked"' : ""
-                }></td>
                   </tr>
                 `)
               );

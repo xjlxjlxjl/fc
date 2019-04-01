@@ -311,7 +311,8 @@ export default {
           detailView: true,
           columns: columns,
           detailFormatter: (index, row, $el) => {
-            $("#task #table").bootstrapTable("collapseRow", [ that.index ? that.index : index != 0 ? 0 : undefined ]);
+            if (that.index != index)
+              $("#task #table").bootstrapTable("collapseRow", [ that.index ? that.index : index != 0 ? 0 : undefined ]);
             that.rowId = row.id, that.index = index || undefined;
             let jsonGantt = JSON.parse(row.gantt) || {
                 data:[],

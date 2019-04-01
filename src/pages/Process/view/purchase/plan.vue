@@ -161,16 +161,11 @@ export default {
                     `https://www.factoryun.com/procurement/schedule/${
                       row.number
                     }`,
-                    (err, string) =>
-                      (document.getElementById(
-                        `purchasePlanQrcode${row.id}`
-                      ).innerHTML = string)
+                    (err, string) => (document.getElementById(`purchasePlanQrcode${row.id}`).innerHTML = string)
                   ),
                 500
               );
-              return `<div id="purchasePlanQrcode${
-                row.id
-              }" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+              return `<div id="purchasePlanQrcode${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
@@ -181,9 +176,7 @@ export default {
                     row.number
                   }`,
                   (err, string) =>
-                    (document.getElementById(
-                      "purchasePlanPrintImg"
-                    ).innerHTML = string)
+                    (document.getElementById("purchasePlanPrintImg").innerHTML = string)
                 );
                 $("#purchasePlanPrintModal").modal("show");
               }
@@ -334,9 +327,11 @@ export default {
                   <th>需求日期</th>
                   <th>备注</th>
                   <th>供应商</th>
+                  <th>联系人</th>
                   <th>单价</th>
                   <th>交期</th>
-                  <th>料品类别</th>                  
+                  <th>料品类别</th>
+                  <th>智能提示下单日期</th>
                   <th>结案</th>
                 </tr>`
             ];
@@ -359,12 +354,14 @@ export default {
                     <td>${e.specification || ""}</td>
                     <td>${e.unit || ""}</td>
                     <td>${e.quantity || ""}</td>
-                    <td>${e.demand_at || ""}</td>
+                    <td>${e.demand_at.split(' ')[0] || ""}</td>
                     <td>${e.remark || ""}</td>
-                    <td>${e.supplier || ""}</td>
-                    <td>${e.price || ""}</td>
-                    <td>${e.delivery_date || ""}</td>
-                    <td>${e.type || ""}</td>
+                    <td>${e.supplier_name || ""}</td>
+                    <td>${e.supplier_contract_name || ''}</td>
+                    <td>${e.price}</td>
+                    <td>${e.delivery_period.split(' ')[0] || ""}</td>
+                    <td>${e.category_name || ""}</td>
+                    <td>${e.date_of_order.split(' ')[0] || ""}</td>
                     <td>
                       <input 
                         type="checkbox" 

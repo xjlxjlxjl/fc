@@ -453,10 +453,21 @@ export default {
       }
       this.$refs["form"].validate(v => {
         if (!v) return false;
-        let that = this, url = this.rows.id ? `customers/edit` : `customers/create`;
-        //   arr = [];
-        // that.form.payment_terms.forEach(e => arr.push(e.value));
-        
+        let that = this, url = this.rows.id ? `customers/edit` : `customers/create`,
+          contact = [];
+        for (let e of that.form.contact) {
+          if (
+            e.name && 
+            e.position && 
+            e.mobile
+          )
+            contact.push(e);
+        }
+        if (!contact.length) {
+          that.$message({ message: "至少要有一个联系人", type: "error" });
+          return false;
+        }
+
         that
           .$post(url, {
             name: that.form.name,
@@ -481,11 +492,11 @@ export default {
             invoice_head: that.form.invoice_head,
             legal_representative: that.form.legal_representative,
             registered_capital: that.form.registered_capital,
-            establish_at: that.miniDateParse(new Date(that.form.establish_at)),
-            recent_contacts_at: that.miniDateParse(new Date(that.form.recent_contacts_at)),
+            establish_at: that.form.establish_at ? that.miniDateParse(new Date(that.form.establish_at)) : undefined,
+            recent_contacts_at: that.form.recent_contacts_at ? that.miniDateParse(new Date(that.form.recent_contacts_at)) : undefined,
             recent_contacts_record: that.form.recent_contacts_record,
-            recent_service_at: that.miniDateParse(new Date(that.form.recent_service_at)),
-            recent_shipping_at: that.miniDateParse(new Date(that.form.recent_shipping_at)),
+            recent_service_at: that.form.recent_service_at ? that.miniDateParse(new Date(that.form.recent_service_at)) : undefined,
+            recent_shipping_at: that.form.recent_shipping_at ? that.miniDateParse(new Date(that.form.recent_shipping_at)) : undefined,
             tags: that.form.tags,
             detailed_address: that.form.detailed_address,
             account_period_type: that.form.account_period_type,
@@ -496,7 +507,7 @@ export default {
             product_used: that.form.product_used,
             purchase_quantity_year: that.form.purchase_quantity_year,
             business_content: that.form.business_content,
-            contact: JSON.stringify(that.form.contact),
+            contact: JSON.stringify(contact),
             abbreviation: that.form.abbreviation,
             area: that.form.area,
             slug: that.rows.slug || undefined

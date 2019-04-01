@@ -6,15 +6,15 @@
       <p style="text-align: center;font-size: 18px;">采购订单</p>
       <div style="display: flex;justify-content: space-between;font-size: 10px;padding-top: 20px;">
         <div>
-          <p>公司：深圳市克洛诺斯科技有限公司</p>
-          <p>地址：深圳市宝安区石岩街道水田社区宝石东路268-3号伟兴科技园A栋1层</p>
+          <p>公司：{{ data.company.name }}</p>
+          <p>地址：{{ data.company.address }}</p>
           <p>
-            <span style="margin-right: 25px;">电话：0755- 86090058</span>
-            <span>传真：0755- 86090058</span>
+            <span style="margin-right: 25px;">电话：{{ data.company.phone }}</span>
+            <span>传真：{{ data.company.fax }}</span>
           </p>
           <p>
-            <span style="margin-right: 25px;">网址：xyz.factoryun.com</span>
-            <span>邮箱：yangguang@factoryun.com</span>
+            <span style="margin-right: 25px;">网址：{{ data.company.website }}</span>
+            <span>邮箱：{{ data.company.email }}</span>
           </p>
         </div>
         <div id="QrCode" style="width: 80px;height: 80px;"></div>
@@ -25,17 +25,17 @@
       >
         <div>
           <p>
-            <span style="margin-right: 25px;">供应商：深圳市克洛诺斯科技有限公司</span>
-            <span>联系人：摸摸摸</span>
+            <span style="margin-right: 25px;">供应商：{{ data.supplier.name }}</span>
+            <span>联系人：{{ data.supplier.contract.name }}</span>
           </p>
-          <p>地址：深圳市宝安区石岩街道水田社区宝石东路268-3号伟兴科技园A栋1层</p>
+          <p>地址：{{ data.supplier.address }}</p>
           <p>
-            <span style="margin-right: 25px;">电话：0755- 86090058</span>
-            <span>传真：0755- 86090058</span>
+            <span style="margin-right: 25px;">电话：{{ data.supplier.phone }}</span>
+            <span>传真：{{ data.supplier.fax }}</span>
           </p>
           <p>
-            <span style="margin-right: 25px;">网址：xyz.factoryun.com</span>
-            <span>邮箱：yangguang@factoryun.com</span>
+            <span style="margin-right: 25px;">网址：{{ data.supplier.website }}</span>
+            <span>邮箱：{{ data.supplier.email }}</span>
           </p>
         </div>
       </div>
@@ -50,11 +50,11 @@
           <span style="width: 50%;">付款条件：{{ data.branch_name }}</span>
         </p>
         <p style="display: flex;justify-content: space-between;">
-          <span style="width: 50%;">创建人：{{ data.created_by }}</span>
-          <span style="width: 50%;">付款方式：{{ data.branch_name }}</span>
+          <span style="width: 50%;">创建人：{{ data.applicant_name }}</span>
+          <span style="width: 50%;">付款方式：{{ data.supplier.terms_of_payment }}</span>
         </p>
         <p style="display: flex;justify-content: space-between;">
-          <span style="width: 50%;">交货地址：{{ data.created_by }}</span>
+          <span style="width: 50%;">交货地址：{{ data.supplier.address }}</span>
         </p>
         <table
           style="margin-top: 10px;width: 100%;border: 1px solid rgb(215, 215, 215);text-align: center;"
@@ -95,14 +95,14 @@
             >{{ item.price }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
-            >{{ item.price * item.quantity }}</td>
+            >{{ parseFloat(item.price) * parseInt(item.quantity) }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
             >{{ item.delivery_period.split(' ')[0] }}</td>
             <td style="border-top: 1px solid rgb(215, 215, 215);">{{ item.remark }}</td>
           </tr>
           <tr>
-            <td colspan="10" style="border-top: 1px solid rgb(215, 215, 215);" align="right">合计：</td>
+            <td colspan="10" style="border-top: 1px solid rgb(215, 215, 215);" align="right">合计：{{ data.total }}</td>
           </tr>
         </table>
         <div
@@ -138,7 +138,7 @@ export default {
         setTimeout(
           () =>
             QRCode.toString(
-              `https://www.factoryun.com/purchaseOrder/${this.$route.params.id}`,
+              `https://www.factoryun.com/print.html#/purchaseOrder/${this.$route.params.id}`,
               (err, string) =>
                 (document.getElementById(`QrCode`).innerHTML = string)
             ),

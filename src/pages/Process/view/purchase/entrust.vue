@@ -1,13 +1,7 @@
 <template>
   <div id="purchasEntrust">
     <addEntrustModal></addEntrustModal>
-    <div
-      class="modal fade"
-      id="purchasEntrustPrintModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-    >
+    <div class="modal fade" id="purchasEntrustPrintModal" role="dialog" >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
@@ -70,12 +64,93 @@
         </div>
       </div>
     </div>
-    <div
-      class="modal fade bs-example-modal-lg materielList"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <!-- 合同列表 -->
+    <div class="modal fade contract" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <table class="table table-bordered" style="margin-bottom: 0;">
+              <tbody>
+                <tr>
+                  <th>合同</th>
+                  <th>上传日期</th>
+                </tr>
+                <tr v-for="item in contracts" :key="item.id">
+                  <td><button class="btn btn-link" @click="showPDF(item.url)">{{ item.name }}</button></td>
+                  <td>{{ item.created_at.split(' ')[0] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 查看报告 -->
+    <div class="modal fade report" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div id="canvasBox"></div>
+        </div>
+      </div>
+    </div>
+    <!-- 委外领料 -->
+    <div class="modal fade outMaterList" role="dialog">
+      <div class="modal-dialog" role="document" style="width: 100%;max-width: 920px;">
+        <div class="modal-content">
+          <el-table :data="tableData" size="mini" border style="width: 100%">
+            <el-table-column label="序号" width="50">
+              <template slot-scope="{ $index }"><span>{{ $index + 1 }}</span></template>
+            </el-table-column>
+            <el-table-column prop="material_code" label="成品料编码"></el-table-column>
+            <el-table-column prop="material_code" label="料品编码">
+              <template slot-scope="{ $index, row }">
+                <el-input size="mini" v-model="row.material_code">
+                  <el-button slot="append" type="default" @click="addMater(true);index = $index">
+                    <i class="el-icon-arrow-down"></i>
+                  </el-button>
+                </el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="料品名称">
+              <template slot-scope="{ $index, row }">
+                <el-input size="mini" v-model="row.name">
+                  <el-button slot="append" type="default" @click="addMater(true);index = $index">
+                    <i class="el-icon-arrow-down"></i>
+                  </el-button>
+                </el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="specification" label="料品规格">
+              <template slot-scope="{ $index, row }">
+                <el-input size="mini" v-model="row.specification">
+                  <el-button slot="append" type="default" @click="addMater(true);index = $index">
+                    <i class="el-icon-arrow-down"></i>
+                  </el-button>
+                </el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="unit" label="单位"></el-table-column>
+            <el-table-column prop="quantity" label="数量"></el-table-column>
+            <el-table-column prop="length" label="长度"></el-table-column>
+            <el-table-column prop="store" label="仓库"></el-table-column>
+            <el-table-column prop="remark" label="备注">
+              <template slot-scope="{ $index, row }">
+                <el-input size="mini" v-model="row.remark"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="{ $index, row }">
+                <el-button type="text" @click="tableData.splice($index, 1)">
+                  <i class="el-icon-delete" style="font-size: 2.1rem;"></i>
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-button type="primary" size="mini" @click="tableData.push({})" style="width: 100%;"><i class="el-icon-plus"></i></el-button>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade materielList" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table
@@ -83,9 +158,9 @@
             border
             style="width: 100%"
             height="500"
-            @selection-change="materChange"
+            highlight-current-row
+            @current-change="materChange"
           >
-            <el-table-column type="selection"></el-table-column>
             <el-table-column prop="material_code" label="物料编码"></el-table-column>
             <el-table-column prop="name" label="物料名称"></el-table-column>
             <el-table-column prop="specification" label="料品规格"></el-table-column>
@@ -167,7 +242,7 @@
             </div> -->
             <div></div>
             <div>
-              <button class="btn btn-primary btn-sm" @click="addMater">确定</button>
+              <button class="btn btn-primary btn-sm" @click="addMater(false)">确定</button>
               <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
             </div>
           </div>
@@ -175,7 +250,7 @@
       </div>
     </div>
     <div id="toolbar">
-      <el-button size="mini" @click="addEntrust">新建委外订单</el-button>
+      <!-- <el-button size="mini" @click="addEntrust">新建委外订单</el-button> -->
       <el-select v-model="params.status" size="mini" @change="refreshed">
         <el-option label="全部" :value="undefined"></el-option>
         <el-option label="未审核" :value="0"></el-option>
@@ -187,6 +262,7 @@
 </template>
 <script>
 import QRCode from "qrcode";
+import PDFJS from "pdfjs-dist";
 import addEntrustModal from "@/pages/Process/common/purchase/addEntrust";
 
 export default {
@@ -204,10 +280,17 @@ export default {
       params: {
         status: 0
       },
+      tableData: [],
       mater: {
         data: [],
         selection: []
-      }
+      },
+      pdfDoc: null,
+      pageNum: 1,
+      pageRendering: false,
+      pageNumPending: null,
+      contracts: [],
+      index: 0
     };
   },
   components: {
@@ -306,10 +389,6 @@ export default {
             field: "created_at",
             title: "创建日期"
           },
-          {
-            field: "demand_at",
-            title: "需求日期"
-          },
           // {
           //   field: "",
           //   title: "关联采购申请单号"
@@ -339,13 +418,29 @@ export default {
             title: "联系电话"
           },
           {
+            field: "contract",
+            title: "合同",
+            formatter: () => {
+              let getContract = `<button class="btn btn-link getContract">查看合同</button>`;
+              return getContract;
+            },
+            events: {
+              "click .getContract": function(e, value, row, index) {
+                that.contracts = row.contracts;
+                $("#purchasEntrust .contract").modal("show");
+              }
+            }
+          },
+          {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
               let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`,
                 del = `<button class="del btn btn-danger btn-sm">删除</button>`,
-                print = `<button class="print btn btn-success btn-sm">打印</button>`;
-              return get + del + print;
+                print = `<button class="print btn btn-success btn-sm">打印</button>`,
+                upload = `<input class="upload" style="display: inline-block;width: 0px;position: relative;opacity: 0;" type="file" multiple="multiple" />
+                          <button class="btn btn-warning btn-sm">上传文件</button>`;
+              return get + del + print + upload;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -363,10 +458,33 @@ export default {
                   arr.push(Object.assign(item, row));
                 }
                 that.mater.data = arr;
-                $("#purchasEntrust .materielList").modal("show");
+                $("#purchasEntrust .outMaterList").modal("show");
               },
               'click .print':function (e, value, row, index) {
                 window.open(`/print.html#/purchasEntrust/${row.id}`);
+              },
+              "change .upload": function(e, value, row, index) {
+                  let arr = [];
+                  for (let e of row.contracts) arr.push(e.id);
+                for (let k in $(this)[0].files) {
+                  if(isNaN(parseInt(k))) return false;
+                  let form = new FormData();
+                  form.append("upload", $(this)[0].files[k]);
+                  form.append("slug", "procurement");
+                  that
+                    .$upload("files/upload", form)
+                    .then(response => {
+                      if (response.status != 200) return false;
+                      arr.push(response.data.upload.id);
+                      if (k == $(this)[0].files.length - 1)
+                        that.editEntrust(row.id, {
+                          supplier_id: row.supplier_id,
+                          supplier_contract_id: row.supplier_contract_id,
+                          contract_ids: arr.join(','),
+                        });
+                    })
+                    .catch(err => console.error(err));
+                }
               }
             }
           }
@@ -453,30 +571,77 @@ export default {
     addEntrust() {
       $("#addEntrust").modal("show");
     },
+    editEntrust(id, params) {
+      let that = this;
+      that
+        .$post(`procurement/outsourcing/edit/${id}`, params)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.refreshed();
+        })
+        .catch(err => console.error(err));
+    },
     materChange(val) {
       this.mater.selection = val;
     },
-    addMater() {
-      let that = this,
-        param = this.mater.selection.shift();
-      that
-        .$post(`procurement/out_picking_material/item/create`, {
-          out_picking_material_id: that.requset_id || '',
-          outsourcing_id: param.id,
-          material_id: param.material_id,
-          name: param.name,
-          specification: param.specification,
-          unit: param.unit,
-          quantity: param.quantity,
-          is_closed: param.is_closed
-        })
-        .then(response => {
-          if(response.status != 200) return false;
-          that.requset_id = response.data.out_picking_material;
-          if(this.mater.selection.length) that.addMater();
-        })
-        .catch(err => console.error(err));
+    addMater(state = false) {
+      if (state) {
+        $("#purchasEntrust .materielList").modal("show");
+        return false;
+      }
+      let param = this.mater.selection;
+        this.tableData[this.index] = this.mater.selection;
+        console.log(this.tableData)
       $("#purchasEntrust .materielList").modal("hide");
+    },
+    showPDF(url) {
+      let _this = this;
+      $("#canvasBox").empty();
+      $(".report").modal("show");
+      switch(url.split('.').pop()) {
+        case 'pdf':
+          PDFJS.getDocument(url).then(function(pdf) {
+            _this.pdfDoc = pdf;
+            for (let i = 1; i < pdf.numPages + 1; i++) {
+              _this.renderPage(i);
+            }
+          });
+          break;
+        default:
+          let img = new Image();
+          img.style.width = '100%';
+          img.src = url;
+          document.getElementById("canvasBox").appendChild(img);
+          break;
+      }
+    },
+    renderPage(num) {
+      this.pageRendering = true;
+      let _this = this;
+      this.pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport(_this.scale);
+        // let canvas = document.getElementById("the-canvas");
+        let canvas = document.createElement("canvas");
+        canvas.height = isNaN(viewport.height) ? 800 : viewport.height;
+        canvas.width = isNaN(viewport.width) ? 600 : viewport.width;
+
+        // Render PDF page into canvas context
+        var renderContext = {
+          canvasContext: canvas.getContext("2d"),
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+        document.getElementById("canvasBox").appendChild(canvas);
+        // Wait for rendering to finish
+        renderTask.promise.then(function() {
+          _this.pageRendering = false;
+          if (_this.pageNumPending !== null) {
+            // New page rendering is pending
+            _this.renderPage(_this.pageNumPending);
+            _this.pageNumPending = null;
+          }
+        });
+      });
     },
     refreshed() {
       this.refresh($("#purchasEntrust #table"));
@@ -512,6 +677,14 @@ export default {
 </script>
 <style lang="less">
 #purchasEntrust {
+  .report {
+    #canvasBox {
+      text-align: center;
+      canvas {
+        max-width: 100%;
+      }
+    }
+  }
   .materielList,
   .materList {
     .el-table {
