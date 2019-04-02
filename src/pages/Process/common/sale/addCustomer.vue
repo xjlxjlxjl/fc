@@ -773,22 +773,21 @@ export default {
           e.item.index +
           "<br />myValue = " +
           checkValue;
-        var myGeo = new BMap.Geocoder();
-        myGeo.getPoint(
-          e.item.value.city + e.item.value.district + e.item.value.business,
-          function(point) {
+
+          function myFun(){
+            var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
             that.form.region = {
-              address: `${e.item.value.city}-${e.item.value.district}-${
-                e.item.value.business
-              }`,
-              x: point.lng,
-              y: point.lat
+              address: checkValue,
+              x: pp.lng,
+              y: pp.lat
             };
-            that.map.centerAndZoom(point, 16);
-            that.map.addOverlay(new BMap.Marker(point));
-          },
-          e.item.value.city
-        );
+            that.map.centerAndZoom(pp, 16);
+            that.map.addOverlay(new BMap.Marker(pp));    //添加标注
+          }
+          var local = new BMap.LocalSearch(that.map, { //智能搜索
+            onSearchComplete: myFun
+          });
+          local.search(checkValue);
       });
     }
   },
