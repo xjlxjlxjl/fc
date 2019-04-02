@@ -866,6 +866,11 @@ export default {
           this.form = this.rows;
           this.editor.setData(this.form.contract_terms);
           this.form.payment_terms = this.form.payment_terms_vl;
+          if (this.form.region.x && this.form.region.y) {
+            this.map.centerAndZoom(new BMap.Point(this.form.region.x, this.form.region.y), 14);
+            var marker = new BMap.Marker(new BMap.Point(this.form.region.x, this.form.region.y));
+            this.map.addOverlay(marker);
+          }
           this.form.tags = this.form.tags.join(' ');
         }
       else 
