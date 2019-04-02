@@ -2,7 +2,7 @@
   <div id="purchaseSupplier">
     <addSupplier :id="row.id" :row="row" @refresh="refreshed"></addSupplier>
 
-    <div class="modal fade" id="contract" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal fade" id="contract" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-body">

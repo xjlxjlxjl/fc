@@ -773,6 +773,8 @@ export default {
       this.form.items[this.index].name = this.mater.selection.name;
       this.form.items[this.index].specification = this.mater.selection.material_specification;
       this.form.items[this.index].unit = this.mater.selection.item_unit;
+      this.form.items.push({});
+      this.form.items.pop();
       $("#purchasePlan .materList").modal("hide");
     },
     getSupplier(search = false) {

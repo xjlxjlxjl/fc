@@ -1,11 +1,6 @@
 <template>
   <div>
-    <div
-      class="modal fade bs-example-modal-lg"
-      role="dialog"
-      id="addSupplier"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade" role="dialog" id="addSupplier">
       <div class="modal-dialog modal-lg" style="width: 100%;max-width: 1280px;" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -162,11 +157,7 @@
         </div>
       </div>
     </div>
-    <div
-      class="modal fade" 
-      role="dialog" 
-      id="addContract"
-      aria-labelledby="myLargeModalLabel">
+    <div class="modal fade" role="dialog"  id="addContract">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-body">

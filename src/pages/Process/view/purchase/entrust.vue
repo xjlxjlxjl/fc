@@ -95,58 +95,69 @@
     </div>
     <!-- 委外领料 -->
     <div class="modal fade outMaterList" role="dialog">
-      <div class="modal-dialog" role="document" style="width: 100%;max-width: 920px;">
+      <div class="modal-dialog" role="document" style="width: 100%;max-width: 1080px;">
         <div class="modal-content">
-          <el-table :data="tableData" size="mini" border style="width: 100%">
-            <el-table-column label="序号" width="50">
-              <template slot-scope="{ $index }"><span>{{ $index + 1 }}</span></template>
-            </el-table-column>
-            <el-table-column prop="material_code" label="成品料编码"></el-table-column>
-            <el-table-column prop="material_code" label="料品编码">
-              <template slot-scope="{ $index, row }">
-                <el-input size="mini" v-model="row.material_code">
-                  <el-button slot="append" type="default" @click="addMater(true);index = $index">
-                    <i class="el-icon-arrow-down"></i>
+          <div class="modal-body">
+            <el-table :data="tableData" size="mini" border style="width: 100%">
+              <el-table-column label="序号" width="50">
+                <template slot-scope="{ $index }"><span>{{ $index + 1 }}</span></template>
+              </el-table-column>
+              <el-table-column prop="material_code" label="成品料编码"></el-table-column>
+              <el-table-column prop="material_code" label="料品编码">
+                <template slot-scope="{ $index, row }">
+                  <el-input size="mini" v-model="row.material_code">
+                    <el-button slot="append" type="default" @click="addMater(true);index = $index">
+                      <i class="el-icon-arrow-down"></i>
+                    </el-button>
+                  </el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="name" label="料品名称">
+                <template slot-scope="{ $index, row }">
+                  <el-input size="mini" v-model="row.name">
+                    <el-button slot="append" type="default" @click="addMater(true);index = $index">
+                      <i class="el-icon-arrow-down"></i>
+                    </el-button>
+                  </el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="specification" label="料品规格">
+                <template slot-scope="{ $index, row }">
+                  <el-input size="mini" v-model="row.specification">
+                    <el-button slot="append" type="default" @click="addMater(true);index = $index">
+                      <i class="el-icon-arrow-down"></i>
+                    </el-button>
+                  </el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="unit" label="单位" width="50"></el-table-column>
+              <el-table-column prop="quantity" label="数量" width="50"></el-table-column>
+              <el-table-column prop="length" label="长度" width="50"></el-table-column>
+              <el-table-column prop="store" label="仓库" width="50"></el-table-column>
+              <el-table-column prop="demand_at" label="需求日期">
+                <template slot-scope="{ row }">
+                  <el-date-picker size="mini" v-model="row.demand_at" type="date" value-format="yyyy-MM-dd" placeholder="需求日期"></el-date-picker>
+                </template>
+              </el-table-column>
+              <el-table-column prop="remark" label="备注">
+                <template slot-scope="{ $index, row }">
+                  <el-input size="mini" v-model="row.remark"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="50">
+                <template slot-scope="{ $index }">
+                  <el-button type="text" @click="tableData.splice($index, 1)">
+                    <i class="el-icon-delete" style="font-size: 2.1rem;"></i>
                   </el-button>
-                </el-input>
-              </template>
-            </el-table-column>
-            <el-table-column prop="name" label="料品名称">
-              <template slot-scope="{ $index, row }">
-                <el-input size="mini" v-model="row.name">
-                  <el-button slot="append" type="default" @click="addMater(true);index = $index">
-                    <i class="el-icon-arrow-down"></i>
-                  </el-button>
-                </el-input>
-              </template>
-            </el-table-column>
-            <el-table-column prop="specification" label="料品规格">
-              <template slot-scope="{ $index, row }">
-                <el-input size="mini" v-model="row.specification">
-                  <el-button slot="append" type="default" @click="addMater(true);index = $index">
-                    <i class="el-icon-arrow-down"></i>
-                  </el-button>
-                </el-input>
-              </template>
-            </el-table-column>
-            <el-table-column prop="unit" label="单位"></el-table-column>
-            <el-table-column prop="quantity" label="数量"></el-table-column>
-            <el-table-column prop="length" label="长度"></el-table-column>
-            <el-table-column prop="store" label="仓库"></el-table-column>
-            <el-table-column prop="remark" label="备注">
-              <template slot-scope="{ $index, row }">
-                <el-input size="mini" v-model="row.remark"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="{ $index, row }">
-                <el-button type="text" @click="tableData.splice($index, 1)">
-                  <i class="el-icon-delete" style="font-size: 2.1rem;"></i>
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-button type="primary" size="mini" @click="tableData.push({})" style="width: 100%;"><i class="el-icon-plus"></i></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-button type="primary" size="mini" @click="tableData.push({})" style="width: 100%;"><i class="el-icon-plus"></i></el-button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click="addReceive">确定</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          </div>
         </div>
       </div>
     </div>
@@ -290,7 +301,7 @@ export default {
       pageRendering: false,
       pageNumPending: null,
       contracts: [],
-      index: 0
+      activated: {}
     };
   },
   components: {
@@ -328,9 +339,6 @@ export default {
     init() {
       let that = this,
         columns = [
-          // {
-          //   checkbox: true
-          // },
           {
             field: "id",
             title: "序号",
@@ -389,14 +397,6 @@ export default {
             field: "created_at",
             title: "创建日期"
           },
-          // {
-          //   field: "",
-          //   title: "关联采购申请单号"
-          // },
-          // {
-          //   field: "",
-          //   title: "关联销售单号"
-          // },
           {
             field: "remark",
             title: "备注",
@@ -454,10 +454,10 @@ export default {
               },
               "click .get": function(e, value, row, index) {
                 let arr = [];
-                for (let item of row.items) {
+                for (let item of row.items)
                   arr.push(Object.assign(item, row));
-                }
                 that.mater.data = arr;
+                that.activated = row;
                 $("#purchasEntrust .outMaterList").modal("show");
               },
               'click .print':function (e, value, row, index) {
@@ -581,18 +581,42 @@ export default {
         })
         .catch(err => console.error(err));
     },
+    addReceive() {
+      let that = this,
+        arr = [];
+      that.tableData.forEach(e => arr.push({
+        material_id: e.material_id,
+        name: e.name,
+        specification: e.specification,
+        unit: e.unit,
+        quantity: e.quantity,
+        demand_at: e.demand_at,
+        remark: e.remark
+      }));
+      that
+        .$post(`procurement/out_picking_material/create`, {
+          applicant_id: that.activated.applicant_id,
+          branch_id: that.activated.branch_id,
+          outsourcing_id: that.activated.id,
+          supplier_id: that.activated.supplier_id,
+          supplier_contract_id: that.activated.supplier_contract_id,
+          items: arr
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          $("#purchasEntrust .outMaterList").modal("hide");
+        })
+        .catch(err => console.error(err));
+    },
     materChange(val) {
       this.mater.selection = val;
     },
     addMater(state = false) {
-      if (state) {
-        $("#purchasEntrust .materielList").modal("show");
-        return false;
-      }
-      let param = this.mater.selection;
-        this.tableData[this.index] = this.mater.selection;
-        console.log(this.tableData)
-      $("#purchasEntrust .materielList").modal("hide");
+      $("#purchasEntrust .materielList").modal("toggle");
+      if (state) return false;
+      this.tableData[this.index] = this.mater.selection;
+      this.tableData.push({});
+      this.tableData.pop();
     },
     showPDF(url) {
       let _this = this;
@@ -720,6 +744,14 @@ export default {
           white-space: nowrap;
           margin-right: 5px;
         }
+      }
+    }
+  }
+  .outMaterList {
+    .el-date-editor {
+      width: 100%;
+      > input {
+        padding-right: 0;
       }
     }
   }

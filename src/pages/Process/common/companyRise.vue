@@ -422,6 +422,10 @@ export default {
             background-color: @white !important;
             > a {
               color: @aBule !important;
+              > i,
+              > span {
+                color: @aBule !important;
+              }
             }
             > .processExtend {
               display: flex;

@@ -137,9 +137,6 @@ export default {
     init() {
       let that = this,
         columns = [
-          // {
-          //   checkbox: true
-          // },
           {
             field: "id",
             title: "序号",
@@ -215,11 +212,11 @@ export default {
             }
           },
           {
-            field: "suppler_name",
+            field: "supplier_name",
             title: "委外商"
           },
           {
-            field: "phone",
+            field: "supplier_contract_mobile",
             title: "联系电话"
           },
           {
@@ -227,8 +224,8 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let del = `<button class="del btn btn-danger btn-sm">删除</button>`,
-                print = `<button class="del btn btn-success btn-sm">打印</button>`;
-              return del;
+                print = `<button class="print btn btn-success btn-sm">打印</button>`;
+              return del + print;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -322,11 +319,6 @@ export default {
       this.$print(this.$refs.purchasReceivePrint);
       $("#purchasReceivePrintModal").modal("hide");
     },
-    /*
-      addReceive() {
-        $("#addReceive").modal("show");
-      },
-    */
     refreshed() {
       this.refresh($("#purchasReceive #table"));
     }

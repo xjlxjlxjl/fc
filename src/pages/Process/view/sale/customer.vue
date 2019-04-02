@@ -3,7 +3,7 @@
     <addCustomer @refresh="refreshed" :rows="rows"></addCustomer>
     <addVisit :rows="rows" @refresh="refreshed"></addVisit>
 
-    <div class="modal fade contactModal" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade contactModal" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <el-table :data="contact" border style="width: 100%">
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="modal fade payment_termsModal" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade payment_termsModal" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <el-table :data="payment_terms" border style="width: 100%">
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div class="modal fade visitModal" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade visitModal" role="dialog">
       <div class="modal-dialog" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table :data="visit" border style="width: 100%">
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <div class="modal fade sigininModal" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade sigininModal" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <el-table :data="siginin" border style="width: 100%">
@@ -75,6 +75,21 @@
             <el-table-column prop="created_at" label="打卡时间"></el-table-column>
             <el-table-column prop="signin_address.address" label="打卡地址"></el-table-column>
           </el-table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade contractModal" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div id="toolbar-container"></div>
+            <div id="editor"></div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" @click="edit">保存</button>
+            <button class="btn btn-default" data-dismiss="modal">取消</button>
+          </div>
         </div>
       </div>
     </div>
@@ -90,6 +105,8 @@
   </div>
 </template>
 <script>
+import CKEditor from "@ckeditor/ckeditor5-build-classic";
+import "@ckeditor/ckeditor5-build-classic/build/translations/zh-cn";
 import addCustomer from "@/pages/Process/common/sale/addCustomer";
 import addVisit from "@/pages/Process/common/sale/addVisit";
 
@@ -139,6 +156,24 @@ export default {
         id: 0
       }
       addCustomer.methods.close.call(this);
+    },
+    edit() {
+      let that = this;
+      that
+        .$post(`customers/edit`, {
+          name: that.row.name,
+          slug: that.row.slug,
+          contact: JSON.stringify(that.row.contact),
+          abbreviation: that.row.abbreviation,
+          area: that.row.area,
+          contract_terms: that.editor.getData()
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          that.refreshed();
+          $("#customer .contractModal").modal("hide");
+        })
+        .catch(err => console.error(err));
     },
     addReply() {
       let that = this;
@@ -520,6 +555,21 @@ export default {
             }
           },
           {
+            field: "contract_terms",
+            title: "合同模板",
+            formatter: (value, row, index) => {
+              let get = `<button class="btn btn-primary btn-sm get">查看模板</button>`;
+              return get;
+            },
+            events: {
+              "click .btn": function(e, value, row, index) {
+                that.row = row;
+                that.editor.setData(value);
+                $("#customer .contractModal").modal("show");
+              }
+            }
+          },
+          {
             field: "recent_contacts_at",
             title: "最近联系日期",
             sortable: true,
@@ -652,10 +702,48 @@ export default {
           detailFormatter(field, mrow, oldValue, $el) {}
         };
       $("#customer #table").bootstrapTable(data);
+    },
+    initCKEditor() {
+      const that = this;
+      class UploadAdapter {
+        constructor(loader) {
+          this.loader = loader;
+        }
+        upload() {
+          //重置上传路径
+          return new Promise((resolve, reject) => {
+            let form = new FormData();
+            form.append('imageFile', this.loader.file);
+            console.log(form);
+          });
+        }
+        abort() {}
+      }
+      //初始化编辑器
+      CKEditor.create(document.querySelector(".contractModal #editor"), {
+        removePlugins: ["MediaEmbed"], //除去视频按钮
+        language: "zh-cn", // 中文
+        ckfinder: {
+          uploaded: 1,
+          url: "/"
+          // 后端处理上传逻辑返回json数据,包括uploaded(选项true/false)和url两个字段
+        }
+      })
+        .then(editor => {
+          const toolbarContainer = document.querySelector(".contractModal #toolbar-container");
+          toolbarContainer.appendChild(editor.ui.view.toolbar.element);
+          // 加载了适配器
+          editor.plugins.get("FileRepository").createUploadAdapter = loader => {
+            return new UploadAdapter(loader);
+          };
+          this.editor = editor; // 将编辑器保存起来，用来随时获取编辑器中的内容等，执行一些操作
+        })
+        .catch(error => console.error(error));
     }
   },
   mounted() {
     this.tableInit();
+    this.initCKEditor();
   }
 };
 </script>

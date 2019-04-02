@@ -200,6 +200,11 @@
                   <el-input v-model="form.delivery_address" placeholder="交货地址"></el-input>
                 </el-form-item>
 
+                <p class="lead widthFull">合同信息</p>
+                <el-form-item label="合同模板">
+                  <el-button type="info" @click="editContract(true)">编辑条款</el-button>
+                </el-form-item>
+
                 <p class="lead widthFull">商务记录</p>
                 <el-form-item label="最近联系日期">
                   <el-date-picker
@@ -237,13 +242,8 @@
         </div>
       </div>
     </transition>
-    <div
-      class="modal fade"
-      id="payMentModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <!-- 付款条件 -->
+    <div class="modal fade" id="payMentModal" role="dialog" >
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-body">
@@ -322,10 +322,24 @@
         </div>
       </div>
     </div>
+    <!-- 编辑条款 -->
+    <div class="modal fade editContract" role="dialog" >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div id="toolbar-container"></div>
+            <div id="editor"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
+import CKEditor from "@ckeditor/ckeditor5-build-classic";
+import "@ckeditor/ckeditor5-build-classic/build/translations/zh-cn";
+
 export default {
   name: "addCustomer",
   data() {
@@ -510,6 +524,7 @@ export default {
             contact: JSON.stringify(contact),
             abbreviation: that.form.abbreviation,
             area: that.form.area,
+            contract_terms: that.editor.getData(),
             slug: that.rows.slug || undefined
           })
           .then(response => {
@@ -518,7 +533,7 @@ export default {
             that.close();
             that.clearForm();
           })
-          .catch(err => {});
+          .catch(err => console.error(err));
       });
     },
     getBranch() {
@@ -594,6 +609,15 @@ export default {
         business_content: "",
         enabled: 1
       };
+      this.editor.setData(`
+        <p>合同条款：</p>
+        <ul>
+          <li>1、收到订单后必须在当天签回，否则将视为供方已默认收到磁采购订单；</li>
+          <li>2、送货单请详细填写采购单号、产品料号、品名规格、数量（勿填价格）等；</li>
+          <li>3、必须按期保质保量交换，因逾期交货或品质问题影响需方产生进度的，则当天扣除按该订单总货款的0.1%，未如期完成对账及发票开具的，将延至下月付款；</li>
+          <li>4、廉政条约：如发现我司员工与供应商有利益关系，立即取消供应商资格，并扣除所有货款。</li>
+        </ul>
+      `);
     },
     close() {
       this.$store.commit("changeModal", "addCustomer");
@@ -671,6 +695,10 @@ export default {
       this.key = key;
       $("#customer #payMentModal").modal("show");
     },
+    editContract(state) {
+      $("#customer .editContract").modal("toggle");
+      if(state) return false;
+    },
     /**
      * 地图初始化
      */
@@ -713,6 +741,43 @@ export default {
         });
         this.map.addOverlay(marker);
       });
+    },
+    initCKEditor() {
+      const that = this;
+      class UploadAdapter {
+        constructor(loader) {
+          this.loader = loader;
+        }
+        upload() {
+          //重置上传路径
+          return new Promise((resolve, reject) => {
+            let form = new FormData();
+            form.append('imageFile', this.loader.file);
+            console.log(form);
+          });
+        }
+        abort() {}
+      }
+      //初始化编辑器
+      CKEditor.create(document.querySelector("#editor"), {
+        removePlugins: ["MediaEmbed"], //除去视频按钮
+        language: "zh-cn", // 中文
+        ckfinder: {
+          uploaded: 1,
+          url: "/"
+          // 后端处理上传逻辑返回json数据,包括uploaded(选项true/false)和url两个字段
+        }
+      })
+        .then(editor => {
+          const toolbarContainer = document.querySelector("#toolbar-container");
+          toolbarContainer.appendChild(editor.ui.view.toolbar.element);
+          // 加载了适配器
+          editor.plugins.get("FileRepository").createUploadAdapter = loader => {
+            return new UploadAdapter(loader);
+          };
+          this.editor = editor; // 将编辑器保存起来，用来随时获取编辑器中的内容等，执行一些操作
+        })
+        .catch(error => console.error(error));
     },
     G(id) {
       return document.getElementById(id);
@@ -799,6 +864,7 @@ export default {
       if (val)
         if (this.rows.id) {
           this.form = this.rows;
+          this.editor.setData(this.form.contract_terms);
           this.form.payment_terms = this.form.payment_terms_vl;
           this.form.tags = this.form.tags.join(' ');
         }
@@ -810,6 +876,7 @@ export default {
   mounted() {
     this.getBranch();
     this.loadMapAutocomplete("suggestId", "searchResultPanel");
+    this.initCKEditor();
     setTimeout(() => this.init(), 2000);
   }
 };

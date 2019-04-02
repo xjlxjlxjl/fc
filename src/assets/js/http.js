@@ -3,8 +3,8 @@ import elementUi from "element-ui";
 import qs from "qs";
 
 // axios 配置
-axios.defaults.timeout = 60000;
-// axios.defaults.baseURL = "http://api.app.com/";
+axios.defaults.timeout = 600000;
+// axios.defaults.baseURL = "http://192.168.66.105/";
 // axios.defaults.baseURL = "http://api.skyliu.cn/";
 axios.defaults.baseURL = "https://api.factoryun.com/";
 // http request 拦截器
