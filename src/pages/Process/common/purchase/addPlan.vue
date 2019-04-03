@@ -154,8 +154,8 @@
                   <el-table-column prop="category" label="料品类别" width="150px">
                     <template slot-scope="{$index, row}">
                       <el-select v-model="row.category" @change="editItem(row)" placeholder="料品类别">
-                        <el-option label="采购件" :value="1"></el-option>
-                        <el-option label="委外件" :value="2"></el-option>
+                        <el-option label="采购件" value="1"></el-option>
+                        <el-option label="委外件" value="2"></el-option>
                       </el-select>
                     </template>
                   </el-table-column>
@@ -551,7 +551,7 @@ export default {
             supplier_contract_id: 0,
             supplier_contract: [],
             price: 0,
-            category: 1,
+            category: '1',
             date_of_order: ""
           }
         ]

@@ -430,12 +430,12 @@ export default {
         arr = [];
       that.form.items.forEach((e, k) => {
         if (!e.material_id) e.material_id = undefined;
+        if (!e.demand_at) e.demand_at = that.miniDateParse(new Date());
         if (
           // e.material_id ||
           e.name &&
           // e.code ||
           e.specification &&
-          e.unit &&
           e.quantity &&
           e.demand_at
         )

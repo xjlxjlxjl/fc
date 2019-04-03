@@ -1,13 +1,15 @@
 <template>
-  <div id="apply">
+  <div id="Receive">
     <div style="width: 600px;height: 840px;border: 1px solid rgba(121, 121, 121, 1);padding: 30px;">
       <p style="text-align: center;font-size: 18px;">委外领料单</p>
       <div
         style="display: flex;justify-content: space-between;border-bottom: 1px solid rgb(121, 121, 121);font-size: 10px;padding: 20px 0;"
       >
         <div>
-          <p>委外领料单号：{{ data.number }}</p>
-          <p>供应商：{{ data.supplier.name }}</p>
+          <p>
+            <span style="margin-right: 25px;">委外领料单号：{{ data.number }}</span>
+            <span>供应商：{{ data.supplier.name }}</span>
+          </p>
           <p>
             <span style="margin-right: 25px;">创建日期：{{ data.created_at.split(' ')[0]  }}</span>
             <span>创建人：{{ data.applicant_name }}</span>
@@ -31,7 +33,7 @@
             <td style="border-right: 1px solid rgb(215, 215, 215)">备注</td>
             <td>备注</td>
           </tr>
-          <tr v-for="(item,index) in data.item" :key="index">
+          <tr v-for="(item,index) in data.items" :key="index">
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
             >{{ index + 1 }}</td>
@@ -52,11 +54,14 @@
             >{{ item.quantity }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
-            >{{ item.length }}</td>
+            >{{ item.material_length }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
-            >{{ item.store }}</td>
+            >{{ item.material_position }}</td>
             <td style="border-top: 1px solid rgb(215, 215, 215);">{{ item.remark }}</td>
+          </tr>
+          <tr>
+            <td colspan="10" style="border-top: 1px solid rgb(215, 215, 215);" align="right">合计：{{ data.total }}</td>
           </tr>
         </table>
       </div>
@@ -70,7 +75,8 @@ export default {
     return {
       data: {
         created_at: " ",
-        item: []
+        supplier: { name: '' },
+        items: []
       }
     };
   },
@@ -95,6 +101,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-#apply {
+#Receive {
 }
 </style>
