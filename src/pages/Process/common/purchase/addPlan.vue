@@ -55,29 +55,29 @@
                       <div>{{ $index + 1 }}</div>
                     </template>
                   </el-table-column>
-                  <el-table-column label="关联采购计划" width="180px">
+                  <el-table-column label="关联采购计划" width="200px">
                     <template slot-scope="{  }">
                       <div>{{ form.number }}</div>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="saleOrder" label="关联销售订单" width="180px">
+                  <el-table-column prop="saleOrder" label="关联销售订单" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.saleOrder" placeholder="关联销售订单" @blur="editItem(row)"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="code" label="料品编码" width="180px">
+                  <el-table-column prop="code" label="料品编码" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.code" placeholder="料品编码" @blur="editItem(row)">
                         <el-button slot="append" icon="el-icon-arrow-down" @click="getMater(true);index = $index"></el-button>
                       </el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="name" label="料品名称">
+                  <el-table-column prop="name" label="料品名称" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.name" placeholder="料品名称" @blur="editItem(row)"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="specification" label="料品规格">
+                  <el-table-column prop="specification" label="料品规格" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input
                         v-model="row.specification"
@@ -86,17 +86,17 @@
                       ></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="unit" label="单位">
+                  <el-table-column prop="unit" label="单位" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.unit" placeholder="单位" @blur="editItem(row)"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="quantity" label="数量">
+                  <el-table-column prop="quantity" label="数量" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.quantity" placeholder="数量" @blur="editItem(row)"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="demand_at" label="需求日期" width="150px">
+                  <el-table-column prop="demand_at" label="需求日期" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-date-picker
                         v-model="row.demand_at"
@@ -107,12 +107,12 @@
                       ></el-date-picker>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="remarks" label="备注">
+                  <el-table-column prop="remarks" label="备注" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.remarks" placeholder="备注" @blur="editItem(row)"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="supplier_name" label="供应商" min-width="120px">
+                  <el-table-column prop="supplier_name" label="供应商" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.supplier_name" placeholder="供应商" @blur="editItem(row)">
                         <el-button
@@ -123,7 +123,7 @@
                       </el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="supplier_contract_name" label="联系人">
+                  <el-table-column prop="supplier_contract_name" label="联系人" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-select v-model="row.supplier_contract_id" @change="editItem(row)" placeholder="联系人">
                         <el-option 
@@ -135,7 +135,7 @@
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="price" label="单价">
+                  <el-table-column prop="price" label="单价" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.price" placeholder="单价" @blur="editItem(row)"></el-input>
                     </template>

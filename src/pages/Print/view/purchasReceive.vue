@@ -30,7 +30,6 @@
             <td style="border-right: 1px solid rgb(215, 215, 215)">数量</td>
             <td style="border-right: 1px solid rgb(215, 215, 215)">长度</td>
             <td style="border-right: 1px solid rgb(215, 215, 215)">仓库</td>
-            <td style="border-right: 1px solid rgb(215, 215, 215)">备注</td>
             <td>备注</td>
           </tr>
           <tr v-for="(item,index) in data.items" :key="index">
@@ -61,7 +60,7 @@
             <td style="border-top: 1px solid rgb(215, 215, 215);">{{ item.remark }}</td>
           </tr>
           <tr>
-            <td colspan="10" style="border-top: 1px solid rgb(215, 215, 215);" align="right">合计：{{ data.total }}</td>
+            <td colspan="9" style="border-top: 1px solid rgb(215, 215, 215);" align="right">合计：{{ data.total }}</td>
           </tr>
         </table>
       </div>

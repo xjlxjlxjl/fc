@@ -23,17 +23,7 @@ import Purchase from "@/pages/Process/control/tabs?v=1";
 // IQC
 import IQC from "@/pages/Process/view/IQC/IQC";
 // 仓库
-import WareHouse from "@/pages/Process/view/wareHouse/wareHouse";
-// import wareTasks from "@/pages/Process/view/wareHouse/tasks";
-import wareProduct from "@/pages/Process/view/wareHouse/product";
-import wareMaterial from "@/pages/Process/view/wareHouse/material";
-import wareOutStock from "@/pages/Process/view/wareHouse/outStock";
-import wareShipment from "@/pages/Process/view/wareHouse/shipment";
-import warehousing from "@/pages/Process/view/wareHouse/warehousing";
-import wareTemporary from "@/pages/Process/view/wareHouse/temporary";
-import wareCombination from "@/pages/Process/view/wareHouse/combination";
-import wareSplit from "@/pages/Process/view/wareHouse/split";
-import wareSparePart from "@/pages/Process/view/wareHouse/spareParts";
+import store from "@/pages/Process/control/tabs?v=3";
 // 生产
 import Produce from "@/pages/Process/view/produce/produce";
 // import produceTasks from "@/pages/Process/view/produce/tasks";
@@ -160,51 +150,53 @@ export default new Router({
       component: IQC
     },
     {
-      path: "/WareHouse",
-      name: "WareHouse",
-      component: WareHouse,
-      children: [
-        {
-          path: "/WareHouse",
-          component: saleTasks
-        },
-        {
-          path: "/WareHouse/product",
-          component: wareProduct
-        },
-        {
-          path: "/WareHouse/material",
-          component: wareMaterial
-        },
-        {
-          path: "/WareHouse/outStock",
-          component: wareOutStock
-        },
-        {
-          path: "/WareHouse/shipment",
-          component: wareShipment
-        },
-        {
-          path: "/WareHouse/warehousing",
-          component: warehousing
-        },
-        {
-          path: "/WareHouse/temporary",
-          component: wareTemporary
-        },
-        {
-          path: "/WareHouse/combination",
-          component: wareCombination
-        },
-        {
-          path: "/WareHouse/split",
-          component: wareSplit
-        },
-        {
-          path: "/WareHouse/spareParts",
-          component: wareSparePart
-        }
-      ]
+      path: "/store",
+      name: "store",
+      component: store,
+      /*
+        children: [
+          {
+            path: "/WareHouse",
+            component: saleTasks
+          },
+          {
+            path: "/WareHouse/product",
+            component: wareProduct
+          },
+          {
+            path: "/WareHouse/material",
+            component: wareMaterial
+          },
+          {
+            path: "/WareHouse/outStock",
+            component: wareOutStock
+          },
+          {
+            path: "/WareHouse/shipment",
+            component: wareShipment
+          },
+          {
+            path: "/WareHouse/warehousing",
+            component: warehousing
+          },
+          {
+            path: "/WareHouse/temporary",
+            component: wareTemporary
+          },
+          {
+            path: "/WareHouse/combination",
+            component: wareCombination
+          },
+          {
+            path: "/WareHouse/split",
+            component: wareSplit
+          },
+          {
+            path: "/WareHouse/spareParts",
+            component: wareSparePart
+          }
+        ]
+      */
     },
     {
       path: "/Produce",

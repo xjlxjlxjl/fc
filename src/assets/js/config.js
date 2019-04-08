@@ -103,6 +103,9 @@ export default {
     Vue.prototype.getData = $el => {
       return $el.bootstrapTable("getSelections");
     };
+    Vue.prototype.getAllData = $el => {
+      return $el.bootstrapTable("getData");
+    };
     Vue.prototype.getRow = ($el, params) => {
       return $el.bootstrapTable('getRowByUniqueId', params);
     }

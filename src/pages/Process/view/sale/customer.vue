@@ -211,7 +211,7 @@ export default {
             sortable: true
           },
           {
-            field: "created_by",
+            field: "created_member.display_name",
             title: "创建人",
             sortable: true
           },

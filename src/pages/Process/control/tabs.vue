@@ -40,6 +40,10 @@
         <purchaseProduct v-else-if="activeTabs == '/Purchase/product'"></purchaseProduct>
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+        <!-- 仓库 -->
+        <storeManage v-else-if="activeTabs == '/store/manage'"></storeManage>
+        <storeStock v-else-if="activeTabs == '/store/stock'"></storeStock>
+        <storeTemporary v-else-if="activeTabs == '/store/temporary'"></storeTemporary>
         <!-- 财务 -->
         <financeIncomeDetail v-else-if="activeTabs == '/Finance/incomeDetail'"></financeIncomeDetail>
         <financePayableDetail v-else-if="activeTabs == '/Finance/payableDetail'"></financePayableDetail>
@@ -79,6 +83,19 @@ import purchasePriceAnalysis from "@/pages/Process/view/purchase/priceAnalysis";
 import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
+
+// 仓库
+import storeManage from "@/pages/Process/view/store/manage";
+import storeStock from "@/pages/Process/view/store/Stock";
+import storeProduct from "@/pages/Process/view/store/product";
+import storeMaterial from "@/pages/Process/view/store/material";
+import storeOutStock from "@/pages/Process/view/store/outStock";
+import storeShipment from "@/pages/Process/view/store/shipment";
+import storehousing from "@/pages/Process/view/store/warehousing";
+import storeTemporary from "@/pages/Process/view/store/temporary";
+import storeCombination from "@/pages/Process/view/store/combination";
+import storeSplit from "@/pages/Process/view/store/split";
+import storeSparePart from "@/pages/Process/view/store/spareParts";
 
 // 财务
 import financeIncomeDetail from "@/pages/Process/view/finance/incomeDetail";
@@ -124,6 +141,10 @@ export default {
     purchaseProduct: purchaseProduct,
     purchaseSupplier: purchaseSupplier,
     purchaseUnhealthy: purchaseUnhealthy,
+    
+    storeManage: storeManage,
+    storeStock: storeStock,
+    storeTemporary: storeTemporary,
 
     financeIncomeDetail: financeIncomeDetail,
     financePayableDetail: financePayableDetail,
@@ -330,6 +351,7 @@ export default {
     }
   }
 
+  #store,
   #finance,
   #purchase {
     .el-tabs__header {

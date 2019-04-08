@@ -93,7 +93,7 @@
                   <el-input v-model="form.remark" placeholder="备注"></el-input>
                 </el-form-item>
                 <el-form-item label="详细地址" prop="detailed_address" class="widthFull">
-                  <input id="suggestId" name="sendAddress" placeholder="详细地址" type="text">
+                  <input id="suggestId" name="sendAddress" v-model="form.detailed_address" placeholder="详细地址" type="text">
                   <div
                     id="searchResultPanel"
                     style="border: 1px solid #C0C0C0; width: 150px; height: auto;display: none;"
@@ -847,6 +847,7 @@ export default {
               y: pp.lat
             };
             that.map.centerAndZoom(pp, 16);
+            that.map.clearOverlays();
             that.map.addOverlay(new BMap.Marker(pp));    //添加标注
           }
           var local = new BMap.LocalSearch(that.map, { //智能搜索
@@ -867,6 +868,7 @@ export default {
           this.editor.setData(this.form.contract_terms);
           this.form.payment_terms = this.form.payment_terms_vl;
           if (this.form.region.x && this.form.region.y) {
+            this.map.clearOverlays();
             this.map.centerAndZoom(new BMap.Point(this.form.region.x, this.form.region.y), 14);
             var marker = new BMap.Marker(new BMap.Point(this.form.region.x, this.form.region.y));
             this.map.addOverlay(marker);

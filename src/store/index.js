@@ -181,8 +181,8 @@ export default new Vuex.Store({
       },
       {
         name: "仓库",
-        url: "/WareHouse",
-        indexUrl: "/process.html#/WareHouse",
+        url: "/store",
+        indexUrl: "/process.html#/store",
         active: false,
         child: [
           {
@@ -465,86 +465,54 @@ export default new Vuex.Store({
           url: "/Produce/time"
         }
       ],
-      WareHouse: [
+      store: [
         {
           name: "待完成任务",
-          url: "/WareHouse"
+          url: "/tasks"
         },
         {
           name: "生产看板",
-          url: "/WareHouse/product"
+          url: "/store/product"
+        },
+        {
+          name: "仓库、仓位管理",
+          url: "/store/manage"
+        },
+        {
+          name: "库存管理",
+          url: "/store/stock"
+        },
+        {
+          name: "来料暂收",
+          url: "/store/temporary"
         },
         {
           name: "备料需求表",
-          url: "/WareHouse/spareParts"
+          url: "/store/spareParts"
         },
         {
           name: "拆分需求表",
-          url: "/WareHouse/split"
+          url: "/store/split"
         },
         {
           name: "组合需求表",
-          url: "/WareHouse/combination"
-        },
-        {
-          name: "来料暂收表",
-          url: "/WareHouse/temporary"
+          url: "/store/combination"
         },
         {
           name: "入库申请表",
-          url: "/WareHouse/warehousing"
+          url: "/store/warehousing"
         },
         {
           name: "出货申请表",
-          url: "/WareHouse/shipment"
+          url: "/store/shipment"
         },
         {
           name: "出库申请表",
-          url: "/WareHouse/outStock"
+          url: "/store/outStock"
         },
         {
           name: "原材料库存",
-          url: "/WareHouse/material"
-        },
-        {
-          name: "物料备货周期表",
-          url: ""
-        },
-        {
-          name: "库存金额表",
-          url: ""
-        },
-        {
-          name: "最优库存量表",
-          url: ""
-        },
-        {
-          name: "差异仓列表",
-          url: ""
-        },
-        {
-          name: "展品仓列表",
-          url: ""
-        },
-        {
-          name: "库存金额表",
-          url: ""
-        },
-        {
-          name: "固定资产仓列表",
-          url: ""
-        },
-        {
-          name: "退换货仓列表",
-          url: ""
-        },
-        {
-          name: "打包仓列表",
-          url: ""
-        },
-        {
-          name: "各仓历史盘点记录",
-          url: ""
+          url: "/store/material"
         }
       ],
       OQC: [

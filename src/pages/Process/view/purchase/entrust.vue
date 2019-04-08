@@ -438,9 +438,9 @@ export default {
               let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`,
                 del = `<button class="del btn btn-danger btn-sm">删除</button>`,
                 print = `<button class="print btn btn-success btn-sm">打印</button>`,
-                upload = `<input class="upload" style="display: inline-block;width: 0px;position: relative;opacity: 0;" type="file" multiple="multiple" />
+                upload = `<input class="upload" style="display: inline-block;width: 70px;height: 30px;position: absolute;opacity: 0;" type="file" multiple="multiple" />
                           <button class="btn btn-warning btn-sm">上传文件</button>`;
-              return get + del + print + upload;
+              return `<div style="position: relative;">${upload + get + del + print}</div>`;
             },
             events: {
               "click .del": function(e, value, row, index) {
