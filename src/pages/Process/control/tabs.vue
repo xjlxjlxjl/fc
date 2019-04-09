@@ -40,6 +40,8 @@
         <purchaseProduct v-else-if="activeTabs == '/Purchase/product'"></purchaseProduct>
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+        <!-- 工程 -->
+        <engineerMaterial v-else-if="activeTabs == '/Engineer/material'"></engineerMaterial>
         <!-- 仓库 -->
         <storeManage v-else-if="activeTabs == '/store/manage'"></storeManage>
         <storeStock v-else-if="activeTabs == '/store/stock'"></storeStock>
@@ -83,6 +85,9 @@ import purchasePriceAnalysis from "@/pages/Process/view/purchase/priceAnalysis";
 import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
+
+// 工程
+import engineerMaterial from "@/pages/Process/view/engineer/material";
 
 // 仓库
 import storeManage from "@/pages/Process/view/store/manage";
@@ -141,7 +146,9 @@ export default {
     purchaseProduct: purchaseProduct,
     purchaseSupplier: purchaseSupplier,
     purchaseUnhealthy: purchaseUnhealthy,
-    
+
+    engineerMaterial: engineerMaterial,
+
     storeManage: storeManage,
     storeStock: storeStock,
     storeTemporary: storeTemporary,
@@ -287,7 +294,20 @@ export default {
   computed: {
     ...mapState(["createdWorkModal", "tasksPendingNum"])
   },
+  watch: {
+    tabItems(val) {
+      localStorage.setItem('tabItems', JSON.stringify(val));
+    },
+    activeTabs(val) {
+      localStorage.setItem('activeTabs', val)
+    }
+  },
   mounted() {
+    if (localStorage.getItem("activeTabs")) 
+      this.activeTabs = localStorage.getItem("activeTabs");
+    if (localStorage.getItem("tabItems"))
+      this.tabItems = JSON.parse(localStorage.getItem("tabItems"));
+    
     this.getLabelNums();
   }
 };
