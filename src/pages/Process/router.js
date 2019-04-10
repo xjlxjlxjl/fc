@@ -17,7 +17,7 @@ import saleShipment from "@/pages/Process/view/sale/shipment";
 import customerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
 import customerMap from '@/pages/Process/view/sale/customerMap';
 // 工程
-import Engineer from "@/pages/Process/view/engineer/engineer";
+import Engineer from "@/pages/Process/control/tabs?v=4";
 // 采购
 import Purchase from "@/pages/Process/control/tabs?v=1";
 // IQC

@@ -1034,10 +1034,18 @@ export default {
     );
   },
   created() {
-    this.getChatList();
-    this.webSocket();
-    this.getMembers();
-    this.getNotices();
+    let state = true,
+    clock = setInterval(() => {
+      if (!localStorage.getItem('user')) return false;
+      if (!state) return false;
+        this.user = JSON.parse(localStorage.getItem("user"));
+        this.getChatList();
+        this.webSocket();
+        this.getMembers();
+        this.getNotices();
+        state = false;
+        clearInterval(clock)
+    }, 100);
   }
 };
 </script>

@@ -195,6 +195,7 @@ export default {
         .catch(error => loading.close());
     },
     changeModal(name, state = null) {
+      if (!this.$ifLogin()) return false;
       this.messageTips = 0;
       if (state) this[name] = state;
       else this[name] = !this[name];
@@ -394,6 +395,10 @@ export default {
             background-color: @white !important;
             > a {
               color: @aBule !important;
+              > i,
+              span {
+                color: @aBule !important;
+              }
             }
             > .processExtend {
               display: flex;

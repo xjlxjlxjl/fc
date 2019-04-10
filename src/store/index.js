@@ -730,6 +730,44 @@ export default new Vuex.Store({
           name: '汇总科目余额表',
           url: '/Finance/poolBalance'
         }
+      ],
+      engineer: [
+        {
+          name: "待完成任务",
+          url: "/tasks"
+        },
+        {
+          name: "生产看板",
+          url: "/Engineer/product"
+        },
+        {
+          name: "审核表",
+          url: "/approval"
+        },
+        {
+          name: "料品管理",
+          url: "/Engineer/material"
+        },
+        {
+          name: "BOM管理",
+          url: "/Engineer/BOM"
+        },
+        {
+          name: "承认图",
+          url: "/Engineer/admit"
+        },
+        {
+          name: "组装图",
+          url: "/Engineer/assemble"
+        },
+        {
+          name: "加工图",
+          url: "/Engineer/machine"
+        },
+        {
+          name: "标准产品图库",
+          url: "/Engineer/gallery"
+        }
       ]
     },
     // 任务
@@ -818,7 +856,15 @@ export default new Vuex.Store({
       '/Finance/receiveSummary': 0,
       '/Finance/meetSummary': 0,
       '/Finance/receiveDebt': 0,
-      '/Finance/meetDebt': 0
+      '/Finance/meetDebt': 0,
+      // 工程
+      '/Engineer/product': 0,
+      '/Engineer/material': 0,
+      '/Engineer/BOM': 0,
+      '/Engineer/admit': 0,
+      '/Engineer/assemble': 0,
+      '/Engineer/machine': 0,
+      '/Engineer/gallery': 0
     },
     apiKeys: {
       // baiduMap: "IjVLfQ6Tudo7LK8wCBeCPESmHl8doh61"
