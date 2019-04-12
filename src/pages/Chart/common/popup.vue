@@ -352,7 +352,10 @@ export default {
       body = document.querySelector('body');
 
     body.onclick = e => (that.mousePosition = ["close"]);
-    popRise.onmousedown = e => (this.isMove = true);
+    popRise.onmousedown = e => {
+      if (e.toElement.className == 'el-icon-close' || e.toElement.className == 'el-icon-download') return false;
+      this.isMove = true;
+    };
     popRise.onmouseup = popRise.onmouseout = e => (this.isMove = false);
 
     $uploadBox.ondragover = $uploadBox.ondragleave = $uploadBox.ondragenter = e => {
