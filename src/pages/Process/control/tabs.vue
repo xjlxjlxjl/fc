@@ -39,6 +39,7 @@
         <purchasePriceAnalysis v-else-if="activeTabs == '/Purchase/priceAnalysis'"></purchasePriceAnalysis>
         <purchaseProduct v-else-if="activeTabs == '/Purchase/product'"></purchaseProduct>
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
+        <purchaseTrimPrice v-else-if="activeTabs == '/Purchase/trimPrice'"></purchaseTrimPrice>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
         <!-- 工程 -->
         <engineerMaterial v-else-if="activeTabs == '/Engineer/material'"></engineerMaterial>
@@ -84,6 +85,7 @@ import purchasePlan from "@/pages/Process/view/purchase/plan";
 import purchasePriceAnalysis from "@/pages/Process/view/purchase/priceAnalysis";
 import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
+import purchaseTrimPrice from "@/pages/Process/view/purchase/trimPrice"
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
 
 // 工程
@@ -145,6 +147,7 @@ export default {
     purchasePriceAnalysis: purchasePriceAnalysis,
     purchaseProduct: purchaseProduct,
     purchaseSupplier: purchaseSupplier,
+    purchaseTrimPrice: purchaseTrimPrice,
     purchaseUnhealthy: purchaseUnhealthy,
 
     engineerMaterial: engineerMaterial,

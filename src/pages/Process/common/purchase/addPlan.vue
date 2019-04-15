@@ -1,11 +1,6 @@
 <template>
   <div>
-    <div
-      class="modal fade bs-example-modal-lg"
-      id="addPlan"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade" id="addPlan" role="dialog">
       <div class="modal-dialog modal-lg" style="width: 100%;" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -186,11 +181,7 @@
       </div>
     </div>
     <!-- 采购申请列表 -->
-    <div
-      class="modal fade bs-example-modal-lg applyList"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade applyList" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table
@@ -240,11 +231,7 @@
       </div>
     </div>
     <!-- 销售订单列表 -->
-    <div
-      class="modal fade bs-example-modal-lg orderList"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade orderList" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table
@@ -326,11 +313,7 @@
       </div>
     </div>
     <!-- 料品列表 -->
-    <div
-      class="modal fade bs-example-modal-lg materList"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade materList" role="dialog">
       <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table
@@ -443,12 +426,7 @@
       </div>
     </div>
     <!-- 供应商 -->
-    <div
-      class="modal fade bs-example-modal-lg supplier"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade supplier" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table

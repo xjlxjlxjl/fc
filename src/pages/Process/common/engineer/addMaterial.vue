@@ -67,6 +67,10 @@
                 <el-radio :value="0" label="否"></el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item class="widthFull" label="仓库" prop="store">
+              <el-select v-model="form.store">
+              </el-select>
+            </el-form-item>
             <el-form-item class="widthHalf" label="料品属性" prop="property">
               <el-checkbox-group v-model="form.property">
                 <el-checkbox :value="1" label="原材料"></el-checkbox>

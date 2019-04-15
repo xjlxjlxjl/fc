@@ -42,28 +42,25 @@ export default {
   },
   props: {
     active: Object,
-    title: String
+    title: String,
+    type: String
   },
   methods: {
     ...mapMutations(["getUserBranch"]),
     getBranch() {
-      if (this.$store.state.userBranch.length)
-        this.$store.state.userBranch.forEach(e =>
-          e.member.forEach(v => this.userBranch.push(v))
-        );
-      else {
-        let that = this;
-        that
-          .$get(`members/company/branch`, {})
-          .then(response => {
-            if (response.status != 200) return false;
-            response.data.list.forEach(e =>
-              e.member.forEach(v => that.userBranch.push(v))
-            );
-            that.getUserBranch(response.data.list);
-          })
-          .catch(err => console.error(err));
-      }
+      let that = this;
+      that
+        .$get(`members/user_group`, {
+          slug: that.type
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          response.data.list.forEach(e =>
+            e.members.forEach(v => that.userBranch.push(v))
+          );
+          that.getUserBranch(response.data.list);
+        })
+        .catch(err => console.error(err));
     },
     commit() {
       let that = this,
@@ -95,8 +92,10 @@ export default {
     }
   },
   computed: mapState(["delegateUser"]),
-  created() {
-    this.getBranch();
+  watch: {
+    delegateUser(val) {
+      if(val) this.getBranch();
+    }
   }
 };
 </script>

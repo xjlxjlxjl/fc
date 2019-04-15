@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-import addOrderModal from "@/pages/Process/common/addOrderModal";
+import addOrderModal from "@/pages/Process/common/sale/addOrderModal";
 import addShipment from "@/pages/Process/common/addShipment";
 
 export default {
@@ -102,18 +102,16 @@ export default {
             checkbox: true
           },
           {
+            field: "index",
+            title: "序号",
+            sortable: true,
+            formatter: (value, row, index) => {
+              return index + 1;
+            }
+          },
+          {
             field: "numbering",
             title: "销售订单号",
-            sortable: true
-          },
-          {
-            field: "created_by_name",
-            title: "创建人",
-            sortable: true
-          },
-          {
-            field: "total_price",
-            title: "订单金额",
             sortable: true
           },
           {
@@ -123,7 +121,7 @@ export default {
           },
           {
             field: "products",
-            title: "交期",
+            title: "客户要求交期",
             sortable: true,
             formatter: (value, row, index) => {
               let date = 0;
@@ -132,8 +130,43 @@ export default {
             }
           },
           {
+            field: "created_by_name",
+            title: "业务员",
+            sortable: true
+          },
+          {
+            field: "total_price",
+            title: "订单总金额",
+            sortable: true
+          },
+          {
+            field: "currency",
+            title: "币别",
+            sortable: true
+          },
+          {
+            field: "consignee",
+            title: "收货人",
+            sortable: true
+          },
+          {
+            field: "consignee_mobile",
+            title: "收货人手机",
+            sortable: true
+          },
+          {
             field: "address",
             title: "收货地址",
+            sortable: true
+          },
+          {
+            field: "post_code",
+            title: "邮政编码",
+            sortable: true
+          },
+          {
+            field: "customer_code",
+            title: "客户编码",
             sortable: true
           },
           {
@@ -148,7 +181,7 @@ export default {
           },
           {
             field: "mobile",
-            title: "手机",
+            title: "手机号",
             sortable: true
           },
           {
@@ -165,28 +198,6 @@ export default {
             sortable: true,
             formatter: (value, row, index) => {
               return `${value ? "已支付" : "未支付"}`;
-            }
-          },
-          {
-            field: "pay_method",
-            title: "支付方式",
-            sortable: true,
-            formatter: (value, row, index) => {
-              let text = "";
-              switch (value) {
-                case 0:
-                case "0":
-                  return "线下支付";
-                  break;
-                case 1:
-                case "1":
-                  return "支付宝支付";
-                  break;
-                case 2:
-                case "2":
-                  return "银联支付";
-                  break;
-              }
             }
           },
           {
@@ -211,21 +222,70 @@ export default {
             }
           },
           {
-            field: "check_man_name",
-            title: "审核人",
-            sortable: true,
-            formatter: (value, row, index) => {
-              return `${value || "暂无"}`;
-            }
+            field: "delivery_mode",
+            title: "送货方式",
+            sortable: true
           },
           {
-            field: "check_at",
-            title: "审核时间",
-            sortable: true,
-            formatter: (value, row, index) => {
-              return `${value || "暂无"}`;
-            }
+            field: "pickup_mode",
+            title: "包装方式",
+            sortable: true
           },
+          {
+            field: "pay_method",
+            title: "付款条件",
+            sortable: true
+          },
+          {
+            field: "contract",
+            title: "合同",
+            sortable: true
+          },
+          {
+            field: "invoice_record",
+            title: "发票记录",
+            sortable: true
+          },
+          /*
+            {
+              field: "pay_method",
+              title: "支付方式",
+              sortable: true,
+              formatter: (value, row, index) => {
+                let text = "";
+                switch (value) {
+                  case 0:
+                  case "0":
+                    return "线下支付";
+                    break;
+                  case 1:
+                  case "1":
+                    return "支付宝支付";
+                    break;
+                  case 2:
+                  case "2":
+                    return "银联支付";
+                    break;
+                }
+              }
+            },
+            {
+              field: "check_man_name",
+              title: "审核人",
+              sortable: true,
+              formatter: (value, row, index) => {
+                return `${value || "暂无"}`;
+              }
+            },
+            {
+              field: "check_at",
+              title: "审核时间",
+              sortable: true,
+              formatter: (value, row, index) => {
+                return `${value || "暂无"}`;
+              }
+            },
+          */
           {
             field: "slug",
             title: "操作",

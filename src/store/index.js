@@ -597,6 +597,10 @@ export default new Vuex.Store({
           url: '/Purchase/unhealthy'
         },
         {
+          name: '调整入库单价',
+          url: '/Purchase/trimPrice'
+        },
+        {
           name: '历史订单查询',
           url: '/Purchase/history'
         },
@@ -900,7 +904,6 @@ export default new Vuex.Store({
     addWareHouseModal: false,
     addMaterials: false,
     addShipmentModal: false,
-    addOrderModal: false,
     addCustomer: false,
     editServicePrice: false,
     //

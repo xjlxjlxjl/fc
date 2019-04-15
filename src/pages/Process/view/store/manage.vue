@@ -1,7 +1,7 @@
 <template>
   <div id="manage">
-    <addManage :row="row"></addManage>
-    <addPosition :row="placeRow"></addPosition>
+    <addManage :row="row" @refresh="refreshed"></addManage>
+    <addPosition :row="placeRow" @refresh="refreshed"></addPosition>
     <div class="modal fade managePrintModal" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -26,7 +26,7 @@
                 >创建日期</div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
-                >创建人</div>
+                ></div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
                 ></div>
@@ -48,7 +48,7 @@
                 >{{ modalData.created_at }}</div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
-                >{{ modalData.created_by }}</div>
+                ></div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
                 ></div>
@@ -93,10 +93,16 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{ id: 998, name: 'aaa', number: 'A1001', position: [{ id: 999,number: 'A1002', name: "阿萨德", describe: "1111", switch: "0" }] }],
-        total: 1
-      })
+      this
+        .$get(`respositories/list`)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.list.length
+          });
+        })
+        .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
       params.page = params.offset / 10 + 1;
@@ -120,7 +126,7 @@ export default {
             formatter: (value, row, index) => {
               setTimeout(
                 () =>
-                  QRCode.toString(`https://www.factoryun.com/procurement/request/${row.number}`,
+                  QRCode.toString(`https://www.factoryun.com/respositories/detail/${row.slug}`,
                     (err, string) =>
                       (document.getElementById(`manage${row.id}`).innerHTML = string)
                   ),
@@ -133,7 +139,7 @@ export default {
                 that.modalData = row;
                 that.modalData.company = that.user.user.current_company;
                 QRCode.toString(
-                  `https://www.factoryun.com/procurement/request/${row.number}`,
+                  `https://www.factoryun.com/respositories/detail/${row.slug}`,
                   (err, string) =>
                     (document.getElementById("managePrintImg").innerHTML = string)
                 );
@@ -147,12 +153,15 @@ export default {
             sortable: true
           },
           {
-            field: "#",
+            field: "type",
             title: "属性",
-            sortable: true
+            sortable: true,
+            formatter: function(value, row, index) {
+              return value == 1 ? '仓库' : '仓位';
+            }
           },
           {
-            field: "desc",
+            field: "description",
             title: "描述",
             sortable: true
           },
@@ -162,10 +171,10 @@ export default {
             sortable: true
           },
           {
-            field: "#",
+            field: "enabled",
             title: "是否启用",
             formatter: function(value, row, index) {
-              let checkBox = `<input type="checkbox" class="switch" checked="${value || ''}" />`;
+              let checkBox = `<input type="checkbox" class="switch" checked="${value || ''}" disabled />`;
               return checkBox;
             },
             events: {
@@ -175,7 +184,7 @@ export default {
             }
           },
           {
-            field: "id",
+            field: "slug",
             title: "操作",
             formatter: function(value, row, index) {
               let add = `<button class="btn btn-sm btn-success add">添加仓位</button>`,
@@ -185,7 +194,7 @@ export default {
             },
             events: {
               'click .add': function(e, value, row, index) {
-                that.placeRow = { id: 0 };
+                that.placeRow = { id: 0, parent_id: row.id };
                 that.addPlace();
               },
               'click .edit': function(e, value, row, index) {
@@ -193,6 +202,12 @@ export default {
                 that.addStore();
               },
               'click .del': function(e, value, row, index) {
+                that
+                  .$get(`respositories/delete/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#manage #table"), 'id', [row.id]);
+                  }).catch(err => console.error(err));
               }
             }
           }
@@ -231,14 +246,14 @@ export default {
                   <td>操作</td>
                 </tr>
             `;
-            mrow.position.forEach((item, k) => {
+            mrow.children.forEach((item, k) => {
               table += `
                 <tr>
                   <td>${ item.number }</td>
                   <td>${ item.name }</td>
-                  <td>${ item.describe }</td>
+                  <td>${ item.description }</td>
                   <td>
-                    <input type="checkbox" name="iStart" Sid="${item.id}" checked="${ item.switch }" />
+                    <input type="checkbox" name="iStart" Sid="${item.id}" checked="${ item.enabled ? true : false }" disabled />
                   </td>
                   <td>
                     <button class="btn btn-warning btn-xs positionEdit" row="${field}" index="${k}">编辑</button>
@@ -249,8 +264,7 @@ export default {
             })
             table += `</table>`;
             return table;
-          },
-          onEditableSave(field, mrow, oldValue, $el) {}
+          }
         };
       $("#manage #table").bootstrapTable(data);
     },
@@ -274,12 +288,20 @@ export default {
     $("#manage").on('click', '.positionEdit', function() {
       let self = $(this),
         data = that.getAllData($("#manage #table"));
-      console.log(data[self.attr("row")].position[self.attr("index")]);
+        that.placeRow = data[self.attr("row")].children[self.attr("index")];
+        $("#manage #addPosition").modal("show");
     });
     $("#manage").on('click', '.positionDel', function() {
       let self = $(this),
-        data = that.getAllData($("#manage #table"));
-      console.log(data[self.attr("row")].position[self.attr("index")]);
+        data = that.getAllData($("#manage #table")),
+        slug = data[self.attr("row")].children[self.attr("index")].slug;
+      that
+        .$get(`respositories/delete/${slug}`)
+        .then(response => {
+          if (response.status != 200) return false;
+          self.parent().parent().remove();
+        })
+        .catch(err => console.error(err));
     });
   }
 }

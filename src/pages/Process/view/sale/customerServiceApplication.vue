@@ -2,7 +2,7 @@
   <div id="customerServiceApplication">
     <createdCustomer @refresh="refreshed" number></createdCustomer>
     <applyService :active="active"></applyService>
-    <delegateUser :active="active" title="选择通知客服" @refresh="refreshed"></delegateUser>
+    <delegateUser :active="active" title="选择通知客服" type="customer" @refresh="refreshed"></delegateUser>
     <editServicePrice :active="active" @refresh="refreshed"></editServicePrice>
     <div id="toolbar">
       <span class="lead">客服申请表</span>

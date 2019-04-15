@@ -1,7 +1,7 @@
 <template>
   <div id="application">
     <applyService :active="active" @refresh="refreshed"></applyService>
-    <delegateUser :active="active" title="选择委派人员" @refresh="refreshed"></delegateUser>
+    <delegateUser :active="active" title="选择委派人员" type="customer" @refresh="refreshed"></delegateUser>
     <createdReport :active="active" @refresh="childRefreshed"></createdReport>
     <div
       class="modal fade bs-example-modal-lg"
