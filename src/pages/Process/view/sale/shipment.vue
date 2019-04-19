@@ -1,12 +1,7 @@
 <template>
   <div id="shipment">
     <addShipment :shipment="shipment" @refresh="refreshed"></addShipment>
-    <div
-      class="modal fade bs-example-modal-lg"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade bs-example-modal-lg" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div ref="print" id="shipmentOrder" style="text-align: center;">

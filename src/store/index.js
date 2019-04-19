@@ -248,9 +248,9 @@ export default new Vuex.Store({
         ]
       },
       {
-        name: "售后",
-        url: "/AfterSale",
-        indexUrl: "/process.html#/AfterSale",
+        name: "客服",
+        url: "/afterSale",
+        indexUrl: "/process.html#/afterSale",
         active: false,
         child: [
           {
@@ -395,24 +395,40 @@ export default new Vuex.Store({
         {
           name: "审批类型列表",
           url: "/Matters/approvals/type"
-        }
-      ],
-      afterSale: [
-        {
-          name: "待完成任务",
-          url: "/AfterSale"
         },
         {
-          name: "客服申请表",
+          name: "用户组列表",
+          url: "/Matters/userGroup"
+        },
+      ],
+      aftersale: [
+        {
+          name: "待完成任务",
+          url: "/tasks"
+        },
+        {
+          name: "客服申请",
           url: "/AfterSale/application"
         },
         {
-          name: "客服报告列表",
+          name: "客服报价",
+          url: "/AfterSale/offer"
+        },
+        {
+          name: "客服领料",
+          url: "/AfterSale/picking"
+        },
+        {
+          name: "客服报告",
           url: "/AfterSale/report"
         },
         {
-          name: "客服领料申请表",
-          url: "/AfterSale/picking"
+          name: "采购申请",
+          url: "/AfterSale/PR"
+        },
+        {
+          name: "客服打卡",
+          url: "/AfterSale/clock"
         },
         {
           name: "历史客服申请",
@@ -891,7 +907,6 @@ export default new Vuex.Store({
     dateTimePickModal: false,
     customerService: false,
     delegateUser: false,
-    createdReportModal: false,
     //
     entryWorkModal: false,
     changePositionsModal: false,

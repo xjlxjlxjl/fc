@@ -1,10 +1,8 @@
 <template>
   <div id="picking">
-    <div id="afterSaleToolbar">
-      <span class="lead">客服领料申请表</span>
-      <!-- <el-button size="mini">新建领料</el-button> -->
+    <div id="toolbar">
     </div>
-    <table id="afterSaleTable"></table>
+    <table id="table"></table>
   </div>
 </template>
 <script>
@@ -16,16 +14,10 @@ export default {
   methods: {
     tableAjaxData(params) {
       let that = this;
-      // that
-      //   .$get(`repositories/requisition`, params.data)
-      //   .then(response => {
-      //     if (response.status != 200) return false;
-      //     params.success({
-      //       total: 0,
-      //       rows: []
-      //     });
-      //   })
-      //   .catch(err => {});
+      params.success({
+        rows: [{ items: [{}] }],
+        total: 1
+      });
     },
     tableAjaxParams(params) {
       params.page = params.offset / 10 + 1;
@@ -36,11 +28,15 @@ export default {
       let that = this,
         columns = [
           {
-            checkbox: true
+            field: "index",
+            title: "序号",
+            formatter: (value, row, index) => {
+              return `${index + 1}`;
+            }
           },
           {
-            field: "pickId",
-            title: "客服领料单号",
+            field: "qrCode",
+            title: "二维码",
             formatter: (value, row, index) => {
               return `${value}`;
             }
@@ -54,35 +50,21 @@ export default {
           },
           {
             field: "pickId",
-            title: "申请人",
+            title: "创建人",
             formatter: (value, row, index) => {
               return `${value}`;
             }
           },
           {
             field: "pickId",
-            title: "申请日期",
+            title: "创建日期",
             formatter: (value, row, index) => {
               return `${value}`;
             }
           },
           {
             field: "pickId",
-            title: "审核状态",
-            formatter: (value, row, index) => {
-              return `${value}`;
-            }
-          },
-          {
-            field: "pickId",
-            title: "领料状态",
-            formatter: (value, row, index) => {
-              return `${value}`;
-            }
-          },
-          {
-            field: "pickId",
-            title: "客服单号",
+            title: "客服申请单号",
             formatter: (value, row, index) => {
               return `${value}`;
             }
@@ -96,23 +78,39 @@ export default {
           },
           {
             field: "pickId",
-            title: "备注",
+            title: "客户联系人",
             formatter: (value, row, index) => {
               return `${value}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "联系电话",
+            formatter: (value, row, index) => {
+              return `${value}`;
+            }
+          },
+          {
+            field: "check_status",
+            title: "审核状态",
+            formatter: (value, row, index) => {
+              return `${value ? '审核中' : '已审核' }`;
             }
           },
           {
             field: "id",
             title: "操作",
             formatter: (value, row, index) => {
-              return `${value}`;
+              let edit = `<button class="btn btn-success btn-sm">编辑</button>`,
+                del = `<button class="btn btn-danger btn-sm">删除</button>`;
+              return edit + del;
             },
             events: {
               "click .del": ($el, value, row, index) => {
                 that
                   .$post(`/service/delete/${value}`)
                   .then(response => {
-                    that.delTable($("#afterSaleTable"), "id", [value]);
+                    that.delTable($("#table"), "id", [value]);
                   })
                   .catch(err => {});
               }
@@ -120,7 +118,7 @@ export default {
           }
         ],
         data = {
-          toolbar: "#afterSaleToolbar",
+          toolbar: "#picking #toolbar",
           ajax: this.tableAjaxData,
           queryParams: this.tableAjaxParams,
           search: true,
@@ -152,19 +150,42 @@ export default {
               .catch(err => {});
           },
           detailFormatter(field, mrow, oldValue, $el) {
-            let html = [`<p>客服领料明细</p>`];
-            html.push(`<table class="table">`);
-            mrow.detail.forEach(e =>
-              html.push(
-                `<tr><td>物品名称：${e.name}</td><td>数量：${
-                  e.numbers
-                }</td></tr>`
-              )
-            );
-            html.push(`</table>`);
+            let content = `
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>料品编码</td>
+                    <td>料品规格</td>
+                    <td>料品名称</td>
+                    <td>单位</td>
+                    <td>数量</td>
+                    <td>已领数量</td>
+                    <td>待领数量</td>
+                  </tr>
+            `;
+            mrow.items.forEach((e, k) => {
+              content += `
+                <tr>
+                  <td>${ k + 1 }</td>
+                  <td>${ e.code }</td>
+                  <td>${ e.info }</td>
+                  <td>${ e.name }</td>
+                  <td>${ e.unit }</td>
+                  <td>${ e.nums }</td>
+                  <td>${ e.out_num }</td>
+                  <td>${ e.get_num }</td>
+                </tr>
+              `
+            });
+            content += `
+                </tbody>
+              </table>
+            `;
+            return content;
           }
         };
-      $("#afterSaleTable").bootstrapTable(data);
+      $("#picking #table").bootstrapTable(data);
     }
   },
   mounted() {

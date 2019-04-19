@@ -45,16 +45,7 @@ import OQCHistory from "@/pages/Process/view/OQC/history";
 // 物流
 import Logistics from "@/pages/Process/view/logistics/logistics";
 // 售后
-import AfterSale from "@/pages/Process/view/afterSale/afterSale";
-// import afterSaleTasks from "@/pages/Process/view/afterSale/tasks";
-import application from "@/pages/Process/view/afterSale/application";
-import afterSaleReport from "@/pages/Process/view/afterSale/report";
-import picking from "@/pages/Process/view/afterSale/picking";
-import history from "@/pages/Process/view/afterSale/history";
-import analysis from "@/pages/Process/view/afterSale/analysis";
-import badProblem from "@/pages/Process/view/afterSale/badProblem";
-import praise from "@/pages/Process/view/afterSale/praise";
-import sharedFiles from "@/pages/Process/view/afterSale/sharedFiles";
+import AfterSale from "@/pages/Process/control/tabs?v=5";
 // 财务
 import Finance from "@/pages/Process/control/tabs?v=2";
 // 人事
@@ -71,6 +62,7 @@ import mattersBreak from "@/pages/Process/view/matters/mattersBreak";
 import entry from "@/pages/Process/view/matters/entry";
 import approval from "@/pages/Process/view/matters/approval";
 import approvalType from "@/pages/Process/view/matters/approvalType";
+import userGroup from "@/pages/Process/view/matters/userGroup";
 // 系统设置
 import System from "@/pages/Process/view/system/system";
 import basic from "@/pages/Process/view/system/basic";
@@ -273,44 +265,6 @@ export default new Router({
       path: "/AfterSale",
       name: "AfterSale",
       component: AfterSale,
-      children: [
-        {
-          path: "/AfterSale",
-          component: saleTasks
-        },
-        {
-          path: "/AfterSale/application",
-          component: application
-        },
-        {
-          path: "/AfterSale/report",
-          component: afterSaleReport
-        },
-        {
-          path: "/AfterSale/picking",
-          component: picking
-        },
-        {
-          path: "/AfterSale/history",
-          component: history
-        },
-        {
-          path: "/AfterSale/analysis",
-          component: analysis
-        },
-        {
-          path: "/AfterSale/badProblem",
-          component: badProblem
-        },
-        {
-          path: "/AfterSale/praise",
-          component: praise
-        },
-        {
-          path: "/AfterSale/sharedFiles",
-          component: sharedFiles
-        }
-      ]
     },
     {
       path: "/Finance",
@@ -369,7 +323,11 @@ export default new Router({
         {
           path: "/Matters/approvals/type",
           component: approvalType
-        }
+        },
+        {
+          path: "/Matters/userGroup",
+          component: userGroup
+        },
       ]
     },
     {

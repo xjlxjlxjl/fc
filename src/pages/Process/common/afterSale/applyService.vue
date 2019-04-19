@@ -1,103 +1,96 @@
 <template>
-  <transition name="el-fade-in-linear">
-    <div id="applyService" v-show="customerService">
-      <div class="Curtain"></div>
-      <div class="modalBox">
-        <div class="modalBoxMain">
-          <div class="modalBoxMainHeader">
-            <div class="modalBoxMainHeaderTitle">客服报价</div>
-            <div class="modalBoxMainHeaderBtn" @click="close">
-              <i class="el-message-box__close el-icon-close"></i>
-            </div>
+  <div class="modal fade" id="applyService">
+    <div class="modal-dialog" role="document" style="width: 980px;max-width: 100%;">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div id="quotation">
+            <el-form :model="form" ref="form" :rules="rules" label-position="left" size="mini" label-width="80px">
+              <el-form-item label="客服单号" prop="order_number">
+                <el-input v-model="form.order_number"></el-input>
+              </el-form-item>
+              <el-form-item label="客户公司" prop="customer_company_name">
+                <el-input v-model="form.customer_company_name"></el-input>
+              </el-form-item>
+              <el-form-item label="联系人" prop="linkman">
+                <el-input v-model="form.linkman"></el-input>
+              </el-form-item>
+              <el-form-item label="联系电话" prop="mobile">
+                <el-input v-model="form.mobile"></el-input>
+              </el-form-item>
+              <el-form-item label="备注" prop="remark">
+                <el-input type="textarea" v-model="form.remark"></el-input>
+              </el-form-item>
+              <el-form-item label="明细" size="mini" style="margin-left: 0;">
+                <el-table :data="form.tableData" size="mini">
+                  <el-table-column label="序号" width="50px">
+                    <template slot-scope="{ $index }">
+                      <span>{{ $index + 1 }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    v-for="(item,index) in tableLabel"
+                    :prop="item.id"
+                    :key="index"
+                    :label="item.label"
+                  >
+                    <template slot-scope="{ row }">
+                      <el-input v-model="row[item.prop]" :placeholder="item.label" size="mini"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="50px">
+                    <template slot-scope="{ $index }">
+                      <el-button type="text" @click="form.tableData.splice($index, 1)">
+                        <i style="font-size: 2.1rem;" class="el-icon-delete"></i>
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
+            </el-form>
+            <el-button type="primary" size="mini" style="width: 100%;" @click="form.tableData.push({ name: '', number: '' })">
+              <i class="el-icon-plus"></i>
+            </el-button>
           </div>
-          <div class="modalBoxMainContent">
-            <div id="quotation">
-              <el-form :model="form" ref="form" label-position="left" label-width="120px">
-                <el-form-item label="联系人" size="mini">
-                  <el-input v-model="form.linkman"></el-input>
-                </el-form-item>
-                <el-form-item label="客户公司" size="mini">
-                  <el-input v-model="form.customer_company_name"></el-input>
-                </el-form-item>
-                <!-- <el-form-item label="价格" size="mini">
-                  <el-input v-model="form.price"></el-input>
-                </el-form-item>
-                <el-form-item label="额外费用" size="mini">
-                  <el-table :data="form.other_detail" size="mini" height="150">
-                    <el-table-column
-                      v-for="(item,index) in other_detail"
-                      :prop="item.id"
-                      :key="index"
-                      :label="item.label"
-                    >
-                      <template slot-scope="{ row }">
-                        <el-input v-model="row[item.prop]" :placeholder="item.label" size="mini"></el-input>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </el-form-item>-->
-                <el-form-item label="明细" size="mini" style="margin-left: 0;">
-                  <el-table :data="form.tableData" size="mini" height="250">
-                    <el-table-column
-                      v-for="(item,index) in tableLabel"
-                      :prop="item.id"
-                      :key="index"
-                      :label="item.label"
-                    >
-                      <template slot-scope="{ row }">
-                        <el-input v-model="row[item.prop]" :placeholder="item.label" size="mini"></el-input>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </el-form-item>
-              </el-form>
-            </div>
-          </div>
-          <div class="modalBoxMainBtn">
-            <el-button size="mini" type="primary" @click="commit">确定</el-button>
-          </div>
+        </div>
+        <div class="modal-footer" style="text-align: center;">
+          <el-button size="mini" type="info" data-dismiss="modal">取消</el-button>
+          <el-button size="mini" type="primary" @click="commit">保存</el-button>
         </div>
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 <script>
-import "@/assets/css/modal.css";
 import { mapState } from "vuex";
 export default {
   name: "applyService",
   data() {
     return {
       form: {
+        order_number: "",
         linkman: "",
         customer_company_name: "",
-        // price: "",
-        // other_detail: [
-        //   {
-        //     name: "",
-        //     money: ""
-        //   }
-        // ],
+        remark: "",
         tableData: [
           {
             name: "",
             number: ""
-            // price: ""
           }
         ]
       },
-      // other_detail: [
-      //   { label: "额外费用名称", prop: "name" },
-      //   { label: "额外费用金额", prop: "money" }
-      // ],
       tableLabel: [
         { label: "料品编号", prop: "code" },
-        { label: "品名", prop: "name" },
         { label: "规格", prop: "info" },
+        { label: "料品名称/费用名称", prop: "name" },
         { label: "单位", prop: "unit" },
         { label: "数量", prop: "number" }
-        // { label: "价格", prop: "price" }
-      ]
+      ],
+      rules: {
+        order_number: [{ required: true, message: '请填写客服单号', trigger: 'blur' }],
+        customer_company_name: [{ required: true, message: '请填写客户公司名', trigger: 'blur' }],
+        linkman: [{ required: true, message: '请填写联系人', trigger: 'blur' }],
+        mobile: [{ required: true, message: '请填写联系电话', trigger: 'blur' }]
+      }
     };
   },
   props: {
@@ -176,7 +169,9 @@ export default {
   },
   watch: {
     customerService(val, oldVal) {
+      $("#application #applyService").modal("toggle");
       if (!val) return false;
+      this.form.order_number = this.active.order_number;
       this.form.linkman = this.active.customer_linkman;
       this.form.customer_company_name = this.active.customer_company_name;
     },
@@ -207,14 +202,19 @@ export default {
 </script>
 <style lang="less">
 #applyService {
-  .modalBoxMain {
-    width: 800px;
-    max-width: 100%;
-  }
   #quotation {
     .el-form {
+      display: flex;
+      flex-wrap: wrap;
       .el-form-item {
+        width: 25%;
+        padding-left: 5px;
+        padding-right: 5px;
+        &:nth-child(5) {
+          width: 100%;
+        }
         &:last-child {
+          width: 100%;
           .el-form-item__content {
             margin-left: 0 !important;
             table {

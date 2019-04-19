@@ -1,43 +1,20 @@
 <template>
-  <div id="report">
-    <div id="toolbar"></div>
+  <div id="PR">
+    <div id="toolbar">
+    </div>
     <table id="table"></table>
   </div>
 </template>
+
 <script>
 export default {
-  name: "report",
+  name: "PR",
   data() {
     return {
-      user: JSON.parse(localStorage.getItem("user") || "{}"),
-      date: []
+
     };
   },
   methods: {
-    tableAjaxData(params) {
-      let that = this;
-      that
-        .$get(`service/report`, params.data)
-        .then(response => {
-          if (response.status != 200) return false;
-          params.success({
-            rows: response.data.list,
-            total: response.data.pagination.total
-          });
-        })
-        .catch(err => console.error(err));
-    },
-    tableAjaxParams(params) {
-      let p = {
-        page: params.offset / params.limit + 1,
-        per_page: params.limit,
-        member: this.user.user.display_name,
-        start_at: this.date[0],
-        end_at: this.date[1]
-      };
-      p.number = params.search || undefined;
-      return p;
-    },
     init() {
       let that = this,
         columns = [
@@ -170,15 +147,15 @@ export default {
           },
           onEditableSave(field, mrow, oldValue, $el) {}
         };
-      $("#report #table").bootstrapTable(data);
+      $("#PR #table").bootstrapTable(data);
     }
   },
   mounted() {
     this.init();
   }
-};
+}
 </script>
 <style lang="less">
-#report {
+#PR {
 }
 </style>

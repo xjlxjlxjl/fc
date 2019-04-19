@@ -31,8 +31,8 @@
               <el-form-item label="手机号" prop="contact_mobile">
                 <el-input v-model="form.contact_mobile"></el-input>
               </el-form-item>
-              <el-form-item label="业务员" prop="salesman_id">
-                <el-select v-model="form.salesman_id">
+              <el-form-item label="业务员" prop="clerk_id">
+                <el-select v-model="form.clerk_id">
                   <el-option 
                     v-for="(item, index) in form.salesman_arr" 
                     :key="index"
@@ -78,6 +78,15 @@
                   ></el-option>
                 </el-select>
                 <button class="btn btn-xs btn-add" @click="payMentModal = !payMentModal">新增</button>
+              </el-form-item>
+              <el-form-item label="付款方式">
+                <el-select v-model="form.payment_type_id">
+                  <el-option v-for="item in paymenType"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="备注">
                 <el-input type="text" v-model="form.remark" placeholder="备注"></el-input>
@@ -134,7 +143,7 @@
                       <el-input v-model="row.price"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="shipping_schedule" label="出货计划" width="90">
+                  <el-table-column prop="shipping_schedule_s" label="出货计划" width="90">
                     <template slot-scope="{ $index }">
                       <button class="btn btn-sm" @click="shipmentModal = !shipmentModal;index = $index">编辑计划</button>
                     </template>
@@ -153,7 +162,7 @@
                   </el-table-column>
                 </el-table>
               </el-form-item>
-              <el-button type="info" size="mini" style="width: 100%;" @click="form.items.push({ material_id: '', material_code: '', name: '', specifications: '', quantity: '', price: '', shipping_schedule: [], remark: '' })">
+              <el-button v-if="!row.id" type="info" size="mini" style="width: 100%;" @click="form.items.push({ material_id: '', material_code: '', name: '', specifications: '', quantity: '', price: '', shipping_schedule_s: [], remark: '' })">
                 <i class="el-icon-plus"></i>
               </el-button>
             </div>
@@ -181,7 +190,7 @@
           </el-form>
         </div>
         <div class="modal-footer">
-          <el-button size="mini" type="primary" @click="onSubmit">立即创建</el-button>
+          <el-button size="mini" type="primary" @click="onSubmit">保存</el-button>
         </div>
       </div>
     </div>
@@ -203,20 +212,20 @@
         <div class="modal-body">
           <el-form size="mini" ref="form" label-width="60px">
             <el-form-item label="联系人">
-              <el-input></el-input>
+              <el-input v-model="acgModal.name"></el-input>
             </el-form-item>
             <el-form-item label="职务">
-              <el-input></el-input>
+              <el-input v-model="acgModal.position"></el-input>
             </el-form-item>
             <el-form-item label="手机号">
-              <el-input></el-input>
+              <el-input v-model="acgModal.mobile"></el-input>
             </el-form-item>
             <el-form-item label="邮箱">
-              <el-input></el-input>
+              <el-input v-model="acgModal.email"></el-input>
             </el-form-item>
             <el-form-item class="widthFull text-center">
-              <el-button type="info">取消</el-button>
-              <el-button type="info">保存</el-button>
+              <el-button type="info" data-dismiss="modal">取消</el-button>
+              <el-button type="info" @click="addConsignee">保存</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -417,7 +426,7 @@
   <div class="modal fade shipment" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <el-table :data="form.items[index].shipping_schedule" size="mini" border stripe>
+        <el-table :data="form.items[index].shipping_schedule_s" size="mini" border stripe>
           <el-table-column prop="date" label="出货日期" width="250">
             <template slot-scope="{ row }">
               <el-date-picker
@@ -436,13 +445,13 @@
           </el-table-column>
           <el-table-column width="97">
             <template slot-scope="{ $index }">
-              <el-button type="text" @click="form.items[index].shipping_schedule.splice($index, 1)">
+              <el-button type="text" @click="form.items[index].shipping_schedule_s.splice($index, 1)">
                 <i class="el-icon-delete" style="font-size: 2.1rem;"></i>
               </el-button>
             </template>
           </el-table-column>          
         </el-table>
-        <el-button type="info" size="mini" style="width: 100%;" @click="form.items[index].shipping_schedule.push({ date: '', number: '' })">
+        <el-button type="info" size="mini" style="width: 100%;" @click="form.items[index].shipping_schedule_s.push({ date: '', number: '' })">
           <i class="el-icon-plus"></i>
         </el-button>
       </div>
@@ -490,7 +499,7 @@ export default {
         contact_s: "",
         contact: "",
         contact_mobile: "",
-        salesman_id: "",
+        clerk_id: "",
         salesman_arr: [],
         consignee: "",
         consignee_s: "",
@@ -499,6 +508,7 @@ export default {
         invoice_type_id: "",
         terms_of_payment_arr: [],
         terms_of_payment: "",
+        payment_type_id: "",
         currency: "",
         delivery_period: "",
         delivery_method: "",
@@ -514,7 +524,8 @@ export default {
             specifications: "",
             quantity: "",
             price: "",
-            shipping_schedule: [],
+            shipping_schedule_s: [],
+            shipping_schedule: "",
             remark: ""
           }
         ]
@@ -577,6 +588,12 @@ export default {
         selection: []
       },
       materialModal: false,
+      acgModal: {
+        name: "",
+        position: "",
+        mobile: "",
+        email: ""
+      },
       addConsigneeState: 0,
       addConsigneeModal: false,
       payMentModal: false,
@@ -585,6 +602,9 @@ export default {
       contact: [],
       contractModal: false
     };
+  },
+  props: {
+    row: Object
   },
   methods: {
     ...mapMutations(["setStateData"]),
@@ -611,21 +631,15 @@ export default {
         .catch(err => {});
     },
     onSubmit() {
-      let that = this;
+      let that = this, url = "";
+      that.form.items.forEach(e => e.shipping_schedule = JSON.stringify(e.shipping_schedule_s));
+      that.form.terms_of_contract = this.editor.getData();
+      if (that.row.id) url = `orders/company/edit/${that.row.id}`;
+      else url = `orders/company/create`;
+
       that
-        .$post("orders/company/create", that.form)
+        .$post(url, that.form)
         .then(response => {
-          if (response.status != 200) {
-            that.form.products.push({
-              product_id: "",
-              product_model: "",
-              product_name: "",
-              product_specification: "",
-              quantity: "",
-              price: "",
-              is_stock: 0
-            });
-          }
           if (response.status != 200) return false;
           that.$emit("refresh");
           that.close();
@@ -635,33 +649,49 @@ export default {
     },
     clearForm() {
       this.form = {
-        delivery_period: "",
-        member_id: "",
+        customer_id: 0,
+        customer_code: "",
+        customer_name: "",
+        contact_arr: [],
+        contact_s: "",
+        contact: "",
+        contact_mobile: "",
+        clerk_id: "",
+        salesman_arr: [],
         consignee: "",
+        consignee_s: "",
         mobile: "",
         address: "",
         invoice_type_id: "",
-        payment_type_id: "",
+        terms_of_payment_arr: [],
+        terms_of_payment: "",
+        currency: "",
+        delivery_period: "",
+        delivery_method: "",
+        packing_method: "",
+        postcode: "",
+        terms_of_contract: "",
         remark: "",
-        products: [
+        items: [
           {
-            product_id: "",
-            product_model: "",
-            product_name: "",
-            product_specification: "",
+            material_id: "",
+            material_code: "",
+            name: "",
+            specifications: "",
             quantity: "",
             price: "",
-            is_stock: 0
+            shipping_schedule_s: [],
+            shipping_schedule: "",
+            remark: ""
           }
         ]
       };
     },
     close() {
-      $('#order #addOrderModal').modal('show')
+      $('#order #addOrderModal').modal('toggle')
     },
     setCustomers() {
       let customer = this.getData($("#order .customer #table")).pop();
-
       this.form.contact_s = "";
       this.form.contact = "";
       this.form.contact_mobile = "";
@@ -673,7 +703,7 @@ export default {
       this.form.terms_of_payment = "";
       this.form.address = "";
 
-      this.form.salesman_id = customer.salesman_information.id;
+      this.form.clerk_id = customer.salesman_information.id;
       this.form.salesman_arr = [customer.salesman_information];
 
       this.form.customer_id = customer.id;
@@ -687,10 +717,51 @@ export default {
 
       this.customerModal = false;
     },
+    addConsignee() {
+      if (this.form.customer_id)
+        this.$post(`customers/create_contact`, {
+          customer_id: '',
+          contact: JSON.stringify([this.acgModal])
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          
+          this.form.contact_arr.push({
+            name: this.acgModal.name,
+            position: this.acgModal.position,
+            mobile: this.acgModal.mobile,
+            email: this.acgModal.email
+          });
+
+          switch (this.addConsigneeState) {
+            case 1:
+              this.form.contact_s = this.form.contact_arr.length - 1
+              this.form.contact = this.acgModal.name;
+              this.form.contact_mobile = this.acgModal.mobile;
+              break;
+            case 2:
+              this.form.consignee = this.form.contact_arr.length - 1
+              this.form.consignee_s = this.acgModal.name;
+              this.form.mobile = this.acgModal.mobile;
+              break;
+          }
+
+          this.acgModal = {
+            name: "",
+            position: "",
+            mobile: "",
+            email: ""
+          };
+
+          this.addConsigneeModal = !this.addConsigneeModal;
+        })
+        .catch(err => console.error(err));
+      else 
+        this.$message({ message: "请先选择客户", type: "error" });
+    },
     userChange(val, name) {
       this.form[name] = this.form.contact_arr[val].name;
       this.form[`${name == 'consignee'? 'mobile' : 'contact_mobile' }`] = this.form.contact_arr[val].mobile;
-      console.log(this.form)
     },
     getMater(search) {
       let that = this,
@@ -712,7 +783,6 @@ export default {
               that.mater.data.push(item);
             }
           that.mater.pagination = response.data.pagination;
-          $("#purchasePlan .materList").modal("show");
         })
         .catch(err => loading.close());
     },
@@ -727,9 +797,73 @@ export default {
       this.form.items[this.index].unit = this.mater.selection.item_unit;
       this.form.items.push({});
       this.form.items.pop();
-      $("#order .material").modal("hide");
+      this.materialModal = !this.materialModal
     },
-    addPayment() {},
+    addPayment() {
+      let text = '',
+        self = this.payMenTerms;
+      if (self.deposit.pay_rate) text += `合同签订后，付 ${self.deposit.pay_rate} %订单总额;`;
+      if (self.shipment_before.pay_rate) text += `出货前，付 ${self.shipment_before.pay_rate} %订单总额;`;
+      if (self.shipment_after.length) 
+        self.shipment_after.forEach(e => {
+          if (e.pay_rate) text += `出货后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+        })
+      if (self.accept_after.length)
+        self.accept_after.forEach(e => {
+          if (e.pay_rate) text += `验收后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+        })
+      if (self.accept_after_balance.pay_rate) text += `验收后 ${self.accept_after_balance.day} 天，付清订单余款 ${self.accept_after_balance.pay_rate} %`;
+      if (self.billing_after.length)
+        self.billing_after.forEach(e => {
+          if (e.pay_rate) text += `票到后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+        })
+      if (self.billing_after_balance.pay_rate) text += `票到后 ${self.billing_after_balance.day} 天，付清订单余款 ${self.billing_after_balance.pay_rate}%;`;
+
+      this.form.terms_of_payment = JSON.stringify({
+        text: text,
+        value: this.payMenTerms
+      })
+      this.form.terms_of_payment_arr.push({
+        text: text,
+        value: this.payMenTerms
+      });
+      
+      this.payMentModal = !this.payMentModal;
+      this.payMenTerms = {
+        deposit: {
+          pay_rate: ''
+        },
+        shipment_before: {
+          pay_rate: ''
+        },
+        shipment_after: [
+          {
+            day: '',
+            pay_rate: ''
+          }
+        ],
+        accept_after: [
+          {
+            day: '',
+            pay_rate: ''
+          }
+        ],
+        accept_after_balance: {
+          day: '',
+          pay_rate: ''
+        },
+        billing_after: [
+          {
+            day: '',
+            pay_rate: ''
+          }
+        ],
+        billing_after_balance: {
+          day: '',
+          pay_rate: ''
+        }
+      }
+    },
     initCKEditor() {
       const that = this;
       class UploadAdapter {
@@ -793,7 +927,7 @@ export default {
       params.per_page = params.limit;
       params.address = params.search;
       params.work = "visit";
-      // params.salesman_id = this.user.user.id;
+      // params.clerk_id = this.user.user.id;
       return params;
     },
     init() {
@@ -1051,6 +1185,90 @@ export default {
   mounted() {
     this.initCKEditor();
     this.init();
+    const that = this;
+    $('#order #addOrderModal').on('shown.bs.modal', function () {
+      console.log(that.row)
+      if (that.row.id) {
+        that.form.customer_id = that.row.customer_id;
+        that.form.customer_code = that.row.customer_code;
+        that.form.customer_name = that.row.customer_name;
+        that.form.contact_arr = that.row.customer_contract;
+        that.form.contact = that.row.contract;
+        that.form.contact_mobile = that.row.contract_mobile;
+        that.form.clerk_id = that.row.clerk_id;
+        that.form.salesman_arr = [{ id: that.row.clerk_id, display_name: that.row.clerk_name }];
+        that.form.consignee = that.row.consignee;
+        that.form.mobile = that.row.mobile;
+        that.form.contact_arr.forEach((e, k) => {
+          if (e.name == that.form.contact) that.form.contact_s = k;
+          if (e.name == that.form.consignee) that.form.consignee_s = k;
+        });
+        that.form.address = that.row.address;
+        that.form.invoice_type_id = that.row.invoice_type_id;
+        that.form.terms_of_payment_arr = [that.row.terms_of_payment];
+        that.form.terms_of_payment = JSON.stringify(that.row.terms_of_payment);
+        that.form.payment_type_id = that.row.payment_type_id;
+        that.form.delivery_period = that.row.delivery_period || that.dateParse(new Date);
+        that.form.remark = that.row.remark;
+        that.form.packing_method = that.row.packing_method;
+        that.form.postcode = that.row.postcode;
+        that.form.delivery_method = that.row.delivery_method;
+        that.form.items = [];
+        that.row.items.forEach(e => that.form.items.push({
+          id: e.id,
+          material_id: e.material_id,
+          material_code: e.material_code,
+          name: e.material_name,
+          specifications: e.material_specification,
+          unit: e.material_unit,
+          quantity: e.quantity,
+          price: e.purchase_price,
+          shipping_schedule_s: e.shipping_schedule,
+          remark: e.remark
+        }));
+        that.editor.setData(that.row.terms_of_contract);
+      } else 
+        that.form = {
+          customer_id: 0,
+          customer_code: "",
+          customer_name: "",
+          contact_arr: [],
+          contact_s: "",
+          contact: "",
+          contact_mobile: "",
+          clerk_id: "",
+          salesman_arr: [],
+          consignee: "",
+          consignee_s: "",
+          mobile: "",
+          address: "",
+          invoice_type_id: "",
+          terms_of_payment_arr: [],
+          terms_of_payment: "",
+          payment_type_id: 0,
+          currency: "",
+          delivery_period: "",
+          delivery_method: "",
+          packing_method: "",
+          postcode: "",
+          terms_of_contract: "",
+          remark: "",
+          items: [
+            {
+              material_id: "",
+              material_code: "",
+              name: "",
+              specifications: "",
+              unit: "",
+              quantity: "",
+              price: "",
+              shipping_schedule_s: [],
+              shipping_schedule: "",
+              remark: ""
+            }
+          ]
+        }
+    });
   },
   created() {
     this.getInvoice();

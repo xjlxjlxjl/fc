@@ -14,7 +14,7 @@
 </template>
 <script>
 import createdCustomer from "@/pages/Process/common/createdCustomer";
-import applyService from "@/pages/Process/common/applyService";
+import applyService from "@/pages/Process/common/afterSale/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
 import editServicePrice from "@/pages/Process/common/editServicePrice";
 
@@ -84,13 +84,24 @@ export default {
       });
     },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#customerServiceApplication #table"));
     },
     init() {
       let that = this,
         columns = [
           {
-            checkbox: true
+            field: "index",
+            title: "序号",
+            formatter: function(value, row, index) {
+              return index + 1;
+            }
+          },
+          {
+            field: "qrCode",
+            title: "二维码",
+            formatter: function(value, row, index) {
+              return value;
+            }
           },
           {
             field: "service_number",
@@ -98,34 +109,29 @@ export default {
             sortable: true
           },
           {
+            field: "business_man_name",
+            title: "申请人",
+            editable: {
+              type: "text",
+              title: "申请人",
+              emptytext: "空"
+            }
+          },
+          {
             field: "created_at",
-            title: "创建日期",
+            title: "申请日期",
             sortable: true
           },
           {
-            field: "business_man_name",
-            title: "申请联系人",
-            editable: {
-              type: "text",
-              title: "申请联系人",
-              emptytext: "空"
-            }
-          },
-          {
-            field: "customer_demand",
-            title: "问题描述",
-            editable: {
-              type: "text",
-              title: "问题描述",
-              emptytext: "空"
-            }
+            field: "customer_company_name",
+            title: "客户公司名"
           },
           {
             field: "customer_linkman",
             title: "客户联系人",
             editable: {
               type: "text",
-              title: "客户名",
+              title: "客户联系人",
               emptytext: "空",
               validate: v => {
                 if (!v) return "不能为空";
@@ -134,11 +140,11 @@ export default {
           },
           {
             field: "customer_contact",
-            title: "客户联系方式",
+            title: "联系电话",
             sortable: true,
             editable: {
               type: "text",
-              title: "联系方式",
+              title: "联系电话",
               emptytext: "空",
               validate: v => {
                 if (!v) return "不能为空";
@@ -146,12 +152,12 @@ export default {
             }
           },
           {
-            field: "customer_other_contact",
-            title: "客户其他联系方式",
+            field: "address",
+            title: "客服地址",
             sortable: true,
             editable: {
               type: "text",
-              title: "客户其他联系方式",
+              title: "客服地址",
               emptytext: "无",
               validate: v => {
                 if (!v) return "不能为空";
@@ -159,83 +165,12 @@ export default {
             }
           },
           {
-            field: "specification",
-            title: "规格",
-            sortable: true,
-            editable: {
-              type: "text",
-              title: "规格",
-              emptytext: "空",
-              validate: v => {
-                if (!v) return "不能为空";
-              }
-            }
-          },
-          {
             field: "process_name",
-            title: "订单处理状态"
-          },
-          {
-            field: "deal_mans",
-            title: "委派人员",
-            sortable: true,
-            formatter: (value, row, index) => {
-              return row.deal_mans.join(",");
-            }
-          },
-          {
-            field: "price",
-            title: "总价",
-            // editable: {
-            //   type: "number",
-            //   title: "总价",
-            //   emptytext: "未报价",
-            //   validate: v => {
-            //     if (!v) return "不能为空";
-            //   }
-            // },
-            formatter: (value, row, index) => {
-              return `${value || "未报价"}`;
-            }
-          },
-          {
-            field: "discount_price",
-            title: "优惠价",
-            // editable: {
-            //   type: "number",
-            //   title: "优惠卷",
-            //   emptytext: "未报价",
-            //   validate: v => {
-            //     if (!v) return "不能为空";
-            //   }
-            // },
-            formatter: (value, row, index) => {
-              return `${value || "未报价"}`;
-            }
-          },
-          {
-            field: "yingshou",
-            title: "应收价",
-            formatter: (value, row, index) => {
-              return `${row.price ? row.price - row.discount_price : "未报价"}`;
-            }
-          },
-          {
-            field: "service_status_name",
-            title: "服务状态"
-          },
-          {
-            field: "remark",
-            title: "备注",
-            editable: {
-              type: "text",
-              title: "备注",
-              emptytext: "空"
-            }
+            title: "处理进度"
           },
           {
             field: "id",
-            title: "",
+            title: "操作",
             formatter: (value, row, index) => {
               let del = [
                 '<button class="btn btn-danger del btn-sm">　删除　</button>'
@@ -323,89 +258,44 @@ export default {
               .catch(err => {});
           },
           detailFormatter(field, mrow, oldValue, $el) {
-            let html = [];
-            if (mrow.customer_files.length) {
-              html.push(
-                `<p class="lead" align="left">客户上传文件</p><ul class="list-inline" align="left">`
-              );
-              mrow.customer_files.forEach(e => {
-                let ess = e.url.split(".").pop();
-                switch (ess) {
-                  case "jpg":
-                  case "png":
-                  case "jpeg":
-                    html.push(
-                      `<li><a href="${e.url}" target="_blank"><img src="${
-                        e.url
-                      }" class="img-rounded" style="width: 100px;"></a></li>`
-                    );
-                    break;
-                  default:
-                    html.push(
-                      `<li><a href="${e.url}" target="_blank">${e.url
-                        .split("/")
-                        .pop()}</a></li>`
-                    );
-                    break;
-                }
-              });
-              html.push(`</ul>`);
-            }
-            if (mrow.business_files.length) {
-              html.push(
-                `<p class="lead" align="left">业务上传文件</p><ul class="list-inline" align="left">`
-              );
-              mrow.business_files.forEach(e => {
-                let ess = e.url.split(".").pop();
-                switch (ess) {
-                  case "jpg":
-                  case "png":
-                  case "jpeg":
-                    html.push(
-                      `<li><a href="${e.url}" target="_blank"><img src="${
-                        e.url
-                      }" class="img-rounded" style="width: 100px;"></a></li>`
-                    );
-                    break;
-                  default:
-                    html.push(
-                      `<li><a href="${e.url}" target="_blank">${e.url
-                        .split("/")
-                        .pop()}</a></li>`
-                    );
-                    break;
-                }
-              });
-              html.push(`</ul>`);
-            }
-            if (mrow.service_files.length) {
-              html.push(
-                `<p class="lead" align="left">客服上传文件</p><ul class="list-inline" align="left">`
-              );
-              mrow.service_files.forEach(e => {
-                let ess = e.url.split(".").pop();
-                switch (ess) {
-                  case "jpg":
-                  case "png":
-                  case "jpeg":
-                    html.push(
-                      `<li><a href="${e.url}" target="_blank"><img src="${
-                        e.url
-                      }" class="img-rounded" style="width: 100px;"></a></li>`
-                    );
-                    break;
-                  default:
-                    html.push(
-                      `<li><a href="${e.url}" target="_blank">${e.url
-                        .split("/")
-                        .pop()}</a></li>`
-                    );
-                    break;
-                }
-              });
-              html.push(`</ul>`);
-            }
-            return html.join("");
+            let content = `
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>订单编号</td>
+                    <td>产品SN码</td>
+                    <td>料品编码</td>
+                    <td>料品规格</td>
+                    <td>料品名称</td>
+                    <td>出货日期</td>
+                    <td>是否过保</td>
+                    <td>产品故障描述</td>
+                    <td>图片</td>
+                  </tr>
+            `;
+            mrow.business_files.forEach((e, k) => {
+              content += `
+                <tr>
+                  <td>${ k + 1 }</td>
+                  <td>${ e.order_number }</td>
+                  <td>${ e.sn }</td>
+                  <td>${ e.code }</td>
+                  <td>${ e.specification }</td>
+                  <td>${ e.name }</td>
+                  <td>${ e.date }</td>
+                  <td>${ e.guarantee }</td>
+                  <td>${ e.desc }</td>
+                  <td>
+                    <a href="${ e.url }" target="_blank">
+                      <img src="${ e.url }" style="max-width: 50px;max-height: 50px;">
+                    </a>
+                  </td>
+                </tr>
+              `
+            });
+            content += `</tbody></table>`;
+            return content;
           }
         };
       $("#customerServiceApplication #table").bootstrapTable(data);

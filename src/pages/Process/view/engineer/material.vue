@@ -1,7 +1,7 @@
 <template>
   <div id="material">
     <transfeRecord :data="record"></transfeRecord>
-    <addMaterialModal></addMaterialModal>
+    <addMaterialModal @refresh="refreshed"></addMaterialModal>
     <barcode></barcode>
     <div id="toolbar">
       <el-button size="mini" @click="addMaterial">新建料品</el-button>
@@ -30,6 +30,16 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
+      this
+        .$get(`respositories/materials/list`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => console.error(err));
       params.success({
         rows: [{ id: 20 },{ id: 30 },],
         total: 2
@@ -46,31 +56,31 @@ export default {
             checkbox: true
           },
           {
-            field: "#",
+            field: "material_number",
             title: "料品编码",
             sortable: true
           },
           {
-            field: "#",
+            field: "name",
             title: "料品名称",
             sortable: true
           },
           {
-            field: "#",
+            field: "material_specification",
             title: "料品规格",
             sortable: true
           },
           {
-            field: "#",
+            field: "item_unit",
             title: "单位",
             sortable: true
           },
           {
-            field: "id",
+            field: "barcode",
             title: "条码",
             formatter: function(value, row, index) {
               let img = `<svg id="barCode${index}"></svg>`;
-              setTimeout(() => JsBarcode(`#barCode${index}`, value, barCodeStyle), 500);
+              setTimeout(() => JsBarcode(`#barCode${index}`, value || 'Non-existent', barCodeStyle), 500);
               return img;
             },
             events: {
@@ -80,7 +90,7 @@ export default {
             }
           },
           {
-            field: "category",
+            field: "material_category.name",
             title: "料品类别",
             formatter: function(value, row, index) {
               const checkbox = `
@@ -103,12 +113,11 @@ export default {
             },
             events: {
               'change input': function(e, value, row, index) {
-                console.log(123)
               },
             }
           },
           {
-            field: "attribute",
+            field: "attributes",
             title: "料品属性",
             formatter: function(value, row, index) {
               const checkbox = `
@@ -128,278 +137,276 @@ export default {
             },
             events: {
               'change input': function(e, value, row, index) {
-                console.log(321)
               },
             }
           },
           {
-            field: "#",
+            field: "respository.name",
             title: "仓库",
             sortable: true
           },
           {
-            field: "#",
+            field: "length",
             title: "长度",
             sortable: true
           },
           {
-            field: "#",
+            field: "width",
             title: "宽度",
             sortable: true
           },
           {
-            field: "#",
+            field: "height",
             title: "高度",
             sortable: true
           },
           {
-            field: "#",
+            field: "weight",
             title: "重量",
             sortable: true
           },
           {
-            field: "#",
+            field: "purchase_unit",
             title: "采购单位",
             sortable: true
           },
           {
-            field: "#",
+            field: "sales_unit",
             title: "销售单位",
             sortable: true
           },
           {
-            field: "#",
+            field: "bom_unit",
             title: "Bom单位",
             sortable: true
           },
           {
-            field: "#",
+            field: "children",
             title: "关联子料编码",
             sortable: true
           },
           {
-            field: "#",
+            field: "pinyin_code",
             title: "拼音码",
             sortable: true
           },
           {
-            field: "#",
+            field: "material_quality",
             title: "材质",
             sortable: true
           },
           {
-            field: "#",
+            field: "picture_number",
             title: "图档号",
             sortable: true
           },
           {
-            field: "#",
+            field: "manufacturer",
             title: "生产厂家",
             sortable: true
           },
           {
-            field: "#",
+            field: "mold_number",
             title: "模具号",
             sortable: true
           },
           {
-            field: "#",
+            field: "standard_model",
             title: "标准型号",
             sortable: true
           },
           {
-            field: "#",
+            field: "material_level",
             title: "料品等级",
             sortable: true
           },
           {
-            field: "#",
+            field: "brand_name.name",
             title: "品牌",
             sortable: true
           },
           {
-            field: "#",
+            field: "check",
             title: "是否需检",
-            sortable: true
+            formatter: function(value, row, index) {
+              return `${value ? "需要" : "不需要" }`
+            }
           },
           {
-            field: "#",
+            field: "min_inventory",
             title: "最小库存量",
             sortable: true
           },
           {
-            field: "#",
+            field: "max_inventory",
             title: "最大库存量",
             sortable: true
           },
           {
-            field: "#",
+            field: "safety_stock",
             title: "安全库存量",
             sortable: true
           },
           {
-            field: "#",
+            field: "stocking_volume",
             title: "备货量",
             sortable: true
           },
           {
-            field: "#",
+            field: "purchase_cycle",
             title: "采购周期",
             sortable: true
           },
           {
-            field: "#",
+            field: "image",
             title: "图片",
             sortable: true
           },
           {
-            field: "#",
+            field: "project_drawing_number",
             title: "工程图号",
             sortable: true
           },
           {
-            field: "#",
+            field: "drawing_working",
             title: "加工图",
             sortable: true
           },
           {
-            field: "#",
+            field: "drawing_approve",
             title: "承认图",
             sortable: true
           },
           {
-            field: "#",
+            field: "drawing_2d",
             title: "2D图纸",
             sortable: true
           },
           {
-            field: "#",
+            field: "drawing_3d",
             title: "3D图纸",
             sortable: true
           },
           {
-            field: "#",
+            field: "drawing_pdf",
             title: "pdf图纸",
             sortable: true
           },
           {
-            field: "#",
+            field: "assembly_drawing",
             title: "组装图",
             sortable: true
           },
           {
-            field: "#",
+            field: "begin_price",
             title: "期初单价",
             sortable: true
           },
           {
-            field: "#",
+            field: "enter_warehouse_price",
             title: "入库单价",
             sortable: true
           },
           {
-            field: "#",
+            field: "out_warehouse_price",
             title: "出库单价",
             sortable: true
           },
           {
-            field: "#",
+            field: "enter_warehouse_amount",
             title: "入库金额",
             sortable: true
           },
           {
-            field: "#",
+            field: "out_warehouse_amount",
             title: "出库金额",
             sortable: true
           },
           {
-            field: "#",
+            field: "enter_warehouse_quantity",
             title: "入库数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "out_warehouse_quantity",
             title: "出库数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "end_period_quantity",
             title: "期末数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "end_period_amount",
             title: "期末金额",
             sortable: true
           },
           {
-            field: "#",
+            field: "revise_quantity",
             title: "调整数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "revise_amount",
             title: "调整金额",
             sortable: true
           },
           {
-            field: "#",
+            field: "tax",
             title: "税额",
             sortable: true
           },
           {
-            field: "#",
+            field: "real_inventory",
             title: "库存可用数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "way_quantity",
             title: "在途数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "take_up",
             title: "占用数量",
             sortable: true
           },
           {
-            field: "#",
+            field: "member",
             title: "创建人",
             sortable: true
           },
           {
-            field: "#",
+            field: "created_at",
             title: "创建日期",
             sortable: true
           },
           {
-            field: "#",
+            field: "audit.check_last_name",
             title: "审核人",
             sortable: true
           },
           {
-            field: "#",
+            field: "audit.check_at",
             title: "审核日期",
             sortable: true
           },
           {
-            field: "#",
+            field: "audit.check_status",
             title: "审核状态",
-            sortable: true
+            formatter: function(value, row, index) {
+              return `${ value ? "已审核" : "未审核" }`;
+            }
           },
           {
-            field: "#",
+            field: "editor.last_name",
             title: "修改人",
             sortable: true
           },
           {
-            field: "#",
+            field: "updated_at",
             title: "修改日期",
-            sortable: true
-          },
-          {
-            field: "#",
-            title: "删除日期",
             sortable: true
           },
           {
@@ -458,6 +465,9 @@ export default {
           onEditableSave: (field, mrow, oldValue, $el) => {}
         };
       $("#material #table").bootstrapTable(data);
+    },
+    refreshed() {
+      this.refresh($("#material #table"));
     },
     addMaterial() {
       $("#material #addMaterial").modal("show");

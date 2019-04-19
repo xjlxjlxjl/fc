@@ -27,7 +27,12 @@
         <saleCustomerServiceApplication v-else-if="activeTabs == '/Sale/customerServiceApplication'"></saleCustomerServiceApplication>
         <saleCustomerServiceQuotation v-else-if="activeTabs == '/Sale/customerServiceQuotation'"></saleCustomerServiceQuotation>
         <!-- 售后 -->
-        <saleApplication v-else-if="activeTabs == '/AfterSale/application'"></saleApplication>
+        <afterSaleApplication v-else-if="activeTabs == '/AfterSale/application'"></afterSaleApplication>
+        <afterSaleOffer v-else-if="activeTabs == '/AfterSale/offer'"></afterSaleOffer>
+        <afterSalePicking v-else-if="activeTabs == '/AfterSale/picking'"></afterSalePicking>
+        <afterSaleReport v-else-if="activeTabs == '/AfterSale/report'"></afterSaleReport>
+        <afterSalePr v-else-if="activeTabs == '/AfterSale/PR'"></afterSalePr>
+        <afterSaleClock v-else-if="activeTabs == '/AfterSale/clock'"></afterSaleClock>
         <!-- 采购 -->
         <purchaseApply v-else-if="activeTabs == '/Purchase/apply'"></purchaseApply>
         <purchaseBillAnalysis v-else-if="activeTabs == '/Purchase/billAnalysis'"></purchaseBillAnalysis>
@@ -72,7 +77,12 @@ import saleCustomerServiceApplication from "@/pages/Process/view/sale/customerSe
 import saleCustomerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
 
 // 售后
-import saleApplication from "@/pages/Process/view/afterSale/application";
+import afterSaleApplication from "@/pages/Process/view/afterSale/application";
+import afterSaleOffer from "@/pages/Process/view/afterSale/offer";
+import afterSalePicking from "@/pages/Process/view/afterSale/picking";
+import afterSaleReport from "@/pages/Process/view/afterSale/report";
+import afterSalePr from "@/pages/Process/view/afterSale/PR";
+import afterSaleClock from "@/pages/Process/view/afterSale/clock";
 
 // 采购
 import purchaseApply from "@/pages/Process/view/purchase/apply";
@@ -134,8 +144,14 @@ export default {
 
     saleOrder: saleOrder,
     saleCustomerServiceApplication: saleCustomerServiceApplication,
-    saleApplication: saleApplication,
     saleCustomerServiceQuotation: saleCustomerServiceQuotation,
+
+    afterSaleApplication: afterSaleApplication,
+    afterSaleOffer: afterSaleOffer,
+    afterSalePicking: afterSalePicking,
+    afterSaleReport: afterSaleReport,
+    afterSalePr: afterSalePr,
+    afterSaleClock: afterSaleClock,
 
     purchaseApply: purchaseApply,
     purchaseBillAnalysis: purchaseBillAnalysis,

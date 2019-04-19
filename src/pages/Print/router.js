@@ -6,6 +6,7 @@ import purchasePlan from '@/pages/Print/view/purchasePlan'
 import purchaseOrder from '@/pages/Print/view/purchaseOrder'
 import purchasEntrust from '@/pages/Print/view/purchasEntrust'
 import purchasReceive from '@/pages/Print/view/purchasReceive'
+import saleOrder from '@/pages/Print/view/saleOrder'
 Vue.use(Router);
 
 
@@ -32,6 +33,10 @@ export default new Router({
       path: "/purchasReceive/:id",
       name: "purchasReceive",
       component: purchasReceive
+    }, {
+      path: "/saleOrder/:id",
+      name: "saleOrder",
+      component: saleOrder
     }
   ]
 })
