@@ -1245,7 +1245,7 @@ export default {
           invoice_type_id: "",
           terms_of_payment_arr: [],
           terms_of_payment: "",
-          payment_type_id: 0,
+          payment_type_id: "",
           currency: "",
           delivery_period: "",
           delivery_method: "",

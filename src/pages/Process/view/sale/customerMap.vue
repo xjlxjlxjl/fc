@@ -43,7 +43,7 @@ export default {
       params: {
         lat: 0,
         lng: 0,
-        distance: 10000
+        distance: 10
       },
       tableData: []
     };

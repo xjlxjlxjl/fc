@@ -3,6 +3,30 @@
     <addOrderModal :row="row" @refresh="refreshed"></addOrderModal>
     <addShipment :shipment="shipment" :goods="goods" @refresh="refreshed"></addShipment>
     <serviceApplication></serviceApplication>
+  
+    <div class="modal fade" id="contractMiniModal" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>合同</td>
+                  <td>上传日期</td>
+                </tr>
+                <tr v-for="item in contractList" :key="item.date">
+                  <td><a href="javascript:;" @click="showPDF(item.url)">{{ item.name }}</a></td>
+                  <td>{{ item.created_at }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer" style="text-align: center;">
+            <el-button type="info" data-dismiss="modal">关闭</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- 合同 -->
     <div class="modal fade" id="contractModal" role="dialog">
       <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
@@ -98,6 +122,7 @@ export default {
       pageNumPending: null,
       scale: 1,
 
+      contractList: [],
       shipping_schedule: []
     };
   },
@@ -323,8 +348,10 @@ export default {
             },
             events: {
               "click .contract": function(event, value, row, index) {
-                this.showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/kl6666_aliyun_oss/lwhwm2ltrz4f/LK140-XXXX-103-289 承认图.PDF');
-                $("#order #contractModal").modal("show");
+                that.contractList = row.contract_files;
+                $("#order #contractMiniModal").modal("show");
+                // this.showPDF('https://factoryun.oss-cn-shenzhen.aliyuncs.com/kl6666_aliyun_oss/lwhwm2ltrz4f/LK140-XXXX-103-289 承认图.PDF');
+                // $("#order #contractModal").modal("show");
               }
             }
           },
@@ -349,14 +376,17 @@ export default {
             formatter: (value, row, index) => {
               let schedule = `<button class="schedule btn btn-sm btn-success">添加排单</button>`,
                 server = `<button class="server btn btn-sm btn-danger">申请客服</button>`,
-                upload = `<button class="upload btn btn-sm btn-primary">上传合同</button>`,
+                upload = `
+                  <input type="file" class="upload" style="position: absolute;opacity: 0; width: 68px;height: 28px;">
+                  <button class="btn btn-sm btn-primary">上传合同</button>
+                `,
                 print = `<a href="/print.html#/saleOrder/${row.id}" target="_blank">
                   <button class="print btn btn-sm btn-primary">　打印　</button>
                 </a>`,
                 edit = `<button class="edit btn btn-sm btn-success">　编辑　</button>`,
                 del = `<button class="del btn btn-sm btn-danger">　删除　</button>`;
-              if (!row.operate_status) return schedule + server + upload + print + edit + del;
-              else return server + upload + print + edit + del;
+              if (!row.operate_status) return `<div style="position: relative">${upload + schedule + server + print + edit + del}</div>`;
+              else return `<div style="position: relative">${upload + server + print + edit + del}</div>`;
             },
             events: {
               "click .schedule": (event, value, row, index) => {
@@ -384,6 +414,38 @@ export default {
               },
               "click .server": function() {
                 $("#order #serviceApplication").modal("show");
+              },
+              "change .upload": function(event, value, row, index) {
+                for (let k in $(this)[0].files) {
+                  if(isNaN(parseInt(k))) return false;
+                  let form = new FormData();
+                  form.append("upload", $(this)[0].files[k]);
+                  form.append("slug", "order_module");
+                  that
+                    .$upload("files/upload", form)
+                    .then(response => {
+                      if (response.status != 200) return false;
+                      let arr = [response.data.upload.id];
+                      row.contract_files.forEach(e => arr.push(e.id));
+                      row.items.forEach(e => {
+                        e.price = e.purchase_price;
+                        e.shipping_schedule = JSON.stringify(e.shipping_schedule)
+                      });
+                      that.editAjaxData(row.id, {
+                        customer_id: row.customer_id,
+                        contact: row.contact,
+                        contact_mobile: row.contact_mobile,
+                        clerk_id: row.clerk_id,
+                        consignee: row.consignee,
+                        mobile: row.mobile,
+                        address: row.address,
+                        delivery_period: row.delivery_period || that.dateParse(new Date()),
+                        items: row.items,
+                        contract_file_id: arr.join(',')
+                      });
+                    })
+                    .catch(err => console.error(err));
+                }
               }
             }
           }
@@ -454,10 +516,19 @@ export default {
         };
       $("#order #table").bootstrapTable(data);
     },
+    editAjaxData(id, params) {
+      this
+        .$post(`orders/company/edit/${id}`, params)
+        .then(result => {
+          if (result.status != 200) return false;
+          console.log(result)
+          this.refreshed();
+        }).catch(err => console.error(err));
+    },
     showPDF(url) {
       let _this = this;
+      $("#order #contractModal").modal("show");
       PDFJS.getDocument(url).then(function(pdf) {
-
         _this.pdfDoc = pdf;
         for (let i = 1; i < pdf.numPages + 1; i++) {
           if (i == 1) $("#canvasBox").empty();
