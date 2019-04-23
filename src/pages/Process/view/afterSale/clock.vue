@@ -13,6 +13,21 @@ export default {
     return {};
   },
   methods: {
+    tableAjaxData(params) {
+      this
+        .$get(`service/signin/records`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => console.error(err));
+    },
+    tableAjaxParams(params) {
+      return params;
+    },
     init() {
       let that = this,
         columns = [
@@ -24,27 +39,27 @@ export default {
             }
           },
           {
-            field: "customer_conpany_name",
+            field: "customer_company_name",
             title: "客服公司名",
             sortable: true
           },
           {
-            field: "customer_name",
+            field: "service_number",
             title: "客服申请单号",
             sortable: true
           },
           {
-            field: "customer_linkman",
+            field: "last_name",
             title: "打卡人",
             sortable: true
           },
           {
-            field: "customer_mobile",
+            field: "created_at",
             title: "打卡时间",
             sortable: true
           },
           {
-            field: "specification",
+            field: "address",
             title: "打卡地址",
             sortable: true
           }

@@ -16,7 +16,7 @@
 </template>
 <script>
 import indexChart from "@/pages/Index/common/indexChart";
-import createdCustomer from "@/pages/Process/common/createdCustomer";
+import createdCustomer from "@/pages/Process/common/sale/createdCustomer";
 import PDFJS from "pdfjs-dist";
 
 export default {

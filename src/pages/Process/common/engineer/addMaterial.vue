@@ -69,10 +69,10 @@
             </el-form-item>
             <el-form-item class="widthFull" label="仓库" prop="respository">
               <el-select v-model="form.respository">
-                <el-option 
+                <el-option
                   v-for="item in storeList"
                   :key="item.id"
-                  :label="item.name" 
+                  :label="item.name"
                   :value="item.id"
                 ></el-option>
               </el-select>
@@ -101,58 +101,37 @@
               <el-input v-model="form.project_drawing_number" placeholder="工程图号"></el-input>
             </el-form-item>
             <el-form-item label="加工图" prop="drawing_working">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form.drawing_working">
+              <el-upload action="aaa" :before-upload="upload" :file-list="drawing_working">
                 <el-button size="mini" type="info" @click="uploadType = 1">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="组装图" prop="assembly_drawing">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form.assembly_drawing">
+              <el-upload action="aaa" :before-upload="upload" :file-list="assembly_drawing">
                 <el-button size="mini" type="info" @click="uploadType = 2">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="承认图" prop="drawing_approve">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form.drawing_approve">
+              <el-upload action="aaa" :before-upload="upload" :file-list="drawing_approve">
                 <el-button size="mini" type="info" @click="uploadType = 3">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="图片" prop="image">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form.image">
+              <el-upload action="aaa" :before-upload="upload" :file-list="image">
                 <el-button size="mini" type="info" @click="uploadType = 4">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="2d图纸" prop="drawing_2d">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form['drawing_2d']">
+              <el-upload action="aaa" :before-upload="upload" :file-list="drawing_2d">
                 <el-button size="mini" type="info" @click="uploadType = 5">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="3d图纸" prop="drawing_3d">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form['drawing_3d']">
+              <el-upload action="aaa" :before-upload="upload" :file-list="drawing_3d">
                 <el-button size="mini" type="info" @click="uploadType = 6">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="pdf图纸" prop="drawing_pdf">
-              <el-upload
-                action="aaa"
-                :before-upload="upload"
-                :file-list="form.drawing_pdf">
+              <el-upload action="aaa" :before-upload="upload" :file-list="drawing_pdf">
                 <el-button size="mini" type="info" @click="uploadType = 7">点击上传</el-button>
               </el-upload>
             </el-form-item>
@@ -160,7 +139,7 @@
         </div>
         <div class="modal-footer">
           <el-button type="info" size="mini" data-dismiss="modal">取消</el-button>
-          <el-button type="info" size="mini" @click="submit">保存</el-button>          
+          <el-button type="info" size="mini" @click="submit">保存</el-button>
         </div>
       </div>
     </div>
@@ -172,31 +151,38 @@ export default {
   data() {
     return {
       form: {
-        name: '',
-        material_specification: '',
-        length: '',
+        name: "",
+        material_specification: "",
+        length: "",
         check: 1,
-        drawing_working: [],
-        drawing_working_ids: [],
-        assembly_drawing: [],
-        assembly_drawing_ids: [],
-        drawing_approve: [],
-        drawing_approve_ids: [],
-        image: [],
-        image_ids: [],
-        'drawing_2d': [],
-        'drawing_2d_ids': [],
-        'drawing_3d': [],
-        'drawing_3d_ids': [],
-        drawing_pdf_ids: [],
-        drawing_pdf: []
+        drawing_working_ids: "",
+        assembly_drawing_ids: "",
+        drawing_approve_ids: "",
+        image_ids: "",
+        drawing_2d_ids: "",
+        drawing_3d_ids: "",
+        drawing_pdf_ids: ""
       },
       rules: {
-        name: [{ required: true, message: '请输入料品名称', trigger: 'blur' }],
-        material_specification: [{ required: true, message: '请输入料品规格', trigger: 'blur' }],
-        length: [{ required: true, message: '请输入长度, 并且为数字', trigger: 'blur' }],
-        respository: [{ required: true, message: '请选择仓库', trigger: 'change' }]
+        name: [{ required: true, message: "请输入料品名称", trigger: "blur" }],
+        material_specification: [
+          { required: true, message: "请输入料品规格", trigger: "blur" }
+        ],
+        length: [
+          { required: true, message: "请输入长度, 并且为数字", trigger: "blur" }
+        ],
+        respository: [
+          { required: true, message: "请选择仓库", trigger: "change" }
+        ]
       },
+      drawing_working: [],
+      assembly_drawing: [],
+      drawing_approve: [],
+      image: [],
+      drawing_2d: [],
+      drawing_3d: [],
+      drawing_pdf: [],
+
       uploadType: 0,
       storeList: [],
       attrList: [],
@@ -205,8 +191,7 @@ export default {
   },
   methods: {
     getStore() {
-      this
-        .$get(`respositories/list`)
+      this.$get(`respositories/list`)
         .then(response => {
           if (response.status != 200) return false;
           this.storeList = response.data.list;
@@ -214,8 +199,7 @@ export default {
         .catch(err => console.error(err));
     },
     getAttr() {
-      this
-        .$get(`project/material_attr`)
+      this.$get(`project/material_attr`)
         .then(response => {
           if (response.status != 200) return false;
           this.attrList = response.data.list;
@@ -223,8 +207,7 @@ export default {
         .catch(err => console.error(err));
     },
     getCate() {
-      this
-        .$get(`project/categories`)
+      this.$get(`project/categories`)
         .then(response => {
           if (response.status != 200) return false;
           this.categoriesList = response.data.list;
@@ -232,8 +215,7 @@ export default {
         .catch(err => console.error(err));
     },
     getFileslist() {
-      this
-        .$get(`files/folders`)
+      this.$get(`files/folders`)
         .then(response => {
           if (response.status != 200) return false;
           console.log(response);
@@ -243,41 +225,54 @@ export default {
     submit() {
       this.$refs["form"].validate(v => {
         if (!v) return false;
-        this
-          .$post(`respositories/materials/create`, this.form)
+        this.$post(`respositories/materials/create`, this.form)
           .then(response => {
             if (response.status != 200) return false;
             this.$emit("refresh");
             $("#material #addMaterial").modal("hide");
+            this.$refs["form"].resetFields();
+            this.clearForm();
           })
           .catch(err => console.error(err));
       });
     },
+    clearForm() {
+      this.drawing_working = [];
+      this.assembly_drawing = [];
+      this.drawing_approve = [];
+      this.image = [];
+      this.drawing_2d = [];
+      this.drawing_3d = [];
+      this.drawing_pdf = [];
+    },
     upload(file) {
       let form = new FormData(),
         that = this,
-        param = '',
+        param = "",
         type = {
-          1: () => { param = 'drawing_working'; },
-          2: () => { param = 'assembly_drawing'; },
-          3: () => { param = 'drawing_approve'; },
-          4: () => { param = 'image'; },
-          5: () => { param = 'drawing_2d'; },
-          6: () => { param = 'drawing_3d'; },
-          7: () => { param = 'drawing_pdf'; }
+          1: () => (param = "drawing_working"),
+          2: () => (param = "assembly_drawing"),
+          3: () => (param = "drawing_approve"),
+          4: () => (param = "image"),
+          5: () => (param = "drawing_2d"),
+          6: () => (param = "drawing_3d"),
+          7: () => (param = "drawing_pdf")
         };
       form.append("upload", file);
-      form.append("slug", "engineer");
+      form.append("slug", "repository_material");
       that
         .$upload("files/upload", form)
         .then(response => {
           if (response.status != 200) return false;
           type[that.uploadType]();
-          that.form[param].push({
+          that[param].push({
             name: file.name,
             url: response.data.url
           });
+          if (that.form[`${param}_ids`] == "") that.form[`${param}_ids`] = [];
+          else that.form[`${param}_ids`] = that.form[`${param}_ids`].split(',');
           that.form[`${param}_ids`].push(response.data.upload.id);
+          that.form[`${param}_ids`] = that.form[`${param}_ids`].join(',');
         })
         .catch(err => console.error(err));
     }

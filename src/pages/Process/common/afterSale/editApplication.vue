@@ -87,7 +87,7 @@
                   :on-preview="show"
                   multiple
                   :file-list="row.img">
-                  <i class="el-icon-plus"></i>
+                  <el-button size="small" type="primary">点击上传</el-button>
                 </el-upload>
               </template>
             </el-table-column>
@@ -161,25 +161,32 @@ export default {
     }
   }
   .el-table {
-    td {
-      padding-top: 5px;
-      padding-bottom: 5px;
-      text-align: center;
-      .el-upload-list {
-        .el-upload-list__item {
-          width: 68px;
-          height: 30px;
-          margin: 0px;
-          box-sizing: border-box;
-        }
-      }
-      .el-upload--picture-card {
-        width: 68px;
-        height: 30px;
-        line-height: 28px;
-        box-sizing: border-box;
-        input[type=file] {
-          display: none;
+    .el-table__body-wrapper {
+      .el-table__body {
+        .el-table__row {
+          td {
+            &:nth-child(10) {
+              padding: 0;
+              .cell {
+                .el-upload-list {
+                  .el-upload-list__item {
+                    width: 50%;
+                    height: auto;
+                    margin: 0;
+                  }
+                }
+                .el-upload {
+                  border: none;
+                  width: 82px;
+                  height: 32px;
+                  line-height: 30px;
+                  .el-upload__input {
+                    display: none;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

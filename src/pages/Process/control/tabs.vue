@@ -48,6 +48,7 @@
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
         <!-- 工程 -->
         <engineerMaterial v-else-if="activeTabs == '/Engineer/material'"></engineerMaterial>
+        <engineerBom v-else-if="activeTabs == '/Engineer/BOM'"></engineerBom>
         <!-- 仓库 -->
         <storeManage v-else-if="activeTabs == '/store/manage'"></storeManage>
         <storeStock v-else-if="activeTabs == '/store/stock'"></storeStock>
@@ -100,6 +101,7 @@ import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
 
 // 工程
 import engineerMaterial from "@/pages/Process/view/engineer/material";
+import engineerBom from "@/pages/Process/view/engineer/BOM";
 
 // 仓库
 import storeManage from "@/pages/Process/view/store/manage";
@@ -167,6 +169,7 @@ export default {
     purchaseUnhealthy: purchaseUnhealthy,
 
     engineerMaterial: engineerMaterial,
+    engineerBom: engineerBom,
 
     storeManage: storeManage,
     storeStock: storeStock,

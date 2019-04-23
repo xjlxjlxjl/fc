@@ -51,7 +51,7 @@
   </div>
 </template>
 <script>
-import createdCustomer from "@/pages/Process/common/createdCustomer";
+import createdCustomer from "@/pages/Process/common/sale/createdCustomer";
 
 export default {
   name: "customer",

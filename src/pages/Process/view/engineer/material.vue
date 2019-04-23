@@ -40,10 +40,6 @@ export default {
           });
         })
         .catch(err => console.error(err));
-      params.success({
-        rows: [{ id: 20 },{ id: 30 },],
-        total: 2
-      });
     },
     tableAjaxParams(params) {
       return params;
@@ -63,7 +59,14 @@ export default {
           {
             field: "name",
             title: "料品名称",
-            sortable: true
+            editable: {
+              type: "text",
+              title: "料品名称",
+              emptytext: "空",
+              validate: v => {
+                if (!v) return "不能为空";
+              }
+            }
           },
           {
             field: "material_specification",
@@ -419,6 +422,13 @@ export default {
             events: {
               'click .btn': function(e, value, row, index) {
                 that.record = [];
+                that
+                  .$get(`respositories/materials/rollover_record/${row.slug}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    console.log(response);
+                  })
+                  .catch(err => console.error(err));
                 $("#material #transfeRecord").modal("show");
               }
             }
@@ -432,6 +442,13 @@ export default {
             },
             events: {
               'click .del': function(e, value, row, index) {
+                that
+                  .$get(`respositories/materials/delete/${row.slug}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#material #table"), 'id', [row.id]);
+                  })
+                  .catch(err => console.error(err));
               }
             }
           }
@@ -461,8 +478,18 @@ export default {
           pageList: [10, 25, 50, 100, "All"],
           detailView: false,
           columns: columns,
-          detailFormatter: (index, row, $el) => {},
-          onEditableSave: (field, mrow, oldValue, $el) => {}
+          detailFormatter(index, row, $el) {},
+          onEditableSave(field, mrow, oldValue, $el) {
+            that
+              .$post(`respositories/materials/edit/${mrow.slug}`,{
+                name: mrow.name,
+                respository: mrow.respository.id
+              })
+              .then(response => {
+                if (response.status != 200) return false;
+              })
+              .catch(err => console.error(err));
+          }
         };
       $("#material #table").bootstrapTable(data);
     },

@@ -30,10 +30,16 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{ id: 20 }],
-        total: 1
-      });
+      this
+        .$get(`respositories/materials/list`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
       return params;
@@ -53,7 +59,15 @@ export default {
           {
             field: "name",
             title: "料品名称",
-            sortable: true
+            sortable: true,
+            editable: {
+              type: "text",
+              title: "料品名称",
+              emptytext: "空",
+              validate: v => {
+                if (!v) return "不能为空";
+              }
+            }
           },
           {
             field: "material_specification",
@@ -70,10 +84,7 @@ export default {
             title: "条码",
             formatter: function(value, row, index) {
               let img = `<svg id="barCode${index}"></svg>`;
-              setTimeout(
-                () => JsBarcode(`#barCode${index}`, value, barCodeStyle),
-                500
-              );
+              setTimeout(() => JsBarcode(`#barCode${index}`, value || 'Non-existent', barCodeStyle), 500);
               return img;
             },
             events: {
@@ -384,7 +395,9 @@ export default {
           {
             field: "audit.check_status",
             title: "审核状态",
-            sortable: true
+            formatter: function(value, row, index) {
+              return `${ value ? "已审核" : "未审核" }`;
+            }
           },
           {
             field: "editor.last_name",
@@ -411,6 +424,13 @@ export default {
             events: {
               "click .btn": function(e, value, row, index) {
                 that.record = [];
+                that
+                  .$get(`respositories/materials/rollover_record/${row.slug}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    console.log(response);
+                  })
+                  .catch(err => console.error(err));
                 $("#stock #transfeRecord").modal("show");
               }
             }
@@ -423,7 +443,15 @@ export default {
               return del;
             },
             events: {
-              "click .del": function(e, value, row, index) {}
+              "click .del": function(e, value, row, index) {
+                that
+                  .$get(`respositories/materials/delete/${row.slug}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#stock #table"), 'id', [row.id]);
+                  })
+                  .catch(err => console.error(err));
+              }
             }
           }
         ],
@@ -451,7 +479,17 @@ export default {
           detailView: false,
           columns: columns,
           detailFormatter(field, mrow, oldValue, $el) {},
-          onEditableSave(field, mrow, oldValue, $el) {}
+          onEditableSave(field, mrow, oldValue, $el) {
+            that
+              .$post(`respositories/materials/edit/${mrow.slug}`,{
+                name: mrow.name,
+                respository: mrow.respository.id
+              })
+              .then(response => {
+                if (response.status != 200) return false;
+              })
+              .catch(err => console.error(err));
+          }
         };
 
       $("#stock #table").bootstrapTable(data);

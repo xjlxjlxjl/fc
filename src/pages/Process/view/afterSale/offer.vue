@@ -25,10 +25,16 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{ item: [{},{}] }],
-        total: 1
-      });
+      this
+        .$get(`/service/quoted_price`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
       return params;

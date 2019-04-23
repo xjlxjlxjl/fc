@@ -4,7 +4,7 @@
     <applyService :active="active" @refresh="refreshed"></applyService>
     <delegateUser :active="active" title="选择委派人员" type="customer" @refresh="refreshed"></delegateUser>
     <report :active="active"></report>
-    <editApplication></editApplication>
+    <editApplication @refresh="refreshed" number="0" :row="row"></editApplication>
     <div id="toolbar">
     </div>
     <table id="table"></table>
@@ -16,7 +16,7 @@ import Qrmodel from "@/pages/Process/common/afterSale/qrCode";
 import applyService from "@/pages/Process/common/afterSale/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
 import report from "@/pages/Process/common/afterSale/report";
-import editApplication from "@/pages/Process/common/afterSale/editApplication";
+import editApplication from "@/pages/Process/common/sale/createdCustomer";
 
 export default {
   name: "application",
@@ -25,7 +25,9 @@ export default {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       url: '',
       active: {},
-      tableData: []
+      tableData: [],
+      row: {},
+      geolocation: new BMap.Geolocation()
     };
   },
   components: {
@@ -121,7 +123,7 @@ export default {
             sortable: true
           },
           {
-            field: "customer_name",
+            field: "customer_company_name",
             title: "客户公司名",
             editable: {
               type: "text",
@@ -168,7 +170,7 @@ export default {
             }
           },
           {
-            field: "service_status_name",
+            field: "process_name",
             title: "处理进度"
           },
           {
@@ -179,18 +181,62 @@ export default {
                 edit = `<button class="btn btn-success edit btn-sm">　编辑　</button>`,
                 apply = `<button class="btn btn-primary apply btn-sm">客服报价</button>`,
                 delegate = `<button class="btn btn-warning delegate btn-sm">指派客服</button>`,
+                sign = `<button class="btn btn-primary sign btn-sm">　打卡　</button>`,
                 success = `<button class="btn btn-success success btn-sm">完成客服</button>`,
                 report = `<button class="btn btn-warning report btn-sm">客服报告</button>`;
-              return delegate + apply + report + success + del + edit;
+              if (row.process != 4) return sign + delegate + apply + report + success + del + edit;
+              else return sign + delegate + apply + report + del + edit;
             },
             events: {
+              "click .sign": function($el, value, row, index) {
+                that.geolocation.getCurrentPosition(
+                  function(r) {
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                      that
+                        .$post(`personnels/siginin/create`, {
+                          work: "service",
+                          signin_address: {
+                            address:
+                              r.address.province +
+                              r.address.city +
+                              r.address.district +
+                              r.address.street,
+                            x: r.longitude,
+                            y: r.latitude
+                          }
+                        })
+                        .then(response => {
+                          if (response.status != 200) return false;
+                          that
+                            .$post(`service/bind_signin`, { signin_id: response.data.id, service_id: row.id })
+                            .then(result => {
+                              if (result.status != 200) return false;
+                              that.$message({ message: "打卡成功", type: "success" });
+                            })
+                        })
+                        .catch(err => console.error(err));
+                    } else
+                      that.$message({ message: "浏览器不支持获取定位", type: "error" });
+                  },
+                  { enableHighAccuracy: true }
+                );
+              },
               "click .del": ($el, value, row, index) => {
                 that
                   .$post(`/service/delete/${value}`)
                   .then(response => {
                     that.delTable($("#table"), "id", [value]);
                   })
-                  .catch(err => {});
+                  .catch(err => console.error(err));
+              },
+              "click .success": function($el, value, row, index) {
+                that
+                  .$post(`service/update_process/${value}`, { process: 4 })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(err => console.error(err));
               },
               "click .apply": ($el, value, row, index) => {
                 that.active = row;
@@ -204,8 +250,9 @@ export default {
                 that.active = row;
                 $("#application #report").modal("show");
               },
-              "click .edit": () => {
-                $("#application #editApplication").modal("show");
+              "click .edit": ($el, value, row, index) => {
+                that.row = row;
+                $("#application #createdCustomer").modal("show");
               }
             }
           }
@@ -243,43 +290,48 @@ export default {
               .catch(err => {});
           },
           detailFormatter(field, mrow, oldValue, $el) {
-            let table = `
+            let content = `
               <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>订单编号</td>
+                    <td>产品SN码</td>
+                    <td>料品编码</td>
+                    <td>料品规格</td>
+                    <td>料品名称</td>
+                    <td>出货日期</td>
+                    <td>是否过保</td>
+                    <td>产品故障描述</td>
+                    <td>图片</td>
+                  </tr>
+            `;
+            mrow.orders.forEach((e, k) => {
+              content += `
                 <tr>
-                  <td>序号</td>
-                  <td>订单编号</td>
-                  <td>产品SN码</td>
-                  <td>料品编码</td>
-                  <td>料品规格</td>
-                  <td>料品名称</td>
-                  <td>出货日期</td>
-                  <td>是否过保</td>
-                  <td>产品故障描述</td>
-                  <td>图片</td>
-                </tr>
-            `;
-            table += `
-              <tr>
-                <td>序号</td>
-                <td>订单编号</td>
-                <td>产品SN码</td>
-                <td>料品编码</td>
-                <td>料品规格</td>
-                <td>料品名称</td>
-                <td>出货日期</td>
-                <td>是否过保</td>
-                <td>产品故障描述</td>
-                <td>`;
-            mrow.business_files.forEach(e => table += '<a href="' + e.url + '" target="_blank"><img src="' + e.url + '" style="max-width: 50px; max-height: 50px;"></a>');
-            mrow.business_files.forEach(e => table += '<a href="' + e.url + '" target="_blank"><img src="' + e.url + '" style="max-width: 50px; max-height: 50px;"></a>');
-            mrow.business_files.forEach(e => table += '<a href="' + e.url + '" target="_blank"><img src="' + e.url + '" style="max-width: 50px; max-height: 50px;"></a>');
-            mrow.business_files.forEach(e => table += '<a href="' + e.url + '" target="_blank"><img src="' + e.url + '" style="max-width: 50px; max-height: 50px;"></a>');
-
-            table += `</td>
-              </tr>
-            `;
-            table += `</table>`;
-            return table;
+                  <td>${ k + 1 }</td>
+                  <td>${ e.order_no }</td>
+                  <td>${ e.product_sn }</td>
+                  <td>${ e.material_code }</td>
+                  <td>${ e.material_specification }</td>
+                  <td>${ e.material_name }</td>
+                  <td>${ e.ship_date }</td>
+                  <td>${ e.is_protected ? '否' : '是' }</td>
+                  <td>${ e.problem }</td>
+                  <td>`;
+                
+                for (const item of e.images_url) {
+                  content += `
+                    <a href="${ item.url }" target="_blank">
+                      <img src="${ item.url }" style="max-width: 50px;max-height: 50px;">
+                    </a>
+                  `;
+                }
+              content += `</td></tr>`;
+              
+            });
+            content += `</tbody></table>`;
+            return content;
           }
         };
       $("#application #table").bootstrapTable(data);

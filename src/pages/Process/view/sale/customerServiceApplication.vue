@@ -1,6 +1,6 @@
 <template>
   <div id="customerServiceApplication">
-    <createdCustomer @refresh="refreshed" number></createdCustomer>
+    <createdCustomer @refresh="refreshed" number="0" :row="row"></createdCustomer>
     <applyService :active="active"></applyService>
     <delegateUser :active="active" title="选择通知客服" type="customer" @refresh="refreshed"></delegateUser>
     <editServicePrice :active="active" @refresh="refreshed"></editServicePrice>
@@ -13,7 +13,8 @@
   </div>
 </template>
 <script>
-import createdCustomer from "@/pages/Process/common/createdCustomer";
+import QRCode from "qrcode";
+import createdCustomer from "@/pages/Process/common/sale/createdCustomer";
 import applyService from "@/pages/Process/common/afterSale/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
 import editServicePrice from "@/pages/Process/common/editServicePrice";
@@ -24,7 +25,8 @@ export default {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       active: {},
-      tableData: []
+      tableData: [],
+      row: {}
     };
   },
   components: {
@@ -35,11 +37,7 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      let that = this,
-        loading = this.$loading({
-          lock: true,
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+      let that = this, loading = this.$loading({ lock: true, background: "rgba(0, 0, 0, 0.7)" });
       that
         .$get("service/list", params.data)
         .then(response => {
@@ -100,7 +98,11 @@ export default {
             field: "qrCode",
             title: "二维码",
             formatter: function(value, row, index) {
-              return value;
+              setTimeout(() => QRCode.toString(
+                `https://www.factoryun.com/Sale/print/${ row.service_number }`,
+                (err, string) => (document.getElementById( `saleApplication${row.id}` ).innerHTML = string)
+              ), 500)
+              return `<svg id="saleApplication${row.id}" style="max-width: 50px;max-height: 50px;"></svg>`;
             }
           },
           {
@@ -152,7 +154,7 @@ export default {
             }
           },
           {
-            field: "address",
+            field: "customer_other_contact",
             title: "客服地址",
             sortable: true,
             editable: {
@@ -172,32 +174,15 @@ export default {
             field: "id",
             title: "操作",
             formatter: (value, row, index) => {
-              let del = [
-                '<button class="btn btn-danger del btn-sm">　删除　</button>'
-              ];
-              let service = [
-                '<button class="btn btn-success service btn-sm">提交客服</button>'
-              ];
-              let delegate = [
-                '<button class="btn btn-warning delegate btn-sm">委派人员</button>'
-              ];
-              let discountPrice = [
-                '<button class="btn btn-success discountPrice btn-sm">优 惠 价</button>'
-              ];
-              switch (row.process) {
-                case 0:
-                case 1:
-                  return service + del;
-                  break;
-                case 2:
-                  if (row.quoted_price.price != undefined) {
-                    return discountPrice + del;
-                  } else return del;
-                  break;
-                default:
-                  return del;
-                  break;
-              }
+              let del = '<button class="btn btn-danger del btn-sm">　删除　</button>',
+                edit = `<button class="btn btn-success edit btn-sm">　编辑　</button>`,
+                finish = `<button class="btn btn-primary finish btn-sm">完成客服</button>`,
+                service = '<button class="btn btn-success service btn-sm">指派客服</button>',
+                delegate = '<button class="btn btn-warning service btn-sm">委派人员</button>',
+                discountPrice = '<button class="btn btn-success discountPrice btn-sm">优 惠 价</button>';
+
+                if (row.process != 5) return delegate + finish + edit + del;
+                else return delegate + edit + del;
             },
             events: {
               "click .del": ($el, value, row, index) => {
@@ -207,6 +192,19 @@ export default {
                     that.delTable($("#table"), "id", [value]);
                   })
                   .catch(err => {});
+              },
+              "click .edit": function($el, value, row, index) {
+                that.row = row;
+                that.addApplication();
+              },
+              "click .finish": function($el, value, row, index) {
+                that
+                  .$post(`service/update_process/${value}`, { process: 5 })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(err => console.error(err));
               },
               "click .service": ($el, value, row, index) => {
                 // applyService.methods.close.call(this);
@@ -274,25 +272,29 @@ export default {
                     <td>图片</td>
                   </tr>
             `;
-            mrow.business_files.forEach((e, k) => {
+            mrow.orders.forEach((e, k) => {
               content += `
                 <tr>
                   <td>${ k + 1 }</td>
-                  <td>${ e.order_number }</td>
-                  <td>${ e.sn }</td>
-                  <td>${ e.code }</td>
-                  <td>${ e.specification }</td>
-                  <td>${ e.name }</td>
-                  <td>${ e.date }</td>
-                  <td>${ e.guarantee }</td>
-                  <td>${ e.desc }</td>
-                  <td>
-                    <a href="${ e.url }" target="_blank">
-                      <img src="${ e.url }" style="max-width: 50px;max-height: 50px;">
+                  <td>${ e.order_no }</td>
+                  <td>${ e.product_sn }</td>
+                  <td>${ e.material_code }</td>
+                  <td>${ e.material_specification }</td>
+                  <td>${ e.material_name }</td>
+                  <td>${ e.ship_date }</td>
+                  <td>${ e.is_protected ? '否' : '是' }</td>
+                  <td>${ e.problem }</td>
+                  <td>`;
+                
+                for (const item of e.images_url) {
+                  content += `
+                    <a href="${ item.url }" target="_blank">
+                      <img src="${ item.url }" style="max-width: 50px;max-height: 50px;">
                     </a>
-                  </td>
-                </tr>
-              `
+                  `;
+                }
+              content += `</td></tr>`;
+              
             });
             content += `</tbody></table>`;
             return content;
