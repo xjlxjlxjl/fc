@@ -36,14 +36,14 @@
               </template>
             </el-table-column>
             <el-table-column width="50">
-              <template slot-scope="{ $index }">
-                <el-button type="text" @click="form.item.splice($index, 1)">
+              <template slot-scope="{ $index, row }">
+                <el-button type="text" @click="delItem(row.id, $index);">
                   <i class="el-icon-delete" style="font-size: 2.1rem;"></i>
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
-          <el-button type="default" size="small" style="width: 100%;" @click="form.item.push({})">
+          <el-button type="default" size="small" style="width: 100%;" @click="form.materials.push({})">
             <i class="el-icon-plus"></i>
           </el-button>
         </div>
@@ -106,7 +106,8 @@ export default {
     onSubmit() {
       this.$refs["form"].validate(v => {
         if(!v) return false;
-        let url = '';
+        let url = '',
+          arr = [];
 
         switch (this.type) {
           case "1":
@@ -116,21 +117,52 @@ export default {
             url = `service/receive_material/${this.active.id}/edit`;
             this.form.materials.forEach((e, k) => {
               if (e.id) {
-                if (e.isEdit) this.editItems(e);
-                this.form.materials.splice(k, 1);
-              } 
+                if (e.isEdit) this.editItems(e.id, e);
+              } else arr.push(e);
             });
+            this.form.materials = arr;
             break;
         }
-
         this
           .$post(url, this.form)
           .then(response => {
             if (response.status != 200) return false;
-            console.log(response);
+            $("#servicePick").modal("hide");
+            this.clearForm();
           })
           .catch(e => console.error(e));
       })
+    },
+    clearForm() {
+      this.form = {
+        service_id: 0,
+        quoted_price_id: 0,
+        order_number: '',
+        customer_company_name: '',
+        customer_linkman: '',
+        phone: '',
+        materials: []
+      }
+    },
+    delItem(id, $index) {
+      if (id){
+        this
+          .$get(`service/receive_material/${this.active.id}/item/${id}/delete`)
+          .then(response => {
+            if (response.status != 200) return false;
+            this.form.materials.splice($index, 1);
+          })
+          .catch(e => console.error(e));
+      } else this.form.materials.splice($index, 1);
+    },
+    editItems(id, data) {
+      if (id) 
+        this
+          .$post(`service/receive_material/${this.active.id}/item/${id}/edit`, data)
+          .then(response => {
+            if (response.status != 200) return false;
+          })
+          .catch(e => console.error(e));
     }
   },
   mounted() {
@@ -138,12 +170,18 @@ export default {
     $("#servicePick").on("shown.bs.modal", function() {
       that.form = {
         service_id: that.active.service_id,
-        price_id: that.active.id,
-        order_number: that.active.quoted_price_number,
+        order_number: that.active.quoted_price_number || that.active.service_number,
         customer_company_name: that.active.customer_company_name,
-        customer_linkman: that.active.linkman,
+        customer_linkman: that.active.linkman || that.active.customer_linkman,
         phone: that.active.phone,
         materials: that.active.items
+      }
+      switch (that.type) {
+        case '1':
+          that.form.quoted_price_id = that.active.id;
+          break;
+        case '2':
+          break;
       }
     });
   }

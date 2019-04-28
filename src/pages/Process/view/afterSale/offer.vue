@@ -100,17 +100,17 @@ export default {
             sortable: true
           },
           {
-            field: "customer_linkman",
+            field: "linkman",
             title: "客户联系人",
             sortable: true
           },
           {
-            field: "customer_mobile",
+            field: "phone",
             title: "联系电话",
             sortable: true
           },
           {
-            field: "status",
+            field: "check.check_status",
             title: "审核状态",
             formatter: function(value, row, index) {
               return `${value ? "已审核" : "审核中"}`;
