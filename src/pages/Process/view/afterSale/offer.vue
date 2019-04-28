@@ -1,7 +1,8 @@
 <template>
   <div id="offer">
     <Qrmodel :url="url"></Qrmodel>
-    <servicePick></servicePick>
+    <servicePick type="1" :active="active" @refresh="refreshed"></servicePick>
+    <applyService :active="active" @refresh="refreshed"></applyService>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -11,22 +12,25 @@
 import QRCode from "qrcode";
 import Qrmodel from "@/pages/Process/common/afterSale/qrCode";
 import servicePick from "@/pages/Process/common/afterSale/servicePick";
+import applyService from "@/pages/Process/common/afterSale/applyService";
 
 export default {
   name: "offer",
   data() {
     return {
-      url: ""
+      url: "",
+      active: {}
     };
   },
   components: {
     Qrmodel: Qrmodel,
-    servicePick: servicePick
+    servicePick: servicePick,
+    applyService: applyService
   },
   methods: {
     tableAjaxData(params) {
       this
-        .$get(`/service/quoted_price`, params.data)
+        .$get(`service/quoted_price`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -71,7 +75,7 @@ export default {
             }
           },
           {
-            field: "numbers",
+            field: "quoted_price_number",
             title: "客服报价单号",
             sortable: true
           },
@@ -86,7 +90,7 @@ export default {
             sortable: true
           },
           {
-            field: "order_numbers",
+            field: "service_number",
             title: "客服申请单号",
             sortable: true
           },
@@ -117,15 +121,18 @@ export default {
             title: "操作",
             formatter: function(value, row, index) {
               const picking = `<button class="picking btn btn-primary btn-sm">客服领料</button>`,
-                edit = `<button class="edit btn btn-success btn-sm">编辑</button>`,
-                del = `<button class="del btn btn-danger btn-sm">删除</button>`;
+                edit = `<button class="edit btn btn-success btn-sm">　编辑　</button>`,
+                del = `<button class="del btn btn-danger btn-sm">　删除　</button>`;
               return picking + edit + del;
             },
             events: {
               "click .picking": function($el, value, row, index) {
+                that.active = row;
                 $("#offer #servicePick").modal("show");
               },
               "click .edit": function($el, value, row, index) {
+                that.active = row;
+                $("#offer #applyService").modal("show");
               },
               "click .del": function($el, value, row, index) {},
             }
@@ -178,6 +185,9 @@ export default {
           onEditableSave(field, mrow, oldValue, $el) {}
         };
       $("#offer #table").bootstrapTable(data);
+    },
+    refreshed() {
+      this.refresh($("#offer #table"));
     }
   },
   mounted() {

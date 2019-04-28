@@ -1,17 +1,38 @@
 <template>
   <div id="report">
+    <Qrmodel :url="url"></Qrmodel>
+    <editReport :active="active" @refresh="refreshed" type="2" @createdReportModal="createdReportModal" @reportListModal="reportListModal"></editReport>
+    <createdReport :active="rows"></createdReport>
+    <reportList :reportId="reportId"></reportList>
+
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
 </template>
 <script>
+import QRCode from "qrcode";
+import Qrmodel from "@/pages/Process/common/afterSale/qrCode";
+import editReport from "@/pages/Process/common/afterSale/report";
+import createdReport from "@/pages/Process/common/afterSale/createdReport";
+import reportList from "@/pages/Process/common/afterSale/reportList";
+
 export default {
   name: "report",
   data() {
     return {
+      url: '',
       user: JSON.parse(localStorage.getItem("user") || "{}"),
-      date: []
+      active: {},
+      date: [],
+      rows: {},
+      reportId: 0,
     };
+  },
+  components: {
+    Qrmodel: Qrmodel,
+    editReport: editReport,
+    createdReport: createdReport,
+    reportList: reportList
   },
   methods: {
     tableAjaxData(params) {
@@ -52,7 +73,21 @@ export default {
             field: "qrCode",
             title: "二维码",
             formatter: function(value, row, index) {
-              return index + 1;
+              setTimeout(
+                () =>
+                  QRCode.toString(`https://www.factoryun.com/service/report/detail/${row.id}`,
+                    (err, string) =>
+                      (document.getElementById(`report${row.id}`).innerHTML = string)
+                  ),
+                500
+              );
+              return `<div id="report${row.id}" class="img" style="margin: auto;"></div>`;
+            },
+            events: {
+              "click .img": function($el, value, row, index) {
+                that.url = `https://www.factoryun.com/service/report/detail/${row.id}`;
+                $("#report .qrCode").modal("show");
+              }
             }
           },
           {
@@ -61,7 +96,7 @@ export default {
             sortable: true
           },
           {
-            field: "customer_name",
+            field: "creator.last_name",
             title: "创建人",
             sortable: true
           },
@@ -71,35 +106,47 @@ export default {
             sortable: true
           },
           {
-            field: "customer_mobile",
+            field: "server_number",
             title: "客服申请单号",
             sortable: true
           },
           {
-            field: "specification",
+            field: "customer_company_name",
             title: "客户公司名",
             sortable: true
           },
           {
-            field: "quantity",
+            field: "customer_linkman",
             title: "客户联系人",
             sortable: true
           },
           {
-            field: "description",
+            field: "customer_mobile",
             title: "联系电话",
             sortable: true
           },
           {
-            field: "#",
+            field: "id",
             title: "操作",
             formatter: function(value, row, index) {
-              let edit = `<button class="btn btn-success btn-sm">编辑</button>`,
-                del = `<button class="btn btn-danger btn-sm">删除</button>`;
+              let edit = `<button class="edit btn btn-success btn-sm">编辑</button>`,
+                del = `<button class="del btn btn-danger btn-sm">删除</button>`;
               return edit + del;
             },
             events: {
-
+              "click .edit": function(e, value, row, index) {
+                that.active = row;
+                $("#report #report").modal("show");
+              },
+              "click .del": function(e, value, row, index) {
+                that
+                  .$get(`service/report/delete/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#report #table"), 'id', [value]);
+                  })
+                  .catch(e => console.error(e));
+              }
             }
           }
         ],
@@ -142,39 +189,58 @@ export default {
                     <td>客服记录</td>
                   </tr>
             `;
-            mrow.items = [{}]
-            mrow.items.forEach((e, k) => {
+            mrow.orders.forEach((e, k) => {
               content += `
                 <tr>
                   <td>${ k + 1 }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
-                  <td>${ e.numbers }</td>
+                  <td>${ e.order_no }</td>
+                  <td>${ e.product_sn }</td>
+                  <td>${ e.material_number }</td>
+                  <td>${ e.material_specification }</td>
+                  <td>${ e.material_name }</td>
+                  <td>${ e.ship_date }</td>
+                  <td>${ e.is_protected ? '是' : '否' }</td>
+                  <td>${ e.problem }</td>
+                  <td>`
+                    e.images_url.forEach(v => content += `<a href="${v.url}" target="_blank"><img src="${v.url}" style="max-width: 50px; max-height: 50px;" /></a>`);
+                  content += `</td>
                   <td>
-                    <img src="" />
-                  </td>
-                  <td>
-                    <button class="btn btn-default btn-sm getRecord">查看记录</button>
-                    <button class="btn btn-default btn-sm addRecord">添加记录</button>
+                    <button index="${e.id}" class="btn btn-default btn-sm getRecord">查看记录</button>
+                    <button index="${field}" key="${k}" class="btn btn-default btn-sm addRecord">添加记录</button>
                   </td>
                 </tr>
               `;
             })
             content += `</tbody></table>`;
             return content;
-          },
-          onEditableSave(field, mrow, oldValue, $el) {}
+          }
         };
       $("#report #table").bootstrapTable(data);
+    },
+    refreshed() {
+      this.refresh($("#report #table"));
+    },
+    createdReportModal(val) {
+      this.rows = val;
+      $("#report #createdReport").modal("toggle");
+    },
+    reportListModal(val) {
+      this.reportId = parseInt(val);
+      $("#report #reportList").modal("toggle");
     }
   },
   mounted() {
     this.init();
+    const that = this;
+    $("#report #table").on("click", '.getRecord', function() {
+      that.reportListModal($(this).attr("index"));
+    })
+    $("#report #table").on("click", '.addRecord', function() {
+      let index = $(this).attr("index"),
+        key = $(this).attr("key"),
+        data = that.getAllData($("#report #table"))[index].orders[key];
+      that.createdReportModal(data);
+    })
   }
 };
 </script>

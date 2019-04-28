@@ -307,6 +307,14 @@ export default new Vuex.Store({
           url: "/Sale/order"
         },
         {
+          name: "非标询价",
+          url: "/Sale/nonstandard"
+        },
+        {
+          name: "非标询价模板设置",
+          url: "/Sale/nonstandardModal"
+        },
+        {
           name: "报价单",
           url: "/Sale/offer"
         },

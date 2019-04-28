@@ -1,28 +1,42 @@
 <template>
   <div id="picking">
-    <div id="toolbar">
-    </div>
+    <servicePick type="2" :active="active" @refresh="refreshed"></servicePick>
+    <div id="toolbar"></div>
     <table id="table"></table>
   </div>
 </template>
 <script>
+import servicePick from "@/pages/Process/common/afterSale/servicePick";
+
 export default {
   name: "picking",
   data() {
-    return {};
+    return {
+      active: {}
+    };
+  },
+  components: {
+    servicePick: servicePick
   },
   methods: {
     tableAjaxData(params) {
-      let that = this;
-      params.success({
-        rows: [{ items: [{}] }],
-        total: 1
-      });
+      this
+        .$get(`service/receive_material`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        search: params.search,
+        page: params.offset / 10 + 1,
+        per_page: params.limit
+      };
     },
     init() {
       let that = this,
@@ -106,6 +120,10 @@ export default {
               return edit + del;
             },
             events: {
+              "click .edit": function() {
+                that.active = row;
+                $("#picking #servicePick").modal("show");
+              },
               "click .del": ($el, value, row, index) => {
                 that
                   .$post(`/service/delete/${value}`)
@@ -186,6 +204,9 @@ export default {
           }
         };
       $("#picking #table").bootstrapTable(data);
+    },
+    refreshed() {
+      this.refresh($("#picking #table"));
     }
   },
   mounted() {

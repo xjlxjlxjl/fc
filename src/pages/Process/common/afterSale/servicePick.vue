@@ -10,17 +10,17 @@
             <el-form-item label="客户公司名" prop="customer_company_name">
               <el-input v-model="form.customer_company_name"></el-input>
             </el-form-item>
-            <el-form-item label="联系人" prop="linkman">
-              <el-input v-model="form.linkman"></el-input>
+            <el-form-item label="联系人" prop="customer_linkman">
+              <el-input v-model="form.customer_linkman"></el-input>
             </el-form-item>
-            <el-form-item label="联系电话" prop="mobile">
-              <el-input v-model="form.mobile"></el-input>
+            <el-form-item label="联系电话" prop="phone">
+              <el-input v-model="form.phone"></el-input>
             </el-form-item>
             <el-form-item label="备注">
               <el-input type="textarea" v-model="form.remark" placeholder="请输入"></el-input>
             </el-form-item>
           </el-form>
-          <el-table :data="form.item" border stripe>
+          <el-table :data="form.materials" border stripe>
             <el-table-column label="序号" width="50">
               <template slot-scope="{ $index }">
                 <span>{{ $index + 1 }}</span>
@@ -31,8 +31,8 @@
               :prop="col.value"
               :key="col.key"
               :label="col.label">
-              <template slot-scope="{row}">
-                <el-input size="mini" v-model="row[col.value]"></el-input>
+              <template slot-scope="{ row }">
+                <el-input size="mini" v-model="row[col.value]" @blur="row.isEdit = true"></el-input>
               </template>
             </el-table-column>
             <el-table-column width="50">
@@ -61,28 +61,28 @@ export default {
   data() {
     return {
       form: {
-        item: []
+        materials: []
       },
       rules: {
         order_number: [{ required: true, message: "请填写客服单号", trigger: "blur" }],
         customer_company_name: [{ required: true, message: "请填写客户公司名", trigger: "blur" }],
-        linkman: [{ required: true, message: "请填写联系人", trigger: "blur" }],
-        mobile: [{ required: true, message: "请填写联系方式", trigger: "blur" }],
+        customer_linkman: [{ required: true, message: "请填写联系人", trigger: "blur" }],
+        phone: [{ required: true, message: "请填写联系方式", trigger: "blur" }],
       },
       columns: [
         {
           label: "料品编码",
-          value: "code",
+          value: "material_number",
           key: 1
         },
         {
           label: "料品规格",
-          value: "specification",
+          value: "material_specification",
           key: 2
         },
         {
           label: "料品名称",
-          value: "name",
+          value: "material_name",
           key: 3
         },
         {
@@ -99,23 +99,52 @@ export default {
     };
   },
   props: {
+    type: String,
     active: Object
   },
   methods: {
     onSubmit() {
       this.$refs["form"].validate(v => {
         if(!v) return false;
-        console.log(this.form)
+        let url = '';
+
+        switch (this.type) {
+          case "1":
+            url = `service/receive_material/create`;
+            break;
+          case "2":
+            url = `service/receive_material/${this.active.id}/edit`;
+            this.form.materials.forEach((e, k) => {
+              if (e.id) {
+                if (e.isEdit) this.editItems(e);
+                this.form.materials.splice(k, 1);
+              } 
+            });
+            break;
+        }
+
+        this
+          .$post(url, this.form)
+          .then(response => {
+            if (response.status != 200) return false;
+            console.log(response);
+          })
+          .catch(e => console.error(e));
       })
     }
   },
   mounted() {
     const that = this;
-    $("#application #servicePick").on("shown.bs.modal", function() {
-      that.form = that.active;
-      that.form.item.forEach((e, k) => {
-        if(!e.code) that.form.item.splice(k, 1);
-      })
+    $("#servicePick").on("shown.bs.modal", function() {
+      that.form = {
+        service_id: that.active.service_id,
+        price_id: that.active.id,
+        order_number: that.active.quoted_price_number,
+        customer_company_name: that.active.customer_company_name,
+        customer_linkman: that.active.linkman,
+        phone: that.active.phone,
+        materials: that.active.items
+      }
     });
   }
 }

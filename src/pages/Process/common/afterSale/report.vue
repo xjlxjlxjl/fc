@@ -1,7 +1,5 @@
 <template>
   <div>
-    <createdReport :active="row"></createdReport>
-    <reportList :reportId="reportId"></reportList>
     <div class="modal fade" id="report">
       <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
         <div class="modal-content">
@@ -10,39 +8,41 @@
               <el-form-item label="客户公司名" prop="customer_company_name">
                 <el-input v-model="form.customer_company_name"></el-input>
               </el-form-item>
-              <el-form-item label="联系人" prop="linkman">
-                <el-input v-model="form.linkman"></el-input>
+              <el-form-item label="联系人" prop="customer_linkman">
+                <el-input v-model="form.customer_linkman"></el-input>
               </el-form-item>
-              <el-form-item label="联系电话" prop="mobile">
-                <el-input v-model="form.mobile"></el-input>
+              <el-form-item label="联系电话" prop="customer_mobile">
+                <el-input v-model="form.customer_mobile"></el-input>
               </el-form-item>
               <el-form-item label="客服地址" prop="address">
                 <el-input v-model="form.address"></el-input>
               </el-form-item>
             </el-form>
-            <el-table :data="form.item" size="mini" border>
+            <el-table :data="form.orders" size="mini" border>
               <el-table-column label="序号" width="50px">
                 <template slot-scope="{ $index }"><span>{{ $index + 1 }}</span></template>
               </el-table-column>
-              <el-table-column prop="order_number" label="销售订单编号"></el-table-column>
-              <el-table-column prop="SN" label="产品SN码"></el-table-column>
-              <el-table-column prop="code" label="料品编码"></el-table-column>
-              <el-table-column prop="specifications" label="料品规格"></el-table-column>
-              <el-table-column prop="name" label="料品名称"></el-table-column>
-              <el-table-column prop="date" label="出货日期"></el-table-column>
-              <el-table-column prop="is" label="是否过保"></el-table-column>
-              <el-table-column prop="description" label="产品故障描述"></el-table-column>
+              <el-table-column prop="order_no" label="销售订单编号"></el-table-column>
+              <el-table-column prop="product_sn" label="产品SN码"></el-table-column>
+              <el-table-column prop="material_number" label="料品编码"></el-table-column>
+              <el-table-column prop="material_specification" label="料品规格"></el-table-column>
+              <el-table-column prop="material_name" label="料品名称"></el-table-column>
+              <el-table-column prop="ship_date" label="出货日期"></el-table-column>
+              <el-table-column prop="is_protected" label="是否过保">
+                <template slot-scope="{ row }"><span>{{ row.is_protected ? "是" : "否" }}</span></template>
+              </el-table-column>
+              <el-table-column prop="problem" label="产品故障描述"></el-table-column>
               <el-table-column label="图片">
                 <template slot-scope="{ row }">
-                  <a v-for="item in row.img" :key="item.id" :href="item.url" target="_blank">
-                    <img :src="item.url" />
+                  <a v-for="item in row.images_url" :key="item.id" :href="item.url" target="_blank">
+                    <img :src="item.url" style="max-width: 50px;max-height: 50px;" />
                   </a>
                 </template>
               </el-table-column>
-              <el-table-column label="客服记录" align="center">
+              <el-table-column label="客服记录" align="center" v-if="type != '1'">
                 <template slot-scope="{ row }">
-                  <el-button type="default" size="mini" @click="reportId = row.id;reportListModal = !reportListModal">查看记录</el-button>
-                  <el-button type="default" size="mini" style="margin: 0;" @click="createdReportModal = !createdReportModal">添加记录</el-button>                
+                  <el-button type="default" size="mini" @click="reportListModal(row.id)">查看记录</el-button>
+                  <el-button type="default" size="mini" style="margin: 0;" @click="createdReportModal(row)">添加记录</el-button>                
                 </template>
               </el-table-column>
             </el-table>
@@ -57,63 +57,92 @@
   </div>
 </template>
 <script>
-import createdReport from "@/pages/Process/common/afterSale/createdReport";
-import reportList from "@/pages/Process/common/afterSale/reportList";
-
 export default {
   name: "report",
   data() {
     return {
       form: {
         customer_company_name: "",
-        linkman: "",
-        mobile: "",
+        customer_linkman: "",
+        customer_mobile: "",
         address: "",
-        item: [
-          {
-            img: [],
-          }
-        ]
+        orders: []
       },
       rules: {
         customer_company_name: [{ required: true, message: '请输入客户公司名', trigger: 'blur' }],
-        linkman: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
-        mobile: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
+        customer_linkman: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
+        customer_mobile: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
         address: [{ required: true, message: '请输入客服地址', trigger: 'blur' }]
-      },
-      row: {},
-      reportId: 0,
-      reportListModal: false,
-      createdReportModal: false
+      }
     };
   },
   props: {
+    type: String,
     active: Object
-  },
-  components: {
-    createdReport: createdReport,
-    reportList: reportList
   },
   methods: {
     onSubmit() {
-
-    }
-  },
-  watch: {
-    createdReportModal() {
-      $("#application  #createdReport").modal("toggle");
+      this.$refs['form'].validate(v => {
+        if (!v) return false;
+        let url = '';
+        if (this.type == "1") url = `service/report/create`;
+        else url = `service/report/edit/${this.active.id}`;
+        this
+          .$post(url, this.form)
+          .then(response => {
+            if (response.status != 200) return false;
+            $("#report").modal("hide");
+            this.clearForm();
+          })
+          .catch(e => console.error(e));
+      })
     },
-    reportListModal() {
-      $("#application  #reportList").modal("toggle");
+    clearForm() {
+      this.form = {
+        customer_company_name: "",
+        customer_linkman: "",
+        customer_mobile: "",
+        address: "",
+        orders: []
+      }
+    },
+    reportListModal(val) {
+      this.$emit("reportListModal", val);
+    },
+    createdReportModal(val) {
+      this.$emit("createdReportModal", val);
     }
   },
   mounted() {
     const that = this;
-    $("#application #report").on("shown.bs.modal", function() {
+    $("#report").on("shown.bs.modal", function() {
+      if (that.type == "1") that.form.service_id = that.active.id;
+      else that.form.service_id = that.active.service_id;
+      
       that.form.customer_company_name = that.active.customer_company_name;
-      that.form.linkman = that.active.customer_linkman;
-      that.form.mobile = that.active.customer_contact;
-      console.log(that.form)
+      that.form.customer_linkman = that.active.customer_linkman;
+      that.form.customer_mobile = that.active.customer_contact || that.active.customer_mobile;
+      that.form.address = that.active.customer_other_contact || that.active.address;
+      that.form.orders = [];
+      for (let e of that.active.orders) {
+        let images = e.images_url.map(e => e.id);
+        that.form.orders.push({
+          id: e.id,
+          order_id: e.order_id,
+          order_no: e.order_no,
+          product_sn: e.product_sn,
+          schedule_id: e.schedule_id,
+          materail_id: e.material_id,
+          material_number: e.material_code || e.material_number,
+          material_name: e.material_name,
+          material_specification: e.material_specification,
+          ship_date: e.ship_date,
+          is_protected: e.is_protected,
+          problem: e.problem,
+          images: images.join(','),
+          images_url: e.images_url
+        })
+      }
     })
   }
 }

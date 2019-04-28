@@ -4,21 +4,23 @@
       <div class="modal-content">
         <div class="modal-body" id="reportBody">
           <el-form :model="form" :rules="rules" ref="form" label-width="100px">
-            <el-form-item label="客服人员" prop="customer_name">
-              <el-input v-model="form.customer_name"></el-input>
+            <el-form-item label="客服人员" prop="members">
+              <el-select v-model="form.members" multiple>
+                <el-option v-for="item in userBranch" :key="item.id" :label="item.display_name" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="责任方">
-              <el-select v-model="form.organization">
+              <el-select v-model="form.responsible_unit">
                 <el-option label="厂内" value="item.value"></el-option>
                 <el-option label="客户" value="item.value"></el-option>
                 <el-option label="无法判定" value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="不良原因分析">
-              <el-input v-model="form.analysis"></el-input>
+            <el-form-item class="widthFull" label="不良原因分析">
+              <el-input type="textarea" v-model="form.reason"></el-input>
             </el-form-item>
-            <el-form-item label="处理方案">
-              <el-input v-model="form.content"></el-input>
+            <el-form-item class="widthFull" label="处理方案">
+              <el-input type="textarea" v-model="form.solution"></el-input>
             </el-form-item>
             <el-form-item label="图片" class="fileList">
               <el-upload
@@ -47,23 +49,23 @@ export default {
     let user = JSON.parse(localStorage.getItem("user") || "{}");
     return {
       form: {
-        customer_name: "",
+        members: "",
         customer_linkman: "",
         customer_mobile: "",
         specification: "",
         quantity: 1,
         description: "",
-        analysis: "",
-        content: "",
-        organization: "客户",
+        reason: "",
+        solution: "",
+        responsible_unit: "客户",
         advice: "",
         service_at: "",
         service_id: user.user.id,
-        file_ids: [],
+        images: [],
         fileUrl: []
       },
       rules: {
-        customer_name: [
+        members: [
           { required: true, message: "请输入客户名称", trigger: "blur" }
         ],
         customer_linkman: [
@@ -78,13 +80,25 @@ export default {
         service_at: [
           { required: true, message: "请输入服务时间", trigger: "blur" }
         ]
-      }
+      },
+      userBranch: []
     };
   },
   props: {
     active: Object
   },
   methods: {
+    getBranch() {
+      this
+        .$get(`members/user_group`, { slug: 'customer' })
+        .then(response => {
+          if (response.status != 200) return false;
+          response.data.list.forEach(e =>
+            e.members.forEach(v => this.userBranch.push(v))
+          );
+        })
+        .catch(err => console.error(err));
+    },
     upload(file) {
       let form = new FormData(),
         that = this;
@@ -98,14 +112,14 @@ export default {
             name: file.name,
             url: response.data.url
           });
-          that.form.file_ids.push(response.data.upload.id);
+          that.form.images.push(response.data.upload.id);
         })
         .catch(err => console.error(err));
     },
     remove(item) {
       this.form.fileUrl.forEach((e, k) => {
         if (e.uid == item.uid) {
-          this.form.file_ids.splice(k, 1);
+          this.form.images.splice(k, 1);
           this.form.fileUrl.splice(k, 1);
         }
       });
@@ -116,37 +130,34 @@ export default {
       that.$refs["form"].validate(v => {
         if (!v) return false;
         that
-          .$post(`service/report/create`, {
-            number: this.active.product_number,
-            customer_name: self.customer_name,
-            customer_linkman: self.customer_linkman,
-            customer_mobile: self.customer_mobile,
-            specification: self.specification,
-            quantity: self.quantity,
-            description: self.description,
-            analysis: self.analysis,
-            content: self.content,
-            organization: self.organization,
-            advice: self.advice,
-            service_at: self.service_at,
-            service_id: this.active.id,
-            file_ids: self.file_ids.join(",")
+          .$post(`service/report/order/record/create`, {
+            responsible_unit: self.responsible_unit,
+            reason: self.reason,
+            solution: self.solution,
+            report_order_id: this.active.id,
+            members: self.members.join(','),
+            images: self.images.join(",")
           })
           .then(response => {
             if (response.status != 200) return false;
-            that.$emit("refresh");
             that.close();
             that.clearForm();
           })
-          .catch(err => {});
+          .catch(err => console.error(err));
       });
     },
     clearForm() {
       this.$refs["form"].resetFields();
     },
     close() {
-      this.$store.commit("changeModal", "createdReportModal");
+      $("#report #createdReport").modal("hide");
     }
+  },
+  mounted() {
+    this.getBranch();
+    $("#report #createdReport").on("shown.bs.modal", e => {
+      console.log(this.active)
+    })
   }
 };
 </script>

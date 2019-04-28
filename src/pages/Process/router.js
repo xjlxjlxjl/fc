@@ -12,6 +12,8 @@ import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQ
 import customerProduct from "@/pages/Process/view/sale/product";
 import customer from "@/pages/Process/view/sale/customer";
 import saleOrder from "@/pages/Process/view/sale/order";
+import nonstandard from "@/pages/Process/view/sale/nonstandard";
+import nonstandardModal from "@/pages/Process/view/sale/nonstandardModal";
 import saleOffer from "@/pages/Process/view/sale/offer";
 import saleShipment from "@/pages/Process/view/sale/shipment";
 import customerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
@@ -106,6 +108,14 @@ export default new Router({
         {
           path: "/Sale/order",
           component: saleOrder
+        },
+        {
+          path: "/Sale/nonstandard",
+          component: nonstandard
+        },
+        {
+          path: "/Sale/nonstandardModal",
+          component: nonstandardModal
         },
         {
           path: "/Sale/offer",

@@ -3,7 +3,7 @@
     <Qrmodel :url="url"></Qrmodel>
     <applyService :active="active" @refresh="refreshed"></applyService>
     <delegateUser :active="active" title="选择委派人员" type="customer" @refresh="refreshed"></delegateUser>
-    <report :active="active"></report>
+    <report :active="active" type="1"></report>
     <editApplication @refresh="refreshed" number="0" :row="row"></editApplication>
     <div id="toolbar">
     </div>
@@ -84,7 +84,6 @@ export default {
           {
             field: "qrcode",
             title: "二维码",
-            sortable: true,
             formatter: function(value, row, index) {
               setTimeout(
                 () =>
@@ -157,7 +156,7 @@ export default {
             }
           },
           {
-            field: "address",
+            field: "customer_other_contact",
             title: "客服地址",
             sortable: true,
             editable: {
@@ -240,7 +239,7 @@ export default {
               },
               "click .apply": ($el, value, row, index) => {
                 that.active = row;
-                applyService.methods.close.call(this);
+                $("#application #applyService").modal("show");
               },
               "click .delegate": ($el, value, row, index) => {
                 that.active = row;
@@ -337,7 +336,7 @@ export default {
       $("#application #table").bootstrapTable(data);
     },
     refreshed() {
-      this.refresh($("#table"));
+      this.refresh($("#application #table"));
     }
   },
   mounted() {
