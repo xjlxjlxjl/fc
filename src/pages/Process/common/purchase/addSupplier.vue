@@ -74,7 +74,7 @@
                 type="info" 
                 size="mini" 
                 style="margin-bottom: 20px;"
-                @click="form.contracts.push({ linkman: '', position: '', mobile: '', email: '' })">+ 添加</el-button>
+                @click="form.contracts.push({ name: '', position: '', mobile: '', email: '' })">+ 添加</el-button>
               
               <p class="lead">其他</p>
               <el-form-item label="法定代表人" prop="legal_representative">

@@ -477,6 +477,8 @@ export default {
               <table class="table table-bordered">
                 <tbody>
                   <tr>
+                    <th>序号</th>
+                    <th>图片</th>
                     <th>料品编码</th>
                     <th>料品名称</th>
                     <th>料品规格</th>
@@ -491,16 +493,21 @@ export default {
                   </tr>
             `;
             mrow.items.forEach((e, k) => {
-              let date = '';
+              let date = '', images = '';
               for (let item of e.shipping_schedule) {
                 if (new Date(item.date) <= new Date)
                   date = item.date;
               }
+              if (typeof e.images == Array)
+                e.images.forEach(e => images += `<a href="${e}" target="_blank"><img src="${e}" style="max-width:50px;max-height: 50px;"></a>`);
+              
               content += `<tr>
+                  <td>${k + 1}</td>
+                  <td>${images}</td>
                   <td>${e.material_code}</td>
                   <td>${e.material_name}</td>
                   <td>${e.material_specification}</td>
-                  <td>${e.unit}</td>
+                  <td>${e.material_unit}</td>
                   <td>${e.quantity}</td>
                   <td><button class="btn btn-sm shipping_schedule" index="${field}" k="${k}">查看</button></td>
                   <td>${e.remark}</td>

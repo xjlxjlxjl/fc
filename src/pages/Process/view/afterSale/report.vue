@@ -2,7 +2,7 @@
   <div id="report">
     <Qrmodel :url="url"></Qrmodel>
     <editReport :active="active" @refresh="refreshed" type="2" @createdReportModal="createdReportModal" @reportListModal="reportListModal"></editReport>
-    <createdReport :active="rows"></createdReport>
+    <createdReport :active="rows" @record="ids"></createdReport>
     <reportList :reportId="reportId"></reportList>
 
     <div id="toolbar"></div>
@@ -22,7 +22,9 @@ export default {
     return {
       url: '',
       user: JSON.parse(localStorage.getItem("user") || "{}"),
-      active: {},
+      active: {
+        orders: [],
+      },
       date: [],
       rows: {},
       reportId: 0,
@@ -227,6 +229,10 @@ export default {
     reportListModal(val) {
       this.reportId = parseInt(val);
       $("#report #reportList").modal("toggle");
+    },
+    ids(data) {
+      console.log(data)
+      this.active.orders = data;
     }
   },
   mounted() {
@@ -238,7 +244,7 @@ export default {
     $("#report #table").on("click", '.addRecord', function() {
       let index = $(this).attr("index"),
         key = $(this).attr("key"),
-        data = that.getAllData($("#report #table"))[index].orders[key];
+        data = { index: key, data: that.getAllData($("#report #table"))[index].orders };
       that.createdReportModal(data);
     })
   }

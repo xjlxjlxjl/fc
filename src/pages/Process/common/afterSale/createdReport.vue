@@ -11,9 +11,9 @@
             </el-form-item>
             <el-form-item label="责任方">
               <el-select v-model="form.responsible_unit">
-                <el-option label="厂内" value="item.value"></el-option>
-                <el-option label="客户" value="item.value"></el-option>
-                <el-option label="无法判定" value="item.value"></el-option>
+                <el-option label="厂内" value="1"></el-option>
+                <el-option label="客户" value="2"></el-option>
+                <el-option label="无法判定" value="3"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item class="widthFull" label="不良原因分析">
@@ -48,6 +48,7 @@ export default {
   data() {
     let user = JSON.parse(localStorage.getItem("user") || "{}");
     return {
+      user: user,
       form: {
         members: "",
         customer_linkman: "",
@@ -66,7 +67,7 @@ export default {
       },
       rules: {
         members: [
-          { required: true, message: "请输入客户名称", trigger: "blur" }
+          { required: true, message: "请输入客服名称", trigger: "blur" }
         ],
         customer_linkman: [
           { required: true, message: "请输入客户联系人", trigger: "blur" }
@@ -81,7 +82,8 @@ export default {
           { required: true, message: "请输入服务时间", trigger: "blur" }
         ]
       },
-      userBranch: []
+      userBranch: [],
+      data: []
     };
   },
   props: {
@@ -134,12 +136,18 @@ export default {
             responsible_unit: self.responsible_unit,
             reason: self.reason,
             solution: self.solution,
-            report_order_id: this.active.id,
+            service_order_id: this.active.id || this.active.data[this.active.index].id,
             members: self.members.join(','),
             images: self.images.join(",")
           })
           .then(response => {
             if (response.status != 200) return false;
+            if (this.active.index && this.data[this.active.index].record_ids){
+              this.data[this.active.index].record_ids = this.data[this.active.index].record_ids.split(",");
+              this.data[this.active.index].record_ids.push(response.data.id);
+              this.data[this.active.index].record_ids = this.data[this.active.index].record_ids.join(",");
+            } else if (this.active.index) this.data[this.active.index].record_ids = response.data.id.toString();
+            this.$emit("record", this.data);
             that.close();
             that.clearForm();
           })
@@ -147,15 +155,35 @@ export default {
       });
     },
     clearForm() {
-      this.$refs["form"].resetFields();
+      this.form = {
+        members: [],
+        customer_linkman: "",
+        customer_mobile: "",
+        specification: "",
+        quantity: 1,
+        description: "",
+        reason: "",
+        solution: "",
+        responsible_unit: "客户",
+        advice: "",
+        service_at: "",
+        service_id: this.user.user.id,
+        images: [],
+        fileUrl: []
+      };
     },
     close() {
-      $("#report #createdReport").modal("hide");
+      $("#createdReport").modal("hide");
     }
   },
   mounted() {
     this.getBranch();
     $("#report #createdReport").on("shown.bs.modal", e => {
+      this.data = this.active.data;
+      console.log(this.active)
+    })
+    $("#application #createdReport").on("shown.bs.modal", e => {
+      this.data = this.active.data;
       console.log(this.active)
     })
   }

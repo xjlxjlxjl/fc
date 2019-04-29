@@ -39,10 +39,10 @@
                   </a>
                 </template>
               </el-table-column>
-              <el-table-column label="客服记录" align="center" v-if="type != '1'">
-                <template slot-scope="{ row }">
-                  <el-button type="default" size="mini" @click="reportListModal(row.id)">查看记录</el-button>
-                  <el-button type="default" size="mini" style="margin: 0;" @click="createdReportModal(row)">添加记录</el-button>                
+              <el-table-column label="客服记录" align="center">
+                <template slot-scope="{ $index, row }">
+                  <el-button type="default" size="mini" v-if="type != '1'" @click="reportListModal(row.id)">查看记录</el-button>
+                  <el-button type="default" size="mini" style="margin: 0;" @click="createdReportModal($index)">添加记录</el-button>                
                 </template>
               </el-table-column>
             </el-table>
@@ -84,14 +84,23 @@ export default {
     onSubmit() {
       this.$refs['form'].validate(v => {
         if (!v) return false;
-        let url = '';
+        let url = '', arr = [];
         if (this.type == "1") url = `service/report/create`;
         else url = `service/report/edit/${this.active.id}`;
+        this.form.orders.forEach((e, k) => {
+          e.record_ids = this.active.orders[k].record_ids || "";
+          if (this.active.orders[k].record_ids)
+            arr.push(this.active.orders[k].record_ids);
+        });
+        console.log(arr)
+        if (this.type == "2")
+          this.form.record_ids = arr.join(",");
         this
           .$post(url, this.form)
           .then(response => {
             if (response.status != 200) return false;
-            $("#report").modal("hide");
+            $("#application #report").modal("hide");
+            $("#report #report").modal("hide");
             this.clearForm();
           })
           .catch(e => console.error(e));
@@ -109,21 +118,22 @@ export default {
     reportListModal(val) {
       this.$emit("reportListModal", val);
     },
-    createdReportModal(val) {
-      this.$emit("createdReportModal", val);
+    createdReportModal(index) {
+      this.$emit("createdReportModal", { index: index, data: this.form.orders });
     }
   },
   mounted() {
     const that = this;
     $("#report").on("shown.bs.modal", function() {
       if (that.type == "1") that.form.service_id = that.active.id;
-      else that.form.service_id = that.active.service_id;
+      else that.form.service_id = that.active.server_id;
       
       that.form.customer_company_name = that.active.customer_company_name;
       that.form.customer_linkman = that.active.customer_linkman;
       that.form.customer_mobile = that.active.customer_contact || that.active.customer_mobile;
       that.form.address = that.active.customer_other_contact || that.active.address;
       that.form.orders = [];
+
       for (let e of that.active.orders) {
         let images = e.images_url.map(e => e.id);
         that.form.orders.push({

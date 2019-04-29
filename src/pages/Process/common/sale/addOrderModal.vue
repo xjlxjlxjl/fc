@@ -133,6 +133,11 @@
                       <el-input v-model="row.unit"></el-input>
                     </template>
                   </el-table-column>
+                  <el-table-column prop="image" label="图片">
+                    <template slot-scope="{ row }">
+                      <img v-for="item in row.image" :key="item" :src="item" style="max-width: 50px; max-height: 50px;">
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="quantity" label="数量">
                     <template slot-scope="{ row }">
                       <el-input v-model="row.quantity"></el-input>

@@ -3,8 +3,9 @@
     <Qrmodel :url="url"></Qrmodel>
     <applyService :active="active" @refresh="refreshed"></applyService>
     <delegateUser :active="active" title="选择委派人员" type="customer" @refresh="refreshed"></delegateUser>
-    <report :active="active" type="1"></report>
+    <report :active="active" @createdReportModal="createdReportModal" type="1"></report>
     <editApplication @refresh="refreshed" number="0" :row="row"></editApplication>
+    <createdReport :active="rows" @record="ids"></createdReport>
     <div id="toolbar">
     </div>
     <table id="table"></table>
@@ -17,6 +18,7 @@ import applyService from "@/pages/Process/common/afterSale/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
 import report from "@/pages/Process/common/afterSale/report";
 import editApplication from "@/pages/Process/common/sale/createdCustomer";
+import createdReport from "@/pages/Process/common/afterSale/createdReport";
 
 export default {
   name: "application",
@@ -24,9 +26,12 @@ export default {
     return {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       url: '',
-      active: {},
+      active: {
+        orders: [],
+      },
       tableData: [],
       row: {},
+      rows: {},
       geolocation: new BMap.Geolocation()
     };
   },
@@ -35,7 +40,8 @@ export default {
     applyService: applyService,
     delegateUser: delegateUser,
     report: report,
-    editApplication: editApplication
+    editApplication: editApplication,
+    createdReport: createdReport
   },
   methods: {
     tableAjaxData(params) {
@@ -337,6 +343,13 @@ export default {
     },
     refreshed() {
       this.refresh($("#application #table"));
+    },
+    createdReportModal(val) {
+      this.rows = val;
+      $("#application #createdReport").modal("toggle");
+    },
+    ids(data) {
+      this.active.orders = data;
     }
   },
   mounted() {
