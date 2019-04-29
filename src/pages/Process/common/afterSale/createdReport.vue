@@ -142,11 +142,11 @@ export default {
           })
           .then(response => {
             if (response.status != 200) return false;
-            if (this.active.index && this.data[this.active.index].record_ids){
+            if (this.data[this.active.index].record_ids){
               this.data[this.active.index].record_ids = this.data[this.active.index].record_ids.split(",");
               this.data[this.active.index].record_ids.push(response.data.id);
               this.data[this.active.index].record_ids = this.data[this.active.index].record_ids.join(",");
-            } else if (this.active.index) this.data[this.active.index].record_ids = response.data.id.toString();
+            } else this.data[this.active.index].record_ids = response.data.id.toString();
             this.$emit("record", this.data);
             that.close();
             that.clearForm();

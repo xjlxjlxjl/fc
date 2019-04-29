@@ -363,7 +363,62 @@ export default {
   },
   mounted() {
     const that = this;
-    $('#createdCustomer').on('shown.bs.modal', function(e) {
+    $('#customerServiceApplication #createdCustomer').on('shown.bs.modal', function(e) {
+      console.log(that.row)
+      if (that.row && that.row.id) {
+        that.form.customer_company_name = that.row.customer_company_name;
+        that.form.customer_linkman = that.row.customer_linkman;
+        that.form.customer_contact = that.row.customer_contact;
+        that.form.customer_other_contact = that.row.customer_other_contact;
+        that.form.remark = that.row.remark;
+        that.form.orders = [];
+        that.row.orders.forEach(e => {
+          let images = [],
+            fileUrl = [];
+            e.images_url.forEach(item => {
+              images.push(item.id);
+              fileUrl.push({
+                name: item.url.split('/').pop(),
+                uid: item.id,
+                url: item.url
+              });
+            });
+          that.form.orders.push({
+            id: e.id,
+            order_no: e.order_no,
+            product_sn: e.product_sn,
+            material_code: e.material_code,
+            material_specification: e.material_specification,
+            material_name: e.material_name,
+            ship_date: e.ship_date,
+            is_protected: e.is_protected,
+            problem: e.problem,
+            images: images,
+            fileUrl: fileUrl
+          });
+        });
+      } else 
+        that.form = {
+          customer_company_name: "",
+          customer_linkman: "",
+          customer_contact: "",
+          customer_other_contact: "",
+          remark: "",
+          orders: [],
+
+          number: "",
+          apply_linkman: "",
+          date: "",
+          customer_demand: "",
+          specification: "",
+          code: "",
+          customer_file_ids: [],
+          business_file_ids: [],
+          fileUrl: [],
+          token: ""
+        }
+    });
+    $('#application #createdCustomer').on('shown.bs.modal', function(e) {
       console.log(that.row)
       if (that.row && that.row.id) {
         that.form.customer_company_name = that.row.customer_company_name;

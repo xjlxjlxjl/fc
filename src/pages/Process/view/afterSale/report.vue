@@ -231,7 +231,6 @@ export default {
       $("#report #reportList").modal("toggle");
     },
     ids(data) {
-      console.log(data)
       this.active.orders = data;
     }
   },

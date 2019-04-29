@@ -131,9 +131,9 @@ export default {
     init() {
       let that = this,
         columns = [
-          {
-            checkbox: true
-          },
+          // {
+          //   checkbox: true
+          // },
           {
             field: "work_no",
             title: "任务编号",
@@ -156,19 +156,16 @@ export default {
             field: "content",
             title: "工作内容"
           },
-          // {
-          //   field: "members",
-          //   title: "工作成员",
-          //   formatter: event => {
-          //     let html = "";
-          //     event.forEach(e => {
-          //       html += `<p>姓名：${e.user.display_name}　进度：${
-          //         e.status_text
-          //       }</p>`;
-          //     });
-          //     return html;
-          //   }
-          // },
+          {
+            field: "members",
+            title: "工作成员",
+            formatter: event => {
+              let html = `<table class="table table-bordered" style="white-space: nowrap;">`;
+              event.forEach(e => (html += `<tr><td>姓名：${e.user.display_name}</td><td>进度：${e.status_text}</td></tr>`));
+              html += `</table>`;
+              return html;
+            }
+          },
           {
             field: "status_text",
             title: "任务状态"

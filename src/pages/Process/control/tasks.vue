@@ -90,9 +90,9 @@ export default {
     init() {
       let that = this,
         columns = [
-          {
-            checkbox: true
-          },
+          // {
+          //   checkbox: true
+          // },
           {
             field: "work_no",
             title: "任务编号",

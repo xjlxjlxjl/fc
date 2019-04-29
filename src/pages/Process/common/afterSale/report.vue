@@ -92,7 +92,6 @@ export default {
           if (this.active.orders[k].record_ids)
             arr.push(this.active.orders[k].record_ids);
         });
-        console.log(arr)
         if (this.type == "2")
           this.form.record_ids = arr.join(",");
         this
