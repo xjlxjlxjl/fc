@@ -46,6 +46,13 @@
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
         <purchaseTrimPrice v-else-if="activeTabs == '/Purchase/trimPrice'"></purchaseTrimPrice>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+        <!-- IQC -->
+        <IQCkanban v-else-if="activeTabs == '/IQC/kanban'"></IQCkanban>
+        <IQCtemporary v-else-if="activeTabs == '/IQC/temporary'"></IQCtemporary>
+        <IQCtest v-else-if="activeTabs == '/IQC/test'"></IQCtest>
+        <IQCunhealthy v-else-if="activeTabs == '/IQC/unhealthy'"></IQCunhealthy>
+        <IQCmanage v-else-if="activeTabs == '/IQC/manage'"></IQCmanage>
+        <IQCunhealthyManage v-else-if="activeTabs == '/IQC/unhealthyManage'"></IQCunhealthyManage>
         <!-- 工程 -->
         <engineerMaterial v-else-if="activeTabs == '/Engineer/material'"></engineerMaterial>
         <engineerBom v-else-if="activeTabs == '/Engineer/BOM'"></engineerBom>
@@ -98,6 +105,14 @@ import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
 import purchaseTrimPrice from "@/pages/Process/view/purchase/trimPrice"
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
+
+// IQC
+import IQCkanban from "@/pages/Process/view/IQC/kanban";
+import IQCtemporary from "@/pages/Process/view/IQC/temporary";
+import IQCtest from "@/pages/Process/view/IQC/test";
+import IQCunhealthy from "@/pages/Process/view/IQC/unhealthy";
+import IQCmanage from "@/pages/Process/view/IQC/manage";
+import IQCunhealthyManage from "@/pages/Process/view/IQC/unhealthyManage";
 
 // 工程
 import engineerMaterial from "@/pages/Process/view/engineer/material";
@@ -167,6 +182,13 @@ export default {
     purchaseSupplier: purchaseSupplier,
     purchaseTrimPrice: purchaseTrimPrice,
     purchaseUnhealthy: purchaseUnhealthy,
+
+    IQCkanban: IQCkanban,
+    IQCtemporary: IQCtemporary,
+    IQCtest: IQCtest,
+    IQCunhealthy: IQCunhealthy,
+    IQCmanage: IQCmanage,
+    IQCunhealthyManage: IQCunhealthyManage,
 
     engineerMaterial: engineerMaterial,
     engineerBom: engineerBom,

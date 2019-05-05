@@ -63,35 +63,50 @@
         </div>
       </div>
     </div>
+    <addTemporary @refresh="refreshed"></addTemporary>
     <div id="toolbar">
-      <el-button type="default" size="mini">新建来料暂收</el-button>
+      <el-button type="default" size="mini" @click="add">新建来料暂收</el-button>
     </div>
     <table id="table"></table>
   </div>
 </template>
 <script>
 import QRCode from "qrcode";
+import addTemporary from '@/pages/Process/common/store/addTemporary';
 
 export default {
   name: "temporary",
   data() {
-    let user = JSON.parse(localStorage.getItem("user") || "{ user: { current_company: '' } }");
+    let user = JSON.parse(
+      localStorage.getItem("user") || "{ user: { current_company: '' } }"
+    );
     return {
       user: user,
       modalData: {}
     };
   },
+  components: {
+    addTemporary: addTemporary
+  },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{}],
-        total: 1
-      })
+      this
+        .$get(`repositories/receipt`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        supplier_name: params.search
+      };
     },
     init() {
       let that = this,
@@ -109,13 +124,20 @@ export default {
             formatter: (value, row, index) => {
               setTimeout(
                 () =>
-                  QRCode.toString(`https://www.factoryun.com/procurement/request/${row.number}`,
+                  QRCode.toString(
+                    `https://www.factoryun.com/procurement/request/${
+                      row.number
+                    }`,
                     (err, string) =>
-                      (document.getElementById(`temporary${row.id}`).innerHTML = string)
+                      (document.getElementById(
+                        `temporary${row.id}`
+                      ).innerHTML = string)
                   ),
                 500
               );
-              return `<div id="temporary${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+              return `<div id="temporary${
+                row.id
+              }" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
@@ -124,59 +146,61 @@ export default {
                 QRCode.toString(
                   `https://www.factoryun.com/procurement/request/${row.number}`,
                   (err, string) =>
-                    (document.getElementById("temporaryPrintImg").innerHTML = string)
+                    (document.getElementById(
+                      "temporaryPrintImg"
+                    ).innerHTML = string)
                 );
                 $(".temporaryPrintModal").modal("show");
               }
             }
           },
           {
-            field: "id",
+            field: "aaa",
             title: "暂收单号",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "暂收日期",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "暂收员",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "暂收来源",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "单号",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "委外商/供应商",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "联系人",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "联系电话",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "采购员",
             sortable: true
           },
           {
-            field: "id",
+            field: "aaa",
             title: "是否发送质检",
             sortable: true
           },
@@ -191,18 +215,19 @@ export default {
               return send + join + edit + del;
             },
             events: {
-              'click .send': function(e, value, row, index) {
-
-              },
-              'click .join': function(e, value, row, index) {
-
-              },
-              'click .edit': function(e, value, row, index) {
-
-              },
-              'click .del': function(e, value, row, index) {
-
-              },
+              "click .send": function(e, value, row, index) {},
+              "click .join": function(e, value, row, index) {},
+              "click .edit": function(e, value, row, index) {},
+              "click .del": function(e, value, row, index) {
+                if (confirm('是否确认删除'))
+                  that
+                    .$get(`/repositories/receipt/delete/${value}`)
+                    .then(response => {
+                      if (response.status != 200) return false
+                      that.delTable($("#temporary #table"), 'id', [value]);
+                    })
+                    .catch(e => console.error(e));
+              }
             }
           }
         ],
@@ -251,8 +276,11 @@ export default {
             return html;
           },
           onEditableSave(field, mrow, oldValue, $el) {}
-        }
+        };
       $("#temporary #table").bootstrapTable(data);
+    },
+    add() {
+      $("#temporary #addTemporary").modal("show");
     },
     printing() {
       this.$print(this.$refs.temporaryPrint);
@@ -268,7 +296,7 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="less">
 #temporary {
 }
 </style>

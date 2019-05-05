@@ -23,7 +23,7 @@ import Engineer from "@/pages/Process/control/tabs?v=4";
 // 采购
 import Purchase from "@/pages/Process/control/tabs?v=1";
 // IQC
-import IQC from "@/pages/Process/view/IQC/IQC";
+import IQC from "@/pages/Process/control/tabs?v=6";
 // 仓库
 import store from "@/pages/Process/control/tabs?v=3";
 // 生产

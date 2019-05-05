@@ -276,14 +276,14 @@ export default {
               content += `
                 <tr>
                   <td>${ k + 1 }</td>
-                  <td>${ e.order_no }</td>
-                  <td>${ e.product_sn }</td>
-                  <td>${ e.material_code }</td>
-                  <td>${ e.material_specification }</td>
-                  <td>${ e.material_name }</td>
-                  <td>${ e.ship_date }</td>
+                  <td>${ e.order_no || '' }</td>
+                  <td>${ e.product_sn || '' }</td>
+                  <td>${ e.material_code || '' }</td>
+                  <td>${ e.material_specification || '' }</td>
+                  <td>${ e.material_name || '' }</td>
+                  <td>${ e.ship_date || '' }</td>
                   <td>${ e.is_protected ? '否' : '是' }</td>
-                  <td>${ e.problem }</td>
+                  <td>${ e.problem || '' }</td>
                   <td>`;
                 
                 for (const item of e.images_url) {

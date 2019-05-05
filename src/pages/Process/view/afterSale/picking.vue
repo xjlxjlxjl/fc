@@ -65,7 +65,7 @@ export default {
                   ),
                 500
               );
-              return `<div id="picking${row.id}" class="img" style="margin: auto;"></div>`;
+              return `<div id="picking${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
@@ -82,14 +82,14 @@ export default {
             }
           },
           {
-            field: "pickId",
+            field: "creator.last_name",
             title: "创建人",
             formatter: (value, row, index) => {
               return `${value}`;
             }
           },
           {
-            field: "pickId",
+            field: "created_at",
             title: "创建日期",
             formatter: (value, row, index) => {
               return `${value}`;

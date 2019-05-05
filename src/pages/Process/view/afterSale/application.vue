@@ -3,10 +3,19 @@
     <Qrmodel :url="url"></Qrmodel>
     <applyService :active="active" @refresh="refreshed"></applyService>
     <delegateUser :active="active" title="选择委派人员" type="customer" @refresh="refreshed"></delegateUser>
-    <report :active="active" @createdReportModal="createdReportModal" type="1"></report>
+    <report :active="active" @createdReportModal="createdReportModal" @reportListModal="reportListModal" type="1"></report>
     <editApplication @refresh="refreshed" number="0" :row="row"></editApplication>
     <createdReport :active="rows" @record="ids"></createdReport>
+    <reportList :reportId="reportId"></reportList>
     <div id="toolbar">
+      <el-select v-model="params.process" size="mini" @change="refreshed">
+        <el-option label="客户已申请" :value="0"></el-option>
+        <el-option label="业务处理中" :value="1"></el-option>
+        <el-option label="客服处理中" :value="2"></el-option>
+        <el-option label="维修处理中" :value="3"></el-option>
+        <el-option label="完成" :value="4"></el-option>
+        <el-option label="全部" :value="undefined"></el-option>
+      </el-select>
     </div>
     <table id="table"></table>
   </div>
@@ -19,6 +28,7 @@ import delegateUser from "@/pages/Process/common/delegateUser";
 import report from "@/pages/Process/common/afterSale/report";
 import editApplication from "@/pages/Process/common/sale/createdCustomer";
 import createdReport from "@/pages/Process/common/afterSale/createdReport";
+import reportList from "@/pages/Process/common/afterSale/reportList";
 
 export default {
   name: "application",
@@ -32,6 +42,10 @@ export default {
       tableData: [],
       row: {},
       rows: {},
+      reportId: 0,
+      params: {
+        process: 0
+      },
       geolocation: new BMap.Geolocation()
     };
   },
@@ -41,7 +55,8 @@ export default {
     delegateUser: delegateUser,
     report: report,
     editApplication: editApplication,
-    createdReport: createdReport
+    createdReport: createdReport,
+    reportList: reportList
   },
   methods: {
     tableAjaxData(params) {
@@ -73,7 +88,7 @@ export default {
         per_page: params.limit,
         search: params.search,
         // is_reported: 0,
-        service_status: 0
+        process: this.params.process
       };
     },
     init() {
@@ -315,14 +330,14 @@ export default {
               content += `
                 <tr>
                   <td>${ k + 1 }</td>
-                  <td>${ e.order_no }</td>
-                  <td>${ e.product_sn }</td>
-                  <td>${ e.material_code }</td>
-                  <td>${ e.material_specification }</td>
-                  <td>${ e.material_name }</td>
-                  <td>${ e.ship_date }</td>
+                  <td>${ e.order_no || '' }</td>
+                  <td>${ e.product_sn || '' }</td>
+                  <td>${ e.material_code || '' }</td>
+                  <td>${ e.material_specification || '' }</td>
+                  <td>${ e.material_name || '' }</td>
+                  <td>${ e.ship_date || '' }</td>
                   <td>${ e.is_protected ? '否' : '是' }</td>
-                  <td>${ e.problem }</td>
+                  <td>${ e.problem || '' }</td>
                   <td>`;
                 
                 for (const item of e.images_url) {
@@ -347,6 +362,10 @@ export default {
     createdReportModal(val) {
       this.rows = val;
       $("#application #createdReport").modal("toggle");
+    },
+    reportListModal(val) {
+      this.reportId = parseInt(val);
+      $("#application #reportList").modal("toggle");
     },
     ids(data) {
       this.active.orders = data;

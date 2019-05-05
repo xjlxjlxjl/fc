@@ -46,11 +46,20 @@ export default {
         })
         .catch(err => console.error(err));
     })
+    $("#application #reportList").on("shown.bs.modal", function() {
+      that
+        .$get(`service/report/order/${that.reportId}/records`)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.tableData = response.data;
+        })
+        .catch(err => console.error(err));
+    })
   }
 };
 </script>
 <style lang="less">
 #reportList {
-  z-index: 1055;
+  z-index: 20000;
 }
 </style>

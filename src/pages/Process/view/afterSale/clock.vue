@@ -18,8 +18,18 @@ export default {
         .$get(`service/signin/records`, params.data)
         .then(response => {
           if (response.status != 200) return false;
+          let arr = [];
+          response.data.list.forEach(e => 
+            e.siginins.forEach(v => arr.push({
+              customer_company_name: e.customer_company_name,
+              service_number: e.service_number,
+              last_name: v.created_member.last_name,
+              created_at: v.created_at,
+              address: v.address
+            }))
+          )
           params.success({
-            rows: response.data.list,
+            rows: arr,
             total: response.data.pagination.total
           });
         })

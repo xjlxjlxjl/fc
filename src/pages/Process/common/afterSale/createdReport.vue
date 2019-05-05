@@ -178,20 +178,17 @@ export default {
   },
   mounted() {
     this.getBranch();
-    $("#report #createdReport").on("shown.bs.modal", e => {
-      this.data = this.active.data;
-      console.log(this.active)
-    })
-    $("#application #createdReport").on("shown.bs.modal", e => {
-      this.data = this.active.data;
-      console.log(this.active)
-    })
+    $("#report #createdReport").on("shown.bs.modal", e =>  this.data = this.active.data)
+    $("#application #createdReport").on("shown.bs.modal", e => this.data = this.active.data)
   }
 };
 </script>
 <style lang="less">
+.el-popper {
+  z-index: 20015 !important;
+}
 #createdReport {
-  z-index: 1055;
+  z-index: 20000;
   #reportBody {
     .el-form {
       display: flex;

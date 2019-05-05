@@ -55,6 +55,7 @@ export default {
         })
         .then(response => {
           if (response.status != 200) return false;
+          that.userBranch = [];
           response.data.list.forEach(e =>
             e.members.forEach(v => that.userBranch.push(v))
           );

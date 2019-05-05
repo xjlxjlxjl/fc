@@ -83,7 +83,7 @@ export default {
                   ),
                 500
               );
-              return `<div id="report${row.id}" class="img" style="margin: auto;"></div>`;
+              return `<div id="report${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
@@ -103,7 +103,7 @@ export default {
             sortable: true
           },
           {
-            field: "customer_linkman",
+            field: "created_at",
             title: "创建日期",
             sortable: true
           },
@@ -195,14 +195,14 @@ export default {
               content += `
                 <tr>
                   <td>${ k + 1 }</td>
-                  <td>${ e.order_no }</td>
-                  <td>${ e.product_sn }</td>
-                  <td>${ e.material_number }</td>
-                  <td>${ e.material_specification }</td>
-                  <td>${ e.material_name }</td>
-                  <td>${ e.ship_date }</td>
+                  <td>${ e.order_no || '' }</td>
+                  <td>${ e.product_sn || '' }</td>
+                  <td>${ e.material_number || '' }</td>
+                  <td>${ e.material_specification || '' }</td>
+                  <td>${ e.material_name || '' }</td>
+                  <td>${ e.ship_date || '' }</td>
                   <td>${ e.is_protected ? '是' : '否' }</td>
-                  <td>${ e.problem }</td>
+                  <td>${ e.problem || '' }</td>
                   <td>`
                     e.images_url.forEach(v => content += `<a href="${v.url}" target="_blank"><img src="${v.url}" style="max-width: 50px; max-height: 50px;" /></a>`);
                   content += `</td>

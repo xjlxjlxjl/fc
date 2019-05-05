@@ -161,28 +161,29 @@ export default {
           columns: columns,
           detailFormatter(field, mrow, oldValue, $el) {
             let table = `
-              <table>
-                <tr>
-                  <td>序号</td>
-                  <td>料品编码</td>
-                  <td>料品名称/费用名称</td>
-                  <td>单位</td>
-                  <td>数量</td>
-                </tr>
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>料品编码</td>
+                    <td>料品名称/费用名称</td>
+                    <td>单位</td>
+                    <td>数量</td>
+                  </tr>
             `;
-            morw.item.forEach((e, k) => (table += `
+            mrow.items.forEach((e, k) => 
+            (table += `
               <tr>
                 <td>${ k + 1 }</td>
-                <td>${ e.code || '' }</td>
-                <td>${ e.name || '' }</td>
+                <td>${ e.material_number || '' }</td>
+                <td>${ e.material_name || '' }</td>
                 <td>${ e.unit || '' }</td>
-                <td>${ e.num || '' }</td>
+                <td>${ e.quantity || '' }</td>
               </tr>
             `));
-            table += `</table>`;
+            table += `</tbody></table>`;
             return table;
-          },
-          onEditableSave(field, mrow, oldValue, $el) {}
+          }
         };
       $("#offer #table").bootstrapTable(data);
     },

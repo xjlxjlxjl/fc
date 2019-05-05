@@ -796,6 +796,36 @@ export default new Vuex.Store({
           name: "标准产品图库",
           url: "/Engineer/gallery"
         }
+      ],
+      iqc: [
+        {
+          name: "待完成任务",
+          url: "/tasks"
+        },
+        {
+          name: "生产看板",
+          url: "/IQC/kanban"
+        },
+        {
+          name: "来料暂收",
+          url: "/IQC/temporary"
+        },
+        {
+          name: "质检单",
+          url: "/IQC/test"
+        },
+        {
+          name: "质检不良单",
+          url: "/IQC/unhealthy"
+        },
+        {
+          name: "质检仓管理",
+          url: "/IQC/manage"
+        },
+        {
+          name: "质检不良仓管理",
+          url: "/IQC/unhealthyManage"
+        }
       ]
     },
     // 任务

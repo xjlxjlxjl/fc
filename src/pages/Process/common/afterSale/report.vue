@@ -41,7 +41,7 @@
               </el-table-column>
               <el-table-column label="客服记录" align="center">
                 <template slot-scope="{ $index, row }">
-                  <el-button type="default" size="mini" v-if="type != '1'" @click="reportListModal(row.id)">查看记录</el-button>
+                  <el-button type="default" size="mini" @click="reportListModal(row.id)">查看记录</el-button>
                   <el-button type="default" size="mini" style="margin: 0;" @click="createdReportModal($index)">添加记录</el-button>                
                 </template>
               </el-table-column>
