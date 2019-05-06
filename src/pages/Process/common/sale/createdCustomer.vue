@@ -1,55 +1,10 @@
 <template>
-  <div>
+  <div v-if="state == 0">
     <div class="modal fade" id="createdCustomer" role="dialog">
       <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
         <div class="modal-content">
           <div class="modal-body">
-            <div id="createdCustomerForm" v-if="state == 1">
-              <el-form :inline="true" :model="form" label-position="left" label-width="70px">
-                <el-form-item label="公司">
-                  <el-input v-model="form.customer_company_name" placeholder="公司"></el-input>
-                </el-form-item>
-                <el-form-item label="姓名">
-                  <el-input v-model="form.customer_linkman" placeholder="姓名"></el-input>
-                </el-form-item>
-                <el-form-item label="手机">
-                  <el-input v-model="form.customer_contact" placeholder="手机">
-                    <el-button
-                      slot="suffix"
-                      type="info"
-                      size="mini"
-                      class="pcCode"
-                      round
-                      @click="sendCode"
-                    >{{ sendCodeTips }}</el-button>
-                  </el-input>
-                </el-form-item>
-                <el-form-item class="moblieCode" style="text-align: right;">
-                  <el-button type="info" size="mini" round @click="sendCode">{{ sendCodeTips }}</el-button>
-                </el-form-item>
-                <el-form-item label="验证码">
-                  <el-input v-model="form.code" placeholder="验证码"></el-input>
-                </el-form-item>
-                <el-form-item label="产品型号">
-                  <el-input v-model="form.specification" placeholder="产品型号"></el-input>
-                </el-form-item>
-                <el-form-item label="问题描述">
-                  <el-input v-model="form.customer_demand" placeholder="问题描述"></el-input>
-                </el-form-item>
-                <el-form-item label="上传图片" class="fileList">
-                  <el-upload
-                    action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-                    list-type="picture-card"
-                    :before-upload="upload"
-                    :before-remove="remove"
-                    :file-list="form.fileUrl"
-                  >
-                    <i class="el-icon-plus"></i>
-                  </el-upload>
-                </el-form-item>
-              </el-form>
-            </div>
-            <div id="createdCustomerForm" v-else-if="state == 0">
+            <div id="createdCustomerForm">
               <el-form :model="form" :rules="rules" label-position="left" size="mini" label-width="80px">
                 <el-form-item label="客户公司" prop="customer_company_name">
                   <el-input v-model="form.customer_company_name" placeholder="客户公司"></el-input>

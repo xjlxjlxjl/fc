@@ -258,6 +258,7 @@ export default {
             let html = `
               <table>
                 <tr>
+                  <th></th>
                   <th>料品编码</th>
                   <th>料品名称</th>
                   <th>料品规格</th>
@@ -271,6 +272,25 @@ export default {
                   <th>料品智能占用</th>
                 </tr>
             `;
+            for (let item of mrow.items) {
+              html += `
+                <tr>
+                  <td><input type="checkbox" class="" /></td>
+                  <td>${ item }</td>
+                  <td>${ item }</td>
+                  <td>${ item }</td>
+                  <td>${ item }</td>
+                  <td>${ item }</td>
+                  <td>${ item }</td>
+                  <td>${ item.cancel_quantity }</td>
+                  <td>${ item }</td>
+                  <td>${ item.is_inspection ? '是' : '否' }</td>
+                  <td>${ item.remark }</td>
+                  <td>${ item }</td>
+                </tr>
+              `;
+            }
+
             html += `</table>`;
 
             return html;

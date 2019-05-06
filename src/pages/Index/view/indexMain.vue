@@ -2607,7 +2607,8 @@ export default {
         images_ids: [],
         fileUrl: []
       },
-      menuShow: false
+      menuShow: false,
+      menuControl: false
     };
   },
   components: {
@@ -3019,6 +3020,13 @@ export default {
         this.menuShow = false;
         this.menuControl = false;
       }
+
+      if (document.body.clientWidth >= 1200)
+        document.querySelector("#main").style.height = `${document.body.clientHeight - 244}px`;
+      else  if (document.body.clientWidth < 1200  && document.body.clientWidth >= 820)
+        document.querySelector("#main").style.height = `${document.body.clientHeight - 182}px`;
+      else
+        document.querySelector("#main").style.height = `auto`;
     }
   },
   watch: {
@@ -3090,9 +3098,9 @@ export default {
     }
   },
   mounted() {
+    this.windowResize();
   },
   created() {
-    this.windowResize();
     window.onresize = e => this.windowResize()
     this.firstJoin = true;
     this.getCategory();
@@ -3115,7 +3123,7 @@ export default {
   max-width: 1280px;
   margin: 0 auto;
   // 保留底部颜色
-  height: 87%;
+  // height: 725px;
   @media screen and (min-width: 820px) {
     > .el-container {
       height: 100%;

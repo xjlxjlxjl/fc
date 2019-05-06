@@ -206,7 +206,7 @@ export default {
     editAttr() {
       let that = this;
       that
-        .$post(`/quality/print/attribute/update/${that.activeSlug}`, {
+        .$post(`quality/print/attribute/update/${that.activeSlug}`, {
           attributes: JSON.stringify(that.print.list)
         })
         .then(response => {
@@ -233,7 +233,7 @@ export default {
             checkbox: true
           },
           {
-            field: "order",
+            field: "order.numbering",
             title: "订单号",
             sortable: true,
             formatter: (value, row, index) => {
@@ -256,11 +256,11 @@ export default {
             sortable: true
           },
           {
-            field: "created",
+            field: "created_by",
             title: "送检人",
             sortable: true,
             formatter: (value, row, index) => {
-              return `${value.last_name}`;
+              return `${value}`;
             }
           },
           {
@@ -293,7 +293,7 @@ export default {
             sortable: true
           },
           {
-            field: "member_user",
+            field: "member_user.last_name",
             title: "质检员",
             sortable: true,
             formatter: (value, row, index) => {

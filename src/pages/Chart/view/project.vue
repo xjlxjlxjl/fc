@@ -259,9 +259,15 @@ export default {
           // 重定义
           response.data.list.forEach(e => {
             if (!e.supplier) e.supplier = { slug: null };
+            else if (!e.all_supplier.length) e.all_supplier.push(e.supplier);
+
             if (!e.payment_type) e.payment_type = { slug: null };
+            else if (!e.all_payment_type.length) e.all_payment_type.push(e.payment_type);
+
             if (!e.invoice_type) e.invoice_type = { slug: null };
+            else if (!e.all_invoice_type.length) e.all_invoice_type.push(e.invoice_type);
           });
+          
           that.projectDetail = response.data;
           that.members = self.members;
           that.displayArr = [];

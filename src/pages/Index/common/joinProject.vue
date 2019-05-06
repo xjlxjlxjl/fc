@@ -165,6 +165,7 @@ export default {
 };
 </script>
 <style lang="less">
+@import "../../../assets/css/modal.css";
 .modalBoxMain {
   width: 330px;
   @media screen and (min-width: 500px) {
