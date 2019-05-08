@@ -58,20 +58,16 @@ export default {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let print = `<button class="btn btn-primary btn-sm print">打印</button>`;
-              return print;
+              let
+                edit = `<button class="btn btn-success btn-sm edit">编辑</button>`,
+                del = `<button class="btn btn-danger btn-sm del" style="margin-left: 5px;">删除</button>`;
+              return edit + del;
             },
             events: {
-              "click .print": (e, value, row, index) => {
-                that
-                  .$get(`ship_order/${value}`)
-                  .then(response => {
-                    if (response.status != 200) return false;
-                    that.printDetail = response.data;
-                    $(".bs-example-modal-lg").modal("show");
-                  })
-                  .catch(err => console.error);
-              }
+              "click .edit": function(e, value, row, index) {
+                that.addNonModal = !that.addNonModal;
+              },
+              "click .del": function(e, value, row, index) {}
             }
           }
         ],

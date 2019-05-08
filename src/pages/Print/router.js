@@ -1,14 +1,15 @@
 import Vue from "vue";
 import Router from "vue-router";
 
-import purchaseApply from '@/pages/Print/view/purchaseApply'
-import purchasePlan from '@/pages/Print/view/purchasePlan'
-import purchaseOrder from '@/pages/Print/view/purchaseOrder'
-import purchasEntrust from '@/pages/Print/view/purchasEntrust'
-import purchasReceive from '@/pages/Print/view/purchasReceive'
-import saleOrder from '@/pages/Print/view/saleOrder'
-import IQCtemporary from '@/pages/Print/view/IQCtemporary'
-import IQCunhealthy from '@/pages/Print/view/IQCunhealthy'
+import purchaseApply from '@/pages/Print/view/purchaseApply';
+import purchasePlan from '@/pages/Print/view/purchasePlan';
+import purchaseOrder from '@/pages/Print/view/purchaseOrder';
+import purchasEntrust from '@/pages/Print/view/purchasEntrust';
+import purchasReceive from '@/pages/Print/view/purchasReceive';
+import saleOrder from '@/pages/Print/view/saleOrder';
+import IQCtemporary from '@/pages/Print/view/IQCtemporary';
+import IQCunhealthy from '@/pages/Print/view/IQCunhealthy';
+import saleNonstandard from '@/pages/Print/view/saleNonstandard';
 Vue.use(Router);
 
 
@@ -47,6 +48,10 @@ export default new Router({
       path: "/IQCunhealthy/:id",
       name: "IQCunhealthy",
       component: IQCunhealthy
+    }, {
+      path: "/saleNonstandard/:id",
+      name: "saleNonstandard",
+      component: saleNonstandard
     }
   ]
 })

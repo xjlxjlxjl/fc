@@ -97,13 +97,24 @@ export default {
             title: "操作",
             formatter: (value, row, index) => {
               let
-                offer = `<button class="btn btn-primary btn-sm offer">打印</button>`,
-                print = `<button class="btn btn-success btn-sm print">打印</button>`;
-              return print;
+                offer = `<button class="btn btn-primary btn-sm offer">报价</button>`,
+                print = `<button class="btn btn-success btn-sm print" style="margin-left: 5px;">打印</button>`,
+                edit = `<button class="btn btn-warning btn-sm edit" style="margin-left: 5px;">编辑</button>`,
+                del = `<button class="btn btn-danger btn-sm del" style="margin-left: 5px;">删除</button>`;
+              return offer + print + edit + del;
             },
             events: {
-              "click .offer": (e, value, row, index) => {
+              "click .offer": function(e, value, row, index) {
                 that.addOfferModal = !that.addOfferModal;
+              },
+              "click .print": function(e, value, row, index) {
+                window.open(`/print.html#/saleNonstandard/${row.id || 123}`);
+              },
+              "click .edit": function(e, value, row, index) {
+                that.addNonstandardModal = !that.addNonstandardModal;
+              },
+              "click .del": function(e, value, row, index) {
+
               }
             }
           }
