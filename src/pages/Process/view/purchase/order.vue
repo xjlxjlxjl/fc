@@ -510,11 +510,6 @@ export default {
     }
   }
   #table {
-    .detail-view {
-      > td {
-        padding: 0;
-      }
-    }
   }
   .img {
     width: 100%;

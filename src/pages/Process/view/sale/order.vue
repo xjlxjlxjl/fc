@@ -94,6 +94,7 @@
 </template>
 <script>
 import PDFJS from "pdfjs-dist";
+import QRCode from "qrcode";
 import addOrderModal from "@/pages/Process/common/sale/addOrderModal";
 import serviceApplication from "@/pages/Process/common/sale/serviceApplication";
 import addShipment from "@/pages/Process/common/addShipment";
@@ -204,6 +205,26 @@ export default {
             sortable: true,
             formatter: (value, row, index) => {
               return index + 1;
+            }
+          },
+          {
+            field: "img",
+            title: "二维码",
+            formatter: (value, row, index) => {
+              setTimeout(
+                () =>
+                  QRCode.toString(
+                    `https://www.factoryun.com/orders/orders/${row.numbering}`,
+                    (err, string) =>
+                      (document.getElementById(`saleOrder${row.id}`).innerHTML = string)
+                  ),
+                500
+              );
+              return `<div id="saleOrder${row.id}" class="img" style="max-width: 85px;max-height: 85px;margin: auto;"></div>`;
+            },
+            events: {
+              "click .img": function(e, value, row, index) {
+              }
             }
           },
           {

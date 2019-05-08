@@ -958,7 +958,6 @@ export default new Vuex.Store({
     addMaterials: false,
     addShipmentModal: false,
     addCustomer: false,
-    editServicePrice: false,
     //
     departmentModal: false,
     addAppTypeModal: false,

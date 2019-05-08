@@ -10,6 +10,7 @@
                 filterable 
                 remote 
                 reserve-keyword 
+                :disabled="active.id ? true : false"
                 :remote-method="searchNumbers"
                 @change="choice">
                 <el-option
@@ -21,7 +22,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="暂收来源">
-              <el-input v-model="form.source"></el-input>
+              <el-input :disabled="true" v-model="form.source"></el-input>
             </el-form-item>
             <el-form-item label="是否退换货">
               <el-radio-group v-model="form.is_return">
@@ -48,7 +49,7 @@
             </el-table-column>
             <el-table-column label="暂收数量" width="150">
               <template slot-scope="{ row }">
-                <el-input-number v-model="row.cancel_quantity" :max="row.quantity" size="mini" placeholder="请输入"></el-input-number>
+                <el-input-number v-model="row.cancel_quantity" :max="parseInt(row.quantity)" size="mini" placeholder="请输入"></el-input-number>
               </template>
             </el-table-column>
             <el-table-column prop="remark" label="备注" width="150">
@@ -81,6 +82,7 @@ export default {
     };
   },
   props: {
+    active: Object
   },
   methods: {
     searchNumbers(val) {
@@ -131,6 +133,9 @@ export default {
       this.options = arr;
     },
     choice(val) {
+      for (let e of val.items)
+        e.order_item_id = e.id;
+
       this.form = {
         numbers: val.number,
         order_id: val.id,
@@ -141,18 +146,44 @@ export default {
       }
     },
     onSubmit() {
+      let url = '';
+      if (this.active.id) url = `repositories/receipt/edit/${this.active.id}`;
+      else url = `repositories/receipt/create`;
       this
-        .$post(`repositories/receipt/create`, this.form)
+        .$post(url, this.form)
         .then(response => {
           if (response.status != 200) return false;
           this.$emit('refresh');
           $("#temporary #addTemporary").modal("hide");
+          this.form = {
+            numbers: '',
+            order_id: '',
+            is_return: 0,
+            materials: []
+          };
         })
         .catch(e => console.error(e));
     }
   },
   mounted() {
-    // $("#temporary #addTemporary").on("shown.bs.modal", function() {});
+    let that = this;
+    $("#temporary #addTemporary").on("shown.bs.modal", function() {
+      if (that.active.id) {
+        that.form = {
+          numbers: that.active.order_number,
+          source: that.active.form,
+          is_return: that.active.is_return,
+          materials: that.active.order_items
+        };
+      } else {
+        that.form = {
+          numbers: '',
+          order_id: '',
+          is_return: 0,
+          materials: []
+        }
+      }
+    });
   }
 };
 </script>

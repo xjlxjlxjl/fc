@@ -96,12 +96,14 @@ export default {
             field: "slug",
             title: "操作",
             formatter: (value, row, index) => {
-              let print = `<button class="btn btn-primary btn-sm print">打印</button>`;
+              let
+                offer = `<button class="btn btn-primary btn-sm offer">打印</button>`,
+                print = `<button class="btn btn-success btn-sm print">打印</button>`;
               return print;
             },
             events: {
-              "click .print": (e, value, row, index) => {
-                addOfferModal = !addOfferModal;
+              "click .offer": (e, value, row, index) => {
+                that.addOfferModal = !that.addOfferModal;
               }
             }
           }

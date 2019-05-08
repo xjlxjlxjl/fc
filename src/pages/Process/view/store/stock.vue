@@ -2,7 +2,7 @@
   <div id="stock">
     <transfeRecord :data="record"></transfeRecord>
     <switchStore :data="list"></switchStore>
-    <barcode></barcode>
+    <barcode :url="url"></barcode>
     <div id="toolbar">
       <el-button type="default" size="mini" @click="change">转仓</el-button>
     </div>
@@ -19,6 +19,7 @@ export default {
   name: "stock",
   data() {
     return {
+      url: '',
       record: [],
       list: []
     };
@@ -89,6 +90,7 @@ export default {
             },
             events: {
               "click svg": function(e, value, row, index) {
+                that.url = row.barcode;
                 $("#stock #barcode").modal("show");
               }
             }
@@ -428,10 +430,10 @@ export default {
                   .$get(`respositories/materials/rollover_record/${row.slug}`)
                   .then(response => {
                     if (response.status != 200) return false;
-                    console.log(response);
+                    that.record = response.data;
+                    $("#stock #transfeRecord").modal("show");
                   })
                   .catch(err => console.error(err));
-                $("#stock #transfeRecord").modal("show");
               }
             }
           },

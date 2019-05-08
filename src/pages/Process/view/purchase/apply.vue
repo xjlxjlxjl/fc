@@ -4,9 +4,7 @@
     <div
       class="modal fade"
       id="purchaseApplyPrintModal"
-      tabindex="-1"
       role="dialog"
-      aria-labelledby="myModalLabel"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -289,7 +287,7 @@ export default {
                   <th>结案</th>
                 </tr>`
             ];
-            row.item.forEach(e =>
+            row.items.forEach(e =>
               html.push(`
                   <tr>
                     <td>${e.material_code || ""}</td>

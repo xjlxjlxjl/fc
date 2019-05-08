@@ -63,7 +63,7 @@
         </div>
       </div>
     </div>
-    <addTemporary @refresh="refreshed"></addTemporary>
+    <addTemporary :active="active" @refresh="refreshed"></addTemporary>
     <div id="toolbar">
       <el-button type="default" size="mini" @click="add">新建来料暂收</el-button>
     </div>
@@ -82,6 +82,7 @@ export default {
     );
     return {
       user: user,
+      active: {},
       modalData: {}
     };
   },
@@ -155,54 +156,67 @@ export default {
             }
           },
           {
-            field: "aaa",
+            field: "receipt_no",
             title: "暂收单号",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "created_at",
             title: "暂收日期",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "receipt_user.last_name",
             title: "暂收员",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "from",
             title: "暂收来源",
-            sortable: true
+            formatter: function(value) {
+              return value;
+            }
           },
           {
-            field: "aaa",
+            field: "order_number",
             title: "单号",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "is_return",
+            title: "是否退换货",
+            editable: {
+              type: "select",
+              title: "是否退换货",
+              source: [{value: 0, text: '否'}, {value: 1, text: '是'}]
+            }
+          },
+          {
+            field: "supplier.name",
             title: "委外商/供应商",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "supplier.contract",
             title: "联系人",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "supplier.phone",
             title: "联系电话",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "purchase_user",
             title: "采购员",
             sortable: true
           },
           {
-            field: "aaa",
+            field: "is_inspection",
             title: "是否发送质检",
-            sortable: true
+            formatter: function(value) {
+              return value ? '是' : '否';
+            }
           },
           {
             field: "id",
@@ -210,14 +224,25 @@ export default {
             formatter: function(value, row, index) {
               let send = `<button class="btn btn-sm btn-success send">发送品检</button>`,
                 join = `<button class="btn btn-sm btn-primary join">申请入库</button>`,
-                edit = `<button class="btn btn-sm btn-warning del">编　　辑</button>`,
+                edit = `<button class="btn btn-sm btn-warning edit">编　　辑</button>`,
                 del = `<button class="btn btn-sm btn-danger del">删　　除</button>`;
               return send + join + edit + del;
             },
             events: {
-              "click .send": function(e, value, row, index) {},
+              "click .send": function(e, value, row, index) {
+                that
+                  .$get(`repositories/receipt/send/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    console.log(response);
+                  })
+                  .catch(e => console.error(e));
+              },
               "click .join": function(e, value, row, index) {},
-              "click .edit": function(e, value, row, index) {},
+              "click .edit": function(e, value, row, index) {
+                that.active = row;
+                that.add();
+              },
               "click .del": function(e, value, row, index) {
                 if (confirm('是否确认删除'))
                   that
@@ -256,46 +281,52 @@ export default {
           columns: columns,
           detailFormatter(field, mrow, oldValue, $el) {
             let html = `
-              <table>
-                <tr>
-                  <th></th>
-                  <th>料品编码</th>
-                  <th>料品名称</th>
-                  <th>料品规格</th>
-                  <th>单位</th>
-                  <th>交期</th>
-                  <th>采购数量</th>
-                  <th>暂收数</th>
-                  <th>尚缺数量</th>
-                  <th>是否需检</th>
-                  <th>备注</th>
-                  <th>料品智能占用</th>
-                </tr>
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th></th>
+                    <th>料品编码</th>
+                    <th>料品名称</th>
+                    <th>料品规格</th>
+                    <th>单位</th>
+                    <th>交期</th>
+                    <th>采购数量</th>
+                    <th>暂收数</th>
+                    <th>尚缺数量</th>
+                    <th>是否需检</th>
+                    <th>备注</th>
+                    <th>料品智能占用</th>
+                  </tr>
             `;
             for (let item of mrow.items) {
               html += `
                 <tr>
                   <td><input type="checkbox" class="" /></td>
-                  <td>${ item }</td>
-                  <td>${ item }</td>
-                  <td>${ item }</td>
-                  <td>${ item }</td>
-                  <td>${ item }</td>
-                  <td>${ item }</td>
+                  <td>${ item.material.material_number }</td>
+                  <td>${ item.material.name }</td>
+                  <td>${ item.material.material_specification }</td>
+                  <td>${ item.material.item_unit }</td>
+                  <td>${ item.order_item ? item.order_item.delivery_period : '' }</td>
+                  <td>${ item.order_item ? item.order_item.quantity : '' }</td>
                   <td>${ item.cancel_quantity }</td>
-                  <td>${ item }</td>
+                  <td>${ item.wait_quantity }</td>
                   <td>${ item.is_inspection ? '是' : '否' }</td>
                   <td>${ item.remark }</td>
-                  <td>${ item }</td>
+                  <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>
               `;
             }
-
-            html += `</table>`;
-
+            html += `</tbody></table>`;
             return html;
           },
-          onEditableSave(field, mrow, oldValue, $el) {}
+          onEditableSave(field, mrow, oldValue, $el) {
+            that
+              .$post(`repositories/receipt/edit/${mrow.id}`, { is_return: mrow.is_return })
+              .then(response => {
+                if (response.status != 200) return false;
+              })
+              .catch(e => console.error(e));
+          }
         };
       $("#temporary #table").bootstrapTable(data);
     },

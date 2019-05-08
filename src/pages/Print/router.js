@@ -8,6 +8,7 @@ import purchasEntrust from '@/pages/Print/view/purchasEntrust'
 import purchasReceive from '@/pages/Print/view/purchasReceive'
 import saleOrder from '@/pages/Print/view/saleOrder'
 import IQCtemporary from '@/pages/Print/view/IQCtemporary'
+import IQCunhealthy from '@/pages/Print/view/IQCunhealthy'
 Vue.use(Router);
 
 
@@ -42,6 +43,10 @@ export default new Router({
       path: "/IQCtemporary/:id",
       name: "IQCtemporary",
       component: IQCtemporary
+    }, {
+      path: "/IQCunhealthy/:id",
+      name: "IQCunhealthy",
+      component: IQCunhealthy
     }
   ]
 })

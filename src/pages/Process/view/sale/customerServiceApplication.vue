@@ -3,7 +3,7 @@
     <createdCustomer @refresh="refreshed" number="0" :row="row"></createdCustomer>
     <applyService :active="active"></applyService>
     <delegateUser :active="active" title="选择通知客服" type="customer" @refresh="refreshed"></delegateUser>
-    <editServicePrice :active="active" @refresh="refreshed"></editServicePrice>
+    <!-- <editServicePrice :active="active" @refresh="refreshed"></editServicePrice> -->
     <div id="toolbar">
       <span class="lead">客服申请表</span>
       <el-button size="mini" @click="addApplication">新建</el-button>
@@ -17,7 +17,7 @@ import QRCode from "qrcode";
 import createdCustomer from "@/pages/Process/common/sale/createdCustomer";
 import applyService from "@/pages/Process/common/afterSale/applyService";
 import delegateUser from "@/pages/Process/common/delegateUser";
-import editServicePrice from "@/pages/Process/common/editServicePrice";
+// import editServicePrice from "@/pages/Process/common/editServicePrice";
 
 export default {
   name: "customerServiceApplication",
@@ -33,7 +33,7 @@ export default {
     createdCustomer: createdCustomer,
     applyService: applyService,
     delegateUser: delegateUser,
-    editServicePrice: editServicePrice
+    // editServicePrice: editServicePrice
   },
   methods: {
     tableAjaxData(params) {
@@ -218,7 +218,7 @@ export default {
               },
               "click .discountPrice": ($el, val, row, index) => {
                 that.active = row;
-                editServicePrice.methods.close.call(this);
+                // editServicePrice.methods.close.call(this);
               }
             }
           }

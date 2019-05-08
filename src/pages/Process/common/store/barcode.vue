@@ -46,6 +46,9 @@ export default {
       barCodeStyle: { displayValue: false , height: 80, width: 2 }
     };
   },
+  props: {
+    url: String
+  },
   methods: {
     print() {
       this.$print(this.$refs.barcode);
@@ -54,7 +57,7 @@ export default {
   mounted() {
     const that = this;
     $('#barcode').on("shown.bs.modal", function() {
-      JsBarcode(`#barcode #barCodeSvg`, '1245648797aaaaaaaaa', that.barCodeStyle)
+      JsBarcode(`#barcode #barCodeSvg`, that.url || 'Non-existent', that.barCodeStyle)
     });
   }
 }

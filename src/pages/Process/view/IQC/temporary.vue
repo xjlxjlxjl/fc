@@ -2,13 +2,7 @@
   <div id="temporary">
     <Qrmodel :url="url"></Qrmodel>
     <addInspectionBill :arr="arr"></addInspectionBill>
-    <div id="toolbar">
-      <el-select v-model="status" @change="refreshed" size="mini">
-        <el-option label="未完成" :value="0"></el-option>
-        <el-option label="已完成" :value="1"></el-option>
-        <el-option label="全部" :value="undefined"></el-option>        
-      </el-select>
-    </div>
+    <div id="toolbar"></div>
     <table id="table"></table>
   </div>
 </template>
@@ -27,7 +21,7 @@ export default {
       user: user,
       url: "",
       status: 0,
-      arr: []
+      arr: {}
     };
   },
   components: {
@@ -36,47 +30,23 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [
-          {
-            id: 1,
-            items: [
-              {},
-              {},
-              {},
-              {}
-            ]
-          },
-          {
-            id: 2,
-            items: [
-              {}
-            ]
-          },
-          {
-            id: 3,
-            items: [
-              {},
-              {},
-            ]
-          },
-          {
-            id: 4,
-            items: [
-              {},
-              {},
-              {}
-            ]
-          }
-        ],
-        total: 1
-      });
+      this
+        .$get(`repositories/receipt`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
       return {
         page: params.offset / 10 + 1,
         per_page: params.limit,
-        status: this.status
+        supplier_name: params.search,
+        is_inspection: 1
       };
     },
     init() {
@@ -113,51 +83,51 @@ export default {
                 that.url = `https://www.factoryun.com/service/report/detail/${
                   row.id
                 }`;
-                $("#picking .qrCode").modal("show");
+                $("#temporary .qrCode").modal("show");
               }
             }
           },
           {
-            field: "aaa",
+            field: "receipt_no",
             title: "暂收单号"
           },
           {
-            field: "aaa",
+            field: "created_at",
             title: "暂收日期"
           },
           {
-            field: "aaa",
+            field: "receipt_user.last_name",
             title: "暂收员"
           },
           {
-            field: "aaa",
+            field: "from",
             title: "暂收来源"
           },
           {
-            field: "aaa",
+            field: "order_number",
             title: "单号"
           },
           {
-            field: "aaa",
+            field: "is_return",
             title: "是否退换货",
             formatter: function(value, row, index) {
               return value ? '是' : '否';
             }
           },
           {
-            field: "aaa",
+            field: "supplier.name",
             title: "供应商/委外商"
           },
           {
-            field: "aaa",
+            field: "supplier.contract",
             title: "联系人"
           },
           {
-            field: "aaa",
+            field: "supplier.phone",
             title: "联系电话"
           },
           {
-            field: "aaa",
+            field: "purchase_user",
             title: "采购员"
           },
           {
@@ -171,14 +141,20 @@ export default {
             },
             events: {
               "click .add": function(e, value, row, index) {
-                that.arr = row.items;
+                that.arr = row;
                 $("#temporary #addInspectionBill").modal("show");
               },
               "click .print": function(e, value, row, index) {
                 window.open(`/print.html#/IQCtemporary/${row.id}`);
               },
               "click .del": function(e, value, row, index) {
-                that.delTable($("#temporary #table"), 'id', [value]);
+                this
+                  .$get(`repositories/receipt/delete/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#temporary #table"), 'id', [value]);
+                  })
+                  .catch(e => console.error(e));
               }
             }
           }
@@ -225,26 +201,27 @@ export default {
                     <th>料品智能占用</th>
                   </tr>
             `;
-            html += `
-              <tr>
-                <td><input type="checkbox" /></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            `;
+            for (let item of mrow.items) {
+              html += `
+                <tr>
+                  <td><input type="checkbox" class="" /></td>
+                  <td>${ item.material.material_number || '' }</td>
+                  <td>${ item.material.name || '' }</td>
+                  <td>${ item.material.material_specification || '' }</td>
+                  <td>${ item.material.item_unit || '' }</td>
+                  <td>${ item.order_item ? item.order_item.delivery_period : '' }</td>
+                  <td>${ item.order_item ? item.order_item.quantity : '' }</td>
+                  <td>${ item.cancel_quantity || '' }</td>
+                  <td>${ item.wait_quantity || '' }</td>
+                  <td>${ item.is_inspection ? '是' : '否' }</td>
+                  <td>${ item.remark || '' }</td>
+                  <td><button class="btn btn-default btn-sm">查看占用</button></td>
+                </tr>
+              `;
+            }
             html += `</tbody></table>`;
             return html;
-          },
-          onEditableSave(field, mrow, oldValue, $el) {}
+          }
         };
       $("#temporary #table").bootstrapTable(data);
     },

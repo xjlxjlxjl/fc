@@ -5,7 +5,6 @@
       class="modal fade"
       id="purchasePlanPrintModal"
       role="dialog"
-      aria-labelledby="myModalLabel"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -436,11 +435,6 @@ export default {
 </script>
 <style lang="less">
 #purchasePlan {
-  .detail-view {
-    > td {
-      padding: 0;
-    }
-  }
   .img {
     width: 100%;
   }

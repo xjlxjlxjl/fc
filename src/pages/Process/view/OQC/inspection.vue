@@ -128,7 +128,7 @@
 </template>
 <script>
 import QRCode from "qrcode";
-import editOqcModal from "@/pages/Process/common/editOqc";
+import editOqcModal from "@/pages/Process/common/OQC/editOqc";
 import PDFJS from "pdfjs-dist";
 
 export default {
@@ -233,9 +233,8 @@ export default {
             checkbox: true
           },
           {
-            field: "order.numbering",
+            field: "order",
             title: "订单号",
-            sortable: true,
             formatter: (value, row, index) => {
               return `${value.numbering}`;
             }
@@ -243,22 +242,18 @@ export default {
           {
             field: "slug",
             title: "唯一识别码",
-            sortable: true
           },
           {
             field: "model",
             title: "料品编码",
-            sortable: true
           },
           {
             field: "name",
             title: "料品名称",
-            sortable: true
           },
           {
-            field: "created_by",
+            field: "created.last_name",
             title: "送检人",
-            sortable: true,
             formatter: (value, row, index) => {
               return `${value}`;
             }
@@ -266,44 +261,33 @@ export default {
           {
             field: "created_at",
             title: "送检日期",
-            sortable: true
           },
           {
-            field: "is_pass",
+            field: "check_status",
             title: "质检状态",
-            sortable: true,
             formatter: (value, row, index) => {
               switch (value) {
-                case 0:
-                  if (row.report_url.length) {
-                    return "未通过";
-                  } else {
-                    return "待审核";
-                  }
-                  break;
-                case 1:
+                case 'wait_verify':
+                  return "待审核";
+                default:
                   return "通过";
-                  break;
               }
             }
           },
           {
             field: "description",
             title: "质检报告",
-            sortable: true
           },
           {
             field: "member_user.last_name",
             title: "质检员",
-            sortable: true,
             formatter: (value, row, index) => {
-              return `${value.last_name}`;
+              return `${value}`;
             }
           },
           {
             field: "updated_at",
             title: "修改日期",
-            sortable: true
           },
           {
             field: "#",

@@ -1,9 +1,7 @@
 <template>
   <div id="test">
     <Qrmodel :url="url"></Qrmodel>
-    <div id="toolbar">
-      <el-button type="default" size="mini">转仓</el-button>
-    </div>
+    <div id="toolbar"></div>
     <table id="table"></table>
   </div>
 </template>
@@ -19,7 +17,7 @@ export default {
     );
     return {
       user: user,
-      url: ""
+      url: "",
     };
   },
   components: {
@@ -27,15 +25,23 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{}],
-        total: 1
-      });
+      this
+        .$get(`icm_qty_ctrl/quality`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        grade: 1
+      };
     },
     init() {
       let that = this,
@@ -57,12 +63,12 @@ export default {
                     `https://www.factoryun.com/service/report/detail/${row.id}`,
                     (err, string) =>
                       (document.getElementById(
-                        `picking${row.id}`
+                        `test${row.id}`
                       ).innerHTML = string)
                   ),
                 500
               );
-              return `<div id="picking${
+              return `<div id="test${
                 row.id
               }" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
@@ -71,75 +77,103 @@ export default {
                 that.url = `https://www.factoryun.com/service/report/detail/${
                   row.id
                 }`;
-                $("#picking .qrCode").modal("show");
+                $("#test .qrCode").modal("show");
               }
             }
           },
           {
-            field: "id",
-            title: "暂收单号",
+            field: "number",
+            title: "质检单号",
             sortable: true
           },
           {
-            field: "id",
+            field: "created_at",
+            title: "质检日期",
+            sortable: true
+          },
+          {
+            field: "created_by",
+            title: "质检员",
+            sortable: true
+          },
+          {
+            field: "temp_storage.number",
+            title: "关联暂收单号",
+            sortable: true
+          },
+          {
+            field: "temp_storage.created_at",
             title: "暂收日期",
             sortable: true
           },
           {
-            field: "id",
+            field: "temp_storage.created_by",
             title: "暂收员",
             sortable: true
           },
           {
-            field: "id",
+            field: "temp_storage.source",
             title: "暂收来源",
             sortable: true
           },
           {
-            field: "id",
-            title: "单号",
+            field: "procurement.number",
+            title: "关联单号",
             sortable: true
           },
           {
-            field: "id",
-            title: "委外商/供应商",
+            field: "temp_storage.is_return",
+            title: "是否退换货",
+            formatter(value) {
+              return value ? '是' : '否' ;
+            }
+          },
+          {
+            field: "procurement.supplier.name",
+            title: "供应商/委外商",
             sortable: true
           },
           {
-            field: "id",
+            field: "procurement.supplier_contract.name",
             title: "联系人",
             sortable: true
           },
           {
-            field: "id",
+            field: "procurement.supplier_contract.mobile",
             title: "联系电话",
             sortable: true
           },
           {
-            field: "id",
+            field: "procurement.created_by",
             title: "采购员",
             sortable: true
           },
           {
-            field: "id",
-            title: "是否发送质检",
-            sortable: true
+            field: "aaa",
+            title: "质检入库",
+            formatter(value) {
+              return value ? '已申请' : '未申请';
+            }
           },
           {
             field: "id",
             title: "操作",
             formatter: function(value, row, index) {
-              let send = `<button class="btn btn-sm btn-success send">发送品检</button>`,
-                join = `<button class="btn btn-sm btn-primary join">申请入库</button>`,
-                edit = `<button class="btn btn-sm btn-warning del">编　　辑</button>`,
+              let join = `<button class="btn btn-sm btn-primary join">质检入库</button>`,
                 del = `<button class="btn btn-sm btn-danger del">删　　除</button>`;
-              return send + join + edit + del;
+              return join + del;
             },
             events: {
-              "click .send": function(e, value, row, index) {},
               "click .join": function(e, value, row, index) {},
-              "click .edit": function(e, value, row, index) {},
-              "click .del": function(e, value, row, index) {}
+              "click .del": function(e, value, row, index) {
+                that
+                  .$get(`icm_qty_ctrl/quality/delete/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#test #table"), 'id', [value]);
+                  })
+                  .catch(e => console.error(e));
+              }
             }
           }
         ],
@@ -168,23 +202,53 @@ export default {
           columns: columns,
           detailFormatter(field, mrow, oldValue, $el) {
             let html = `
-              <table>
-                <tr>
-                  <th>料品编码</th>
-                  <th>料品名称</th>
-                  <th>料品规格</th>
-                  <th>单位</th>
-                  <th>交期</th>
-                  <th>采购数量</th>
-                  <th>暂收数</th>
-                  <th>尚缺数量</th>
-                  <th>是否需检</th>
-                  <th>备注</th>
-                  <th>料品智能占用</th>
-                </tr>
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th>料品编码</th>
+                    <th>料品名称</th>
+                    <th>料品规格</th>
+                    <th>单位</th>
+                    <th>交期</th>
+                    <th>采购数量</th>
+                    <th>暂收数</th>
+                    <th>尚缺数量</th>
+                    <th>是否需检</th>
+                    <th>备注</th>
+                    <th>此次检数</th>
+                    <th>合格</th>
+                    <th>合格数</th>
+                    <th>不良数</th>
+                    <th>需退数</th>
+                    <th>实退数</th>
+                    <th>不良原因</th>
+                    <th>智能占用</th>
+                  </tr>
             `;
-            html += `</table>`;
-
+            for (let e of mrow.items)
+              html += `
+                <tr>
+                  <td>${ e.material.code }</td>
+                  <td>${ e.material.name }</td>
+                  <td>${ e.material.specification }</td>
+                  <td>${ e.material.unit }</td>
+                  <td>${ e.procurement_item.delivery_period }</td>
+                  <td>${ e.procurement_item.quantity }</td>
+                  <td>${ e.temp_storage_item.cancel_quantity }</td>
+                  <td>${ e.temp_storage_item.wait_quantity }</td>
+                  <td>${ e.material.check ? '是' : '否' }</td>
+                  <td>${ e.procurement_item.remark }</td>
+                  <td>${ e.quantity }</td>
+                  <td>${ e.grade }</td>
+                  <td>${ e.qualification }</td>
+                  <td>${ e.bad }</td>
+                  <td>${ e.refund }</td>
+                  <td>${ e.actual_refund }</td>
+                  <td>${ e.bad_cause }</td>
+                  <td><button class="btn btn-default btn-sm">查看占用</button></td>
+                </tr>
+              `;
+            html += `</tbody></table>`;
             return html;
           },
           onEditableSave(field, mrow, oldValue, $el) {}
