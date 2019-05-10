@@ -143,6 +143,13 @@ export default {
             }
           },
           {
+            field: "classification",
+            title: "料品分类",
+            formatter: function(value) {
+              return value ? value.name : '';
+            }
+          },
+          {
             field: "respository.name",
             title: "仓库",
             sortable: true

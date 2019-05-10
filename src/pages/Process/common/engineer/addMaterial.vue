@@ -97,6 +97,17 @@
                 ></el-checkbox>
               </el-checkbox-group>
             </el-form-item>
+            <el-form-item class="widthHalf" label="料品分类">
+              <el-select v-model="form.classification">
+                <el-option
+                  v-for="item in classList"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"
+                ></el-option>
+              </el-select>
+              <el-button type="info" size="mini" @click="addClass">新增</el-button>
+            </el-form-item>
             <el-form-item label="工程图号" prop="project_drawing_number">
               <el-input v-model="form.project_drawing_number" placeholder="工程图号"></el-input>
             </el-form-item>
@@ -186,7 +197,8 @@ export default {
       uploadType: 0,
       storeList: [],
       attrList: [],
-      categoriesList: []
+      categoriesList: [],
+      classList: []
     };
   },
   methods: {
@@ -214,6 +226,15 @@ export default {
         })
         .catch(err => console.error(err));
     },
+    getClass() {
+      this
+        .$get(`repositories/material/classification`)
+        .then(response => {
+          if (response.status != 200) return false;
+          this.classList = response.data.list;
+        })
+        .catch(e => console.error(e));
+    },
     getFileslist() {
       this.$get(`files/folders`)
         .then(response => {
@@ -221,6 +242,27 @@ export default {
           console.log(response);
         })
         .catch(err => console.error(err));
+    },
+    addClass() {
+      this
+        .$prompt('分类名称', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        })
+        .then(({ value }) => {
+          this
+            .$post(`repositories/material/classification/create`, {
+              name: value
+            })
+            .then(response => {
+              if (response.status != 200) return false;
+              this.classList.unshift({
+                id: response.data.id,
+                name: value
+              });
+            })
+            .catch(e => console.error(e));
+        });
     },
     submit() {
       this.$refs["form"].validate(v => {
@@ -281,6 +323,7 @@ export default {
     this.getStore();
     this.getAttr();
     this.getCate();
+    this.getClass();
     this.getFileslist();
   }
 };
@@ -299,7 +342,8 @@ export default {
         }
       }
       .widthHalf {
-        width: 50%;
+        width: 33.3333%;
+        // width: 50%;
       }
       .widthFull {
         width: 100%;
