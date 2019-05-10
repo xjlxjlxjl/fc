@@ -41,12 +41,11 @@ export default {
         .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
-      let p = {
+      return {
         page: params.offset / params.limit + 1,
         per_page: params.limit,
         search: params.search,
-      }
-      return p;
+      };
     },
     init() {
       const that = this,
@@ -118,7 +117,10 @@ export default {
                 version = `<button class="btn btn-sm btn-primary version">版本变更</button>`,
                 copy = `<button class="btn btn-sm btn-warning copy">　复制　</button>`,
                 del = `<button class="btn btn-sm btn-danger del">　删除　</button>`;
-              return edit + version + copy + del;
+                if (row.is_no_edit) 
+                  return version + copy + del;
+                else 
+                  return edit + version + copy + del;
             },
             events: {
               "click .edit": function($el, value, row, index) {

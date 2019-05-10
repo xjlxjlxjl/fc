@@ -47,10 +47,11 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.per_page = params.limit;
-      params.check_status = this.check_status;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        check_status: this.check_status
+      };
     },
     init() {
       let that = this,
@@ -78,7 +79,7 @@ export default {
               let status = {
                 0: "待审核",
                 1: "审核通过",
-                2: "审核失败"
+                2: `审核失败（理由：${row.check_remark}）`
               };
               return status[value];
             }
@@ -99,11 +100,12 @@ export default {
             formatter: (value, row, index) => {
               let quoted = `<button class="btn btn-primary btn-sm quoted">设置报价</button>`,
                 pass = `<button class="btn btn-success btn-sm pass">审核通过</button>`,
-                refuse = `<button class="btn btn-danger btn-sm refuse" style="margin-left: 5px;">审核不通过</button>`;
-                if (row.entry.entry_stream == "quoted_price")
-                  return quoted + pass + refuse;
-                else
-                  return pass + refuse;
+                refuse = `<button class="btn btn-danger btn-sm refuse" style="margin-left: 5px;">审核不通过</button>`,
+                counterTrial = `<button class="btn btn-danger btn-sm counterTrial" style="margin-left: 5px;">反审</button>`,
+                btn = pass + refuse;
+                if (row.entry.entry_stream == "quoted_price") btn += quoted;
+                if (row.is_anti_check) btn += counterTrial;
+                return btn;
             },
             events: {
               "click .quoted": function(e, value, row, index) {
@@ -134,6 +136,22 @@ export default {
                         id: valued,
                         check_status: 2,
                         check_remark: value
+                      })
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.refreshed();
+                      })
+                      .catch(err => console.error(err));
+                  });
+              },
+              "click .counterTrial": function(e, valued, row, index) {
+                that
+                  .$prompt("请输入反审备注", "提示", { confirmButtonText: "确定"})
+                  .then(({ value }) => {
+                    that
+                      .$post(`approvals/anti_review`, {
+                        id: valued,
+                        remark: value
                       })
                       .then(response => {
                         if (response.status != 200) return false;

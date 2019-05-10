@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade" id="addMaterial" role="dialog">
+  <div id="addMaterial" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg" style="width: 1280px;max-width: 100%;" role="document">
       <div class="modal-content">
         <div class="modal-body">

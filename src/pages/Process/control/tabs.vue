@@ -57,6 +57,8 @@
         <engineerMaterial v-else-if="activeTabs == '/Engineer/material'"></engineerMaterial>
         <engineerBom v-else-if="activeTabs == '/Engineer/BOM'"></engineerBom>
         <!-- 仓库 -->
+        <storeApplyMateriel v-else-if="activeTabs == '/store/applyMateriel'"></storeApplyMateriel>
+        <storeCarManage v-else-if="activeTabs == '/store/carManage'"></storeCarManage>
         <storeManage v-else-if="activeTabs == '/store/manage'"></storeManage>
         <storeStock v-else-if="activeTabs == '/store/stock'"></storeStock>
         <storeTemporary v-else-if="activeTabs == '/store/temporary'"></storeTemporary>
@@ -121,12 +123,14 @@ import engineerBom from "@/pages/Process/view/engineer/BOM";
 // 仓库
 import storeManage from "@/pages/Process/view/store/manage";
 import storeStock from "@/pages/Process/view/store/Stock";
+import storeApplyMateriel from "@/pages/Process/view/store/applyMateriel";
 import storeProduct from "@/pages/Process/view/store/product";
 import storeMaterial from "@/pages/Process/view/store/material";
 import storeOutStock from "@/pages/Process/view/store/outStock";
 import storeShipment from "@/pages/Process/view/store/shipment";
 import storehousing from "@/pages/Process/view/store/warehousing";
 import storeTemporary from "@/pages/Process/view/store/temporary";
+import storeCarManage from "@/pages/Process/view/store/carManage";
 import storeCombination from "@/pages/Process/view/store/combination";
 import storeSplit from "@/pages/Process/view/store/split";
 import storeSparePart from "@/pages/Process/view/store/spareParts";
@@ -192,7 +196,9 @@ export default {
 
     engineerMaterial: engineerMaterial,
     engineerBom: engineerBom,
-
+    
+    storeApplyMateriel: storeApplyMateriel,
+    storeCarManage: storeCarManage,
     storeManage: storeManage,
     storeStock: storeStock,
     storeTemporary: storeTemporary,

@@ -499,6 +499,10 @@ export default new Vuex.Store({
           url: "/store/product"
         },
         {
+          name: "领料申请",
+          url: "/store/applyMateriel"
+        },
+        {
           name: "仓库、仓位管理",
           url: "/store/manage"
         },
@@ -509,6 +513,10 @@ export default new Vuex.Store({
         {
           name: "来料暂收",
           url: "/store/temporary"
+        },
+        {
+          name: "物料车管理",
+          url: "/store/carManage"
         },
         {
           name: "备料需求表",

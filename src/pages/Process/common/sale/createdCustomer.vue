@@ -144,16 +144,7 @@ export default {
         customer_other_contact: [{ required: true, message: '请输入客服地址', trigger: 'blur' }],
       },
       sendCodeTips: "发送验证码",
-      isClick: false,
-      tableData: [
-        {
-          materialsId: "",
-          materialsName: "",
-          materialSpecifications: "",
-          materialsNum: "",
-          unit: ""
-        }
-      ]
+      isClick: false
     };
   },
   props: {
@@ -257,19 +248,11 @@ export default {
           }
           break;
         case 1:
-          if (!this.form.code) {
-            this.$message({ message: "验证码为必填选项", type: "error" });
-            return false;
+          params = this.form;
+          for (let e of params.orders) {
+            e.fileUrl = undefined;
+            e.images = e.images.join(',');
           }
-          params.number = this.form.number;
-          params.customer_company_name = this.form.customer_company_name;
-          params.customer_linkman = this.form.customer_linkman;
-          params.customer_contact = this.form.customer_contact;
-          params.customer_demand = this.form.customer_demand;
-          params.specification = this.form.specificatio;
-          params.code = this.form.code;
-          params.token = this.form.token;
-          params.customer_file_ids = this.form.business_file_ids.join(",");
           break;
         default:
           break;
@@ -280,7 +263,7 @@ export default {
           loading.close();
           if (response.status != 200) return false;
           if (that.state) {
-            that.$message({ message: "您的申请已提交", type: "success" });
+            that.$message({ message: "客服申请成功，请耐心等待回复。", type: "success" });
             setTimeout(() => that.$router.go(-1), 1000);
           } else {
             that.$emit('refresh');

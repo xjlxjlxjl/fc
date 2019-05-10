@@ -1,47 +1,84 @@
 <template>
   <div id="customer">
     <div id="createdCustomerForm">
-      <el-form :inline="true" :model="form" label-position="left" label-width="100px">
-        <el-form-item label="公司">
+      <el-form ref="form" :model="form" :rules="rule" size="mini" label-position="left" label-width="100px">
+        <div v-for="(v, k) in form.orders" :key="v.index">
+          <el-form-item label="销售订单号">
+            <el-input v-model="v.order_no"></el-input>
+          </el-form-item>
+          <el-form-item label="产品SN码">
+            <el-input v-model="v.product_sn"></el-input>
+          </el-form-item>
+          <el-form-item label="料品编码">
+            <el-input v-model="v.material_code"></el-input>
+          </el-form-item>
+          <el-form-item label="料品规格">
+            <el-input v-model="v.material_specification"></el-input>
+          </el-form-item>
+          <el-form-item label="料品名称">
+            <el-input v-model="v.material_name"></el-input>
+          </el-form-item>
+          <el-form-item label="出货日期">
+            <el-date-picker
+              v-model="v.ship_date"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择日期">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="是否过保">
+            <el-input v-model="v.is_protected"></el-input>
+          </el-form-item>
+          <el-form-item label="客服问题描述">
+            <el-input type="textarea" v-model="v.problem" placeholder="请输入"></el-input>
+          </el-form-item>
+          <el-form-item label="上传图片" style="margin-bottom: 0px;"></el-form-item>
+          <el-upload
+            action="a"
+            class="fileList"
+            list-type="picture-card"
+            :before-upload="upload"
+            :before-remove="remove"
+            :file-list="v.fileUrl"
+          >
+            <i class="el-icon-plus" @click="key = k"></i>
+          </el-upload>
+          <el-form-item align="right">
+            <el-button size="mini" @click="form.orders.splice(k, 1)">删除</el-button>
+          </el-form-item>
+        </div>
+        <el-button 
+          style="width: 100%;margin-bottom: 18px;"
+          type="info"
+          size="mini"
+          @click="form.orders.push({ fileUrl: [], images: [] })"
+        > +添加产品 </el-button>
+        
+        <el-form-item prop="customer_company_name" label="客户公司名">
           <el-input v-model="form.customer_company_name" placeholder="公司"></el-input>
         </el-form-item>
-        <el-form-item label="姓名">
+        <el-form-item prop="customer_linkman" label="联系人">
           <el-input v-model="form.customer_linkman" placeholder="姓名"></el-input>
         </el-form-item>
-        <el-form-item label="手机">
+        <el-form-item prop="customer_contact" label="联系电话">
           <el-input v-model="form.customer_contact" placeholder="手机">
             <el-button
               slot="suffix"
               type="info"
               size="mini"
-              class="pcCode"
               round
               @click="sendCode"
             >{{ sendCodeTips }}</el-button>
           </el-input>
         </el-form-item>
-        <el-form-item class="moblieCode" style="text-align: right;">
-          <el-button type="info" size="mini" round @click="sendCode">{{ sendCodeTips }}</el-button>
-        </el-form-item>
-        <el-form-item label="验证码">
+        <el-form-item prop="code" label="验证码">
           <el-input v-model="form.code" placeholder="验证码"></el-input>
         </el-form-item>
-        <el-form-item label="产品型号">
-          <el-input v-model="form.specification" placeholder="产品型号"></el-input>
+        <el-form-item prop="customer_other_contact" label="客服地址">
+          <el-input v-model="form.customer_other_contact" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="问题描述">
-          <el-input v-model="form.customer_demand" placeholder="问题描述"></el-input>
-        </el-form-item>
-        <el-form-item label="上传图片" class="fileList">
-          <el-upload
-            action="https://factoryun.oss-cn-shenzhen.aliyuncs.com/"
-            list-type="picture-card"
-            :before-upload="upload"
-            :before-remove="remove"
-            :file-list="form.fileUrl"
-          >
-            <i class="el-icon-plus"></i>
-          </el-upload>
+        <el-form-item prop="remark" label="备注">
+          <el-input v-model="form.remark" placeholder="请输入"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -58,33 +95,25 @@ export default {
   data() {
     return {
       form: {
-        number: this.$route.params.number,
-        apply_linkman: "",
         customer_company_name: "",
         customer_linkman: "",
         customer_contact: "",
-        date: "",
-        customer_demand: "",
-        specification: "",
         code: "",
-        customer_file_ids: [],
-        business_file_ids: [],
-        fileUrl: [],
+        customer_other_contact: "",
         remark: "",
-        token: ""
+        token: "",
+        orders: [{ fileUrl: [], images: [] }]
+      },
+      rule: {
+        customer_company_name: [{ required: true, message: "客户公司名为必填", trigger: "blur" }],
+        customer_linkman: [{ required: true, message: "联系人为必填", trigger: "blur" }],
+        customer_contact: [{ required: true, message: "联系电话为必填", trigger: "blur" }],
+        code: [{ required: true, message: "验证码为必填", trigger: "blur" }],
+        customer_other_contact: [{ required: true, message: "客服地址为必填", trigger: "blur" }]
       },
       state: 1,
       sendCodeTips: "发送验证码",
-      isClick: false,
-      tableData: [
-        {
-          materialsId: "",
-          materialsName: "",
-          materialSpecifications: "",
-          materialsNum: "",
-          unit: ""
-        }
-      ]
+      isClick: false
     };
   },
   methods: {
@@ -98,10 +127,12 @@ export default {
       createdCustomer.methods.remove.call(this, item);
     },
     commit() {
-      createdCustomer.methods.commit.call(this);
+      this.$refs['form'].validate(v => {
+        if (!v) return false;
+        createdCustomer.methods.commit.call(this);
+      })
     }
-  },
-  created() {}
+  }
 };
 </script>
 <style lang="less">
@@ -124,9 +155,10 @@ export default {
           display: none !important;
         }
       }
-      .el-form-item {
+      > div {
         width: 100%;
-        display: flex;
+      }
+      .el-form-item {
         .el-form-item__content {
           box-sizing: border-box;
           flex-grow: 1;
@@ -142,6 +174,7 @@ export default {
               button {
                 padding: 5px;
                 font-size: 12px;
+                font-size: 10px !important;
               }
             }
           }
