@@ -5,13 +5,13 @@
         <div class="modal-body">
           <el-form :model="form" ref="form" label-width="80px" size="mini">
             <el-form-item label="产品型号">
-              <el-input v-model="form.model"></el-input>
+              <el-input v-model="form.product_model"></el-input>
             </el-form-item>
             <el-form-item label="价格">
               <el-input v-model="form.price"></el-input>
             </el-form-item>
             <el-form-item label="交期">
-              <el-date-picker v-model="form.date" type="date" value-format="yyyy-MM-dd">
+              <el-date-picker v-model="form.delivery_period" type="date" value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="备注">
@@ -19,11 +19,12 @@
             </el-form-item>
             <el-form-item label="附件">
               <el-upload
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-remove="handleRemove"
+                action="a"
+                :before-upload="upload"
+                :on-remove="remove"
                 :file-list="fileList"
                 list-type="picture">
-                <el-button size="mini" type="info">点击上传</el-button>
+                <el-button size="mini" type="primary">上传</el-button>
               </el-upload>
             </el-form-item>
           </el-form>
@@ -41,16 +42,69 @@ export default {
   name: "addOffer",
   data() {
     return {
-      form: {},
-      fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
+      form: {
+        inquiry_price_id: 0,
+        product_model: "",
+        price: "",
+        delivery_period: "",
+        file_ids: [],
+        remark: ""
+      },
+      fileList: []
     };
   },
+  props: {
+    row: Object
+  },
   methods: {
-    onSubmit() {
-      console.log(this.form)
+    upload(file) {
+      let form = new FormData();
+      form.append("upload", file);
+      form.append("slug", "non_standard_requirements");
+
+      this
+        .$upload("files/upload", form)
+        .then(response => {
+          if (response.status != 200) return false;
+          this.fileList.push({
+            name: file.name,
+            uid: response.data.upload.id,
+            url: response.data.url
+          });
+          this.form.file_ids.push(response.data.upload.id);
+        })
+        .catch(err => console.error(err));
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    onSubmit() {
+      if (typeof this.form.file_ids == 'object')
+        this.form.file_ids = this.form.file_ids.join(',');
+      this.form.inquiry_price_id = this.row.id;
+      this
+        .$post(`orders/quoted-price/create`, this.form)
+        .then(response => {
+          if (response.status != 200) return false;
+          this.$emit('refresh');
+          $("#nonstandard #addOffer").modal("hide");
+          this.clearForm();
+        })
+        .catch(e => console.error(e));
+    },
+    clearForm() {
+      this.form = {
+        inquiry_price_id: 0,
+        product_model: "",
+        price: "",
+        delivery_period: "",
+        file_ids: [],
+        remark: ""
+      };
+      this.fileList = [];
+    },
+    remove(file, fileList) {
+      this.fileList = fileList;
+      this.form.file_ids = [];
+      for (let v of fileList)
+        this.form.file_ids.push(v.uid)
     }
   }
 };

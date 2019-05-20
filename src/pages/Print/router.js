@@ -6,9 +6,12 @@ import purchasePlan from '@/pages/Print/view/purchasePlan';
 import purchaseOrder from '@/pages/Print/view/purchaseOrder';
 import purchasEntrust from '@/pages/Print/view/purchasEntrust';
 import purchasReceive from '@/pages/Print/view/purchasReceive';
+import purchasBarter from '@/pages/Print/view/purchasBarter';
+import purchasReturn from '@/pages/Print/view/purchasReturn';
 import saleOrder from '@/pages/Print/view/saleOrder';
 import IQCtemporary from '@/pages/Print/view/IQCtemporary';
 import IQCunhealthy from '@/pages/Print/view/IQCunhealthy';
+import IQCstore from '@/pages/Print/view/IQCstore';
 import saleNonstandard from '@/pages/Print/view/saleNonstandard';
 Vue.use(Router);
 
@@ -37,6 +40,14 @@ export default new Router({
       name: "purchasReceive",
       component: purchasReceive
     }, {
+      path: "/purchasBarter/:id",
+      name: "purchasBarter",
+      component: purchasBarter
+    }, {
+      path: "/purchasReturn/:id",
+      name: "purchasReturn",
+      component: purchasReturn
+    }, {
       path: "/saleOrder/:id",
       name: "saleOrder",
       component: saleOrder
@@ -48,6 +59,10 @@ export default new Router({
       path: "/IQCunhealthy/:id",
       name: "IQCunhealthy",
       component: IQCunhealthy
+    }, {
+      path: "/IQCstore/:id",
+      name: "IQCstore",
+      component: IQCstore
     }, {
       path: "/saleNonstandard/:id",
       name: "saleNonstandard",

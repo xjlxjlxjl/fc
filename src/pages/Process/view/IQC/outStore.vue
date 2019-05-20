@@ -1,5 +1,5 @@
 <template>
-  <div id="purchaseUnhealthy">
+  <div id="outStore">
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -7,14 +7,19 @@
 <script>
 import QRCode from "qrcode";
 export default {
-  name: 'purchaseUnhealthy',
+  name: "outStore",
   data() {
     return {};
   },
   methods: {
     tableAjaxData(params) {
+      params.success({
+        rows: [{ id: 1 }],
+        total: 1
+      });
+      return false
       this
-        .$get(`icm_qty_ctrl/quality`, params.data)
+        .$get(``, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -28,7 +33,7 @@ export default {
       return {
         page: params.offset / 10 + 1,
         per_page: params.limit,
-        grade: 0
+        grade: 1
       };
     },
     init() {
@@ -46,21 +51,21 @@ export default {
             title: "二维码",
             formatter: function(value, row, index) {
               setTimeout(() =>QRCode.toString(`https://www.factoryun.com/service/report/detail/${row.id}`,
-                (err, string) => (document.getElementById(`purchaseUnhealthy${row.id}`).innerHTML = string)),
+                (err, string) => (document.getElementById(`outStore${row.id}`).innerHTML = string)),
                 500
               );
-              return `<div id="purchaseUnhealthy${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
+              return `<div id="outStore${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
                 // that.url = `https://www.factoryun.com/service/report/detail/${row.id}`;
-                // $("#purchaseUnhealthy .qrCode").modal("show");
+                // $("#outStore .qrCode").modal("show");
               }
             }
           },
           {
             field: "number",
-            title: "质检不良单号",
+            title: "出库申请单号",
             sortable: true
           },
           {
@@ -75,7 +80,7 @@ export default {
           },
           {
             field: "temp_storage.number",
-            title: "关联质检单号",
+            title: "关联退/换货单",
             sortable: true
           },
           {
@@ -119,38 +124,27 @@ export default {
             field: "id",
             title: "操作",
             formatter: function(value, row, index) {
-              let barter = `<button class="btn btn-sm btn-primary barter">采购换货</button>`,
-                retreat = `<button class="btn btn-sm btn-warning retreat">采购退货</button>`,
-                print = `<button class="btn btn-sm btn-success print">打　　印</button>`,
-                special = `<button class="btn btn-sm btn-primary special">特检入库</button>`,
-                end = `<button class="btn btn-sm btn-danger end">结　　案</button>`,
-                del = `<button class="btn btn-sm btn-danger del">删　　除</button>`;
-              return barter + retreat + print + special + end + del;
+              let print = `<button class="btn btn-sm btn-primary print">打印</button>`,
+                outStore = `<button class="btn btn-sm btn-danger outStore">出库</button>`;
+              return print + outStore;
             },
             events: {
-              "click .barter": function(e, value, row, index) {
-                that.creatEmptor(1, row);
-              },
-              "click .retreat": function(e, value, row, index) {
-                that.creatEmptor(2, row);
-              },
               "click .print": function(e, value, row, index) {
-                window.open(`/print.html#/IQCunhealthy/${row.id}`);
+                window.open(`/print.html#/purchasReceive/${row.id}`);
               },
-              "click .del": function(e, value, row, index) {
-                if (confirm('是否确定删除'))
-                  that
-                    .$get(`icm_qty_ctrl/quality/delete/${value}`)
-                    .then(response => {
-                      if (response.status != 200) return false;
-                    })
-                    .catch(e => console.error(e));
+              "click .outStore": function(e, value, row, index) {
+                that
+                  .$get(`icm_qty_ctrl/quality/delete/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                  })
+                  .catch(e => console.error(e));
               }
             }
           }
         ],
         data = {
-          toolbar: "#purchaseUnhealthy #toolbar",
+          toolbar: "#outStore #toolbar",
           ajax: this.tableAjaxData,
           queryParams: this.tableAjaxParams,
           search: true,
@@ -177,6 +171,7 @@ export default {
               <table class="table table-bordered">
                 <tbody>
                   <tr>
+                    <th>序号</th>
                     <th>料品编码</th>
                     <th>料品名称</th>
                     <th>料品规格</th>
@@ -184,22 +179,16 @@ export default {
                     <th>交期</th>
                     <th>采购数量</th>
                     <th>暂收数</th>
-                    <th>尚缺数量</th>
-                    <th>是否需检</th>
-                    <th>备注</th>
-                    <th>此次检数</th>
-                    <th>合格</th>
-                    <th>合格数</th>
                     <th>不良数</th>
                     <th>需退数</th>
                     <th>实退数</th>
                     <th>不良原因</th>
-                    <th>智能占用</th>
                   </tr>
             `;
             for (let e of mrow.items)
               html += `
                 <tr>
+                  <td>${ k + 1 }</td>
                   <td>${ e.material.code }</td>
                   <td>${ e.material.name }</td>
                   <td>${ e.material.specification }</td>
@@ -208,55 +197,20 @@ export default {
                   <td>${ e.procurement_item.quantity }</td>
                   <td>${ e.temp_storage_item.cancel_quantity }</td>
                   <td>${ e.temp_storage_item.wait_quantity }</td>
-                  <td>${ e.material.check ? '是' : '否' }</td>
-                  <td>${ e.procurement_item.remark }</td>
-                  <td>${ e.quantity }</td>
-                  <td>${ e.grade }</td>
-                  <td>${ e.qualification }</td>
                   <td>${ e.bad }</td>
                   <td>${ e.refund }</td>
                   <td>${ e.actual_refund }</td>
                   <td>${ e.bad_cause }</td>
-                  <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>
               `;
             html += `</tbody></table>`;
             return html;
           }
         };
-      $("#purchaseUnhealthy #table").bootstrapTable(data);
+      $("#outStore #table").bootstrapTable(data);
     },
     refreshed() {
-      this.refresh($("#purchaseUnhealthy #table"));
-    },
-    creatEmptor(type, row) {
-      let 
-        arr = [],
-        that = this, 
-        msg = new Map([
-          [1, () => that.$message({ message: '生成换货单成功', type: 'success' })],
-          [2, () => that.$message({ message: '生成换退货单成功', type: 'success' })]
-        ]);
-      for (let e of row.items)
-        arr.push({
-          quality_item_id: e.id,
-          temp_storage_item_id: e.temp_storage_item_id,
-          refund: e.refund,
-          actual_refund: e.actual_refund
-        })
-
-      that
-        .$post(`procurement/emptor/create`, {
-          quality_id: row.id,
-          temp_storage_id: row.temp_storage_id,
-          type: type,
-          items: arr
-        })
-        .then(response => {
-          if (response.status != 200) return false;
-          msg.get(type).call(this);
-        })
-        .catch(e => console.error(e));
+      this.refresh($("#outStore #table"));
     }
   },
   mounted() {
@@ -264,8 +218,8 @@ export default {
   }
 }
 </script>
-<style>
-  #purchaseUnhealthy {
-    
-  }
+<style lang="less">
+#outStore {
+
+}
 </style>

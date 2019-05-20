@@ -1,6 +1,6 @@
 <template>
   <div id="nonstandardModal">
-    <addNonstandardModal></addNonstandardModal>
+    <addNonstandardModal :row="row" @refresh="refreshed"></addNonstandardModal>
     <div id="toolbar">
       <el-button type="default" size="mini" @click="addNonModal = !addNonModal">新建非标询价模板</el-button>
     </div>
@@ -14,7 +14,8 @@ export default {
   name: "nonstandardModal",
   data() {
     return {
-      addNonModal: false
+      addNonModal: false,
+      row: {}
     };
   },
   components: {
@@ -22,15 +23,23 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{}],
-        total: 1
-      });
+      this
+        .$get(`orders/inquiry-template`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        name: params.search
+      };
     },
     init() {
       let that = this,
@@ -43,19 +52,19 @@ export default {
             }
           },
           {
-            field: "#",
+            field: "name",
             title: "非标询价模板名称"
           },
           {
-            field: "#",
+            field: "created_by",
             title: "创建人"
           },
           {
-            field: "#",
+            field: "created_at",
             title: "创建日期"
           },
           {
-            field: "slug",
+            field: "id",
             title: "操作",
             formatter: (value, row, index) => {
               let
@@ -65,9 +74,18 @@ export default {
             },
             events: {
               "click .edit": function(e, value, row, index) {
+                that.row = row;
                 that.addNonModal = !that.addNonModal;
               },
-              "click .del": function(e, value, row, index) {}
+              "click .del": function(e, value, row, index) {
+                that
+                  .$get(`orders/inquiry-template/delete/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.delTable($("#nonstandardModal #table"), 'id', [value]);
+                  })
+                  .catch(e => console.error(e));
+              }
             }
           }
         ],
@@ -94,8 +112,34 @@ export default {
           pageList: [10, 25, 50, 100, "All"],
           detailView: true,
           columns: columns,
-          onEditableSave(field, mrow, oldValue, $el) {},
-          detailFormatter(field, mrow, oldValue, $el) {}
+          detailFormatter(field, mrow, oldValue, $el) {
+            let content = `
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>客户公司名</td>
+                    <td>　　　　</td>
+                    <td>联系人</td>
+                    <td>　　　　</td>
+                    <td>联系电话</td>
+                    <td>　　　　</td>
+                    <td>职位</td>
+                    <td>　　　　</td>
+                  </tr>
+                  <tr>
+                    <td>需求描述</td>
+                    <td colspan="3"></td>
+                    <td>需求附件</td>
+                    <td colspan="3"></td>
+                  </tr>
+            `;
+            mrow.data.forEach((v, k) => {
+              if (k % 4 == 0) content += `</tr><tr>`;
+              content += `<td>${v.label}</td><td>　　　　</td>`;
+            })
+            content += `</tr></tbody></table>`;
+            return content;
+          }
         };
       $("#nonstandardModal #table").bootstrapTable(data);
     },

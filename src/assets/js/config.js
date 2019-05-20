@@ -58,6 +58,15 @@ Array.prototype.limit = function (cond, ition) {
 
 export default {
   install: function (Vue, options) {
+    Vue.prototype.random = times => {
+      const arr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+      let str = '';
+      for (let i = 0;times > i;i++) {
+        str += arr[Math.ceil(Math.random() * 25)];
+      }
+      return str;
+    }
+
     Vue.prototype.dateParse = date => {
       return `${date.getFullYear()}-${
         date.getMonth() + 1 < 9

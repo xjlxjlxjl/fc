@@ -3,7 +3,7 @@
     <div
       style="width: 100%;min-height: 840px;box-sizing: border-box;border: 1px solid rgba(121, 121, 121, 1);padding: 30px;position: relative;"
     >
-      <p style="text-align: center;font-size: 18px;">质检不良单</p>
+      <p style="text-align: center;font-size: 18px;">采购换货单</p>
       <div style="display: flex;justify-content: space-between;font-size: 10px;padding-top: 20px;">
         <div>
           <p>公司：{{ data.company.name }}</p>
@@ -41,7 +41,7 @@
 
       <div style="margin-top: 15px;font-size: 10px;line-height: 2;">
         <p style="display: flex;justify-content: space-between;">
-          <span style="width: 50%;">质检不良单号：{{ data.number }}</span>
+          <span style="width: 50%;">采购换货单号：{{ data.number }}</span>
           <span style="width: 50%;">质检日期：{{ data.created_at.split(' ')[0] }}</span>
           <span style="width: 50%;">质检员：{{ data.created_by }}</span>
         </p>
@@ -56,12 +56,13 @@
           <tr>
             <td style="border-right: 1px solid rgb(215, 215, 215)">序号</td>
             <td style="border-right: 1px solid rgb(215, 215, 215)">料品编码</td>
-            <td style="border-right: 1px solid rgb(215, 215, 215)">品名</td>
-            <td style="border-right: 1px solid rgb(215, 215, 215)">规格</td>
+            <td style="border-right: 1px solid rgb(215, 215, 215)">料品名称</td>
+            <td style="border-right: 1px solid rgb(215, 215, 215)">料品规格</td>
             <td style="border-right: 1px solid rgb(215, 215, 215)">单位</td>
             <td style="border-right: 1px solid rgb(215, 215, 215)">交期</td>
-            <td style="border-right: 1px solid rgb(215, 215, 215)">暂收数量</td>
-            <td style="border-right: 1px solid rgb(215, 215, 215)">不良数量</td>
+            <td style="border-right: 1px solid rgb(215, 215, 215)">不良数</td>
+            <td style="border-right: 1px solid rgb(215, 215, 215)">需退数</td>
+            <td style="border-right: 1px solid rgb(215, 215, 215)">实退数</td>
             <td>不良原因</td>
           </tr>
           <tr v-for="(item,index) in data.items" :key="index">
@@ -85,10 +86,13 @@
             >{{ item.procurement_item.delivery_period }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
-            >{{ item.temp_storage_item.cancel_quantity }}</td>
+            >{{ item.bad }}</td>
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
-            >{{ item.bad }}</td>
+            >{{ item.refund }}</td>
+            <td
+              style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
+            >{{ item.actual_refund }}</td>
             <td style="border-top: 1px solid rgb(215, 215, 215);">{{ item.bad_cause }}</td>
           </tr>
         </table>
@@ -107,6 +111,7 @@ export default {
           supplier: {},
           supplier_contract: {}
         },
+        quality: {},
         temp_storage: {},
         created_at: " ",
         items: []
@@ -114,7 +119,7 @@ export default {
     };
   },
   created() {
-    let url = `icm_qty_ctrl/quality/print/${this.$route.params.id}`;
+    let url = `procurement/emptor/print/${this.$route.params.id}`;
     this.$get(url)
       .then(response => {
         if (response.status != 200) return false;
@@ -122,7 +127,7 @@ export default {
         setTimeout(
           () =>
             QRCode.toString(
-              `https://www.factoryun.com/print.html#/IQCunhealthy/${this.$route.params.id}`,
+              `https://www.factoryun.com/print.html#/purchasBarter/${this.$route.params.id}`,
               (err, string) =>
                 (document.getElementById(`QrCode`).innerHTML = string)
             ),

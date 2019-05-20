@@ -625,8 +625,24 @@ export default new Vuex.Store({
           url: '/Purchase/receive'
         },
         {
-          name: '采购质检不良单',
+          name: '质检不良单',
           url: '/Purchase/unhealthy'
+        },
+        {
+          name: '采购换货',
+          url: '/Purchase/barter'
+        },
+        {
+          name: '采购退货',
+          url: '/Purchase/return'
+        },
+        {
+          name: '智能计划',
+          url: '/Purchase/smartPlan'
+        },
+        {
+          name: '生产工时管理',
+          url: '/Purchase/producTime'
         },
         {
           name: '调整入库单价',
@@ -825,6 +841,10 @@ export default new Vuex.Store({
         {
           name: "质检不良单",
           url: "/IQC/unhealthy"
+        },
+        {
+          name: "出库申请",
+          url: "/IQC/outStore"
         },
         {
           name: "质检仓管理",

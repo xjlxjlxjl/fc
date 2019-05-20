@@ -46,6 +46,10 @@
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
         <purchaseTrimPrice v-else-if="activeTabs == '/Purchase/trimPrice'"></purchaseTrimPrice>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
+        <purchaseBarter v-else-if="activeTabs == '/Purchase/barter'"></purchaseBarter>
+        <purchaseReturn v-else-if="activeTabs == '/Purchase/return'"></purchaseReturn>
+        <purchaseSmartPlan v-else-if="activeTabs == '/Purchase/smartPlan'"></purchaseSmartPlan>
+        <purchaseProducTime v-else-if="activeTabs == '/Purchase/producTime'"></purchaseProducTime>
         <!-- IQC -->
         <IQCkanban v-else-if="activeTabs == '/IQC/kanban'"></IQCkanban>
         <IQCtemporary v-else-if="activeTabs == '/IQC/temporary'"></IQCtemporary>
@@ -53,6 +57,7 @@
         <IQCunhealthy v-else-if="activeTabs == '/IQC/unhealthy'"></IQCunhealthy>
         <IQCmanage v-else-if="activeTabs == '/IQC/manage'"></IQCmanage>
         <IQCunhealthyManage v-else-if="activeTabs == '/IQC/unhealthyManage'"></IQCunhealthyManage>
+        <IQCoutStore v-else-if="activeTabs == '/IQC/outStore'"></IQCoutStore>
         <!-- 工程 -->
         <engineerMaterial v-else-if="activeTabs == '/Engineer/material'"></engineerMaterial>
         <engineerBom v-else-if="activeTabs == '/Engineer/BOM'"></engineerBom>
@@ -107,6 +112,10 @@ import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
 import purchaseTrimPrice from "@/pages/Process/view/purchase/trimPrice"
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
+import purchaseBarter from "@/pages/Process/view/purchase/barter";
+import purchaseReturn from "@/pages/Process/view/purchase/return";
+import purchaseSmartPlan from "@/pages/Process/view/purchase/smartPlan";
+import purchaseProducTime from "@/pages/Process/view/purchase/producTime";
 
 // IQC
 import IQCkanban from "@/pages/Process/view/IQC/kanban";
@@ -115,6 +124,7 @@ import IQCtest from "@/pages/Process/view/IQC/test";
 import IQCunhealthy from "@/pages/Process/view/IQC/unhealthy";
 import IQCmanage from "@/pages/Process/view/IQC/manage";
 import IQCunhealthyManage from "@/pages/Process/view/IQC/unhealthyManage";
+import IQCoutStore from "@/pages/Process/view/IQC/outStore";
 
 // 工程
 import engineerMaterial from "@/pages/Process/view/engineer/material";
@@ -186,6 +196,10 @@ export default {
     purchaseSupplier: purchaseSupplier,
     purchaseTrimPrice: purchaseTrimPrice,
     purchaseUnhealthy: purchaseUnhealthy,
+    purchaseBarter: purchaseBarter,
+    purchaseReturn: purchaseReturn,
+    purchaseSmartPlan: purchaseSmartPlan,
+    purchaseProducTime: purchaseProducTime,
 
     IQCkanban: IQCkanban,
     IQCtemporary: IQCtemporary,
@@ -193,6 +207,7 @@ export default {
     IQCunhealthy: IQCunhealthy,
     IQCmanage: IQCmanage,
     IQCunhealthyManage: IQCunhealthyManage,
+    IQCoutStore: IQCoutStore,
 
     engineerMaterial: engineerMaterial,
     engineerBom: engineerBom,

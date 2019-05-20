@@ -17,7 +17,7 @@ import addMaterialModal from "@/pages/Process/common/engineer/addMaterial";
 import barcode from "@/pages/Process/common/store/barcode";
 
 export default {
-  name: 'material',
+  name: "material",
   data() {
     return {
       record: []
@@ -30,8 +30,7 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      this
-        .$get(`respositories/materials/list`, params.data)
+      this.$get(`respositories/materials/list`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -42,11 +41,15 @@ export default {
         .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
-      return params;
+      return {
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        name: params.search
+      };
     },
     init() {
       const that = this,
-        barCodeStyle = { displayValue: false , height: 30, width: 2 },
+        barCodeStyle = { displayValue: false, height: 30, width: 2 },
         columns = [
           {
             checkbox: true
@@ -83,13 +86,21 @@ export default {
             title: "条码",
             formatter: function(value, row, index) {
               let img = `<svg id="barCode${index}"></svg>`;
-              setTimeout(() => JsBarcode(`#barCode${index}`, value || 'Non-existent', barCodeStyle), 500);
+              setTimeout(
+                () =>
+                  JsBarcode(
+                    `#barCode${index}`,
+                    value || "Non-existent",
+                    barCodeStyle
+                  ),
+                500
+              );
               return img;
             },
             events: {
-              'click svg': function(e, value, row, index) {
-                $('#material #barcode').modal("show");
-              },
+              "click svg": function(e, value, row, index) {
+                $("#material #barcode").modal("show");
+              }
             }
           },
           {
@@ -115,8 +126,7 @@ export default {
               return checkbox;
             },
             events: {
-              'change input': function(e, value, row, index) {
-              },
+              "change input": function(e, value, row, index) {}
             }
           },
           {
@@ -139,15 +149,14 @@ export default {
               return checkbox;
             },
             events: {
-              'change input': function(e, value, row, index) {
-              },
+              "change input": function(e, value, row, index) {}
             }
           },
           {
             field: "classification",
             title: "料品分类",
             formatter: function(value) {
-              return value ? value.name : '';
+              return value ? value.name : "";
             }
           },
           {
@@ -239,7 +248,7 @@ export default {
             field: "check",
             title: "是否需检",
             formatter: function(value, row, index) {
-              return `${value ? "需要" : "不需要" }`
+              return `${value ? "需要" : "不需要"}`;
             }
           },
           {
@@ -406,7 +415,7 @@ export default {
             field: "audit.check_status",
             title: "审核状态",
             formatter: function(value, row, index) {
-              return `${ value ? "已审核" : "未审核" }`;
+              return `${value ? "已审核" : "未审核"}`;
             }
           },
           {
@@ -427,7 +436,7 @@ export default {
               return getRecord;
             },
             events: {
-              'click .btn': function(e, value, row, index) {
+              "click .btn": function(e, value, row, index) {
                 that.record = [];
                 that
                   .$get(`respositories/materials/rollover_record/${row.slug}`)
@@ -448,12 +457,12 @@ export default {
               return del;
             },
             events: {
-              'click .del': function(e, value, row, index) {
+              "click .del": function(e, value, row, index) {
                 that
                   .$get(`respositories/materials/delete/${row.slug}`)
                   .then(response => {
                     if (response.status != 200) return false;
-                    that.delTable($("#material #table"), 'id', [row.id]);
+                    that.delTable($("#material #table"), "id", [row.id]);
                   })
                   .catch(err => console.error(err));
               }
@@ -488,7 +497,7 @@ export default {
           detailFormatter(index, row, $el) {},
           onEditableSave(field, mrow, oldValue, $el) {
             that
-              .$post(`respositories/materials/edit/${mrow.slug}`,{
+              .$post(`respositories/materials/edit/${mrow.slug}`, {
                 name: mrow.name,
                 respository: mrow.respository.id
               })
@@ -510,7 +519,7 @@ export default {
   mounted() {
     this.init();
   }
-}
+};
 </script>
 <style lang="less">
 @grey: #dddddd;

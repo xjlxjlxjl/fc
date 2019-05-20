@@ -19,7 +19,7 @@ export default {
   name: "stock",
   data() {
     return {
-      url: '',
+      url: "",
       record: [],
       list: []
     };
@@ -31,8 +31,7 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      this
-        .$get(`respositories/materials/list`, params.data)
+      this.$get(`respositories/materials/list`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -43,7 +42,11 @@ export default {
         .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
-      return params;
+      return {
+        page: params.offset / 10 + 1,
+        per_page: params.limit,
+        name: params.search
+      };
     },
     init() {
       const that = this,
@@ -85,7 +88,15 @@ export default {
             title: "条码",
             formatter: function(value, row, index) {
               let img = `<svg id="barCode${index}"></svg>`;
-              setTimeout(() => JsBarcode(`#barCode${index}`, value || 'Non-existent', barCodeStyle), 500);
+              setTimeout(
+                () =>
+                  JsBarcode(
+                    `#barCode${index}`,
+                    value || "Non-existent",
+                    barCodeStyle
+                  ),
+                500
+              );
               return img;
             },
             events: {
@@ -118,9 +129,9 @@ export default {
               return checkbox;
             },
             events: {
-              'change input': function(e, value, row, index) {
-                console.log(123)
-              },
+              "change input": function(e, value, row, index) {
+                console.log(123);
+              }
             }
           },
           {
@@ -137,16 +148,16 @@ export default {
               return checkbox;
             },
             events: {
-              'change input': function(e, value, row, index) {
-                console.log(321)
-              },
+              "change input": function(e, value, row, index) {
+                console.log(321);
+              }
             }
           },
           {
             field: "classification",
             title: "料品分类",
             formatter: function(value) {
-              return value ? value.name : '';
+              return value ? value.name : "";
             }
           },
           {
@@ -238,7 +249,7 @@ export default {
             field: "check",
             title: "是否需检",
             formatter: function(value, row, index) {
-              return `${value ? "需要" : "不需要" }`
+              return `${value ? "需要" : "不需要"}`;
             }
           },
           {
@@ -405,7 +416,7 @@ export default {
             field: "audit.check_status",
             title: "审核状态",
             formatter: function(value, row, index) {
-              return `${ value ? "已审核" : "未审核" }`;
+              return `${value ? "已审核" : "未审核"}`;
             }
           },
           {
@@ -457,7 +468,7 @@ export default {
                   .$get(`respositories/materials/delete/${row.slug}`)
                   .then(response => {
                     if (response.status != 200) return false;
-                    that.delTable($("#stock #table"), 'id', [row.id]);
+                    that.delTable($("#stock #table"), "id", [row.id]);
                   })
                   .catch(err => console.error(err));
               }
@@ -490,7 +501,7 @@ export default {
           detailFormatter(field, mrow, oldValue, $el) {},
           onEditableSave(field, mrow, oldValue, $el) {
             that
-              .$post(`respositories/materials/edit/${mrow.slug}`,{
+              .$post(`respositories/materials/edit/${mrow.slug}`, {
                 name: mrow.name,
                 respository: mrow.respository.id
               })

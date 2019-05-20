@@ -7,30 +7,29 @@
             <el-form-item label="询价模板名称" prop="name">
               <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <p class="lead widthFull">询价人资料</p>
+            <p class="lead widthFull">询价人资料（为默认字段，只作展示作用）</p>
             <el-form-item label="客户公司名" prop="customer_company_name">
-              <el-input v-model="form.customer_company_name"></el-input>
+              <el-input v-model="form.customer_company_name" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="联系人" prop="contract">
-              <el-input v-model="form.contract"></el-input>
+              <el-input v-model="form.contract" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="联系电话" prop="mobile">
-              <el-input v-model="form.mobile"></el-input>
+              <el-input v-model="form.mobile" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="职位" prop="position">
-              <el-input v-model="form.position"></el-input>
+              <el-input v-model="form.position" :disabled="true"></el-input>
             </el-form-item>
-            <p class="lead widthFull">询价产品资料</p>
+            <p class="lead widthFull">询价产品资料（为默认字段，只作展示作用）</p>
             <el-form-item label="需求描述" prop="desc" class="widthFull">
-              <el-input type="textarea" v-model="form.desc"></el-input>
+              <el-input type="textarea" v-model="form.desc" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="需求附件" prop="file">
               <el-upload
                 action="https://jsonplaceholder.typicode.com/posts/"
-                :on-remove="handleRemove"
                 :file-list="form.file"
                 list-type="picture">
-                <el-button size="small" type="primary">点击上传</el-button>
+                <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <p class="lead widthFull">自定义询价字段</p>
@@ -48,6 +47,8 @@
                   <el-radio :label="2">单选值</el-radio>
                   <el-radio :label="3">多选值</el-radio>
                   <el-radio :label="4">下拉选择列表</el-radio>
+                  <el-radio :label="5">多行文本框</el-radio>
+                  <el-radio :label="6">文件</el-radio>
                 </el-radio-group>
                 <el-input v-if="row.type == 1" size="mini" placeholder="请输入"></el-input>
                 <el-radio-group v-else-if="row.type == 2" v-model="s">
@@ -67,6 +68,8 @@
                   <el-option value="2" label="选项2"></el-option>
                   <el-option value="1" label="选项3"></el-option>
                 </el-select>
+                <el-input v-else-if="row.type == 5" type="textarea" v-model="s" size="mini" placeholder="请输入"></el-input>
+                <div v-else-if="row.type == 6"><el-button type="primary" size="mini">点击上传</el-button></div>
               </template>
             </el-table-column>
             <el-table-column label="字段值">
@@ -75,6 +78,8 @@
                 <el-input v-else-if="row.type == 2" type="textarea" v-model="row.value" placeholder="请输入单选值，每行一个"></el-input>
                 <el-input v-else-if="row.type == 3" type="textarea" v-model="row.value" placeholder="请输入多选值，每行一个"></el-input>
                 <el-input v-else-if="row.type == 4" type="textarea" v-model="row.value" placeholder="请输入下拉选择列表，每行一个"></el-input>
+                <el-input v-else-if="row.type == 5" type="textarea" v-model="row.value" size="mini" placeholder="请输入"></el-input>
+                <el-button v-else-if="row.type == 6" type="primary" size="mini">点击上传</el-button>
               </template>
             </el-table-column>
             <el-table-column width="90">
@@ -91,7 +96,7 @@
         </div>
         <div class="modal-footer">
           <el-button size="mini" data-dismiss="modal">取消</el-button>
-          <el-button size="mini" type="primary" @click="onSubmit">立即创建</el-button>     
+          <el-button size="mini" type="primary" @click="onSubmit">保存</el-button>     
         </div>
       </div>
     </div>
@@ -109,33 +114,85 @@ export default {
         mobile: "",
         position: "",
         desc: "",
-        file: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+        file: [],
         items: [{ type: 1 }]
       },
       rules: {
-        name: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
-        customer_company_name: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
-        contract: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
-        mobile: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
-        desc: [{ required: true, message: '请输入活动名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入模板名称', trigger: 'blur' }],
       },
       // 设置默认值
       s: ''
     };
   },
+  props: {
+    row: Object
+  },
   methods: {
     onSubmit() {
-      console.log(this.form.items);
-      let arr = this.form.items;
-      for (let e of arr) {
-        if (e.type != 1)
-          e.value = e.value.split("\n");
+      this.$refs['form'].validate(v => {
+        if (!v) return false;
+        let arr = this.form.items, url = '';
+        for (let e of arr) {
+          if (e.type != 1 && e.type != 5 && e.type != 6) {
+            let cat = e.value.split("\n") || [];
+            e.value = cat.filter(v => {
+              if(v) return v
+            });
+          } else e.value = e.value || "";
+          e.slug = this.random(4);
+        }
+
+        if (this.row.id) url = `orders/inquiry-template/edit/${this.row.id}`;
+        else url = `orders/inquiry-template/create`;
+
+        this
+          .$post(url, {
+            name: this.form.name,
+            data: JSON.stringify(arr)
+          })
+          .then(response => {
+            if (response.status != 200) return false;
+            this.$emit("refresh");
+            $("#nonstandardModal #addNonstandardModal").modal("hide");
+            this.clearForm();
+          })
+          .catch(e => console.error(e));
+      });
+    },
+    clearForm() {
+      this.form = {
+        name: "",
+        customer_company_name: "",
+        contract: "",
+        mobile: "",
+        position: "",
+        desc: "",
+        file: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+        items: [{ type: 1 }]
       }
-      console.log(JSON.stringify(arr));
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
+    }
+  },
+  mounted() {
+    $('#nonstandardModal #addNonstandardModal').on('shown.bs.modal', () => {
+      if (this.row.id) {
+        this.form = {
+          name: this.row.name,
+          items: []
+        };
+        for (let e of this.row.data) {
+          let str = '';
+          if (e.type == 2 || e.type == 3 || e.type == 4)
+            str = e.value.join("\n")
+          else str = e.value || "";
+          this.form.items.push({
+            label: e.label,
+            slug: e.slug,
+            type: e.type,
+            value: str
+          })
+        }
+      }
+    })
   }
 };
 </script>
