@@ -2,6 +2,13 @@
   <div id="overtime">
     <div id="mattersToolbar">
       <span class="lead">出差申请表</span>
+      <el-date-picker
+        v-model="date"
+        type="daterange"
+        value-format="yyyy-MM-dd"
+        size="mini"
+        @change="refreshed">
+      </el-date-picker>
     </div>
     <table id="mattersTable"></table>
   </div>
@@ -11,7 +18,8 @@ export default {
   name: "overtime",
   data() {
     return {
-      user: JSON.parse(localStorage.getItem("user") || "{}")
+      user: JSON.parse(localStorage.getItem("user") || "{}"),
+      date: []
     };
   },
   components: {},
@@ -35,10 +43,13 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.current_page = params.limit;
-      params.d = params.search;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        current_page: params.limit,
+        member_name: params.search,
+        created_start_at: this.date[0],
+        created_end_at: this.date[1]
+      };
     },
     init() {
       let that = this,

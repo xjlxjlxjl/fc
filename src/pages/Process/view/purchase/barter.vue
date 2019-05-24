@@ -13,8 +13,7 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      this
-        .$get(`procurement/emptor`, params.data)
+      this.$get(`procurement/emptor`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -45,11 +44,22 @@ export default {
             field: "qrCode",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(() =>QRCode.toString(`https://www.factoryun.com/procurement/emptor/detail/${row.id}`,
-                (err, string) => (document.getElementById(`barter${row.id}`).innerHTML = string)),
+              setTimeout(
+                () =>
+                  QRCode.toString(
+                    `https://www.factoryun.com/procurement/emptor/detail/${
+                      row.id
+                    }`,
+                    (err, string) =>
+                      (document.getElementById(
+                        `barter${row.id}`
+                      ).innerHTML = string)
+                  ),
                 500
               );
-              return `<div id="barter${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
+              return `<div id="barter${
+                row.id
+              }" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
@@ -168,24 +178,25 @@ export default {
                     <th>不良原因</th>
                   </tr>
             `;
-            mrow.items.forEach((e, k) =>
-              html += `
+            mrow.items.forEach(
+              (e, k) =>
+                (html += `
                 <tr>
-                  <td>${ k + 1 }</td>
-                  <td>${ e.material.code }</td>
-                  <td>${ e.material.name }</td>
-                  <td>${ e.material.specification }</td>
-                  <td>${ e.material.unit }</td>
-                  <td>${ e.procurement_item.delivery_period }</td>
-                  <td>${ e.procurement_item.quantity }</td>
-                  <td>${ e.temp_storage_item.cancel_quantity }</td>
-                  <td>${ e.quality_item.bad }</td>
-                  <td>${ e.quality_item.refund }</td>
-                  <td>${ e.quality_item.actual_refund }</td>
-                  <td>${ e.quality_item.bad_cause }</td>
+                  <td>${k + 1}</td>
+                  <td>${e.material.code}</td>
+                  <td>${e.material.name}</td>
+                  <td>${e.material.specification}</td>
+                  <td>${e.material.unit}</td>
+                  <td>${e.procurement_item.delivery_period}</td>
+                  <td>${e.procurement_item.quantity}</td>
+                  <td>${e.temp_storage_item.cancel_quantity}</td>
+                  <td>${e.quality_item.bad}</td>
+                  <td>${e.quality_item.refund}</td>
+                  <td>${e.quality_item.actual_refund}</td>
+                  <td>${e.quality_item.bad_cause}</td>
                 </tr>
-              `
-            )
+              `)
+            );
             html += `</tbody></table>`;
             return html;
           }
@@ -199,10 +210,9 @@ export default {
   mounted() {
     this.init();
   }
-}
+};
 </script>
 <style lang="less">
 #barter {
-  
 }
 </style>

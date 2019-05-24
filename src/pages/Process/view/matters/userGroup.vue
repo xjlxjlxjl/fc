@@ -7,6 +7,8 @@
         <el-option label="全部" :value="undefined"></el-option>
         <el-option label="客服组" value="customer"></el-option>
         <el-option label="业务组" value="business"></el-option>
+        <el-option label="报价组" value="quoted_price"></el-option>
+        <el-option label="仓库组" value="storehouse"></el-option>
       </el-select>
       <el-button size="mini" @click="addUserGroup();form.id = 0">新建用户组</el-button>
     </div>

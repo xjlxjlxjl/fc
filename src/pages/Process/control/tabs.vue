@@ -50,6 +50,7 @@
         <purchaseReturn v-else-if="activeTabs == '/Purchase/return'"></purchaseReturn>
         <purchaseSmartPlan v-else-if="activeTabs == '/Purchase/smartPlan'"></purchaseSmartPlan>
         <purchaseProducTime v-else-if="activeTabs == '/Purchase/producTime'"></purchaseProducTime>
+        <purchaseDailyHours v-else-if="activeTabs == '/Purchase/dailyHours'"></purchaseDailyHours>
         <!-- IQC -->
         <IQCkanban v-else-if="activeTabs == '/IQC/kanban'"></IQCkanban>
         <IQCtemporary v-else-if="activeTabs == '/IQC/temporary'"></IQCtemporary>
@@ -67,6 +68,9 @@
         <storeManage v-else-if="activeTabs == '/store/manage'"></storeManage>
         <storeStock v-else-if="activeTabs == '/store/stock'"></storeStock>
         <storeTemporary v-else-if="activeTabs == '/store/temporary'"></storeTemporary>
+        <storeCombination v-else-if="activeTabs == '/store/combination'"></storeCombination>
+        <storeSplit v-else-if="activeTabs == '/store/split'"></storeSplit>
+
         <!-- 财务 -->
         <financeIncomeDetail v-else-if="activeTabs == '/Finance/incomeDetail'"></financeIncomeDetail>
         <financePayableDetail v-else-if="activeTabs == '/Finance/payableDetail'"></financePayableDetail>
@@ -116,6 +120,7 @@ import purchaseBarter from "@/pages/Process/view/purchase/barter";
 import purchaseReturn from "@/pages/Process/view/purchase/return";
 import purchaseSmartPlan from "@/pages/Process/view/purchase/smartPlan";
 import purchaseProducTime from "@/pages/Process/view/purchase/producTime";
+import purchaseDailyHours from "@/pages/Process/view/purchase/dailyHours";
 
 // IQC
 import IQCkanban from "@/pages/Process/view/IQC/kanban";
@@ -200,6 +205,7 @@ export default {
     purchaseReturn: purchaseReturn,
     purchaseSmartPlan: purchaseSmartPlan,
     purchaseProducTime: purchaseProducTime,
+    purchaseDailyHours: purchaseDailyHours,
 
     IQCkanban: IQCkanban,
     IQCtemporary: IQCtemporary,
@@ -217,6 +223,8 @@ export default {
     storeManage: storeManage,
     storeStock: storeStock,
     storeTemporary: storeTemporary,
+    storeCombination: storeCombination,
+    storeSplit: storeSplit,
 
     financeIncomeDetail: financeIncomeDetail,
     financePayableDetail: financePayableDetail,

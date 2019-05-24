@@ -519,16 +519,16 @@ export default new Vuex.Store({
           url: "/store/carManage"
         },
         {
-          name: "备料需求表",
-          url: "/store/spareParts"
-        },
-        {
-          name: "拆分需求表",
+          name: "拆分单",
           url: "/store/split"
         },
         {
-          name: "组合需求表",
+          name: "组合单",
           url: "/store/combination"
+        },
+        {
+          name: "备料需求表",
+          url: "/store/spareParts"
         },
         {
           name: "入库申请表",
@@ -643,6 +643,10 @@ export default new Vuex.Store({
         {
           name: '生产工时管理',
           url: '/Purchase/producTime'
+        },
+        {
+          name: '每日可用工时管理',
+          url: '/Purchase/dailyHours'
         },
         {
           name: '调整入库单价',

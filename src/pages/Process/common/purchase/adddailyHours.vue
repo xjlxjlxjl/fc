@@ -1,14 +1,9 @@
 <template>
-  <div class="modal fade" id="addProducTime" role="dialog">
+  <div class="modal fade" id="adddailyHours" role="dialog">
     <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
       <div class="modal-content">
         <div class="modal-body">
           <el-table :data="row" border stripe>
-            <el-table-column label="工时分类名称" width="150px">
-              <template slot-scope="{ row }">
-                <el-input size="mini" v-model="row.name"></el-input>
-              </template>
-            </el-table-column>
             <el-table-column label="发单（H）" width="150px">
               <template slot-scope="{ row }">
                 <el-input-number size="mini" v-model="row.billing"></el-input-number>
@@ -76,7 +71,7 @@
 </template>
 <script>
 export default {
-  name: "addProducTime",
+  name: "adddailyHours",
   data() {
     return {};
   },
@@ -86,22 +81,22 @@ export default {
   methods: {
     onSubmit() {
       this
-        .$post(this.row[0].id ? `/schedule/product/hour/edit/${this.row[0].id}` : `schedule/product/hour/create`, ...this.row)
+        .$post(this.row[0].id ? `schedule/daily/hour/edit/${this.row[0].id}` : `schedule/daily/hour/create`, ...this.row)
         .then(response => {
           if (response.status != 200) return false;
           this.$emit('refresh');
-          $("#producTime #addProducTime").modal("hide");
+          $("#dailyHours #adddailyHours").modal("hide");
         })
         .catch(e => console.error(e));
     }
   },
   mounted() {
-    // $("#producTime #addProducTime").on('shown.bs.modal', () => {});
+    // $("#dailyHours #adddailyHours").on('shown.bs.modal', () => {});
   }
 }
 </script>
 <style lang="less">
-#addProducTime {
+#adddailyHours {
   .el-input-number--mini {
     width: 100%;
   }

@@ -3,9 +3,7 @@
     <div
       class="modal fade bs-example-modal-lg"
       id="addApply"
-      tabindex="-1"
       role="dialog"
-      aria-labelledby="myLargeModalLabel"
     >
       <div class="modal-dialog modal-lg" style="width: 100%;max-width: 1280px;" role="document">
         <div class="modal-content">

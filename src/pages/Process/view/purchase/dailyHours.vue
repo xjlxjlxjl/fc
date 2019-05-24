@@ -1,6 +1,6 @@
 <template>
-  <div id="producTime">
-    <addProducTime :row="row" @refresh="refreshed"></addProducTime>
+  <div id="dailyHours">
+    <adddailyHours :row="row" @refresh="refreshed"></adddailyHours>
     <div id="toolbar">
       <el-button size="mini" @click="row = [{}];add = !add;">新建工时分类</el-button>
     </div>
@@ -8,9 +8,9 @@
   </div>
 </template>
 <script>
-import addProducTime from '@/pages/Process/common/purchase/addProducTime';
+import adddailyHours from "@/pages/Process/common/purchase/adddailyHours";
 export default {
-  name: "producTime",
+  name: "dailyHours",
   data() {
     return {
       row: [],
@@ -18,12 +18,11 @@ export default {
     };
   },
   components: {
-    addProducTime: addProducTime
+    adddailyHours: adddailyHours
   },
   methods: {
     tableAjaxData(params) {
-      this
-        .$get(`schedule/product/hour`, params.data)
+      this.$get(`schedule/daily/hour`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -36,7 +35,8 @@ export default {
     tableAjaxParams(params) {
       return {
         page: params.offset / 10 + 1,
-        per_page: params.limit
+        per_page: params.limit,
+        grade: 1
       };
     },
     init() {
@@ -48,11 +48,6 @@ export default {
             formatter: function(value, row, index) {
               return index + 1;
             }
-          },
-          {
-            field: "name",
-            title: "工时分类名称",
-            sortable: true
           },
           {
             field: "billing",
@@ -104,7 +99,7 @@ export default {
             sortable: true
           },
           {
-            field: "#",
+            field: "procurement",
             title: "总工时（H）",
             formatter(value, row, index) {
               return (row.billing || 0) + (row.split || 0) + (row.outside_preparation || 0) + (row.incoming_quality_inspection || 0) + (row.preparation || 0) + (row.assembly || 0) + (row.finished_product_quality_inspection || 0) + (row.packaging || 0) + (row.storage || 0) + (row.shipping || 0)
@@ -131,15 +126,15 @@ export default {
             events: {
               "click .edit": function(e, value, row, index) {
                 that.row = [row];
-                that.add = !that.add
+                that.add = !that.add;
               },
               "click .del": function(e, value, row, index) {
-                if (confirm('是否确定删除'))
+                if (confirm("是否确定删除"))
                   that
-                    .$get(`schedule/product/hour/delete/${value}`)
+                    .$get(`schedule/daily/hour/delete/${value}`)
                     .then(response => {
                       if (response.status != 200) return false;
-                      that.delTable($("#producTime #table"), 'id', [value]);
+                      that.delTable($("#dailyHours #table"), 'id', [value]);
                     })
                     .catch(e => console.error(e));
               }
@@ -147,7 +142,7 @@ export default {
           }
         ],
         data = {
-          toolbar: "#producTime #toolbar",
+          toolbar: "#dailyHours #toolbar",
           ajax: this.tableAjaxData,
           queryParams: this.tableAjaxParams,
           search: true,
@@ -171,24 +166,23 @@ export default {
           columns: columns,
           detailFormatter(field, mrow, oldValue, $el) {}
         };
-      $("#producTime #table").bootstrapTable(data);
+      $("#dailyHours #table").bootstrapTable(data);
     },
     refreshed() {
-      this.refresh($("#producTime #table"));
+      this.refresh($("#dailyHours #table"));
     }
   },
   watch: {
     add() {
-      $("#producTime #addProducTime").modal("toggle");
+      $("#dailyHours #adddailyHours").modal("toggle");
     }
   },
   mounted() {
     this.init();
   }
-}
+};
 </script>
 <style lang="less">
-#producTime {
-  
+#dailyHours {
 }
 </style>
