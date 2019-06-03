@@ -70,7 +70,14 @@
         <storeTemporary v-else-if="activeTabs == '/store/temporary'"></storeTemporary>
         <storeCombination v-else-if="activeTabs == '/store/combination'"></storeCombination>
         <storeSplit v-else-if="activeTabs == '/store/split'"></storeSplit>
-
+        <!-- 生产 -->
+        <produceProduct v-else-if="activeTabs == '/Produce/product'"></produceProduct>
+        <producePlan v-else-if="activeTabs == '/Produce/plan'"></producePlan>
+        <producePicking v-else-if="activeTabs == '/Produce/picking'"></producePicking>
+        <produceSOP v-else-if="activeTabs == '/Produce/SOP'"></produceSOP>
+        <produceStore v-else-if="activeTabs == '/Produce/store'"></produceStore>
+        <produceUnhealthy v-else-if="activeTabs == '/Produce/unhealthy'"></produceUnhealthy>
+        <produceTime v-else-if="activeTabs == '/Produce/time'"></produceTime>
         <!-- 财务 -->
         <financeIncomeDetail v-else-if="activeTabs == '/Finance/incomeDetail'"></financeIncomeDetail>
         <financePayableDetail v-else-if="activeTabs == '/Finance/payableDetail'"></financePayableDetail>
@@ -150,6 +157,15 @@ import storeCombination from "@/pages/Process/view/store/combination";
 import storeSplit from "@/pages/Process/view/store/split";
 import storeSparePart from "@/pages/Process/view/store/spareParts";
 
+// 生产
+import produceProduct from "@/pages/Process/view/produce/product";
+import producePlan from "@/pages/Process/view/produce/plan";
+import producePicking from "@/pages/Process/view/produce/picking";
+import produceSOP from "@/pages/Process/view/produce/SOP";
+import produceStore from "@/pages/Process/view/produce/store";
+import produceUnhealthy from "@/pages/Process/view/produce/unhealthy";
+import produceTime from "@/pages/Process/view/produce/time";
+
 // 财务
 import financeIncomeDetail from "@/pages/Process/view/finance/incomeDetail";
 import financePayableDetail from "@/pages/Process/view/finance/payableDetail";
@@ -225,6 +241,14 @@ export default {
     storeTemporary: storeTemporary,
     storeCombination: storeCombination,
     storeSplit: storeSplit,
+
+    produceProduct: produceProduct,
+    producePlan: producePlan,
+    producePicking: producePicking,
+    produceSOP: produceSOP,
+    produceStore: produceStore,
+    produceUnhealthy: produceUnhealthy,
+    produceTime: produceTime,
 
     financeIncomeDetail: financeIncomeDetail,
     financePayableDetail: financePayableDetail,

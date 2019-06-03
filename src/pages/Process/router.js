@@ -27,14 +27,7 @@ import IQC from "@/pages/Process/control/tabs?v=6";
 // 仓库
 import store from "@/pages/Process/control/tabs?v=3";
 // 生产
-import Produce from "@/pages/Process/view/produce/produce";
-// import produceTasks from "@/pages/Process/view/produce/tasks";
-import produceProduct from "@/pages/Process/view/produce/product";
-import producePicking from "@/pages/Process/view/produce/picking";
-import produceMateriel from "@/pages/Process/view/produce/materiel";
-import produceStore from "@/pages/Process/view/produce/store";
-import produceSummary from "@/pages/Process/view/produce/summary";
-import produceTime from "@/pages/Process/view/produce/time";
+import Produce from "@/pages/Process/control/tabs?v=7";
 
 // OQC
 import OQC from "@/pages/Process/view/OQC/OQC";
@@ -203,37 +196,7 @@ export default new Router({
     {
       path: "/Produce",
       name: "Produce",
-      component: Produce,
-      children: [
-        {
-          path: "/Produce",
-          component: saleTasks
-        },
-        {
-          path: "/Produce/product",
-          component: produceProduct
-        },
-        {
-          path: "/Produce/picking",
-          component: producePicking
-        },
-        {
-          path: "/Produce/materiel",
-          component: produceMateriel
-        },
-        {
-          path: "/Produce/store",
-          component: produceStore
-        },
-        {
-          path: "/Produce/summary",
-          component: produceSummary
-        },
-        {
-          path: "/Produce/time",
-          component: produceTime
-        }
-      ]
+      component: Produce
     },
     {
       path: "/OQC",

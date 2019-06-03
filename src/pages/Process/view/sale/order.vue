@@ -394,7 +394,7 @@ export default {
             field: "slug",
             title: "操作",
             sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               let schedule = `<button class="schedule btn btn-sm btn-success">添加排单</button>`,
                 server = `<button class="server btn btn-sm btn-danger">申请客服</button>`,
                 upload = `
@@ -410,15 +410,32 @@ export default {
               else return `<div style="position: relative">${upload + server + print + edit + del}</div>`;
             },
             events: {
-              "click .schedule": (event, value, row, index) => {
+              "click .schedule": function(event, value, row, index) {
+                // let arr = [];
+                // row.items.forEach((e, k) => {
+                //   arr.push({
+                //     id: e.material_id,
+                //     cancel_count: k + 1,
+                //     wait_count: k + 2,
+                //     spare_count: k + 3
+                //   })
+                // });
+                // that
+                //   .$post(`repositories/material/receive/create`, {
+                //     sale_order_id: row.id,
+                //     materials: arr
+                //   })
+
                 that
-                  .$post(`schedule/create`, { slug: value })
+                  .$get(`schedule/create`, { slug: row.slug })
                   .then(response => {
                     if (response.status != 200) return false;
-                    row.operate_status = 1;
-                    that.ediTable($("#table"), index, row);
+                    that.$message({
+                      message: '已生成智能计划',
+                      type: 'success'
+                    });
                   })
-                  .catch(err => console.error(err));
+                  .catch(e => console.error(e));
               },
               "click .edit": function(event, value, row, index) {
                 that.row = row;

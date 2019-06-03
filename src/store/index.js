@@ -462,27 +462,35 @@ export default new Vuex.Store({
       produce: [
         {
           name: "待完成任务",
-          url: "/Produce"
+          url: "/tasks"
         },
         {
           name: "生产看板",
           url: "/Produce/product"
         },
         {
+          name: '审核表',
+          url: '/approval'
+        },
+        {
+          name: '生产计划',
+          url: '/Produce/plan'
+        },
+        {
           name: "生产领料",
           url: "/Produce/picking"
         },
         {
-          name: "生产物料车管理",
-          url: "/Produce/materiel"
+          name: "SOP管理",
+          url: "/Produce/SOP"
         },
         {
-          name: "生产仓库存",
+          name: "生产仓管理",
           url: "/Produce/store"
         },
         {
-          name: "不良率原因汇总表",
-          url: "/Produce/summary"
+          name: "生产不良仓管理",
+          url: "/Produce/unhealthy"
         },
         {
           name: "工时表",

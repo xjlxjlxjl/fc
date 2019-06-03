@@ -1,10 +1,7 @@
 <template>
   <div id="picking">
-    <div id="produceToolbar">
-      <span class="lead">生产领料申请表</span>
-      <el-button size="mini">新建领料</el-button>
-    </div>
-    <table id="produceTable"></table>
+    <div id="toolbar"></div>
+    <table id="table"></table>
   </div>
 </template>
 <script>
@@ -37,139 +34,158 @@ export default {
       params.page = params.offset / 10 + 1;
       params.per_page = params.limit;
       return params;
+    },
+    init() {
+      let that = this,
+        columns = [
+          {
+            field: "#",
+            title: "序号",
+            formatter(value, row, index){
+              return `${index + 1}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "生产领料单号",
+            formatter(value, row, index){
+              return `${value}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "创建人",
+            formatter(value, row, index){
+              return `${value}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "创建时间",
+            formatter(value, row, index){
+              return `${value}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "关联销售订单号",
+            formatter(value, row, index){
+              return `${value}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "关联生产计划单",
+            formatter(value, row, index){
+              return `${value}`;
+            }
+          },
+          {
+            field: "pickId",
+            title: "领料状态",
+            formatter(value, row, index){
+              return `${value}`;
+            }
+          },
+          {
+            field: "id",
+            title: "操作",
+            formatter(value, row, index){
+              let end = `<button class="btn btn-sm btn-info">结案</button>`;
+              return end;
+            },
+            events: {
+              "click .end"($el, value, row, index) {
+                if (confirm("是否确认结案"))
+                  that
+                    .$post(`/service/delete/${value}`)
+                    .then(response => {
+                      that.delTable($("#picking #table"), "id", [value]);
+                    })
+                    .catch(err => console.error(err));
+              }
+            }
+          }
+        ],
+        data = {
+          toolbar: "#picking #toolbar",
+          ajax: this.tableAjaxData,
+          queryParams: this.tableAjaxParams,
+          search: true,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          sortName: "createTime",
+          sortOrder: "desc",
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          columns: columns,
+          detailView: true,
+          detailFormatter(field, mrow, oldValue, $el) {
+            let content = `
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>料品编码</td>
+                    <td>料品规格</td>
+                    <td>料品名称</td>
+                    <td>数量</td>
+                    <td>长度</td>
+                    <td>关联子料</td>
+                    <td>单位</td>
+                    <td>料品类别</td>
+                    <td>料品属性</td>
+                    <td>智能占用</td>
+                    <td>智能备料日期</td>
+                    <td>已领数量</td>
+                    <td>待领数量</td>
+                    <td>物料车编号</td>
+                    <td>备料数量</td>
+                  </tr>
+            `;
+            mrow.items = [{}];
+            mrow.items.forEach((e, k) => {
+              content += `
+                <tr>
+                  <td>${k + 1}</td>
+                  <td>${e.料品编码}</td>
+                  <td>${e.料品规格}</td>
+                  <td>${e.料品名称}</td>
+                  <td>${e.数量}</td>
+                  <td>${e.长度}</td>
+                  <td>${e.关联子料}</td>
+                  <td>${e.单位}</td>
+                  <td>${e.料品类别}</td>
+                  <td>${e.料品属性}</td>
+                  <td>${e.智能占用}</td>
+                  <td>${e.智能备料日期}</td>
+                  <td>${e.已领数量}</td>
+                  <td>${e.待领数量}</td>
+                  <td>${e.物料车编号}</td>
+                  <td>${e.备料数量}</td>
+                </tr>
+              `
+            });
+            content += `</tbody></table>`;
+            return content;
+          }
+        };
+      $("#picking #table").bootstrapTable(data);
     }
   },
   mounted() {
-    let that = this;
-    $("#produceTable").bootstrapTable({
-      toolbar: "#produceToolbar",
-      ajax: this.tableAjaxData,
-      queryParams: this.tableAjaxParams,
-      search: true,
-      strictSearch: true,
-      showRefresh: true,
-      sidePagination: "server",
-      pagination: true,
-      striped: true,
-      clickToSelect: true,
-      showColumns: true,
-      sortName: "createTime",
-      sortOrder: "desc",
-      idField: "id",
-      showToggle: true,
-      showExport: true,
-      exportDataType: "all",
-      exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-      classes: "table",
-      pageList: [10, 25, 50, 100, "All"],
-      detailView: true,
-      columns: [
-        {
-          checkbox: true
-        },
-        {
-          field: "pickId",
-          title: "生产领料单号",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "生产领料单号",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "申请人",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "申请日期",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "审核状态",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "领料状态",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "生产单号",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "客户公司名",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "pickId",
-          title: "备注",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          }
-        },
-        {
-          field: "id",
-          title: "操作",
-          formatter: (value, row, index) => {
-            return `${value}`;
-          },
-          events: {
-            "click .del": ($el, value, row, index) => {
-              that
-                .$post(`/service/delete/${value}`)
-                .then(response => {
-                  that.delTable($("#produceTable"), "id", [value]);
-                })
-                .catch(err => {});
-            }
-          }
-        }
-      ],
-      onEditableSave(field, mrow, oldValue, $el) {
-        that
-          .$post(`/service/edit/${mrow.id}`, mrow)
-          .then(response => {
-            if (response.status != 200) return false;
-            this.refreshed();
-          })
-          .catch(err => {});
-      },
-      detailFormatter(field, mrow, oldValue, $el) {
-        let html = [`<p>生产领料明细</p>`];
-        html.push(`<table class="table">`);
-        mrow.detail.forEach(e =>
-          html.push(
-            `<tr><td>物品名称：${e.name}</td><td>数量：${e.numbers}</td></tr>`
-          )
-        );
-        html.push(`</table>`);
-      }
-    });
+    this.init();
   },
-  created() {}
 };
 </script>
 <style lang="less">

@@ -1,138 +1,252 @@
 <template>
   <div id="product">
-    <div id="produceToolbar">
-      <span class="lead">生产看板</span>
-    </div>
-    <table id="produceTable"></table>
+    <getMaterialPic :pic="pic"></getMaterialPic>
+    <getBOM :arr="arr"></getBOM>
+    <getSOP :arr="sop"></getSOP>
+    <badProduce :arr.sync="arr"></badProduce>
+    <div id="toolbar"></div>
+    <table id="table"></table>
   </div>
 </template>
 <script>
+import getMaterialPic from '@/pages/Process/common/engineer/getMaterialPic';
+import getBOM from '@/pages/Process/common/produce/getBOM';
+import getSOP from '@/pages/Process/common/produce/getSOPData';
+import badProduce from '@/pages/Process/common/produce/badProduce';
+
 export default {
   name: "product",
   data() {
-    return {};
+    return {
+      arr: [],
+      sop: {},
+      pic: {
+        drawing_working: [],
+        assembly_drawing: [],
+        drawing_approve: [],
+        drawing_2d: [],
+        drawing_3d: [],
+        drawing_pdf: []
+      },
+    };
+  },
+  components: {
+    getMaterialPic: getMaterialPic,
+    getBOM: getBOM,
+    getSOP: getSOP,
+    badProduce: badProduce
   },
   methods: {
-    tableAjaxData(params) {},
+    tableAjaxData(params) {
+      this
+        .$get(`produces/show`, params.data)
+        .then(response => {
+          if (response.status != 200) return false;
+          params.success({
+            rows: response.data.list,
+            total: response.data.pagination.total
+          });
+        })
+        .catch(e => console.error(e));
+    },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        order_number: params.search
+      };
+    },
+    init() {
+      let that = this,
+        columns = [
+          {
+            checkbox: true
+          },
+          {
+            field: "aaa",
+            title: "排单顺序"
+          },
+          {
+            field: "order_number",
+            title: "订单号"
+          },
+          {
+            field: "created_member.last_name",
+            title: "排单人"
+          },
+          {
+            field: "aaa",
+            title: "审核时间"
+          },
+          {
+            field: "material.material_number",
+            title: "料品编码"
+          },
+          {
+            field: "material.material_specification",
+            title: "料品规格"
+          },
+          {
+            field: "material.name",
+            title: "料品名称"
+          },
+          {
+            field: "schedule.numbering",
+            title: "SN码"
+          },
+          {
+            field: "delivery_period_at",
+            title: "出货计划交期"
+          },
+          {
+            field: "bom",
+            title: "BOM",
+            formatter(value, row, index) {
+              const btn = `<button class="btn btn-sm btn-link">BOM(查看)</button>`;
+              return btn;
+            },
+            events: {
+              "click .btn"($el, value, row, index) {
+                that.arr = row.bom_item || [];
+                $("#product #getBOM").modal("show");
+              }
+            }
+          },
+          {
+            field: "material",
+            title: "图纸",
+            formatter(value) {
+              let see = '<button class="btn btn-sm btn-info see">查看</button>';
+              return see;
+            },
+            events: {
+              "click .see"($el, value, row, index) {
+                that.pic = {
+                  drawing_working: row.material.drawing_working || [],
+                  assembly_drawing: row.material.assembly_drawing || [],
+                  drawing_approve: row.material.drawing_approve || [],
+                  drawing_2d: row.material.drawing_2d || [],
+                  drawing_3d: row.material.drawing_3d || [],
+                  drawing_pdf: row.material.drawing_pdf || []
+                };
+                $("#product #getMaterialPic").modal("show");
+              }
+            }
+          },
+          {
+            field: "status",
+            title: "生产状态",
+            formatter(value) {
+              return value ? '生产中' : '生产结束';
+            }
+          },
+          {
+            field: "members_data",
+            title: "生产组员",
+            formatter(value) {
+              let arr = [];
+              for (const e of value) arr.push(e.last_name);
+              return arr.join(',');
+            }
+          },
+          {
+            field: "sop_data.name",
+            title: "SOP",
+            formatter(value) {
+              const btn = `<button class="btn btn-sm btn-link">${value}</button>`;
+              return btn;
+            },
+            events: {
+              "click .btn"($el, value, row, index) {
+                that.sop = row.sop_data;
+                $("#product #getSopData").modal("show");
+              }
+            }
+          },
+          {
+            field: "aaa",
+            title: "生产工序",
+            formatter(value) {
+              let see = '<button class="btn btn-sm btn-info see">查看</button>';
+              return see;
+            },
+            events: {
+              "click .see"($el, value, row, index) {
+                const data = row;
+                that.pic = {
+                  drawing_working: [],
+                  assembly_drawing: [],
+                  drawing_approve: [],
+                  drawing_2d: [],
+                  drawing_3d: [],
+                  drawing_pdf: []
+                };
+                $("#product #getMaterialPic").modal("show");
+              }
+            }
+          },
+          {
+            field: "id",
+            title: "操作",
+            formatter(value, row, index) {
+              let check = `<button class="btn btn-primary btn-sm check">生产送检</button>`,
+                process = `<button class="btn btn-info btn-sm process">生产工序</button>`,
+                unhealthy = `<button class="btn btn-danger btn-sm unhealthy">生产不良</button>`;
+                return process + check + unhealthy;
+            },
+            events: {
+              "click .process"($el, value, row, index) {
+
+              },
+              "click .check"($el, value, row, index) {
+                if (confirm("确定产品生产完成吗？请将产品送往成品质检部。"))
+                  this
+                    .$get(``)
+                    .then(response => {
+                      if (response.status != 200) return false;
+                    })
+                    .catch(e => console.error(e));
+              },
+              "click .unhealthy"($el, value, row, index) {
+                that.arr = row.bom_item;
+                $("#product #badProduce").modal("show");
+              },
+            }
+          }
+        ],
+        data = {
+          toolbar: "#product #toolbar",
+          ajax: this.tableAjaxData,
+          queryParams: this.tableAjaxParams,
+          search: true,
+          strictSearch: true,
+          showRefresh: true,
+          sidePagination: "server",
+          pagination: true,
+          striped: true,
+          clickToSelect: true,
+          showColumns: true,
+          sortName: "createTime",
+          sortOrder: "desc",
+          idField: "id",
+          showToggle: true,
+          showExport: true,
+          exportDataType: "all",
+          exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
+          classes: "table",
+          pageList: [10, 25, 50, 100, "All"],
+          // detailView: true,
+          columns: columns,
+          detailFormatter(field, mrow, oldValue, $el) {}
+        };
+      $("#product #table").bootstrapTable(data);
+    },
+    refreshed() {
+      this.refresh($("#product #table"));
     }
   },
   mounted() {
-    let that = this;
-    $("#produceTable").bootstrapTable({
-      toolbar: "#produceToolbar",
-      ajax: this.tableAjaxData,
-      queryParams: this.tableAjaxParams,
-      search: true,
-      strictSearch: true,
-      showRefresh: true,
-      sidePagination: "server",
-      pagination: true,
-      striped: true,
-      clickToSelect: true,
-      showColumns: true,
-      sortName: "createTime",
-      sortOrder: "desc",
-      idField: "id",
-      showToggle: true,
-      showExport: true,
-      exportDataType: "all",
-      exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
-      classes: "table",
-      pageList: [10, 25, 50, 100, "All"],
-      detailView: true,
-      columns: [
-        {
-          checkbox: true
-        },
-        {
-          field: "id",
-          title: "优先级排序",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "指定物料车",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "任务开始时间",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "预计结束时间",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "订单号",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "唯一识别码",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "转仓单号",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "转仓日期",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "部门",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "经手人",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "备注",
-          sortable: true,
-          editable: {
-            type: "textarea",
-            title: "备注",
-            emptytext: "空"
-          }
-        },
-        {
-          field: "id",
-          title: "组装人员",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "工时",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "Bom",
-          sortable: true
-        },
-        {
-          field: "id",
-          title: "操作",
-          formatter: (value, row, index) => {},
-          events: {}
-        }
-      ],
-      onEditableSave(field, mrow, oldValue, $el) {},
-      detailFormatter(field, mrow, oldValue, $el) {}
-    });
+    this.init();
   }
 };
 </script>

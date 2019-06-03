@@ -10,6 +10,7 @@
                 <el-option label="业务组" value="business"></el-option>    
                 <el-option label="报价组" value="quoted_price"></el-option>
                 <el-option label="仓库组" value="storehouse"></el-option>
+                <el-option label="生产组" value="production"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="选择用户组用户">

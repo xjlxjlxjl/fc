@@ -1,11 +1,6 @@
 <template>
   <div id="material">
-    <div
-      class="modal fade bs-example-modal-lg"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade bs-example-modal-lg" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div id="materialToolbar">

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <div
-      class="modal fade bs-example-modal-lg"
-      id="addApply"
-      role="dialog"
-    >
+    <div class="modal fade" id="addApply" role="dialog" >
       <div class="modal-dialog modal-lg" style="width: 100%;max-width: 1280px;" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -118,12 +114,7 @@
     </div>
 
     <!-- 料品列表 -->
-    <div
-      class="modal fade bs-example-modal-lg materList"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade materList" role="dialog" >
       <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table

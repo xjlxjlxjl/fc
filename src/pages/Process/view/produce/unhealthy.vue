@@ -1,5 +1,5 @@
 <template>
-  <div id="store">
+  <div id="unhealthy">
     <transfeRecord :data="record"></transfeRecord>
     <switchStore :data="list"></switchStore>
     <barcode :url="url"></barcode>
@@ -16,7 +16,7 @@ import switchStore from "@/pages/Process/common/store/switchStore";
 import barcode from "@/pages/Process/common/store/barcode";
 
 export default {
-  name: "store",
+  name: "unhealthy",
   data() {
     return {
       url: "",
@@ -102,7 +102,7 @@ export default {
             events: {
               "click svg": function(e, value, row, index) {
                 that.url = row.barcode;
-                $("#store #barcode").modal("show");
+                $("#unhealthy #barcode").modal("show");
               }
             }
           },
@@ -263,12 +263,12 @@ export default {
             sortable: true
           },
           {
-            field: "safety_store",
+            field: "safety_unhealthy",
             title: "安全库存量",
             sortable: true
           },
           {
-            field: "storeing_volume",
+            field: "unhealthying_volume",
             title: "备货量",
             sortable: true
           },
@@ -449,7 +449,7 @@ export default {
                   .then(response => {
                     if (response.status != 200) return false;
                     that.record = response.data;
-                    $("#store #transfeRecord").modal("show");
+                    $("#unhealthy #transfeRecord").modal("show");
                   })
                   .catch(err => console.error(err));
               }
@@ -468,7 +468,7 @@ export default {
                   .$get(`respositories/materials/delete/${row.slug}`)
                   .then(response => {
                     if (response.status != 200) return false;
-                    that.delTable($("#store #table"), "id", [row.id]);
+                    that.delTable($("#unhealthy #table"), "id", [row.id]);
                   })
                   .catch(err => console.error(err));
               }
@@ -476,7 +476,7 @@ export default {
           }
         ],
         data = {
-          toolbar: "#store #toolbar",
+          toolbar: "#unhealthy #toolbar",
           ajax: this.tableAjaxData,
           queryParams: this.tableAjaxParams,
           search: true,
@@ -512,10 +512,10 @@ export default {
           }
         };
 
-      $("#store #table").bootstrapTable(data);
+      $("#unhealthy #table").bootstrapTable(data);
     },
     change() {
-      $("#store #switchStore").modal("show");
+      $("#unhealthy #switchStore").modal("show");
     }
   },
   mounted() {
@@ -527,7 +527,7 @@ export default {
 @grey: #dddddd;
 @border: 1px solid @grey;
 
-#store {
+#unhealthy {
   #table {
     tbody {
       tr {

@@ -52,6 +52,7 @@ export default {
   mounted() {
     $('#split #designate').on('shown.bs.modal', () => this.getBranch())
     $('#combination #designate').on('shown.bs.modal', () => this.getBranch())
+    $('#plan #designate').on('shown.bs.modal', () => this.getBranch())
   }
 }
 </script>

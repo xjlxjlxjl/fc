@@ -9,6 +9,7 @@
         <el-option label="业务组" value="business"></el-option>
         <el-option label="报价组" value="quoted_price"></el-option>
         <el-option label="仓库组" value="storehouse"></el-option>
+        <el-option label="生产组" value="production"></el-option>
       </el-select>
       <el-button size="mini" @click="addUserGroup();form.id = 0">新建用户组</el-button>
     </div>
