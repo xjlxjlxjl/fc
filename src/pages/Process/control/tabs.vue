@@ -78,6 +78,12 @@
         <produceStore v-else-if="activeTabs == '/Produce/store'"></produceStore>
         <produceUnhealthy v-else-if="activeTabs == '/Produce/unhealthy'"></produceUnhealthy>
         <produceTime v-else-if="activeTabs == '/Produce/time'"></produceTime>
+        <!-- OQC -->
+        <OQCProduct v-else-if="activeTabs == '/OQC/product'"></OQCProduct>
+        <OQCInspection v-else-if="activeTabs == '/OQC/inspection'"></OQCInspection>
+        <OQCRules v-else-if="activeTabs == '/OQC/rules'"></OQCRules>
+        <OQCTime v-else-if="activeTabs == '/OQC/time'"></OQCTime>
+        <OQCHistory v-else-if="activeTabs == '/OQC/history'"></OQCHistory>
         <!-- 财务 -->
         <financeIncomeDetail v-else-if="activeTabs == '/Finance/incomeDetail'"></financeIncomeDetail>
         <financePayableDetail v-else-if="activeTabs == '/Finance/payableDetail'"></financePayableDetail>
@@ -166,6 +172,14 @@ import produceStore from "@/pages/Process/view/produce/store";
 import produceUnhealthy from "@/pages/Process/view/produce/unhealthy";
 import produceTime from "@/pages/Process/view/produce/time";
 
+// OQC
+
+import OQCProduct from "@/pages/Process/view/OQC/product";
+import OQCInspection from "@/pages/Process/view/OQC/inspection";
+import OQCRules from "@/pages/Process/view/OQC/rules";
+import OQCTime from "@/pages/Process/view/OQC/time";
+import OQCHistory from "@/pages/Process/view/OQC/history";
+
 // 财务
 import financeIncomeDetail from "@/pages/Process/view/finance/incomeDetail";
 import financePayableDetail from "@/pages/Process/view/finance/payableDetail";
@@ -249,6 +263,12 @@ export default {
     produceStore: produceStore,
     produceUnhealthy: produceUnhealthy,
     produceTime: produceTime,
+
+    OQCProduct: OQCProduct,
+    OQCInspection: OQCInspection,
+    OQCRules: OQCRules,
+    OQCTime: OQCTime,
+    OQCHistory: OQCHistory,
 
     financeIncomeDetail: financeIncomeDetail,
     financePayableDetail: financePayableDetail,

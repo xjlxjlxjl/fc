@@ -30,13 +30,8 @@ import store from "@/pages/Process/control/tabs?v=3";
 import Produce from "@/pages/Process/control/tabs?v=7";
 
 // OQC
-import OQC from "@/pages/Process/view/OQC/OQC";
-// import OQCTasks from "@/pages/Process/view/OQC/tasks";
-import OQCProduct from "@/pages/Process/view/OQC/product";
-import OQCInspection from "@/pages/Process/view/OQC/inspection";
-import OQCRules from "@/pages/Process/view/OQC/rules";
-import OQCTime from "@/pages/Process/view/OQC/time";
-import OQCHistory from "@/pages/Process/view/OQC/history";
+import OQC from "@/pages/Process/control/tabs?v=8";
+
 // 物流
 import Logistics from "@/pages/Process/view/logistics/logistics";
 // 售后
@@ -147,51 +142,7 @@ export default new Router({
     {
       path: "/store",
       name: "store",
-      component: store,
-      /*
-        children: [
-          {
-            path: "/WareHouse",
-            component: saleTasks
-          },
-          {
-            path: "/WareHouse/product",
-            component: wareProduct
-          },
-          {
-            path: "/WareHouse/material",
-            component: wareMaterial
-          },
-          {
-            path: "/WareHouse/outStock",
-            component: wareOutStock
-          },
-          {
-            path: "/WareHouse/shipment",
-            component: wareShipment
-          },
-          {
-            path: "/WareHouse/warehousing",
-            component: warehousing
-          },
-          {
-            path: "/WareHouse/temporary",
-            component: wareTemporary
-          },
-          {
-            path: "/WareHouse/combination",
-            component: wareCombination
-          },
-          {
-            path: "/WareHouse/split",
-            component: wareSplit
-          },
-          {
-            path: "/WareHouse/spareParts",
-            component: wareSparePart
-          }
-        ]
-      */
+      component: store
     },
     {
       path: "/Produce",
@@ -201,33 +152,7 @@ export default new Router({
     {
       path: "/OQC",
       name: "OQC",
-      component: OQC,
-      children: [
-        {
-          path: "/OQC",
-          component: saleTasks
-        },
-        {
-          path: "/OQC/product",
-          component: OQCProduct
-        },
-        {
-          path: "/OQC/inspection",
-          component: OQCInspection
-        },
-        {
-          path: "/OQC/rules",
-          component: OQCRules
-        },
-        {
-          path: "/OQC/time",
-          component: OQCTime
-        },
-        {
-          path: "/OQC/history",
-          component: OQCHistory
-        }
-      ]
+      component: OQC
     },
     {
       path: "/Logistics",

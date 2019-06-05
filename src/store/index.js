@@ -555,10 +555,10 @@ export default new Vuex.Store({
           url: "/store/material"
         }
       ],
-      OQC: [
+      oqc: [
         {
           name: "待完成任务",
-          url: "/OQC"
+          url: "/tasks"
         },
         {
           name: "生产看板",
