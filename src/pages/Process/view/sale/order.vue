@@ -1,7 +1,7 @@
 <template>
   <div id="order">
     <addOrderModal :row="row" @refresh="refreshed"></addOrderModal>
-    <addShipment :shipment="shipment" :goods="goods" @refresh="refreshed"></addShipment>
+    <!-- <addShipment :shipment="shipment" :goods="goods" @refresh="refreshed"></addShipment> -->
     <serviceApplication></serviceApplication>
   
     <div class="modal fade" id="contractMiniModal" role="dialog">
@@ -87,7 +87,7 @@
     <div id="toolbar">
       <span class="lead">销售订单</span>
       <el-button size="mini" :goods="goods" @click="row = { id:0 };addOrder()">新建销售订单</el-button>
-      <el-button size="mini" @click="addSale">新建出货单</el-button>
+      <!-- <el-button size="mini" @click="addSale">新建出货单</el-button> -->
     </div>
     <table id="table"></table>
   </div>
@@ -97,7 +97,7 @@ import PDFJS from "pdfjs-dist";
 import QRCode from "qrcode";
 import addOrderModal from "@/pages/Process/common/sale/addOrderModal";
 import serviceApplication from "@/pages/Process/common/sale/serviceApplication";
-import addShipment from "@/pages/Process/common/addShipment";
+// import addShipment from "@/pages/Process/common/sale/addShipment";
 
 export default {
   name: "saleOrder",
@@ -129,7 +129,7 @@ export default {
   },
   components: {
     addOrderModal: addOrderModal,
-    addShipment: addShipment,
+    // addShipment: addShipment,
     serviceApplication: serviceApplication
   },
   methods: {
@@ -191,7 +191,7 @@ export default {
           })
         );
       });
-      addShipment.methods.close.call(this);
+      // addShipment.methods.close.call(this);
     },
     refreshed() {
       this.refresh($("#order #table"));
@@ -203,14 +203,14 @@ export default {
             field: "index",
             title: "序号",
             sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return index + 1;
             }
           },
           {
             field: "img",
             title: "二维码",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               setTimeout(
                 () =>
                   QRCode.toString(
@@ -301,7 +301,7 @@ export default {
             field: "status",
             title: "订单状态",
             sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value ? "已关闭" : "未关闭"}`;
             }
           },
@@ -309,7 +309,7 @@ export default {
             field: "pay_status",
             title: "支付状态",
             sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value ? "已支付" : "未支付"}`;
             }
           },
@@ -322,7 +322,7 @@ export default {
             field: "operate_status",
             title: "排单状态",
             sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value ? "已排单" : "未排单"}`;
             }
           },
@@ -330,7 +330,7 @@ export default {
             field: "check_status_name",
             title: "审核状态",
             sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value || "待审核"}`;
             }
           },
@@ -347,7 +347,7 @@ export default {
           {
             field: "terms_of_payment",
             title: "付款条件",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               let payment = `<button class="payment btn btn-sm btn-primary">付款条件</button>`;
               return payment;
             },
@@ -363,7 +363,7 @@ export default {
           {
             field: "terms_of_contract",
             title: "合同",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               let contract = `<button class="contract btn btn-sm btn-primary">查看合同</button>`;
               return contract;
             },
@@ -379,7 +379,7 @@ export default {
           {
             field: "invoice_record",
             title: "发票记录",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               let invoice = `<button class="invoice btn btn-sm btn-primary">查看发票</button>`;
               return invoice;
             },

@@ -1,7 +1,47 @@
 <template>
   <div>
-    <div class="modal fade" id="addPrepare" role="dialog">
-      <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
+    <div id="addTurn" class="modal fade" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <el-form :model="form" ref="form" size="mini" label-width="100px">
+              <el-form-item label="生产工序名称">
+                <el-input v-model="form.name"></el-input>
+              </el-form-item>
+              <el-form-item label="关联料品">
+                <el-input v-model="form.material_number">
+                  <el-button slot="suffix" icon="el-icon-arrow-down" @click="materModal = !materModal"></el-button>
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <el-table :data="form.data" border stripe>
+              <el-table-column label="序号" width="80">
+                <template slot-scope="{ $index }">{{ $index + 1 }}</template>
+              </el-table-column>
+              <el-table-column prop="step" label="生产步骤">
+                <template slot-scope="{ row }">
+                  <el-input v-model="row.step" size="mini" @blur="row.isEdit = true;"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="" width="80">
+                <template slot-scope="{ $index }">
+                  <el-button size="mini" type="text" icon="el-icon-plus" @click="form.data.splice($index, 0, {})"></el-button>
+                  <el-button size="mini" type="text" icon="el-icon-minus" @click="form.data.splice($index, 1)"></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-button size="mini" style="width: 100%;" icon="el-icon-plus" @click="form.data.push({})"></el-button>
+          </div>
+          <div class="modal-footer">
+            <el-button size="mini" data-dismiss="modal">取消</el-button>
+            <el-button size="mini" type="primary" @click="onSubmit">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade materList" role="dialog" >
+      <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table
             :data="mater.data"
@@ -11,7 +51,6 @@
             highlight-current-row
             @current-change="materChange"
           >
-            <!-- <el-table-column type="selection"></el-table-column> -->
             <el-table-column prop="material_number" label="物料编码"></el-table-column>
             <el-table-column prop="name" label="物料名称"></el-table-column>
             <el-table-column prop="material_specification" label="料品规格"></el-table-column>
@@ -112,45 +151,17 @@
         </div>
       </div>
     </div>
-    <div class="modal fade lockCar" role="dialog">
-      <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
-        <div class="modal-content">
-          <el-table :data="tableData" border stripe>
-            <el-table-column prop="material_number" label="物料编码"></el-table-column>
-            <el-table-column prop="material_specification" label="物料规格"></el-table-column>
-            <el-table-column prop="name" label="物料名称"></el-table-column>
-            <el-table-column prop="material_quality" label="数量"></el-table-column>
-            <el-table-column prop="respository.category" label="仓库"></el-table-column>
-            <el-table-column prop="revise_quantity" label="可用数量"></el-table-column>
-            <el-table-column prop="item_unit" label="单位"></el-table-column>
-            <el-table-column prop="" label="转入仓库"></el-table-column>
-            <el-table-column label="物料车编号">
-              <template slot-scope="{row}">
-                <el-select size="mini" v-model="row.carid">
-                  <el-option v-for="e in car" :key="e.id" :label="e.name" :value="e.id"></el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="备料数量">
-              <template slot-scope="{row}">
-                <el-input v-model="row.prepare_quantity" size="mini"></el-input>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="modal-footer">
-            <button class="btn btn-primary btn-sm" @click="onSubmit">确定</button>
-            <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
 export default {
-  name: "addPrepare",
+  name: "addTurn",
   data() {
     return {
+      form: {
+        material_number: "",
+        data: []
+      },
       mater: {
         data: [],
         pagination: {
@@ -159,24 +170,30 @@ export default {
         },
         search: "",
         date: ["", ""],
-        selection: []
+        selection: {}
       },
-      tableData: [],
-      car: []
+      materModal: false
     };
   },
   props: {
-    receive_id: {
-      type: Number
+    rows: {
+      type: Object
     }
   },
   methods: {
-    getCar() {
+    onSubmit() {
       this
-        .$get(`repositories/car/all`)
+        .$post( this.rows.id ? `produces/procedure/edit` : `produces/procedure/create`, {
+          id: this.rows.id || undefined,
+          name: this.form.name,
+          material_id: this.form.material_id,
+          data: JSON.stringify(this.form.data)
+        })
         .then(response => {
           if (response.status != 200) return false;
-          this.car = response.data;
+          this.$emit('refresh');
+          this.clearForm();
+          $("#turn #addTurn").modal("hide");
         })
         .catch(e => console.error(e));
     },
@@ -206,41 +223,53 @@ export default {
     materChange(val) {
       this.mater.selection = val;
     },
-    // 当选择数较多并且没有 requset_id 过滤
     addMater() {
-      // let ids = [];
-      // for (const e of this.mater.selection) ids.push(e.id);
-      this.tableData = [this.mater.selection];
-      if (this.mater.selection.id)
-        $("#applyMateriel .lockCar").modal("show");
-      else
-        this.$message({ message: "请选择物料", type: "error" });
+      this.form.material_id = this.mater.selection.id;
+      this.form.material_number = this.mater.selection.material_number;
+      this.materModal = !this.materModal;
     },
-    onSubmit() {
-      const data = this.tableData[0];
-      this
-        .$post(`repositories/car/lock/${data.carid}`, {
-          receive_id: this.receive_id,
-          material_id: this.mater.selection.id,
-          prepare_quantity: data.prepare_quantity
-        })
-        .then(response => {
-          if (response.status != 200) return false;
-          this.$emit("refresh");
-          $("#addPrepare").modal("hide");
-          $(".lockCar").modal("hide");
-        })
-        .catch(e => console.error(e));
+    clearForm() {
+      this.form = {
+        material_number: "",
+        data: []
+      };
+    }
+  },
+  watch: {
+    materModal(val) {
+      $("#turn .materList").modal("toggle");
     }
   },
   mounted() {
-    this.getMater();
-    this.getCar();
+    this.getMater()
+    $("#turn #addTurn").on('shown.bs.modal', () => {
+      if (this.rows.id) {
+        this.form.name = this.rows.name;
+        this.form.material_number = this.rows.material.material_number;
+        this.form.material_id = this.rows.material.id;
+        this.form.data = this.rows.steps;
+      } else this.clearForm();
+    })
   }
 }
 </script>
 <style lang="less">
-#addPrepare {
+#addTurn {
+  .el-form {
+    display: flex;
+    .el-form-item {
+      width: 50%;
+      .el-form-item__content {
+        .el-input__suffix {
+          .el-button {
+            border: none;
+          }
+        }
+      }
+    }
+  }
+}
+.materList {
   .el-table {
     td {
       &:nth-child(17) {

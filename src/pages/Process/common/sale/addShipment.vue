@@ -1,7 +1,84 @@
 <template>
   <div>
-    <div class="modal fade" id="addPrepare" role="dialog">
+    <div class="modal fade" id="addShipment" role="dialog">
       <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
+        <div class="modal-content">
+          <div class="modal-body">
+            <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+              <el-form-item prop="order_number" label="关联销售订单号">
+                <el-select
+                  v-model="form.order_number"
+                  filterable
+                  remote
+                  reserve-keyword
+                  placeholder="请输入销售订单号"
+                  :remote-method="search"
+                  @change="change"
+                >
+                  <el-option v-for="item in options" :key="item.id" :label="item.numbering" :value="item"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item prop="consignee" label="收货人">
+                <el-input v-model="form.consignee"></el-input>
+              </el-form-item>
+              <el-form-item prop="mobile" label="收货人手机">
+                <el-input v-model="form.mobile"></el-input>
+              </el-form-item>
+              <el-form-item prop="address" label="收货地址">
+                <el-input v-model="form.address"></el-input>
+              </el-form-item>
+              <el-form-item prop="postcode" label="邮政编码">
+                <el-input v-model="form.postcode"></el-input>
+              </el-form-item>
+              <el-form-item prop="delivery_method" label="送货方式">
+                <el-input v-model="form.delivery_method"></el-input>
+              </el-form-item>
+              <el-form-item prop="packing_method" label="包装方式">
+                <el-input v-model="form.packing_method"></el-input>
+              </el-form-item>
+            </el-form>
+            <el-table :data="form.items" border stripe>
+              <el-table-column label="序号" width="50">
+                <template slot-scope="{ $index }">{{ $index + 1 }}</template>
+              </el-table-column>
+              <el-table-column prop="material_number" label="料品编码">
+                <template slot-scope="{ $index, row }">
+                  <el-input v-model="row.material_number" size="mini">
+                    <el-button 
+                      size="mini" 
+                      slot="suffix" 
+                      icon="el-icon-arrow-down" 
+                      @click="materModal = !materModal;key = $index"
+                    ></el-button>
+                  </el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="name" label="料品名称"></el-table-column>
+              <el-table-column prop="material_specification" label="料品规格"></el-table-column>
+              <el-table-column prop="item_unit" label="单位"></el-table-column>
+              <el-table-column prop="quantity" label="数量">
+                <template slot-scope="{ row }">
+                  <el-input v-model="row.quantity" size="mini"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="" width="50">
+                <template slot-scope="{ $index }">
+                  <el-button type="text" icon="el-icon-delete" style="font-size: 21px;" @click="form.items.splice($index, 1)"></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-button size="mini" style="width: 100%;" icon="el-icon-plus" @click="form.items.push({})"></el-button>
+          </div>
+          <div class="modal-footer">
+            <el-button size="mini" data-dismiss="modal">取消</el-button>
+            <el-button size="mini" type="primary" @click="onSubmit">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 物料列表 -->
+    <div class="modal fade materList" role="dialog" >
+      <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table
             :data="mater.data"
@@ -11,7 +88,6 @@
             highlight-current-row
             @current-change="materChange"
           >
-            <!-- <el-table-column type="selection"></el-table-column> -->
             <el-table-column prop="material_number" label="物料编码"></el-table-column>
             <el-table-column prop="name" label="物料名称"></el-table-column>
             <el-table-column prop="material_specification" label="料品规格"></el-table-column>
@@ -112,45 +188,33 @@
         </div>
       </div>
     </div>
-    <div class="modal fade lockCar" role="dialog">
-      <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
-        <div class="modal-content">
-          <el-table :data="tableData" border stripe>
-            <el-table-column prop="material_number" label="物料编码"></el-table-column>
-            <el-table-column prop="material_specification" label="物料规格"></el-table-column>
-            <el-table-column prop="name" label="物料名称"></el-table-column>
-            <el-table-column prop="material_quality" label="数量"></el-table-column>
-            <el-table-column prop="respository.category" label="仓库"></el-table-column>
-            <el-table-column prop="revise_quantity" label="可用数量"></el-table-column>
-            <el-table-column prop="item_unit" label="单位"></el-table-column>
-            <el-table-column prop="" label="转入仓库"></el-table-column>
-            <el-table-column label="物料车编号">
-              <template slot-scope="{row}">
-                <el-select size="mini" v-model="row.carid">
-                  <el-option v-for="e in car" :key="e.id" :label="e.name" :value="e.id"></el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="备料数量">
-              <template slot-scope="{row}">
-                <el-input v-model="row.prepare_quantity" size="mini"></el-input>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="modal-footer">
-            <button class="btn btn-primary btn-sm" @click="onSubmit">确定</button>
-            <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
 export default {
-  name: "addPrepare",
+  name: "addShipment",
   data() {
     return {
+      form: {
+        order_id: 0,
+        order_number: "",
+        consignee: "",
+        mobile: "",
+        address: "",
+        postcode: "",
+        delivery_method: "",
+        packing_method: "",
+        items: []
+      },
+      rules: {
+        order_number: [{ required: true, message: '此项为必填', trigger: 'blur' }],
+        consignee: [{ required: true, message: '此项为必填', trigger: 'blur' }],
+        mobile: [{ required: true, message: '此项为必填', trigger: 'blur' }],
+        address: [{ required: true, message: '此项为必填', trigger: 'blur' }],
+        delivery_method: [{ required: true, message: '此项为必填', trigger: 'blur' }],
+        packing_method: [{ required: true, message: '此项为必填', trigger: 'blur' }],
+      },
+      options: [],
       mater: {
         data: [],
         pagination: {
@@ -159,26 +223,48 @@ export default {
         },
         search: "",
         date: ["", ""],
-        selection: []
+        selection: {}
       },
-      tableData: [],
-      car: []
+      materModal: false
     };
   },
   props: {
-    receive_id: {
-      type: Number
-    }
+    shipment: Object,
+    goods: Array
   },
   methods: {
-    getCar() {
+    search(v) {
       this
-        .$get(`repositories/car/all`)
+        .$get(`orders/company`, { number: v })
         .then(response => {
           if (response.status != 200) return false;
-          this.car = response.data;
+          this.options = response.data.list;
         })
         .catch(e => console.error(e));
+    },
+    change(v) {
+      this.form.order_id = v.id;
+      this.form.order_number = v.numbering;
+      this.form.consignee = v.consignee;
+      this.form.mobile = v.contract_mobile;
+      this.form.address = v.address;
+      this.form.postcode = v.postcode;
+      this.form.delivery_method = v.delivery_method;
+      this.form.packing_method = v.packing_method;
+    },
+    onSubmit() {
+      this.$refs['form'].validate(v => {
+        if (!v) return false;
+        this
+          .$post(this.shipment.id ? `orders/sales/shipment/edit/${this.shipment.id}` : `orders/sales/shipment/create`, this.form)
+          .then(response => {
+            if (response.status != 200) return false;
+            this.$emit('refresh');
+            $("#shipment #addShipment").modal("hide");
+            this.clearForm();
+          })
+          .catch(e => console.error(e));
+      })
     },
     getMater(search) {
       let that = this,
@@ -206,41 +292,75 @@ export default {
     materChange(val) {
       this.mater.selection = val;
     },
-    // 当选择数较多并且没有 requset_id 过滤
     addMater() {
-      // let ids = [];
-      // for (const e of this.mater.selection) ids.push(e.id);
-      this.tableData = [this.mater.selection];
-      if (this.mater.selection.id)
-        $("#applyMateriel .lockCar").modal("show");
-      else
-        this.$message({ message: "请选择物料", type: "error" });
+      this.form.items[this.key].material_id = this.mater.selection.id;
+      this.form.items[this.key].material_number = this.mater.selection.material_number;
+      this.form.items[this.key].name = this.mater.selection.name;
+      this.form.items[this.key].material_specification = this.mater.selection.material_specification;
+      this.form.items[this.key].item_unit = this.mater.selection.item_unit;
+      this.form.items.push({});
+      this.form.items.pop();
+      this.materModal = !this.materModal;
     },
-    onSubmit() {
-      const data = this.tableData[0];
-      this
-        .$post(`repositories/car/lock/${data.carid}`, {
-          receive_id: this.receive_id,
-          material_id: this.mater.selection.id,
-          prepare_quantity: data.prepare_quantity
-        })
-        .then(response => {
-          if (response.status != 200) return false;
-          this.$emit("refresh");
-          $("#addPrepare").modal("hide");
-          $(".lockCar").modal("hide");
-        })
-        .catch(e => console.error(e));
+    clearForm() {
+      this.form = {
+        order_id: 0,
+        order_number: "",
+        consignee: "",
+        mobile: "",
+        address: "",
+        postcode: "",
+        delivery_method: "",
+        packing_method: "",
+        items: []
+      }
+    }
+  },
+  watch: {
+    materModal(val) {
+      $("#shipment .materList").modal("toggle");
     }
   },
   mounted() {
-    this.getMater();
-    this.getCar();
+    this.getMater()
+    $("#shipment #addShipment").on('shown.bs.modal', () => {
+      if (this.shipment.id)
+        this.form = {
+          order_id: this.shipment.order.id,
+          order_number: this.shipment.order.number,
+          consignee: this.shipment.consignee,
+          mobile: this.shipment.mobile,
+          address: this.shipment.address,
+          postcode: this.shipment.postcode,
+          delivery_method: this.shipment.delivery_method,
+          packing_method: this.shipment.packing_method,
+          items: this.shipment.items.map(e => {
+            return {
+              id: e.id,
+              material_id: e.material.id,
+              material_number: e.material.code,
+              name: e.material.name,
+              material_specification: e.material.specification,
+              item_unit: e.material.unit,
+              quantity: e.quantity
+            }
+          })
+        };
+    });
   }
-}
+};
 </script>
 <style lang="less">
-#addPrepare {
+#addShipment {
+  .el-form {
+    display: flex;
+    flex-wrap: wrap;
+    .el-form-item {
+      width: 25%;
+    }
+  }
+}
+.materList {
   .el-table {
     td {
       &:nth-child(17) {

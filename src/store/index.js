@@ -485,6 +485,10 @@ export default new Vuex.Store({
           url: "/Produce/SOP"
         },
         {
+          name: "生产工序管理",
+          url: "/Produce/turn"
+        },
+        {
           name: "生产仓管理",
           url: "/Produce/store"
         },
@@ -545,10 +549,6 @@ export default new Vuex.Store({
         {
           name: "出货申请表",
           url: "/store/shipment"
-        },
-        {
-          name: "出库申请表",
-          url: "/store/outStock"
         },
         {
           name: "原材料库存",
@@ -996,7 +996,6 @@ export default new Vuex.Store({
     //
     addWareHouseModal: false,
     addMaterials: false,
-    addShipmentModal: false,
     addCustomer: false,
     //
     departmentModal: false,

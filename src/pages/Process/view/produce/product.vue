@@ -3,6 +3,7 @@
     <getMaterialPic :pic="pic"></getMaterialPic>
     <getBOM :arr="arr"></getBOM>
     <getSOP :arr="sop"></getSOP>
+    <seTurn :arr.sync="turn" :member="members_data" @refresh="refreshed"></seTurn>
     <badProduce :arr.sync="arr"></badProduce>
     <div id="toolbar"></div>
     <table id="table"></table>
@@ -12,6 +13,7 @@
 import getMaterialPic from '@/pages/Process/common/engineer/getMaterialPic';
 import getBOM from '@/pages/Process/common/produce/getBOM';
 import getSOP from '@/pages/Process/common/produce/getSOPData';
+import seTurn from '@/pages/Process/common/produce/seTurn';
 import badProduce from '@/pages/Process/common/produce/badProduce';
 
 export default {
@@ -20,6 +22,8 @@ export default {
     return {
       arr: [],
       sop: {},
+      turn: [],
+      members_data: [],
       pic: {
         drawing_working: [],
         assembly_drawing: [],
@@ -34,6 +38,7 @@ export default {
     getMaterialPic: getMaterialPic,
     getBOM: getBOM,
     getSOP: getSOP,
+    seTurn: seTurn,
     badProduce: badProduce
   },
   methods: {
@@ -63,8 +68,11 @@ export default {
             checkbox: true
           },
           {
-            field: "aaa",
-            title: "排单顺序"
+            field: "index",
+            title: "排单顺序",
+            formatter(value, row, index) {
+              return index + 1;
+            }
           },
           {
             field: "order_number",
@@ -73,10 +81,6 @@ export default {
           {
             field: "created_member.last_name",
             title: "排单人"
-          },
-          {
-            field: "aaa",
-            title: "审核时间"
           },
           {
             field: "material.material_number",
@@ -164,24 +168,17 @@ export default {
             }
           },
           {
-            field: "aaa",
+            field: "procedure",
             title: "生产工序",
             formatter(value) {
-              let see = '<button class="btn btn-sm btn-info see">查看</button>';
-              return see;
+              let edit = '<button class="btn btn-sm btn-info edit">编辑</button>';
+              return edit;
             },
             events: {
-              "click .see"($el, value, row, index) {
-                const data = row;
-                that.pic = {
-                  drawing_working: [],
-                  assembly_drawing: [],
-                  drawing_approve: [],
-                  drawing_2d: [],
-                  drawing_3d: [],
-                  drawing_pdf: []
-                };
-                $("#product #getMaterialPic").modal("show");
+              "click .edit"($el, value, row, index) {
+                that.turn = value;
+                that.members_data = row.members_data;
+                $("#product #seTurn").modal("show");
               }
             }
           },
@@ -192,12 +189,10 @@ export default {
               let check = `<button class="btn btn-primary btn-sm check">生产送检</button>`,
                 process = `<button class="btn btn-info btn-sm process">生产工序</button>`,
                 unhealthy = `<button class="btn btn-danger btn-sm unhealthy">生产不良</button>`;
-                return process + check + unhealthy;
+                return check + unhealthy;
             },
             events: {
-              "click .process"($el, value, row, index) {
-
-              },
+              "click .process"($el, value, row, index) {},
               "click .check"($el, value, row, index) {
                 if (confirm("确定产品生产完成吗？请将产品送往成品质检部。"))
                   this

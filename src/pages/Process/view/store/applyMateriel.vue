@@ -1,6 +1,6 @@
 <template>
   <div id="applyMateriel">
-    <addPrepare></addPrepare>
+    <addPrepare :receive_id="receive_id" @refresh="refreshed"></addPrepare>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -12,7 +12,9 @@ import addPrepare from '@/pages/Process/common/store/addPrepare';
 export default {
   name: "applyMateriel",
   data() {
-    return {};
+    return {
+      receive_id: 0
+    };
   },
   components: {
     addPrepare: addPrepare
@@ -84,6 +86,7 @@ export default {
             title: "操作",
             formatter(value, row, index) {
               let notify = `<button class="btn btn-primary btn-sm notify">通知领料</button>`;
+              return notify;
             },
             events: {
               "click .notify"($el, value, row, index) {
@@ -163,7 +166,7 @@ export default {
                   <td>${e.wait_count}</td>
                   <td>物料车编号</td>
                   <td>${e.spare_count}</td>
-                  <td><button class="btn btn-sm prepare">备料</button></td>
+                  <td><button index="${field}" key="${k}" class="btn btn-sm prepare">备料</button></td>
                   <td>结案</td>
                 </tr>`)
             );
@@ -171,14 +174,20 @@ export default {
             return content;
           }
         };
-      $("#applyMateriel #table").bootstrapTable(data)
+      $("#applyMateriel #table").bootstrapTable(data);
+    },
+    refreshed() {
+      this.refresh($("#applyMateriel #table"));
     }
   },
   mounted() {
     this.init();
     let that = this;
     $("#applyMateriel").on("click", ".prepare", function(e) {
-      $("#applyMateriel #addPrepare").modal("show")
+      const self = $(this),
+        data = that.getAllData($("#applyMateriel #table"));
+      that.receive_id = data[self.attr('index')].items[self.attr('key')].receive_id;
+      $("#applyMateriel #addPrepare").modal("show");
     })
   }
 };

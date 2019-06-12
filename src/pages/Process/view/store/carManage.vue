@@ -97,8 +97,9 @@ export default {
             formatter: function(value, row, index) {
               let
                 del = `<button class="btn btn-sm btn-danger del" style="margin-left: 5px;">删除</button>`,
-                edit = `<button class="btn btn-sm btn-success edit">编辑</button>`;
-              return edit + del;
+                edit = `<button class="btn btn-sm btn-success edit">编辑</button>`,
+                clear = `<button class="btn btn-sm btn-warning clear" style="margin-left: 5px;">释放</button>`;
+              return edit + del + clear;
             },
             events: {
               "click .edit": function(e, value, row, index) {
@@ -111,6 +112,15 @@ export default {
                   .then(response => {
                     if (response.status != 200) return false;
                     that.delTable($("#carManage #table"), 'id', [value]);
+                  })
+                  .catch(e => console.error(e));
+              },
+              "click .clear"(e, value, row, index) {
+                that
+                  .$get(`repositories/car/release/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.$message({ message: '释放成功', type: "success" });
                   })
                   .catch(e => console.error(e));
               }

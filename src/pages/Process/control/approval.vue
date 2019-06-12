@@ -239,6 +239,9 @@ export default {
         case "boms":
           url = `project/bom/details/${data.entry.entry_id}`;
           break;
+        case "material_receive":
+          url = `repositories/material/receive/detail/${data.entry.entry_id}`;
+          break;
       }
       that
         .$get(url)
@@ -309,7 +312,6 @@ export default {
                 </table>`;
               break;
             case "schedule":
-              console.log(response);
               dom = `
                 <table class="table">
                   <tr><td>采购计划单号</td><td>${response.data.number}</td></tr>
@@ -327,7 +329,6 @@ export default {
                 </table>`;
               break;
             case "order":
-              console.log(response);
               dom = `
                 <table class="table">
                   <tr><td>采购订单单号</td><td>${response.data.number}</td></tr>
@@ -437,6 +438,23 @@ export default {
                     </td>
                   </tr>
                 </table>`;
+              break;
+            case "material_receive":
+              dom = `<table class="table table-bordered">
+                <tbody>
+                  <tr><td>领料单号</td><td>${response.data.numbering}</td></tr>
+                  <tr><td>创建人</td><td>${response.data.creator}</td></tr>
+                  <tr><td>创建时间</td><td>${response.data.created_at}</td></tr>
+                  <tr><td>领料详情</td><td style="padding: 0;">
+                    <table class="table">
+                      <tr><th>料品编码</th><th>料品名称</th><th>已领数量</th><th>备用数量</th><th>待领取数量</th></tr>`;
+                        if (response.data.items && response.data.items.length)
+                          response.data.items.forEach((e, k) => (dom += `<tr><td>${e.material_info.material_number}</td><td>${e.material_info.name}</td><td>${e.cancel_count}</td><td>${e.spare_count}</td><td>${e.wait_count}</td></tr>`));
+                      dom += `</table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>`;
               break;
           }
           $(`.waitEntry${data.id}`).html(dom);

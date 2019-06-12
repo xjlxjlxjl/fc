@@ -180,7 +180,7 @@ export default {
                   <td><button key="${field}" index="${k}" class="btn btn-xs occupy">查看占用</button></td>
                   <td>${ e.prompt_at_at || '' }</td>
                   <td>${ e.schedule.numbering || '' }</td>
-                  <td>${ e.sop_manage.name || '直线电机组装流程'} <button key="${field}" index="${k}" class="btn btn-xs process">关联</button></td>
+                  <td>${ e.sop_manage.name || '没有关联sop'} <button key="${field}" index="${k}" class="btn btn-xs process">关联</button></td>
                   <td>`;
                   if (e.members.length)
                     for (const v of e.members)

@@ -70,6 +70,7 @@
         <storeTemporary v-else-if="activeTabs == '/store/temporary'"></storeTemporary>
         <storeCombination v-else-if="activeTabs == '/store/combination'"></storeCombination>
         <storeSplit v-else-if="activeTabs == '/store/split'"></storeSplit>
+        <storeShipment v-else-if="activeTabs == '/store/shipment'"></storeShipment>
         <!-- 生产 -->
         <produceProduct v-else-if="activeTabs == '/Produce/product'"></produceProduct>
         <producePlan v-else-if="activeTabs == '/Produce/plan'"></producePlan>
@@ -78,6 +79,7 @@
         <produceStore v-else-if="activeTabs == '/Produce/store'"></produceStore>
         <produceUnhealthy v-else-if="activeTabs == '/Produce/unhealthy'"></produceUnhealthy>
         <produceTime v-else-if="activeTabs == '/Produce/time'"></produceTime>
+        <produceTurn v-else-if="activeTabs == '/Produce/turn'"></produceTurn>
         <!-- OQC -->
         <OQCProduct v-else-if="activeTabs == '/OQC/product'"></OQCProduct>
         <OQCInspection v-else-if="activeTabs == '/OQC/inspection'"></OQCInspection>
@@ -154,7 +156,6 @@ import storeStock from "@/pages/Process/view/store/Stock";
 import storeApplyMateriel from "@/pages/Process/view/store/applyMateriel";
 import storeProduct from "@/pages/Process/view/store/product";
 import storeMaterial from "@/pages/Process/view/store/material";
-import storeOutStock from "@/pages/Process/view/store/outStock";
 import storeShipment from "@/pages/Process/view/store/shipment";
 import storehousing from "@/pages/Process/view/store/warehousing";
 import storeTemporary from "@/pages/Process/view/store/temporary";
@@ -171,9 +172,9 @@ import produceSOP from "@/pages/Process/view/produce/SOP";
 import produceStore from "@/pages/Process/view/produce/store";
 import produceUnhealthy from "@/pages/Process/view/produce/unhealthy";
 import produceTime from "@/pages/Process/view/produce/time";
+import produceTurn from "@/pages/Process/view/produce/turn";
 
 // OQC
-
 import OQCProduct from "@/pages/Process/view/OQC/product";
 import OQCInspection from "@/pages/Process/view/OQC/inspection";
 import OQCRules from "@/pages/Process/view/OQC/rules";
@@ -255,6 +256,7 @@ export default {
     storeTemporary: storeTemporary,
     storeCombination: storeCombination,
     storeSplit: storeSplit,
+    storeShipment: storeShipment,
 
     produceProduct: produceProduct,
     producePlan: producePlan,
@@ -263,6 +265,7 @@ export default {
     produceStore: produceStore,
     produceUnhealthy: produceUnhealthy,
     produceTime: produceTime,
+    produceTurn: produceTurn,
 
     OQCProduct: OQCProduct,
     OQCInspection: OQCInspection,
