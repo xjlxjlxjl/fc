@@ -2941,15 +2941,6 @@ export default {
       joinProjectModel.methods.getProject.call(this);
     },
     createNon() {
-      // createNon(params) {
-      // if (!params.demand) {
-      //   this.$message({ message: "非标产品需求不能为空", type: "error" });
-      //   return false;
-      // }
-      // if (!params.supplier_ids) {
-      //   this.$message({ message: "供应商不能为空", type: "error" });
-      //   return false;
-      // }
       let that = this,
         loading = this.$loading({ lock: true }),
         params = {
@@ -3036,8 +3027,28 @@ export default {
         switch (this.showDetailState) {
           case 1:
           case 2:
-          case 10:
           case 5:
+          case 10:
+            let M = this.params;
+            if (M.readswit == 0) {
+              M.accelerationTime = M.slowTime = M.speed / M.acceleration;
+              M.accdistance = M.slowdistance = M.speed * M.accelerationTime / 2;
+              M.uniformdistance = (M.distance / 1000) - M.accdistance - M.slowdistance;
+              M.uniformTime = M.uniformdistance / M.speed;
+            } else if (M.readswit == 1) {
+              M.accelerationTime = M.time / 2;
+              M.speed = (M.distance / 1000) / M.accelerationTime;
+              M.acceleration = (M.speed / M.accelerationTime);
+              M.accdistance = M.speed * M.accelerationTime / 2;
+              M.slowdistance = M.speed * M.accelerationTime / 2;
+              M.slowTime = M.accelerationTime;
+              M.uniformTime = M.uniformdistance / M.speed;
+              M.uniformdistance = (M.distance / 1000) - parseFloat(M.accdistance) - parseFloat(M.slowdistance);
+            } else {
+              M.speed = (M.distance / 1000) / (M.accelerationTime / 2 + parseFloat(M.uniformTime) + M.slowTime / 2);
+              M.acceleration = M.slowdistance = (M.speed / M.accelerationTime);
+              M.slowTime = M.accelerationTime;
+            }
             this.changeSpeedChart();
             break;
           case 3:

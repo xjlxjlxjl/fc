@@ -18,7 +18,7 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
       that
-        .$get("service/list", params.data)
+        .$get("repositories/material/receive", params.data)
         .then(response => {
           loading.close();
           if (response.status != 200) return false;
@@ -31,9 +31,10 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit
+      };
     },
     init() {
       let that = this,
@@ -46,45 +47,39 @@ export default {
             }
           },
           {
-            field: "pickId",
+            field: "numbering",
             title: "生产领料单号",
             formatter(value, row, index){
               return `${value}`;
             }
           },
           {
-            field: "pickId",
+            field: "creator",
             title: "创建人",
             formatter(value, row, index){
               return `${value}`;
             }
           },
           {
-            field: "pickId",
+            field: "created_at",
             title: "创建时间",
             formatter(value, row, index){
               return `${value}`;
             }
           },
           {
-            field: "pickId",
-            title: "关联销售订单号",
-            formatter(value, row, index){
-              return `${value}`;
-            }
+            field: "order_no",
+            title: "关联销售订单号"
           },
           {
-            field: "pickId",
-            title: "关联生产计划单",
-            formatter(value, row, index){
-              return `${value}`;
-            }
+            field: "plan_no",
+            title: "关联生产计划单"
           },
           {
-            field: "pickId",
+            field: "status",
             title: "领料状态",
             formatter(value, row, index){
-              return `${value}`;
+              return `${value ? '已领' : '待领'}`;
             }
           },
           {
@@ -132,7 +127,7 @@ export default {
           detailView: true,
           detailFormatter(field, mrow, oldValue, $el) {
             let content = `
-              <table class="table table-bordered">
+              <table class="table table-bordered" style="white-space: nowrap;">
                 <tbody>
                   <tr>
                     <td>序号</td>
@@ -153,26 +148,25 @@ export default {
                     <td>备料数量</td>
                   </tr>
             `;
-            mrow.items = [{}];
             mrow.items.forEach((e, k) => {
               content += `
                 <tr>
                   <td>${k + 1}</td>
-                  <td>${e.料品编码}</td>
-                  <td>${e.料品规格}</td>
-                  <td>${e.料品名称}</td>
-                  <td>${e.数量}</td>
-                  <td>${e.长度}</td>
-                  <td>${e.关联子料}</td>
-                  <td>${e.单位}</td>
-                  <td>${e.料品类别}</td>
-                  <td>${e.料品属性}</td>
-                  <td>${e.智能占用}</td>
-                  <td>${e.智能备料日期}</td>
-                  <td>${e.已领数量}</td>
-                  <td>${e.待领数量}</td>
-                  <td>${e.物料车编号}</td>
-                  <td>${e.备料数量}</td>
+                  <td>${e.material_info.material_number || ''}</td>
+                  <td>${e.material_info.material_specification || ''}</td>
+                  <td>${e.material_info.name || ''}</td>
+                  <td>${e.material_info.quantity || ''}</td>
+                  <td>${e.material_info.len || ''}</td>
+                  <td>${e.material_info.children || ''}</td>
+                  <td>${e.material_info.unit || ''}</td>
+                  <td>${e.material_info.category || ''}</td>
+                  <td>${e.material_info.attributes || ''}</td>
+                  <td>${e.smartOccupation || ''}</td>
+                  <td>${e.material_info.prepare_date || ''}</td>
+                  <td>${e.cancel_count || ''}</td>
+                  <td>${e.wait_count || ''}</td>
+                  <td>${e.cat_no || ''}</td>
+                  <td>${e.spare_count || ''}</td>
                 </tr>
               `
             });

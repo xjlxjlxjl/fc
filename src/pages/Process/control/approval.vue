@@ -187,10 +187,10 @@ export default {
           pageList: [10, 25, 50, 100, "All"],
           detailView: true,
           columns: columns,
-          detailFormatter: (index, row, $el) => {
+          detailFormatter(index, row, $el) {
             return that.createTableDom(row);
           },
-          onEditableSave: (field, mrow, oldValue, $el) => {}
+          onEditableSave(field, mrow, oldValue, $el) {}
         };
       $("#approval #table").bootstrapTable(data);
     },
@@ -241,6 +241,9 @@ export default {
           break;
         case "material_receive":
           url = `repositories/material/receive/detail/${data.entry.entry_id}`;
+          break;
+        case "sales_shipment":
+          url = `orders/sales/shipment/detail/${data.entry.entry_id}`;
           break;
       }
       that
@@ -455,6 +458,31 @@ export default {
                   </tr>
                 </tbody>
               </table>`;
+              break;
+            case "sales_shipment":
+              dom = `
+                <table class="table table-bordered">
+                  <tbody>
+                    <tr><td>领料单号</td><td>${response.data.number}</td></tr>
+                    <tr><td>销售订单号</td><td>${response.data.order.number}</td></tr>
+                    <tr><td>创建人</td><td>${response.data.created_by}</td></tr>
+                    <tr><td>创建时间</td><td>${response.data.created_at}</td></tr>
+                    <tr><td>收货人</td><td>${response.data.consignee}</td></tr>
+                    <tr><td>手机</td><td>${response.data.mobile}</td></tr>
+                    <tr><td>地址</td><td>${response.data.address}</td></tr>
+                    <tr><td>邮编</td><td>${response.data.postcode}</td></tr>
+                    <tr><td>送货方式</td><td>${response.data.delivery_method}</td></tr>
+                    <tr><td>包装方式</td><td>${response.data.packing_method}</td></tr>
+                    <tr><td>领料详情</td><td style="padding: 0;">
+                      <table class="table">
+                        <tr><th>料品编码</th><th>料品名称</th><th>料品规格</th><th>物料单位</th><th>数量</th></tr>`;
+                          if (response.data.items && response.data.items.length)
+                            response.data.items.forEach((e, k) => (dom += `<tr><td>${e.material.code}</td><td>${e.material.name}</td><td>${e.material.specification}</td><td>${e.material.unit}</td><td>${e.quantity}</td></tr>`));
+                        dom += `</table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>`;
               break;
           }
           $(`.waitEntry${data.id}`).html(dom);
