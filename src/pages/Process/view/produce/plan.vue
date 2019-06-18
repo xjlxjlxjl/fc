@@ -167,10 +167,10 @@ export default {
               html += `
                 <tr>
                   <td><input type="checkbox"></td>
+                  <td>${ k + 1 }</td>
                   <td>${ e.sn_code || '' }</td>
                   <td>${ e.material.material_number || '' }</td>
                   <td>${ e.material.name || '' }</td>
-                  <td>${ e.material.material_specification || '' }</td>
                   <td>${ e.material.item_unit || '' }</td>
                   <td>${ e.quantity || '' }</td>
                   <td>${ e.delivery_period_at || '' }</td>

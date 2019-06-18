@@ -489,6 +489,10 @@ export default new Vuex.Store({
           url: "/Produce/turn"
         },
         {
+          name: "成品打包",
+          url: "/Produce/bale"
+        },
+        {
           name: "生产仓管理",
           url: "/Produce/store"
         },
@@ -992,7 +996,6 @@ export default new Vuex.Store({
     addLeaveModal: false,
     addOutsiteModal: false,
     addNoteModal: false,
-    editOqcModal: false,
     //
     addWareHouseModal: false,
     addMaterials: false,

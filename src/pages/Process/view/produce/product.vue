@@ -4,7 +4,8 @@
     <getBOM :arr="arr"></getBOM>
     <getSOP :arr="sop"></getSOP>
     <seTurn :arr.sync="turn" :member="members_data" @refresh="refreshed"></seTurn>
-    <badProduce :arr.sync="arr"></badProduce>
+    <badProduce :id="id" :arr.sync="arr"></badProduce>
+    <designate type="self_check_manage" @user="user"></designate>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -15,11 +16,13 @@ import getBOM from '@/pages/Process/common/produce/getBOM';
 import getSOP from '@/pages/Process/common/produce/getSOPData';
 import seTurn from '@/pages/Process/common/produce/seTurn';
 import badProduce from '@/pages/Process/common/produce/badProduce';
+import designate from '@/pages/Process/common/store/designate';
 
 export default {
   name: "product",
   data() {
     return {
+      id: 0,
       arr: [],
       sop: {},
       turn: [],
@@ -39,7 +42,8 @@ export default {
     getBOM: getBOM,
     getSOP: getSOP,
     seTurn: seTurn,
-    badProduce: badProduce
+    badProduce: badProduce,
+    designate: designate
   },
   methods: {
     tableAjaxData(params) {
@@ -194,16 +198,12 @@ export default {
             events: {
               "click .process"($el, value, row, index) {},
               "click .check"($el, value, row, index) {
-                if (confirm("确定产品生产完成吗？请将产品送往成品质检部。"))
-                  this
-                    .$get(``)
-                    .then(response => {
-                      if (response.status != 200) return false;
-                    })
-                    .catch(e => console.error(e));
+                that.id = value;
+                $('#product #designate').modal("show");
               },
               "click .unhealthy"($el, value, row, index) {
-                that.arr = row.bom_item;
+                that.id = value;
+                that.arr = row.produces_bad || [];
                 $("#product #badProduce").modal("show");
               },
             }
@@ -238,6 +238,16 @@ export default {
     },
     refreshed() {
       this.refresh($("#product #table"));
+    },
+    user(ids) {
+      this
+        .$get(`quality/produces/create`, { show_id: this.id, supervisor: ids.join(',') })
+        .then(response => {
+          if (response.status != 200) return false;
+          $('#product #designate').modal("hide");
+          this.$message({ message: '通知成功', type: 'success' });
+        })
+        .catch(e => console.error(e));
     }
   },
   mounted() {

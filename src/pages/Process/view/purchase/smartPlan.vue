@@ -3,6 +3,7 @@
     <getMaterialPic :pic="pic"></getMaterialPic>
     <missMaterial :arr="arr"></missMaterial>
     <smartOccupy :arr="row"></smartOccupy>
+    <getBOM :arr="bom"></getBOM>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -11,7 +12,7 @@
 import getMaterialPic from '@/pages/Process/common/engineer/getMaterialPic';
 import missMaterial from '@/pages/Process/common/purchase/missMaterial';
 import smartOccupy from '@/pages/Process/common/purchase/smartOccupy';
-
+import getBOM from '@/pages/Process/common/produce/getBOM';
 export default {
   name: "smartPlan",
   data() {
@@ -25,13 +26,15 @@ export default {
         drawing_pdf: []
       },
       arr: [],
-      row: []
+      row: [],
+      bom: []
     };
   },
   components: {
     getMaterialPic: getMaterialPic,
     missMaterial: missMaterial,
-    smartOccupy: smartOccupy
+    smartOccupy: smartOccupy,
+    getBOM: getBOM
   },
   methods: {
     tableAjaxData(params) {
@@ -48,9 +51,9 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
-        numbering: params.search
+        numbering: params.search || undefined
       };
     },
     init() {
@@ -76,12 +79,21 @@ export default {
             title: "排单时间"
           },
           {
-            field: "numbering",
+            field: "order_number",
             title: "订单号"
           },
           {
             field: "customer_delivery_at",
             title: "客户要求交期"
+          },
+          {
+            field: "customer_delivery_at",
+            title: "生产计划",
+            formatter(value, row, index) {
+              if (row.items.length) {
+                return row.items[0].status ? `已排单` : `未排单`;
+              } else return `未排单`;
+            }
           },
           {
             field: "id",
@@ -154,7 +166,6 @@ export default {
                     <th>打包</th>
                     <th>入库</th>
                     <th>发货</th>
-                    <th>生产计划</th>
                     <th>结案</th>
                   </tr>
             `;
@@ -168,8 +179,8 @@ export default {
                   <td>${ e.material.specification }</td>
                   <td>${ e.material.unit }</td>
                   <td>${ e.quantity }</td>
-                  <td>${ e.delivery_period }</td>
-                  <td>${ e.bom }</td>
+                  <td>${ mrow.customer_delivery_at }</td>
+                  <td><button key="${field}" index="${k}" class="btn btn-xs bom">查看bom</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs occupy">查看占用</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs material">查看缺少物料</button></td>
@@ -184,7 +195,6 @@ export default {
                   <td>${ e.packaging ? e.packaging.hour : '' }</td>
                   <td>${ e.storage ? e.storage.hour : '' }</td>
                   <td>${ e.shipping ? e.shipping.hour : '' }</td>
-                  <td>${ e.status || '未排单' }</td>
                   <td><input type="checkbox"></td>
                 </tr>
               `;
@@ -202,18 +212,38 @@ export default {
   mounted() {
     this.init();
     let that = this;
+    $("#smartPlan").on("click", ".bom", function() {
+      const
+        key = $(this).attr("key"),
+        index = $(this).attr("index"),
+        data = that.getAllData($("#smartPlan #table"));
+        that.bom = data[key].items[index].material.bom_items.map(e => {
+          return {
+            material_number: e.code,
+            material_specification: e.specification,
+            material_name: e.name,
+            quantity: e.quantity,
+            length: e.length,
+            unit: e.unit,
+            material_category: e.category,
+            bom_attributes_name: e.property,
+            children_code: e.children_code
+          }
+        });
+      $("#smartPlan #getBOM").modal("show");
+    });
     $("#smartPlan").on("click", ".drawing", function() {
       const
         key = $(this).attr("key"),
         index = $(this).attr("index"),
         data = that.getAllData($("#smartPlan #table"));
       that.pic = {
-        drawing_working: [],
-        assembly_drawing: [],
-        drawing_approve: [],
-        drawing_2d: [],
-        drawing_3d: [],
-        drawing_pdf: []
+        drawing_working: data[key].items[index].drawing_working || [],
+        assembly_drawing: data[key].items[index].assembly_drawing || [],
+        drawing_approve: data[key].items[index].drawing_approve || [],
+        drawing_2d: data[key].items[index].drawing_2d || [],
+        drawing_3d: data[key].items[index].drawing_3d || [],
+        drawing_pdf: data[key].items[index].drawing_pdf || []
       };
       $("#smartPlan #getMaterialPic").modal("show");
     });

@@ -20,8 +20,8 @@
               <el-button size="mini" @click="key = $index;bad = !bad">设置不良</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="bad_num" label="不良数量"></el-table-column>
-          <el-table-column prop="reason" label="不良原因"></el-table-column>
+          <el-table-column prop="bad_quantity" label="不良数量"></el-table-column>
+          <el-table-column prop="bad_reason" label="不良原因"></el-table-column>
         </el-table>
       </div>
     </div>
@@ -61,21 +61,34 @@ export default {
     };
   },
   props: {
+    id: Number,
     arr: {
       type: Array
     }
   },
   methods: {
     setBad(bad_num, reason) {
-      this.arr[this.key].bad_num = bad_num;
-      this.arr[this.key].reason = reason;
-      this.arr.push({})
-      this.arr.pop();
-      this.bad = !this.bad;
-      this.form = {
-        bad_num: "",
-        reason: "",
-      };
+      this
+        .$post(`produces/bad/set`, {
+          show_id: this.id,
+          item_id: this.arr[this.key].id,
+          bad_reason: reason,
+          bad_quantity: bad_num,
+          remark: "",
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          this.arr[this.key].bad_quantity = bad_num;
+          this.arr[this.key].bad_reason = reason;
+          this.arr.push({})
+          this.arr.pop();
+          this.bad = !this.bad;
+          this.form = {
+            bad_num: "",
+            reason: "",
+          };
+        })
+        .catch(e => console.error(e));
     }
   },
   watch: {

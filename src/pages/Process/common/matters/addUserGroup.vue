@@ -11,6 +11,8 @@
                 <el-option label="报价组" value="quoted_price"></el-option>
                 <el-option label="仓库组" value="storehouse"></el-option>
                 <el-option label="生产组" value="production"></el-option>
+                <el-option label="质检主管" value="self_check_manage"></el-option>
+                <el-option label="质检组" value="self_check"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="选择用户组用户">

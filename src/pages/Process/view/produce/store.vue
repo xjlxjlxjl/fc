@@ -31,7 +31,8 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      this.$get(`respositories/materials/list`, params.data)
+      this
+        .$get(`respositories/materials/list`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({

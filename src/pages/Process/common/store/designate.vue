@@ -40,7 +40,6 @@ export default {
           response.data.list.forEach(e =>
             e.members.forEach(v => this.userBranch.push(v))
           );
-          this.$store.commit('getUserBranch', response.data.list);
         })
         .catch(err => console.error(err));
     },
@@ -53,6 +52,8 @@ export default {
     $('#split #designate').on('shown.bs.modal', () => this.getBranch())
     $('#combination #designate').on('shown.bs.modal', () => this.getBranch())
     $('#plan #designate').on('shown.bs.modal', () => this.getBranch())
+    $('#inspection #designate').on('shown.bs.modal', () => this.getBranch())
+    $('#product #designate').on('shown.bs.modal', () => this.getBranch())
   }
 }
 </script>

@@ -80,6 +80,7 @@
         <produceUnhealthy v-else-if="activeTabs == '/Produce/unhealthy'"></produceUnhealthy>
         <produceTime v-else-if="activeTabs == '/Produce/time'"></produceTime>
         <produceTurn v-else-if="activeTabs == '/Produce/turn'"></produceTurn>
+        <produceBale v-else-if="activeTabs == '/Produce/bale'"></produceBale>
         <!-- OQC -->
         <OQCProduct v-else-if="activeTabs == '/OQC/product'"></OQCProduct>
         <OQCInspection v-else-if="activeTabs == '/OQC/inspection'"></OQCInspection>
@@ -173,6 +174,7 @@ import produceStore from "@/pages/Process/view/produce/store";
 import produceUnhealthy from "@/pages/Process/view/produce/unhealthy";
 import produceTime from "@/pages/Process/view/produce/time";
 import produceTurn from "@/pages/Process/view/produce/turn";
+import produceBale from "@/pages/Process/view/produce/bale";
 
 // OQC
 import OQCProduct from "@/pages/Process/view/OQC/product";
@@ -266,6 +268,7 @@ export default {
     produceUnhealthy: produceUnhealthy,
     produceTime: produceTime,
     produceTurn: produceTurn,
+    produceBale: produceBale,
 
     OQCProduct: OQCProduct,
     OQCInspection: OQCInspection,

@@ -1,9 +1,9 @@
 <template>
   <div id="inspection">
     <editOqcModal :row="row" @refresh="refreshed"></editOqcModal>
-
+    <designate type="self_check" @user="user"></designate>
     <!--startprint-->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="myModal" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content" style="width: 700px;">
           <div id="print" ref="print" class="modal-body" style="box-sizing:box-sizing;">
@@ -96,40 +96,16 @@
       </div>
     </div>
     <!--endprint-->
-    <!-- 查看报告 -->
-    <div
-      id="reportPage"
-      class="modal fade"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true" style="font-size: 3rem;">&times;</span>
-              </button>
-              <h4 class="modal-title">质检报告</h4>
-            </div>
-            <div id="canvasBox"></div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div id="OQCtoolbar">
-      <span class="lead">生产送检表</span>
-      <!-- <el-button size="mini">上传质检报告</el-button> -->
-    </div>
-    <table id="OQCtable"></table>
+    <div id="toolbar"></div>
+    <table id="table"></table>
   </div>
 </template>
 <script>
 import QRCode from "qrcode";
-import editOqcModal from "@/pages/Process/common/OQC/editOqc";
 import PDFJS from "pdfjs-dist";
+import editOqcModal from "@/pages/Process/common/OQC/editOqc";
+import designate from '@/pages/Process/common/store/designate';
 
 export default {
   name: "inspection",
@@ -182,12 +158,12 @@ export default {
     };
   },
   components: {
-    editOqcModal: editOqcModal
+    editOqcModal: editOqcModal,
+    designate: designate
   },
   methods: {
     tableAjaxData(params) {
-      let that = this;
-      that
+      this
         .$get(`quality/list`, params.data)
         .then(response => {
           if (response.status != 200) return false;
@@ -196,23 +172,24 @@ export default {
             rows: response.data.list
           });
         })
-        .catch(err => {});
+        .catch(err => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        search: params.search || undefined
+      };
     },
     editAttr() {
-      let that = this;
-      that
-        .$post(`quality/print/attribute/update/${that.activeSlug}`, {
-          attributes: JSON.stringify(that.print.list)
+      this
+        .$post(`quality/print/attribute/update/${this.activeSlug}`, {
+          attributes: JSON.stringify(this.print.list)
         })
         .then(response => {
           if (response.status != 200) return false;
         })
-        .catch(err => {});
+        .catch(err => console.error(err));
     },
     addlist() {
       this.print.list.push({
@@ -230,42 +207,70 @@ export default {
       let that = this,
         columns = [
           {
-            checkbox: true
-          },
-          {
-            field: "order",
+            field: "index",
             title: "订单号",
-            formatter: (value, row, index) => {
-              return `${value.numbering}`;
+            formatter(value, row, index) {
+              return index + 1;
             }
           },
           {
-            field: "slug",
-            title: "唯一识别码",
+            field: "qrCode",
+            title: "二维码",
+            formatter(value, row) {
+              setTimeout(
+                () =>
+                  QRCode.toString(
+                    `https://www.factoryun.com/procurement/inspection/${row.number}`,
+                    (err, string) => (document.getElementById(`inspection${row.id}`).innerHTML = string)
+                  ),
+                500
+              );
+              return `<div id="inspection${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+            }
           },
           {
-            field: "model",
-            title: "料品编码",
-          },
-          {
-            field: "name",
-            title: "料品名称",
+            field: "send_number",
+            title: "送检单号"
           },
           {
             field: "created.last_name",
             title: "送检人",
-            formatter: (value, row, index) => {
-              return `${value}`;
-            }
           },
           {
             field: "created_at",
             title: "送检日期",
           },
           {
+            field: "order.numbering",
+            title: "订单号",
+          },
+          {
+            field: "schedule.sn_code",
+            title: "SN码"
+          },
+          {
+            field: "material.material_number",
+            title: "料品编码",
+          },
+          {
+            field: "material.material_specification",
+            title: "料品规格",
+          },
+          {
+            field: "material.name",
+            title: "料品名称",
+          },
+          {
+            field: "inspector",
+            title: "质检员",
+            formatter(value, row, index) {
+              return value.map(e => e.last_name).join(',');
+            }
+          },
+          {
             field: "check_status",
             title: "质检状态",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               switch (value) {
                 case 'wait_verify':
                   return "待审核";
@@ -275,37 +280,21 @@ export default {
             }
           },
           {
-            field: "description",
-            title: "质检报告",
-          },
-          {
-            field: "member_user.last_name",
-            title: "质检员",
-            formatter: (value, row, index) => {
-              return `${value}`;
-            }
-          },
-          {
-            field: "updated_at",
-            title: "修改日期",
-          },
-          {
-            field: "#",
+            field: "id",
             title: "操作",
             formatter: (value, row, index) => {
-              let edit = [
-                  `<button class="btn btn-success btn-sm edit">上传报告</button>`
-                ],
-                print = [
-                  `<button class="btn btn-primary btn-sm print">打　　印</button>`
-                ],
-                report = [
-                  `<button class="btn btn-warning btn-sm report">查看报告</button>`
-                ];
-              return report + edit + print;
+              let assign = `<button class="btn btn-danger btn-sm assign">指派质检</button>`,
+                edit =  `<button class="btn btn-success btn-sm edit">质检报告</button>`,
+                print = `<button class="btn btn-primary btn-sm print">打印标签</button>`,
+                notice = `<button class="btn btn-warning btn-sm notice">通知打包</button>`;
+              return assign + edit + print + notice;
             },
             events: {
-              "click .edit": (e, value, row, index) => {
+              "click .assign"(e, value, row, index) {
+                that.id = value;
+                $('#inspection #designate').modal("show");
+              },
+              "click .edit"(e, value, row, index) {
                 let imgArr = [],
                   pdfArr = [],
                   images = [],
@@ -329,9 +318,9 @@ export default {
                 row.images = images;
                 row.report = report;
                 that.row = row;
-                editOqcModal.methods.close.call(this);
+                editOqcModal.methods.close.call(that);
               },
-              "click .print": (e, value, row, index) => {
+              "click .print"(e, value, row, index) {
                 that
                   .$get(`quality/print/${row.slug}`)
                   .then(response => {
@@ -350,20 +339,20 @@ export default {
                   })
                   .catch(err => {});
               },
-              "click .report": (e, value, row, index) => {
-                if (row.report_url.length || row.images_url.length) {
-                  $("#canvasBox").empty();
-                  for (let item of row.report_url) that.showPDF(item.url);
-                  for (let item of row.images_url) $("#canvasBox").append(`<img src="${item.url}">`);
-                  $("#reportPage").modal("show");
-                } else
-                  that.$message({ message: "尚未上传报告", type: "error" });
+              "click .notice"(e, value, row, index) {
+                that
+                  .$post(`produces/bale/create`, { quality_id: value })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.$message({ message: '通知成功', type: 'success' });
+                  })
+                  .catch(e => console.error(e));
               }
             }
           }
         ],
         data = {
-          toolbar: "#OQCtoolbar",
+          toolbar: "#inspection #toolbar",
           ajax: this.tableAjaxData,
           queryParams: this.tableAjaxParams,
           search: true,
@@ -385,101 +374,57 @@ export default {
           pageList: [15, 25, 50, 100, "All"],
           detailView: true,
           columns: columns,
-          detailFormatter: (index, row, $el) => {
-            let html = [`<div align="left"><ul class="list-inline">`];
-            row.images_url.forEach(e => {
-              // html.push(`<img src="${e.url}" style="width: 100px;">`);
-              html.push(
-                `<a href="${
-                  e.url
-                }" target="_blank" style="margin-right: 1rem;">${e.url
-                  .split("/")
-                  .pop()}</a>`
-              );
-            });
-            html.push(`</ul><ul class="list-inline">`);
-            row.report_url.forEach(e => {
-              html.push(
-                `<a href="${
-                  e.url
-                }" target="_blank" style="margin-right: 1rem;">${e.url
-                  .split("/")
-                  .pop()}</a>`
-              );
-            });
-            html.push(`</ul></div>`);
-            return html;
+          detailFormatter(index, row, $el) {
+            let content = `
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>质检人</td>
+                    <td>质检日期</td>
+                    <td>是否合格</td>
+                    <td>报告文件</td>
+                  </tr>`;
+            content += `
+              <tr>
+                <td>1</td>
+                <td>${row.member_user ? row.member_user.last_name : '无'}</td>
+                <td>${row.quality_time}</td>
+                <td>${row.is_pass}</td>
+                <td>`;
+                  for (let e of row.report_url)
+                    content += `<p><a href="${e.url}" target="__blank">${e.url.split('/').pop()}</a></p>`;
+            
+            content += `</td></tr></tbody></table>`;
+            return content;
           },
-          onEditableSave: (field, mrow, oldValue, $el) => {}
+          onEditableSave(field, mrow, oldValue, $el) {}
         };
-      $("#OQCtable").bootstrapTable(data);
+      $("#inspection #table").bootstrapTable(data);
     },
     printing() {
       this.$print(this.$refs.print);
       this.activeSlug = "";
-      $("#myModal").modal("hide");
+      $("#inspection #myModal").modal("hide");
     },
     refreshed() {
-      this.refresh($("#OQCtable"));
+      this.refresh($("#inspection #table"));
     },
-    showPDF(url) {
-      let _this = this;
-      PDFJS.getDocument(url).then(function(pdf) {
-        _this.pdfDoc = pdf;
-        for (let i = 1; i < pdf.numPages + 1; i++) {
-          _this.renderPage(i);
-        }
-      });
-    },
-    renderPage(num) {
-      this.pageRendering = true;
-      let _this = this;
-      this.pdfDoc.getPage(num).then(function(page) {
-        var viewport = page.getViewport(_this.scale);
-        // let canvas = document.getElementById("the-canvas");
-        let canvas = document.createElement("canvas");
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        // Render PDF page into canvas context
-        var renderContext = {
-          canvasContext: canvas.getContext("2d"),
-          viewport: viewport
-        };
-        var renderTask = page.render(renderContext);
-        document.getElementById("canvasBox").appendChild(canvas);
-        // Wait for rendering to finish
-        renderTask.promise.then(function() {
-          _this.pageRendering = false;
-          if (_this.pageNumPending !== null) {
-            // New page rendering is pending
-            _this.renderPage(_this.pageNumPending);
-            _this.pageNumPending = null;
-          }
-        });
-      });
+    user(ids) {
+      this
+        .$post(`quality/inspection/user`, {
+          id: this.id,
+          inspector: ids.join(',')
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          $('#inspection #designate').modal("hide");
+        })
+        .catch(e => console.error(e));
     }
   },
   mounted() {
     this.init();
-  },
-  watch: {
-    print: {
-      handler(newVal, oldVal) {
-        if (!this.activeSlug) return false;
-        // if (
-        //   newVal.list[newVal.list.length - 1].name &&
-        //   newVal.list[newVal.list.length - 1].value
-        // )
-        //   this.print.list.push({
-        //     name: "",
-        //     slug: "",
-        //     value: ""
-        //   });
-        // setTimeout(() => this.editAttr(), 2000);
-      },
-      deep: true
-    }
   }
 };
 </script>
