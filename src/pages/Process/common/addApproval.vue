@@ -83,7 +83,7 @@
             </el-form>
           </div>
           <div class="modalBoxMainBtn">
-            <el-button size="mini" type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button size="mini" type="primary" @click="onSubmit">保存</el-button>
           </div>
         </div>
       </div>

@@ -86,16 +86,17 @@ export default {
             field: "id",
             title: "操作",
             formatter(value, row, index){
-              let end = `<button class="btn btn-sm btn-info">结案</button>`;
+              let end = `<button class="btn btn-sm btn-info end">结案</button>`;
               return end;
             },
             events: {
               "click .end"($el, value, row, index) {
                 if (confirm("是否确认结案"))
                   that
-                    .$post(`/service/delete/${value}`)
+                    .$post(`repositories/material/receive/update_status/${value}`)
                     .then(response => {
-                      that.delTable($("#picking #table"), "id", [value]);
+                      if (response.status != 200) return false;
+                      that.$message({ message: "结案成功", type: "success" });
                     })
                     .catch(err => console.error(err));
               }

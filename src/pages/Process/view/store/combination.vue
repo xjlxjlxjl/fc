@@ -104,7 +104,9 @@ export default {
                 return `<div style="display: flex;">${ print + assign + split + del }</div>`;
             },
             events: {
-              "click .print"($el, value, row, index) {},
+              "click .print"($el, value, row, index) {
+                window.open(`/print.html#/storeCombination/${row.id}`);
+              },
               "click .assign"($el, value, row, index) {
                 that.activeId = row.id;
                 that.userModal = !that.userModal;

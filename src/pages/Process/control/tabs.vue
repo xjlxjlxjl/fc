@@ -26,6 +26,13 @@
         <saleOrder v-else-if="activeTabs == '/Sale/order'"></saleOrder>
         <saleCustomerServiceApplication v-else-if="activeTabs == '/Sale/customerServiceApplication'"></saleCustomerServiceApplication>
         <saleCustomerServiceQuotation v-else-if="activeTabs == '/Sale/customerServiceQuotation'"></saleCustomerServiceQuotation>
+        <saleCustomerProduct v-else-if="activeTabs == '/Sale/product'"></saleCustomerProduct>
+        <saleCustomer v-else-if="activeTabs == '/Sale/customer'"></saleCustomer>
+        <saleNonstandard v-else-if="activeTabs == '/Sale/nonstandard'"></saleNonstandard>
+        <saleNonstandardModal v-else-if="activeTabs == '/Sale/nonstandardModal'"></saleNonstandardModal>
+        <saleOffer v-else-if="activeTabs == '/Sale/offer'"></saleOffer>
+        <saleShipment v-else-if="activeTabs == '/Sale/shipment'"></saleShipment>
+        <saleCustomerServiceMaterial v-else-if="activeTabs == '/Sale/customerServiceMaterial'"></saleCustomerServiceMaterial>
         <!-- 售后 -->
         <afterSaleApplication v-else-if="activeTabs == '/AfterSale/application'"></afterSaleApplication>
         <afterSaleOffer v-else-if="activeTabs == '/AfterSale/offer'"></afterSaleOffer>
@@ -110,6 +117,13 @@ import approval from "@/pages/Process/control/approval";
 import saleOrder from "@/pages/Process/view/sale/order";
 import saleCustomerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import saleCustomerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
+import saleCustomerProduct from "@/pages/Process/view/sale/product";
+import saleCustomer from "@/pages/Process/view/sale/customer";
+import saleNonstandard from "@/pages/Process/view/sale/nonstandard";
+import saleNonstandardModal from "@/pages/Process/view/sale/nonstandardModal";
+import saleOffer from "@/pages/Process/view/sale/offer";
+import saleShipment from "@/pages/Process/view/sale/shipment";
+import saleCustomerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
 
 // 售后
 import afterSaleApplication from "@/pages/Process/view/afterSale/application";
@@ -194,7 +208,7 @@ import financeMeetDebt from "@/pages/Process/view/finance/meetDebt";
 export default {
   name: "tabs",
   data() {
-    let url = this.$route.name.toLowerCase(),
+    let url = this.$route.name.toLowerCase() || 'sale',
       process = [];
     Object.keys(this.$store.state.process).forEach(label =>
       this.$store.state.process[label].forEach(e => process.push(e))
@@ -214,6 +228,13 @@ export default {
     saleOrder: saleOrder,
     saleCustomerServiceApplication: saleCustomerServiceApplication,
     saleCustomerServiceQuotation: saleCustomerServiceQuotation,
+    saleCustomerProduct: saleCustomerProduct,
+    saleCustomer: saleCustomer,
+    saleNonstandard: saleNonstandard,
+    saleNonstandardModal: saleNonstandardModal,
+    saleOffer: saleOffer,
+    saleShipment: saleShipment,
+    saleCustomerServiceMaterial: saleCustomerServiceMaterial,
 
     afterSaleApplication: afterSaleApplication,
     afterSaleOffer: afterSaleOffer,

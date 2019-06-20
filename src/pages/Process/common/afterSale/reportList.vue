@@ -42,7 +42,7 @@ export default {
         .$get(`service/report/order/${that.reportId}/records`)
         .then(response => {
           if (response.status != 200) return false;
-          that.tableData = response.data;
+          that.tableData = response.data.list;
         })
         .catch(err => console.error(err));
     })
@@ -51,7 +51,7 @@ export default {
         .$get(`service/report/order/${that.reportId}/records`)
         .then(response => {
           if (response.status != 200) return false;
-          that.tableData = response.data;
+          that.tableData = response.data.list;
         })
         .catch(err => console.error(err));
     })

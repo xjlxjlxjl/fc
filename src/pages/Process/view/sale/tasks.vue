@@ -131,9 +131,6 @@ export default {
     init() {
       let that = this,
         columns = [
-          // {
-          //   checkbox: true
-          // },
           {
             field: "work_no",
             title: "任务编号",
@@ -175,21 +172,13 @@ export default {
             title: "奖惩情况"
           },
           {
-            field: "#",
+            field: "id",
             title: "操作",
             formatter: (value, row, index) => {
-              let accept = [
-                  '<button class="btn btn-info accept">接受</button>'
-                ].join(""),
-                complete = [
-                  '<button class="btn btn-success complete">完成</button>'
-                ].join(""),
-                invalid = [
-                  '<button class="btn btn-danger invalid">作废</button>'
-                ].join(""),
-                turn = [
-                  '<button class="btn btn-default turn">跳转</button>'
-                ].join(""),
+              let accept = '<button class="btn btn-info accept">接受</button>',
+                complete = '<button class="btn btn-success complete">完成</button>',
+                invalid = '<button class="btn btn-danger invalid">作废</button>',
+                turn = '<button class="btn btn-default turn">跳222转</button>',
                 taskState = null;
               row.members.forEach(e => {
                 if (e.user.id == this.user.user.id) taskState = e.status;
@@ -256,6 +245,8 @@ export default {
             },
             events: {
               "click .turn": (e, value, row, index) => {
+
+                console.log('123')
                 let sign = row.redirect_slug,
                   // let sign = row.numbering.removeNumber(),
                   sort = that.tasksItems[sign];

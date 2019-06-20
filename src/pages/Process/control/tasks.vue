@@ -76,32 +76,28 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.perPage = params.limit;
-      params.status = this.tasksStatus;
+      let p = {};
+      p.page = params.offset / params.limit + 1;
+      p.perPage = params.limit;
+      p.status = this.tasksStatus;
       if (this.date.length) {
-        params.end_time = this.dateParse(this.date[1]);
-        params.star_time = this.dateParse(this.date[0]);
+        p.end_time = this.dateParse(this.date[1]);
+        p.star_time = this.dateParse(this.date[0]);
       }
-      if (params.search.length > 8) params.work_no = params.search;
-      else params.username = params.search;
-      return params;
+      if (params.search.length > 8) p.work_no = params.search;
+      else p.username = params.search || undefined;
+      return p;
     },
     init() {
       let that = this,
         columns = [
-          // {
-          //   checkbox: true
-          // },
           {
             field: "work_no",
-            title: "任务编号",
-            sortable: true
+            title: "任务编号"
           },
           {
             field: "creator",
-            title: "创建人",
-            sortable: true
+            title: "创建人"
           },
           {
             field: "created_at",
@@ -118,7 +114,7 @@ export default {
           {
             field: "members",
             title: "工作成员",
-            formatter: event => {
+            formatter: function(event) {
               let html = `<table class="table table-bordered" style="white-space: nowrap;">`;
               event.forEach(e => (html += `<tr><td>姓名：${e.user.display_name}</td><td>进度：${e.status_text}</td></tr>`));
               html += `</table>`;
@@ -134,24 +130,16 @@ export default {
             title: "奖惩情况"
           },
           {
-            field: "#",
+            field: "id",
             title: "操作",
-            formatter: (value, row, index) => {
-              let accept = [
-                  '<button class="btn btn-info btn-sm accept">接受</button>'
-                ].join(""),
-                complete = [
-                  '<button class="btn btn-success btn-sm complete">完成</button>'
-                ].join(""),
-                invalid = [
-                  '<button class="btn btn-danger btn-sm invalid">作废</button>'
-                ].join(""),
-                turn = [
-                  '<button class="btn btn-default btn-sm turn">跳转</button>'
-                ].join(""),
+            formatter: function(value, row, index) {
+              let accept = `<button sid="${row.id}" class="btn btn-info btn-sm accept">接受</button>`,
+                complete = `<button sid="${row.id}" class="btn btn-success btn-sm complete">完成</button>`,
+                invalid = `<button sid="${row.id}" class="btn btn-danger btn-sm invalid">作废</button>`,
+                turn = `<button slug="${row.redirect_slug}" class="btn btn-default btn-sm turn">跳转</button>`,
                 taskState = null;
               row.members.forEach(e => {
-                if (e.user.id == this.user.user.id) taskState = e.status;
+                if (e.user.id == that.user.user.id) taskState = e.status;
               });
               switch (row.redirect_slug) {
                 case "service":
@@ -164,122 +152,120 @@ export default {
                   // 自己是任务发起者并且是成员
                   else if (
                     taskState == 0 &&
-                    row.created_by_id == this.user.user.id
+                    row.created_by_id == that.user.user.id
                   )
                     return turn + accept + invalid;
                   else if (
                     taskState == 0 &&
-                    row.created_by_id != this.user.user.id
+                    row.created_by_id != that.user.user.id
                   )
                     return turn + accept;
                   else if (
                     taskState == 1 &&
-                    row.created_by_id == this.user.user.id
+                    row.created_by_id == that.user.user.id
                   )
                     return turn + complete + invalid;
                   else if (
                     taskState == 1 &&
-                    row.created_by_id != this.user.user.id
+                    row.created_by_id != that.user.user.id
                   )
                     return turn + complete;
                   else return turn;
                   break;
                 case "worker":
-                default:
                   // 已废弃任务不做操作
                   if (row.status == 4) return "";
                   // 自己是任务发起者并且是成员
                   else if (
                     taskState == 0 &&
-                    row.created_by_id == this.user.user.id
+                    row.created_by_id == that.user.user.id
                   )
                     return accept + invalid;
                   else if (
                     taskState == 0 &&
-                    row.created_by_id != this.user.user.id
+                    row.created_by_id != that.user.user.id
                   )
                     return accept;
                   else if (
                     taskState == 1 &&
-                    row.created_by_id == this.user.user.id
+                    row.created_by_id == that.user.user.id
                   )
                     return complete + invalid;
                   else if (
                     taskState == 1 &&
-                    row.created_by_id != this.user.user.id
+                    row.created_by_id != that.user.user.id
                   )
                     return complete;
                   else return "";
                   break;
+                default:
+                  return turn;
+                  break;
               }
             },
             events: {
-              "click .turn": (e, value, row, index) => {
-                let sign = row.redirect_slug,
-                  // let sign = row.numbering.removeNumber(),
+              "click .turn": function(e, value, row, index) {
+                let 
+                  sign = row.redirect_slug,
                   sort = that.$store.state.tasksItems[sign];
-                switch (sign) {
-                  // 提交客服
-                  case "service":
-                    that.refresh($("#customerServiceApplication #table"), {
-                      url: "service/list",
-                      query: {
-                        number: row.order_no
-                      }
-                    });
-                    break;
-                  // 客服主管指派客服
-                  case "service_assign":
-                    that.refresh($("#application #afterSaleTable"), {
-                      url: "service/list",
-                      query: {
-                        number: row.order_no
-                      }
-                    });
-                    break;
-                  // 客服报价
-                  case "service_quote":
-                    that.refresh($("#application #afterSaleTable"), {
-                      url: "service/list",
-                      query: {
-                        number: row.order_no
-                      }
-                    });
-                    break;
-                  case "order":
-                    // this.refresh($("#order #table"));
-                    break;
-                  case "check":
-                    that.refresh($("#approval #table"));
-                    break;
-                }
+                  switch (sign) {
+                    // 提交客服
+                    case "service":
+                      that.refresh($("#customerServiceApplication #table"), {
+                        url: "service/list",
+                        query: {
+                          number: row.order_no
+                        }
+                      });
+                      break;
+                    // 客服主管指派客服
+                    case "service_assign":
+                      that.refresh($("#application #afterSaleTable"), {
+                        url: "service/list",
+                        query: {
+                          number: row.order_no
+                        }
+                      });
+                      break;
+                    // 客服报价
+                    case "service_quote":
+                      that.refresh($("#application #afterSaleTable"), {
+                        url: "service/list",
+                        query: {
+                          number: row.order_no
+                        }
+                      });
+                      break;
+                    case "order":
+                      // that.refresh($("#order #table"));
+                      break;
+                    case "check":
+                      that.refresh($("#approval #table"));
+                      break;
+                  }
                 if (sort) that.$emit("change", sort.label);
-                else {
-                  that.$message({
-                    message: "该订单编号尚未注册，请联系管理员后处理",
-                    type: "error"
-                  });
-                  return false;
-                }
+                else that.$message({ message: "该订单编号尚未注册，请联系管理员后处理", type: "error" });
               },
-              "click .accept": (e, value, row, index) => {
-                this.activeId = row.id;
-                dateTimePick.methods.close.call(this);
+              "click .accept": function(e, value, row, index) {
+                that.activeId = row.id;
+                dateTimePick.methods.close.call(that);
               },
-              "click .complete": (e, value, row, index) => {
-                this.$post(`job/complete/${row.id}`)
+              "click .complete": function(e, value, row, index) {
+                that
+                  .$post(`job/complete/${value}`)
                   .then(response => {
                     if (response.status != 200) return false;
-                    that.refresh($("#table"));
+                    that.refreshed();
                   })
                   .catch(err => console.error(err));
               },
-              "click .invalid": (e, value, row, index) => {
-                this.$post(`job/invalid/${row.id}`)
+              "click .invalid": function(e, value, row, index) {
+                that
+                  .$post(`job/invalid/${value}`)
                   .then(response => {
                     if (response.status != 200) return false;
                     row.status = 4;
-                    that.ediTable($("#table"), index, row);
+                    that.ediTable($("#task #table"), index, row);
                   })
                   .catch(err => console.error(err));
               }
@@ -310,7 +296,7 @@ export default {
           pageList: [10, 25, 50, 100, "All"],
           detailView: true,
           columns: columns,
-          detailFormatter: (index, row, $el) => {
+          detailFormatter(index, row, $el) {
             if (that.index != index)
               $("#task #table").bootstrapTable("collapseRow", [ that.index ? that.index : index != 0 ? 0 : undefined ]);
             that.rowId = row.id, that.index = index || undefined;
@@ -329,10 +315,56 @@ export default {
               gantt.parse(jsonGantt);
             }, 100);
             return `<div id="gantt${index}"></div>`;
-          },
-          onEditableSave: (field, mrow, oldValue, $el) => {}
+          }
         };
       $("#task #table").bootstrapTable(data);
+    },
+    initGantt() {
+      gantt.config.autofit = true;
+      gantt.config.autosize = "xy";
+      gantt.config.autosize_min_width = 800;
+      gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
+
+      let
+        colHeader = '<div class="gantt_grid_head_cell gantt_grid_head_add contral" type="addGantt"></div>',
+        colContent = function (task) {
+          return (`
+            <button class="btn btn-xs btn-default contral" type="feedback" tid="${task.id}">反馈</button>
+            <button class="btn btn-xs btn-default contral" type="reply" tid="${task.id}">回复</button>
+            <button class="btn btn-xs btn-info contral" type="addGantt" tid="${task.id}">
+              <i class="el-icon-plus"></i>
+            </button>` +
+            `<button class="btn btn-xs btn-danger contral" type="delGantt" tid="${task.id}">
+              <i class="el-icon-close"></i>
+            </button>
+          `);
+        };
+
+      gantt.config.columns = [
+        { name: "id", label: "序号", tree: true, width: 150 },
+        { name: "create_by", label: "创建人", align: "center", width: 70 },
+        { name: "create_at", label: "创建时间", align: "center", width: 70 },
+        { name: "together", label: "协同人", align: "center", editor: { type: "text", map_to: "together" }, width: 70 },
+        { name: "text", label: "工作内容规划", align: "center", editor: { type: "text", map_to: "text" }, width: 120 },
+        { name: "start_date", label: "预计开始时间", align: "center", width: 120 },
+        { name: "end_date", label: "实际完成时间", align: "center", width: 120 },
+        { name: "duration", label: "耗时", align: "center", width: 70 },
+        { name: "progress", label: "进度", align: "center", width: 70 },
+        { name: "feedback", label: "遇到问题反馈", resize: true, align: "center", width: 120 },
+        { name: "reply", label: "主管回复", resize: true, align: "center", width: 120 },
+        { name: "buttons", label: colHeader, template: colContent, width: 160 }
+      ];
+
+      gantt.config.lightbox.sections = [
+        { name: "together", height: 38, map_to: "together", type: "textarea" },
+        { name: "text", height: 38, map_to: "text", type: "textarea" },
+        { name: "strat_at", height: 38, map_to: "auto", type: "time" },
+        // { name: "progress", height: 38, map_to: "progress", type: "textarea" }
+      ];
+
+      gantt.attachEvent("onAfterTaskAdd", (id, item) => this.editGantt(id, item));
+      gantt.attachEvent("onAfterTaskUpdate", (id, item) => this.editGantt(id, item));
+      gantt.attachEvent("onAfterTaskDelete", (id, item) => this.editGantt(id, item));
     },
     editGantt(id, item) {
       let that = this;
@@ -345,7 +377,6 @@ export default {
           gantt: JSON.stringify(this.jsonGantt)
         }).then(response => {
           if (response.status != 200) return false;
-
         })
         .catch(err => console.error(err));
     },
@@ -358,52 +389,8 @@ export default {
     }
   },
   mounted() {
+    this.initGantt();
     this.init();
-    gantt.config.autofit = true;
-    gantt.config.autosize = "xy";
-    gantt.config.autosize_min_width = 800;
-    gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
-
-    let
-      colHeader = '<div class="gantt_grid_head_cell gantt_grid_head_add contral" type="addGantt"></div>',
-      colContent = function (task) {
-        return (`
-          <button class="btn btn-xs btn-default contral" type="feedback" tid="${task.id}">反馈</button>
-          <button class="btn btn-xs btn-default contral" type="reply" tid="${task.id}">回复</button>
-          <button class="btn btn-xs btn-info contral" type="addGantt" tid="${task.id}">
-            <i class="el-icon-plus"></i>
-          </button>` +
-          `<button class="btn btn-xs btn-danger contral" type="delGantt" tid="${task.id}">
-            <i class="el-icon-close"></i>
-          </button>
-        `);
-      };
-
-    gantt.config.columns = [
-      { name: "id", label: "序号", tree: true, width: 150 },
-      { name: "create_by", label: "创建人", align: "center", width: 70 },
-      { name: "create_at", label: "创建时间", align: "center", width: 70 },
-      { name: "together", label: "协同人", align: "center", editor: { type: "text", map_to: "together" }, width: 70 },
-      { name: "text", label: "工作内容规划", align: "center", editor: { type: "text", map_to: "text" }, width: 120 },
-      { name: "start_date", label: "预计开始时间", align: "center", width: 120 },
-      { name: "end_date", label: "实际完成时间", align: "center", width: 120 },
-      { name: "duration", label: "耗时", align: "center", width: 70 },
-      { name: "progress", label: "进度", align: "center", width: 70 },
-      { name: "feedback", label: "遇到问题反馈", resize: true, align: "center", width: 120 },
-      { name: "reply", label: "主管回复", resize: true, align: "center", width: 120 },
-      { name: "buttons", label: colHeader, template: colContent, width: 160 }
-    ];
-
-    gantt.config.lightbox.sections = [
-      { name: "together", height: 38, map_to: "together", type: "textarea" },
-      { name: "text", height: 38, map_to: "text", type: "textarea" },
-      { name: "strat_at", height: 38, map_to: "auto", type: "time" },
-      // { name: "progress", height: 38, map_to: "progress", type: "textarea" }
-    ];
-
-    gantt.attachEvent("onAfterTaskAdd", (id, item) => this.editGantt(id, item));
-    gantt.attachEvent("onAfterTaskUpdate", (id, item) => this.editGantt(id, item));
-    gantt.attachEvent("onAfterTaskDelete", (id, item) => this.editGantt(id, item));
   },
   created() {
     let that = this;
@@ -451,8 +438,39 @@ export default {
       $($('.gantt_cal_lsection > label')[0]).text('协同人');
       $($('.gantt_cal_lsection > label')[1]).text('工作内容规划');
       $($('.gantt_cal_lsection > label')[2]).text('预计开始时间 - 实际完成时间');
-      // $($('.gantt_cal_lsection > label')[3]).text('进度 (0-1)');
     }, 1000)
+
+    $(document).on("click", ".turn", function(e) {
+      let
+        self = $(this),
+        sign = self.attr('slug'),
+        sort = that.$store.state.tasksItems[sign];
+      if (sort) that.$emit("change", sort.label);
+      else that.$message({ message: "该订单编号尚未注册，请联系管理员后处理", type: "error" });
+    });
+    $(document).on("click", ".accept", function(e) {
+      that.activeId = $(this).attr('sid');
+      dateTimePick.methods.close.call(that);
+    });
+    $(document).on("click", ".complete", function(e) {
+      that
+        .$post(`job/complete/${$(this).attr('sid')}`)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.refreshed();
+        })
+        .catch(err => console.error(err));
+    });
+    $(document).on("click", ".invalid", function(e) {
+      that
+        .$post(`job/invalid/${$(this).attr('sid')}`)
+        .then(response => {
+          if (response.status != 200) return false;
+          row.status = 4;
+          that.ediTable($("#task #table"), index, row);
+        })
+        .catch(err => console.error(err));
+    });
   }
 };
 </script>

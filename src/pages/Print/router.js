@@ -13,6 +13,8 @@ import IQCtemporary from '@/pages/Print/view/IQCtemporary';
 import IQCunhealthy from '@/pages/Print/view/IQCunhealthy';
 import IQCstore from '@/pages/Print/view/IQCstore';
 import saleNonstandard from '@/pages/Print/view/saleNonstandard';
+import storeSplit from '@/pages/Print/view/storeSplit';
+import storeCombination from '@/pages/Print/view/storeCombination';
 Vue.use(Router);
 
 
@@ -67,6 +69,14 @@ export default new Router({
       path: "/saleNonstandard/:id",
       name: "saleNonstandard",
       component: saleNonstandard
+    }, {
+      path: "/storeSplit/:id",
+      name: "storeSplit",
+      component: storeSplit
+    }, {
+      path: "/storeCombination/:id",
+      name: "storeCombination",
+      component: storeCombination
     }
   ]
 })

@@ -292,11 +292,15 @@ export default new Vuex.Store({
       sale: [
         {
           name: "未完成任务",
-          url: "/Sale"
+          url: "/tasks"
         },
         {
           name: "生产看版",
           url: "/Sale/product"
+        },
+        {
+          name: '审核表',
+          url: '/approval'
         },
         {
           name: "客户管理",
@@ -927,6 +931,18 @@ export default new Vuex.Store({
       check: {
         name: "审核表",
         label: "/approval"
+      },
+      show: {
+        name: "生产看板",
+        label: "/Produce/product"
+      },
+      quality: {
+        name: "质检列表",
+        label: "/OQC/inspection"
+      },
+      bale: {
+        name: "成品打包",
+        label: "/Produce/bale"
       }
     },
     tasksPendingNum: {

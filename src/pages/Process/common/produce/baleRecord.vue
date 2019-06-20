@@ -4,7 +4,7 @@
       <div class="modal-content">
         <div class="modal-body">
           <el-form :model="form" ref="form" label-width="80px">
-            <el-form-item label="备注">
+            <el-form-item label="图片">
               <el-upload
                 action="a"
                 :before-upload="upload"

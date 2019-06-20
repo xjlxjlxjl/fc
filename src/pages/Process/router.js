@@ -5,18 +5,8 @@ import Router from "vue-router";
 // import tabs from "@/pages/Process/control/tabs";
 
 // 销售
-import Sale from "@/pages/Process/view/sale/sale";
-import saleTasks from "@/pages/Process/view/sale/tasks";
-import customerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
-import customerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
-import customerProduct from "@/pages/Process/view/sale/product";
-import customer from "@/pages/Process/view/sale/customer";
-import saleOrder from "@/pages/Process/view/sale/order";
-import nonstandard from "@/pages/Process/view/sale/nonstandard";
-import nonstandardModal from "@/pages/Process/view/sale/nonstandardModal";
-import saleOffer from "@/pages/Process/view/sale/offer";
-import saleShipment from "@/pages/Process/view/sale/shipment";
-import customerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
+import Sale from "@/pages/Process/control/tabs?v=9";
+// 客户地图
 import customerMap from '@/pages/Process/view/sale/customerMap';
 // 工程
 import Engineer from "@/pages/Process/control/tabs?v=4";
@@ -66,58 +56,13 @@ export default new Router({
   routes: [
     {
       path: "/",
-      // name: "Sale",
-      component: Sale,
-      children: [
-        {
-          path: "/",
-          component: saleTasks
-        },
-        {
-          path: "/Sale",
-          component: saleTasks
-        },
-        {
-          path: "/Sale/customerServiceApplication",
-          component: customerServiceApplication
-        },
-        {
-          path: "/Sale/customerServiceQuotation",
-          component: customerServiceQuotation
-        },
-        {
-          path: "/Sale/product",
-          component: customerProduct
-        },
-        {
-          path: "/Sale/customer",
-          component: customer
-        },
-        {
-          path: "/Sale/order",
-          component: saleOrder
-        },
-        {
-          path: "/Sale/nonstandard",
-          component: nonstandard
-        },
-        {
-          path: "/Sale/nonstandardModal",
-          component: nonstandardModal
-        },
-        {
-          path: "/Sale/offer",
-          component: saleOffer
-        },
-        {
-          path: "/Sale/shipment",
-          component: saleShipment
-        },
-        {
-          path: "/Sale/customerServiceMaterial",
-          component: customerServiceMaterial
-        }
-      ]
+      name: "Sale",
+      component: Sale
+    },
+    {
+      path: "/Sale",
+      name: 'Sale',
+      component: Sale
     },
     {
       path: "/customerMap",

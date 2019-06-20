@@ -85,7 +85,6 @@
     </div>
 
     <div id="toolbar">
-      <span class="lead">销售订单</span>
       <el-button size="mini" :goods="goods" @click="row = { id:0 };addOrder()">新建销售订单</el-button>
       <!-- <el-button size="mini" @click="addSale">新建出货单</el-button> -->
     </div>

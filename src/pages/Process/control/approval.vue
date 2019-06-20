@@ -98,16 +98,30 @@ export default {
             field: "id",
             title: "操作",
             formatter: (value, row, index) => {
-              let quoted = `<button class="btn btn-primary btn-sm quoted">设置报价</button>`,
+              let quoted = `<button class="btn btn-primary btn-sm quoted" style="margin-left: 5px;">设置报价</button>`,
                 pass = `<button class="btn btn-success btn-sm pass">审核通过</button>`,
                 refuse = `<button class="btn btn-danger btn-sm refuse" style="margin-left: 5px;">审核不通过</button>`,
+                end = `<button class="btn btn-danger end btn-sm" style="margin-left: 5px;">结束客服</button>`,
                 counterTrial = `<button class="btn btn-danger btn-sm counterTrial" style="margin-left: 5px;">反审</button>`,
                 btn = pass + refuse;
-                if (row.entry.entry_stream == "quoted_price") btn += quoted;
+                if (row.entry.entry_stream == "quoted_price"){
+                  btn += quoted;
+                  btn += end;
+                }
                 if (row.is_anti_check) btn += counterTrial;
                 return btn;
             },
             events: {
+              "click .end"(e, value, row, index) {
+                if (confirm('是否结束客服')) 
+                  that
+                    .$post(`service/update_process/${row.entry.entry_id}`, { process: 5 })
+                    .then(response => {
+                      if (response.status != 200) return false;
+                      that.$message({ message: '客服已经结束', type: "success" });
+                    })
+                    .catch(err => console.error(err));
+              },
               "click .quoted": function(e, value, row, index) {
                 // 设置报价
                 that.active = row;
