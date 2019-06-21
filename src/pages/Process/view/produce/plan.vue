@@ -171,10 +171,10 @@ export default {
                   <td>${ e.sn_code || '' }</td>
                   <td>${ e.material.material_number || '' }</td>
                   <td>${ e.material.name || '' }</td>
-                  <td>${ e.material.item_unit || '' }</td>
+                  <td>${ e.material.material_specification || '' }</td>
+                  <td>${ e.item_unit || '' }</td>
                   <td>${ e.quantity || '' }</td>
                   <td>${ e.delivery_period_at || '' }</td>
-                  <td>${ e.bom_item || '' }</td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs btn-link BOM">BOM</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs occupy">查看占用</button></td>
@@ -192,15 +192,6 @@ export default {
             })
             html += `</tbody></table>`;
             return html;
-          },
-          onEditableSave(field, mrow, oldValue, $el) {
-            console.log(mrow);
-            that
-              .$post(`produces/plan/sort`)
-              .then(response => {
-                if (response.status != 200) return false;
-              })
-              .catch(e => console.error(e));
           }
         };
       $("#plan #table").bootstrapTable(data);

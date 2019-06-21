@@ -103,6 +103,10 @@ export default {
             title: "SN码"
           },
           {
+            field: "prompt_at",
+            title: "智能提示生产日期"
+          },
+          {
             field: "delivery_period_at",
             title: "出货计划交期"
           },
