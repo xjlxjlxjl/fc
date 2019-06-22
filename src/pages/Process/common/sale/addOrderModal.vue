@@ -275,22 +275,26 @@
           <el-table-column prop="respository.name" label="仓库"></el-table-column>
           <el-table-column prop="attributes" label="BOM单位"></el-table-column>
           <el-table-column prop="date" label="料品类别" width="400px">
-            <template slot-scope="{}">
-              <div class="materialsType">
-                <div>
-                  <input type="checkbox">采购件
+            <template slot-scope="{ row }">
+                <div class="materialsType">
+                  <div>
+                    <input type="checkbox" v-if="row.attributes.onArray(1, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 采购件
+                  </div>
+                  <div>
+                    <input type="checkbox" v-if="row.attributes.onArray(2, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 自制件
+                  </div>
+                  <div>
+                    <input type="checkbox" v-if="row.attributes.onArray(3, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 委外件
+                  </div>
+                  <div>
+                    <input type="checkbox" v-if="row.attributes.onArray(4, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 销售件
+                  </div>
                 </div>
-                <div>
-                  <input type="checkbox">自制件
-                </div>
-                <div>
-                  <input type="checkbox">委外件
-                </div>
-                <div>
-                  <input type="checkbox">销售件
-                </div>
-              </div>
-            </template>
+              </template>
           </el-table-column>
           <el-table-column prop="attributes" label="料品属性"></el-table-column>
           <el-table-column prop="date" label="损耗率"></el-table-column>
@@ -1363,6 +1367,9 @@ export default {
   }
 }
 .material {
+  .el-table__body tr.current-row>td {
+    background-color: #03a9f4;
+  }
   .condition {
     display: flex;
     justify-content: space-between;

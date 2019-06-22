@@ -401,7 +401,7 @@ export default {
       rules: {
         name: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
         abbreviation: [{ required: true, message: "请输入客户简称", trigger: "blur" }],
-        detailed_address: [{ message: "请输入详细地址", trigger: "blur" }],
+        detailed_address: [{ required: true, message: "请输入详细地址", trigger: "blur" }],
         // primary_contact: [
         //   { required: true, message: "请输入联系人", trigger: "blur" }
         // ],

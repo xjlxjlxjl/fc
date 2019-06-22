@@ -204,7 +204,20 @@ export default {
         if (e.url == route) e.active = true;
         else e.active = false;
       });
-      0
+      let tabItems = JSON.parse(localStorage.getItem('tabItems')),
+        activeTabs = localStorage.getItem('activeTabs'),
+        inArr = false;
+
+      if (activeTabs != "/tasks") {
+        for (const e of tabItems) 
+          if (e.label == "/tasks") inArr = true;
+
+        if (!inArr)
+          tabItems.unshift({"name":"待完成任务","label":"/tasks","num":0});
+        
+        localStorage.setItem('tabItems', JSON.stringify(tabItems));
+        localStorage.setItem('activeTabs', "/tasks");
+      }
     },
     changeModal(name, state = null) {
       this.messageTips = 0;
@@ -213,6 +226,7 @@ export default {
     }
   },
   mounted() {
+
     let route = this.$route.path.split("/")[1];
     this.process.forEach(e => {
       if (e.url == `/${route}`) e.active = true;

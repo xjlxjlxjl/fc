@@ -4,7 +4,7 @@
       <div class="modal-content">
         <el-table :data="arr" border stripe>
           <el-table-column label="序号">
-            <template slot-scope="{ $index }">{{ $index }}</template>
+            <template slot-scope="{ $index }">{{ $index + 1 }}</template>
           </el-table-column>
           <el-table-column prop="material_number" label="料品编码"></el-table-column>
           <el-table-column prop="material_specification" label="料品规格"></el-table-column>

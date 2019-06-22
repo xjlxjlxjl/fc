@@ -1,12 +1,7 @@
 <template>
   <div id="purchaseOrder">
     <addOrderModal></addOrderModal>
-    <div
-      class="modal fade"
-      id="purchaseOrderPrintModal"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-    >
+    <div class="modal fade" id="purchaseOrderPrintModal" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
@@ -70,7 +65,7 @@
       </div>
     </div>
     <!-- 合同列表 -->
-    <div class="modal fade contract" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade contract" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">

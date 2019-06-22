@@ -30,9 +30,6 @@
             <el-form-item label="描述" prop="description">
               <el-input type="textarea" v-model="form.description" placeholder="描述"></el-input>
             </el-form-item>
-            <el-form-item label="地址" prop="address">
-              <el-input type="textarea" v-model="form.address" placeholder="地址"></el-input>
-            </el-form-item>
             <el-form-item label="是否启用" prop="enabled">
               <el-switch
                 v-model="form.enabled"

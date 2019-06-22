@@ -3,9 +3,7 @@
     <div
       class="modal fade bs-example-modal-lg"
       id="addOrder"
-      tabindex="-1"
       role="dialog"
-      aria-labelledby="myLargeModalLabel"
     >
       <div class="modal-dialog modal-lg" style="width: 100%;" role="document">
         <div class="modal-content">
@@ -161,12 +159,7 @@
       </div>
     </div>
     <!-- 采购申请列表 -->
-    <div
-      class="modal fade bs-example-modal-lg applyList"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade bs-example-modal-lg applyList" role="dialog" >
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table
@@ -216,12 +209,7 @@
       </div>
     </div>
     <!-- 销售订单列表 -->
-    <div
-      class="modal fade bs-example-modal-lg orderList"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade bs-example-modal-lg orderList" role="dialog" >
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table
@@ -303,12 +291,7 @@
       </div>
     </div>
     <!-- 料品列表 -->
-    <div
-      class="modal fade bs-example-modal-lg materList"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade bs-example-modal-lg materList" role="dialog" >
       <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
         <div class="modal-content">
           <el-table
@@ -345,19 +328,23 @@
             <el-table-column prop="respository.name" label="仓库"></el-table-column>
             <el-table-column prop="attributes" label="BOM单位"></el-table-column>
             <el-table-column prop="date" label="料品类别" width="400px">
-              <template slot-scope="{}">
+              <template slot-scope="{ row }">
                 <div class="materialsType">
                   <div>
-                    <input type="checkbox">采购件
+                    <input type="checkbox" v-if="row.attributes.onArray(1, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 采购件
                   </div>
                   <div>
-                    <input type="checkbox">自制件
+                    <input type="checkbox" v-if="row.attributes.onArray(2, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 自制件
                   </div>
                   <div>
-                    <input type="checkbox">委外件
+                    <input type="checkbox" v-if="row.attributes.onArray(3, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 委外件
                   </div>
                   <div>
-                    <input type="checkbox">销售件
+                    <input type="checkbox" v-if="row.attributes.onArray(4, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-else disabled> 销售件
                   </div>
                 </div>
               </template>
@@ -420,12 +407,7 @@
       </div>
     </div>
     <!-- 供应商列表 -->
-    <div
-      class="modal fade bs-example-modal-lg supplier"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-    >
+    <div class="modal fade bs-example-modal-lg supplier" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <el-table

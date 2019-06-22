@@ -62,7 +62,7 @@ export default {
     return {
       form: {
         prefix: "",
-        category_id: '',
+        category_id: 1,
         name: "",
         description: "",
         address: "",

@@ -46,7 +46,7 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
+      params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
       params.q = params.search;
       params.i = params.search;

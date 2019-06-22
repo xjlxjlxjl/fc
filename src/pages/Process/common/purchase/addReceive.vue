@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="modal fade bs-example-modal-lg"
-    id="addReceive"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="myLargeModalLabel"
-  >
+  <div class="modal fade bs-example-modal-lg" id="addReceive" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">

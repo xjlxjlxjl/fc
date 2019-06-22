@@ -100,6 +100,27 @@ export default {
               return pick + send + priority;
             },
             events: {
+              "click .pick"($el, value, row, index) {
+                let m = [];
+                for (const e of row.plan_item)
+                  m.push({
+                    material_id: e.material.id,
+                    cancel_count: 0,
+                    wait_count: e.quantity,
+                    spare_count: 0 // 备料开始才有数量
+                  })
+                that
+                  .$post(`repositories/material/receive/create`, {
+                    production_plan_id: value,
+                    sale_order_id: row.order_data.id,
+                    materials: m
+                  })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    console.log(response)
+                  })
+                  .catch(e => console.error(e));
+              },
               "click .send"($el, value, row, index) {
                 if(confirm('确定发送生产看板吗？'))
                 that
@@ -178,8 +199,8 @@ export default {
                   <td><button key="${field}" index="${k}" class="btn btn-xs btn-link BOM">BOM</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs occupy">查看占用</button></td>
-                  <td>${ e.prompt_at_at || '' }</td>
-                  <td>${ e.schedule.numbering || '' }</td>
+                  <td>${ e.prompt_at || '' }</td>
+                  <td>${ e.leadership.numbering || '' }</td>
                   <td>${ e.sop_manage.name || '没有关联sop'} <button key="${field}" index="${k}" class="btn btn-xs process">关联</button></td>
                   <td>`;
                   if (e.members.length)

@@ -90,7 +90,13 @@ export default {
             },
             events: {
               "click .notify"($el, value, row, index) {
-
+                that
+                  .$post(`/repositories/material/receive/notice/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.$message({ message: '通知领料成功', type: 'success' });
+                  })
+                  .catch(e => console.error(e));
               }
             }
           }

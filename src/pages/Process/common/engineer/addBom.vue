@@ -434,20 +434,23 @@ export default {
               const checkbox = `
                 <div>
                   <div>
-                    <label><input type="checkbox" />采购件</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(1, 'id') ? '' : ''} disabled />采购件</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />自制件</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(2, 'id') ? '' : ''} disabled />自制件</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />委外件</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(3, 'id') ? '' : ''} disabled />委外件</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />销售件</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(4, 'id') ? '' : ''} disabled />销售件</label>
                   </div>
                 </div>
               `;
               return checkbox;
+            },
+            events: {
+              "change input": function(e, value, row, index) {}
             }
           },
           {
@@ -457,17 +460,20 @@ export default {
               const checkbox = `
                 <div>
                   <div>
-                    <label><input type="checkbox" />原材料</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(1, 'id') ? '' : ''} disabled />原材料</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />半成品</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(2, 'id') ? '' : ''} disabled />半成品</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />成品</label>
+                    <label><input type="checkbox" ${row.attributes.onArray(3, 'id') ? '' : ''} disabled />成品</label>
                   </div>
                 </div>
               `;
               return checkbox;
+            },
+            events: {
+              "change input": function(e, value, row, index) {}
             }
           },
           {

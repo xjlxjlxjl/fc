@@ -95,7 +95,6 @@
     </div>
 
     <div id="toolbar">
-      <span class="lead">客户管理</span>
       <el-button size="mini" @click="add">新建客户</el-button>
       <router-link to="/customerMap" style="margin-left: 5px;">
         <el-button size="mini">附近客户</el-button>

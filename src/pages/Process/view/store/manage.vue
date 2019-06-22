@@ -105,7 +105,7 @@ export default {
         .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
+      params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
       return params;
     },
@@ -113,12 +113,8 @@ export default {
       const that = this,
         columns = [
           {
-            checkbox: true
-          },
-          {
             field: "number",
-            title: "仓库编号",
-            sortable: true
+            title: "仓库编号"
           },
           {
             field: "img",
@@ -149,32 +145,25 @@ export default {
           },
           {
             field: "name",
-            title: "仓库名",
-            sortable: true
+            title: "仓库名"
           },
           {
-            field: "type",
-            title: "属性",
-            sortable: true,
-            formatter: function(value, row, index) {
-              return value == 1 ? '仓库' : '仓位';
-            }
+            field: "category.title",
+            title: "属性"
           },
           {
             field: "description",
-            title: "描述",
-            sortable: true
+            title: "描述"
           },
           {
             field: "address",
-            title: "地址",
-            sortable: true
+            title: "地址"
           },
           {
             field: "enabled",
             title: "是否启用",
             formatter: function(value, row, index) {
-              let checkBox = `<input type="checkbox" class="switch" checked="${value || ''}" disabled />`;
+              let checkBox = `<input type="checkbox" class="switch" ${value ? 'checked="checked"' : ''} disabled />`;
               return checkBox;
             },
             events: {
@@ -253,7 +242,7 @@ export default {
                   <td>${ item.name }</td>
                   <td>${ item.description }</td>
                   <td>
-                    <input type="checkbox" name="iStart" Sid="${item.id}" checked="${ item.enabled ? true : false }" disabled />
+                    <input type="checkbox" name="iStart" Sid="${item.id}" ${ item.enabled ? 'checked="checked"' : '' }  disabled />
                   </td>
                   <td>
                     <button class="btn btn-warning btn-xs positionEdit" row="${field}" index="${k}">编辑</button>

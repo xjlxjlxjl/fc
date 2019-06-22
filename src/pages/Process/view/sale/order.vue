@@ -2,7 +2,7 @@
   <div id="order">
     <addOrderModal :row="row" @refresh="refreshed"></addOrderModal>
     <!-- <addShipment :shipment="shipment" :goods="goods" @refresh="refreshed"></addShipment> -->
-    <serviceApplication></serviceApplication>
+    <serviceApplication :row="row" @refresh="refreshed"></serviceApplication>
   
     <div class="modal fade" id="contractMiniModal" role="dialog">
       <div class="modal-dialog" role="document">
@@ -410,21 +410,6 @@ export default {
             },
             events: {
               "click .schedule": function(event, value, row, index) {
-                // let arr = [];
-                // row.items.forEach((e, k) => {
-                //   arr.push({
-                //     id: e.material_id,
-                //     cancel_count: k + 1,
-                //     wait_count: k + 2,
-                //     spare_count: k + 3
-                //   })
-                // });
-                // that
-                //   .$post(`repositories/material/receive/create`, {
-                //     sale_order_id: row.id,
-                //     materials: arr
-                //   })
-
                 that
                   .$get(`schedule/create`, { slug: row.slug })
                   .then(response => {
@@ -449,7 +434,8 @@ export default {
                   })
                   .catch(err => console.error(err));
               },
-              "click .server": function() {
+              "click .server": function(event, value, row, index) {
+                that.row = row;
                 $("#order #serviceApplication").modal("show");
               },
               "change .upload": function(event, value, row, index) {
