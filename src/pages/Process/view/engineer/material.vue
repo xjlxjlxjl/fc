@@ -279,42 +279,76 @@ export default {
           {
             field: "image",
             title: "图片",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "project_drawing_number",
-            title: "工程图号",
-            sortable: true
+            title: "工程图号"
           },
           {
             field: "drawing_working",
             title: "加工图",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "drawing_approve",
             title: "承认图",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "drawing_2d",
             title: "2D图纸",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "drawing_3d",
             title: "3D图纸",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "drawing_pdf",
             title: "pdf图纸",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "assembly_drawing",
             title: "组装图",
-            sortable: true
+            formatter(value) {
+              let content = ``;
+              for (let e of value)
+                content += `<div><a target="_blank" style="white-space: nowrap;" href="${ e }">${ e.split('/').pop() }</a></div>`
+              return content;
+            }
           },
           {
             field: "begin_price",

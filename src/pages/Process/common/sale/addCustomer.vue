@@ -873,7 +873,8 @@ export default {
             var marker = new BMap.Marker(new BMap.Point(this.form.region.x, this.form.region.y));
             this.map.addOverlay(marker);
           }
-          this.form.tags = this.form.tags.join(' ');
+          if (typeof this.form.tags == "object") this.form.tags = this.form.tags.join(' ');
+          else this.form.tags = "";
         }
       else 
         this.clearForm();

@@ -157,6 +157,7 @@ export default {
           .$post(`service/create`, this.form)
           .then(response => {
             if (response.status != 200) return false;
+            this.$message({ message: '客服申请成功', type: 'success' });
             this.clearForm();
           })
           .catch(e => console.error(e));

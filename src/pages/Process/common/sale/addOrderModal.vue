@@ -254,7 +254,11 @@
           <el-table-column prop="material_specification" label="料品规格"></el-table-column>
           <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
           <el-table-column prop="item_unit" label="主单位"></el-table-column>
-          <el-table-column prop="image" label="图片"></el-table-column>
+          <el-table-column prop="image" label="图片">
+            <template slot-scope="{ row }">
+              <p v-for="(e, k) in row.image" :key="k"><a style="white-space: nowrap;" target="_blank" :href="e">{{e.split('/').pop()}}</a></p>
+            </template>
+          </el-table-column>
           <el-table-column prop="drawing_pdf" label="工程图号">
             <template slot-scope="{ row }">
               <a
@@ -502,6 +506,7 @@ export default {
       user: JSON.parse(localStorage.getItem("user") || "{}"),
       form: {
         customer_id: 0,
+        customer_slug: "",
         customer_code: "",
         customer_name: "",
         contact_arr: [],
@@ -716,6 +721,7 @@ export default {
       this.form.salesman_arr = [customer.salesman_information];
 
       this.form.customer_id = customer.id;
+      this.form.customer_slug = customer.slug;
       this.form.customer_code = customer.code;
       this.form.customer_name = customer.name;
       this.form.contact_arr = customer.contact
@@ -729,7 +735,7 @@ export default {
     addConsignee() {
       if (this.form.customer_id)
         this.$post(`customers/create_contact`, {
-          customer_id: '',
+          customer_id: this.form.customer_id,
           contact: JSON.stringify([this.acgModal])
         })
         .then(response => {
@@ -804,74 +810,132 @@ export default {
       this.form.items[this.index].name = this.mater.selection.name;
       this.form.items[this.index].specifications = this.mater.selection.material_specification;
       this.form.items[this.index].unit = this.mater.selection.item_unit;
+      this.form.items[this.index].image = this.mater.selection.image;
       this.form.items.push({});
       this.form.items.pop();
       this.materialModal = !this.materialModal
     },
     addPayment() {
       let text = '',
-        self = this.payMenTerms;
-      if (self.deposit.pay_rate) text += `合同签订后，付 ${self.deposit.pay_rate} %订单总额;`;
-      if (self.shipment_before.pay_rate) text += `出货前，付 ${self.shipment_before.pay_rate} %订单总额;`;
+        self = this.payMenTerms,
+        sum = 0;
+      if (
+        !self.deposit.pay_rate && 
+        !self.shipment_before.pay_rate &&
+        !self.shipment_after[0].day &&
+        !self.shipment_after[0].pay_rate &&
+        !self.accept_after[0].day &&
+        !self.accept_after[0].pay_rate &&
+        !self.accept_after_balance.pay_rate &&
+        !self.billing_after[0].day &&
+        !self.billing_after[0].pay_rate &&
+        !self.billing_after_balance.pay_rate
+      ) {
+        this.$message({ message: '请填写付款方式后保存', type: 'error' });
+        return false;
+      }
+
+      if (self.deposit.pay_rate) {
+        text += `合同签订后，付 ${self.deposit.pay_rate} %订单总额;`;
+        sum += parseInt(self.deposit.pay_rate);
+      }
+
+      if (self.shipment_before.pay_rate) {
+        text += `出货前，付 ${self.shipment_before.pay_rate} %订单总额;`;
+        sum += parseInt(self.shipment_before.pay_rate);
+      }
+
       if (self.shipment_after.length) 
         self.shipment_after.forEach(e => {
-          if (e.pay_rate) text += `出货后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+          if (e.pay_rate) {
+            text += `出货后 ${e.day || 0} 天，付 ${e.pay_rate || 0} %订单总额;`;
+            sum += parseInt(e.pay_rate || 0);
+          }
         })
+
       if (self.accept_after.length)
         self.accept_after.forEach(e => {
-          if (e.pay_rate) text += `验收后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+          if (e.pay_rate) {
+            text += `验收后 ${e.day || 0} 天，付 ${e.pay_rate || 0} %订单总额;`;
+            sum += parseInt(e.pay_rate || 0);
+          }
         })
-      if (self.accept_after_balance.pay_rate) text += `验收后 ${self.accept_after_balance.day} 天，付清订单余款 ${self.accept_after_balance.pay_rate} %`;
+
+      if (self.accept_after_balance.pay_rate) {
+        text += `验收后 ${self.accept_after_balance.day} 天，付清订单余款 ${self.accept_after_balance.pay_rate} %`;
+        sum += parseInt(self.accept_after_balance.pay_rate);
+      }
+
       if (self.billing_after.length)
         self.billing_after.forEach(e => {
-          if (e.pay_rate) text += `票到后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+          if (e.pay_rate) {
+            text += `票到后 ${e.day || 0} 天，付 ${e.pay_rate || 0} %订单总额;`;
+            sum += parseInt(e.pay_rate || 0);
+          }
         })
-      if (self.billing_after_balance.pay_rate) text += `票到后 ${self.billing_after_balance.day} 天，付清订单余款 ${self.billing_after_balance.pay_rate}%;`;
+      
+      if (self.billing_after_balance.pay_rate) {
+        text += `票到后 ${self.billing_after_balance.day} 天，付清订单余款 ${self.billing_after_balance.pay_rate}%;`;
+        sum += parseInt(self.billing_after_balance.pay_rate);
+      }
+
+      if (sum != 100) {
+        this.$messgae({ message: '百分比总和为 100', type: 'error' });
+        return false;
+      }
 
       this.form.terms_of_payment = JSON.stringify({
-        text: text,
+        text: text || "",
         value: this.payMenTerms
       })
       this.form.terms_of_payment_arr.push({
-        text: text,
+        text: text || "",
         value: this.payMenTerms
       });
-      
-      this.payMentModal = !this.payMentModal;
-      this.payMenTerms = {
-        deposit: {
-          pay_rate: ''
-        },
-        shipment_before: {
-          pay_rate: ''
-        },
-        shipment_after: [
-          {
-            day: '',
-            pay_rate: ''
+      this.
+        $post(`customers/edit`, {
+          slug: this.form.customer_slug,
+          payment_terms: JSON.stringify(this.form.terms_of_payment_arr)
+        })
+        .then(response => {
+          if (response.status != 200) return false;
+          this.payMentModal = !this.payMentModal;
+          this.payMenTerms = {
+            deposit: {
+              pay_rate: ''
+            },
+            shipment_before: {
+              pay_rate: ''
+            },
+            shipment_after: [
+              {
+                day: '',
+                pay_rate: ''
+              }
+            ],
+            accept_after: [
+              {
+                day: '',
+                pay_rate: ''
+              }
+            ],
+            accept_after_balance: {
+              day: '',
+              pay_rate: ''
+            },
+            billing_after: [
+              {
+                day: '',
+                pay_rate: ''
+              }
+            ],
+            billing_after_balance: {
+              day: '',
+              pay_rate: ''
+            }
           }
-        ],
-        accept_after: [
-          {
-            day: '',
-            pay_rate: ''
-          }
-        ],
-        accept_after_balance: {
-          day: '',
-          pay_rate: ''
-        },
-        billing_after: [
-          {
-            day: '',
-            pay_rate: ''
-          }
-        ],
-        billing_after_balance: {
-          day: '',
-          pay_rate: ''
-        }
-      }
+        })
+        .catch(e => console.error(e));
     },
     initCKEditor() {
       const that = this;
@@ -932,12 +996,12 @@ export default {
         .catch(err => {});
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      params.address = params.search;
-      params.work = "visit";
-      // params.clerk_id = this.user.user.id;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        address: params.search || undefined,
+        work: "visit"
+      };
     },
     init() {
       let that = this,
@@ -1113,21 +1177,21 @@ export default {
             title: "发票抬头",
             sortable: true
           },
-          {
-            field: "payment_terms",
-            title: "付款条件",
-            sortable: true,
-            formatter: (value, row, index) => {
-              let payment_terms = `<button class="btn btn-sm btn-primary">查看条件</button>`;
-              return payment_terms;
-            },
-            events: {
-              'click .btn': function(e, value, row, index) {
-                that.payment_terms = row.payment_terms_vl;
-                $('#order .payment_termsModal').modal('show');
-              }
-            }
-          },
+          // {
+          //   field: "payment_terms",
+          //   title: "付款条件",
+          //   sortable: true,
+          //   formatter: (value, row, index) => {
+          //     let payment_terms = `<button class="btn btn-sm btn-primary">查看条件</button>`;
+          //     return payment_terms;
+          //   },
+          //   events: {
+          //     'click .btn': function(e, value, row, index) {
+          //       that.payment_terms = row.payment_terms_vl;
+          //       $('#order .payment_termsModal').modal('show');
+          //     }
+          //   }
+          // },
           {
             field: "logistics_code",
             title: "物流编码",
