@@ -17,7 +17,7 @@
             <el-form-item label="仓库名称" prop="name">
               <el-input v-model="form.name" placeholder="仓库名称"></el-input>
             </el-form-item>
-            <el-form-item label="仓库类型" prop="category_id">
+            <!-- <el-form-item label="仓库类型" prop="category_id">
               <el-select v-model="form.category_id" placeholder="仓库类型">
                 <el-option 
                   v-for="item in $store.state.WareHouseType"
@@ -25,8 +25,8 @@
                   :label="item.title"
                   :value="item.id">
                 </el-option>
-              </el-select>              
-            </el-form-item>
+              </el-select>
+            </el-form-item> -->
             <el-form-item label="描述" prop="description">
               <el-input type="textarea" v-model="form.description" placeholder="描述"></el-input>
             </el-form-item>
@@ -59,7 +59,7 @@ export default {
     return {
       form: {
         prefix: "",
-        category_id: '',
+        // category_id: '',
         name: "",
         parent_id: 0,
         description: "",
@@ -69,7 +69,7 @@ export default {
       rules: {
         prefix: [{ required: true, message: "请输入仓位编号前缀", trigger: "blur" }],
         name: [{ required: true, message: "请输入仓位名称", trigger: "blur" }],
-        category_id: [{ required: true, message: "请选择仓位属性", trigger: "change" }]
+        // category_id: [{ required: true, message: "请选择仓位属性", trigger: "change" }]
       }
     };
   },
@@ -96,7 +96,7 @@ export default {
         this
           .$post(url, {
             prefix: this.form.prefix,
-            category_id: this.form.category_id,
+            // category_id: this.form.category_id,
             parent_id: this.row.parent_id,
             name: this.form.name,
             description: this.form.description || "",
@@ -115,7 +115,7 @@ export default {
   mounted() {
     let that = this;
     $("#manage #addPosition").on("shown.bs.modal", function() {
-      that.getStoreCategory();
+      // that.getStoreCategory();
       if (that.row.id) {
         that.form = that.row;
         that.form.category_id = that.row.category.id;

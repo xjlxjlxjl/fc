@@ -17,7 +17,7 @@
             <el-form-item label="仓库名称" prop="name">
               <el-input v-model="form.name" placeholder="仓库名称"></el-input>
             </el-form-item>
-            <el-form-item label="仓库类型" prop="category_id">
+            <!-- <el-form-item label="仓库类型" prop="category_id">
               <el-select v-model="form.category_id" placeholder="仓库类型">
                 <el-option 
                   v-for="item in $store.state.WareHouseType"
@@ -26,7 +26,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>              
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="描述" prop="description">
               <el-input type="textarea" v-model="form.description" placeholder="描述"></el-input>
             </el-form-item>
@@ -62,7 +62,7 @@ export default {
     return {
       form: {
         prefix: "",
-        category_id: 1,
+        // category_id: 1,
         name: "",
         description: "",
         address: "",
@@ -71,7 +71,7 @@ export default {
       rules: {
         prefix: [{ required: true, message: "请输入仓库编号前缀", trigger: "blur" }],
         name: [{ required: true, message: "请输入仓库名称", trigger: "blur" }],
-        category_id: [{ required: true, message: "请选择仓库属性", trigger: "change" }]
+        // category_id: [{ required: true, message: "请选择仓库属性", trigger: "change" }]
       }
     };
   },
@@ -98,7 +98,7 @@ export default {
         this
           .$post(url, {
             prefix: this.form.prefix,
-            category_id: this.form.category_id,
+            // category_id: this.form.category_id,
             name: this.form.name,
             description: this.form.description || "",
             address: this.form.address || "",
@@ -117,7 +117,7 @@ export default {
   mounted() {
     let that = this;
     $("#manage #addManage").on("shown.bs.modal", function() {
-      that.getStoreCategory();
+      // that.getStoreCategory();
       if (that.row.id) {
         that.form = that.row;
         that.form.category_id = that.row.category.id;

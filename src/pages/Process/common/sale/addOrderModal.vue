@@ -1196,7 +1196,6 @@ export default {
     this.init();
     const that = this;
     $('#order #addOrderModal').on('shown.bs.modal', function () {
-      console.log(that.row)
       if (that.row.id) {
         that.form.customer_id = that.row.customer_id;
         that.form.customer_code = that.row.customer_code;

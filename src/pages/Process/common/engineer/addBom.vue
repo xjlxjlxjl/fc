@@ -284,19 +284,13 @@ export default {
         this.form.bom_items[this.key].material_specification =
           data.material_specification;
         this.form.bom_items[this.key].name = data.name;
-        this.form.bom_items[this.key].quantity =
-          this.form.bom_items[this.key].quantity || 1;
-        this.form.bom_items[this.key].valid =
-          this.form.bom_items[this.key].valid || 1;
+        this.form.bom_items[this.key].quantity = this.form.bom_items[this.key].quantity || 1;
+        this.form.bom_items[this.key].valid = this.form.bom_items[this.key].valid || 1;
         this.form.bom_items[this.key].unit = data.item_unit;
-        this.form.bom_items[this.key].bom_item_attributes =
-          this.form.bom_items[this.key].bom_item_attributes || "stroke";
-        this.form.bom_items[this.key].operation_method =
-          this.form.bom_items[this.key].operation_method || 1;
-        this.form.bom_items[this.key].material_category_id =
-          data.material_category.id;
-        this.form.bom_items[this.key].material_category_name =
-          data.material_category.name;
+        this.form.bom_items[this.key].bom_item_attributes = this.form.bom_items[this.key].bom_item_attributes || "stroke";
+        this.form.bom_items[this.key].operation_method = this.form.bom_items[this.key].operation_method || 1;
+        this.form.bom_items[this.key].material_category_id = data.classification.id;
+        this.form.bom_items[this.key].material_category_name = data.classification.name;
 
         this.form.bom_items[this.key].assembly_drawing = data.assembly_drawing;
         this.form.bom_items[this.key].drawing_2d = data.drawing_2d;

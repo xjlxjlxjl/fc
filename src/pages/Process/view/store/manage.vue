@@ -105,9 +105,10 @@ export default {
         .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit
+      };
     },
     init() {
       const that = this,

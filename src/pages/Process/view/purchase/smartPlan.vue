@@ -238,12 +238,12 @@ export default {
         index = $(this).attr("index"),
         data = that.getAllData($("#smartPlan #table"));
       that.pic = {
-        drawing_working: data[key].items[index].drawing_working || [],
-        assembly_drawing: data[key].items[index].assembly_drawing || [],
-        drawing_approve: data[key].items[index].drawing_approve || [],
-        drawing_2d: data[key].items[index].drawing_2d || [],
-        drawing_3d: data[key].items[index].drawing_3d || [],
-        drawing_pdf: data[key].items[index].drawing_pdf || []
+        drawing_working: data[key].items[index].material.drawing_working || [],
+        assembly_drawing: data[key].items[index].material.assembly_drawing || [],
+        drawing_approve: data[key].items[index].material.drawing_approve || [],
+        drawing_2d: data[key].items[index].material.drawing_2d || [],
+        drawing_3d: data[key].items[index].material.drawing_3d || [],
+        drawing_pdf: data[key].items[index].material.drawing_pdf || []
       };
       $("#smartPlan #getMaterialPic").modal("show");
     });
