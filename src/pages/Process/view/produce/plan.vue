@@ -3,6 +3,7 @@
     <editPriority :row="active"></editPriority>
     <getBOM :arr="arr"></getBOM>
     <getSOP :id="activeId" @refresh="refreshed"></getSOP>
+    <getTurn :id="activeId" @refresh="refreshed"></getTurn>
     <getMaterialPic :pic="pic"></getMaterialPic>
     <smartOccupy :arr="row"></smartOccupy>
     <designate @user="user" type="production"></designate>
@@ -16,6 +17,7 @@ import getMaterialPic from '@/pages/Process/common/engineer/getMaterialPic';
 import smartOccupy from '@/pages/Process/common/purchase/smartOccupy';
 import getBOM from '@/pages/Process/common/produce/getBOM';
 import getSOP from '@/pages/Process/common/produce/getSOP';
+import getTurn from '@/pages/Process/common/produce/getTurn';
 import designate  from '@/pages/Process/common/store/designate';
 
 export default {
@@ -40,6 +42,7 @@ export default {
     editPriority: editPriority,
     getBOM: getBOM,
     getSOP: getSOP,
+    getTurn: getTurn,
     getMaterialPic: getMaterialPic,
     smartOccupy: smartOccupy,
     designate: designate
@@ -50,10 +53,11 @@ export default {
         .$get(`produces/plan`, params.data)
         .then(response => {
           if (response.status != 200);
+          this.priority = response.data.pagination.from;
           params.success({
             rows: response.data.list,
             total: response.data.pagination.total
-          })
+          });
         })
         .catch(e => console.error(e));
     },
@@ -67,10 +71,10 @@ export default {
       let that = this,
         columns = [
           {
-            field: "#",
+            field: "priority",
             title: "优先级",
             formatter(value, row, index) {
-              return index + 1;
+              return index + that.priority;
             }
           },
           {
@@ -117,7 +121,7 @@ export default {
                   })
                   .then(response => {
                     if (response.status != 200) return false;
-                    console.log(response)
+                    this.$message({ message: '生成生产计划成功', type: 'success' });
                   })
                   .catch(e => console.error(e));
               },
@@ -181,6 +185,7 @@ export default {
                     <th>智能提示生产日期</th>
                     <th>生产领料单号</th>
                     <th>SOP</th>
+                    <th>生产工序</th>
                     <th>生产组员</th>
                   </tr>
             `;
@@ -202,6 +207,7 @@ export default {
                   <td>${ e.prompt_at || '' }</td>
                   <td>${ e.leadership.numbering || '' }</td>
                   <td>${ e.sop_manage.name || '没有关联sop'} <button key="${field}" index="${k}" class="btn btn-xs process">关联</button></td>
+                  <td>${ e.procedure.name || '没有关联工序'} <button key="${field}" index="${k}" class="btn btn-xs turn">关联</button></td>
                   <td>`;
                   if (e.members.length)
                     for (const v of e.members)
@@ -275,6 +281,14 @@ export default {
         data = that.getAllData($("#plan #table"));
       that.activeId = data[key].plan_item[index].id;
       $("#plan #getSOP").modal("show");
+    });
+    $("#plan").on("click", ".turn", function() {
+      const
+        key = $(this).attr("key"),
+        index = $(this).attr("index"),
+        data = that.getAllData($("#plan #table"));
+      that.activeId = data[key].plan_item[index].id;
+      $("#plan #getTurn").modal("show");
     });
     $("#plan").on("click", ".assign", function() {
       const

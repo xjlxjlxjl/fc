@@ -51,6 +51,7 @@ export default {
         .$get(`produces/show`, params.data)
         .then(response => {
           if (response.status != 200) return false;
+          this.priority = response.data.pagination.from;
           params.success({
             rows: response.data.list,
             total: response.data.pagination.total
@@ -72,10 +73,10 @@ export default {
             checkbox: true
           },
           {
-            field: "index",
+            field: "priority",
             title: "排单顺序",
             formatter(value, row, index) {
-              return index + 1;
+              return index + that.priority;
             }
           },
           {
@@ -149,7 +150,7 @@ export default {
             field: "status",
             title: "生产状态",
             formatter(value) {
-              return value ? '生产中' : '生产结束';
+              return value ? '生产结束' : '生产中';
             }
           },
           {

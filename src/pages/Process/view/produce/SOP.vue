@@ -36,7 +36,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         name: params.search || undefined
       };

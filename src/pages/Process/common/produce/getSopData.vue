@@ -23,10 +23,10 @@
                 </el-table-column>
                 <el-table-column prop="happen_at" label="发生时间"></el-table-column>
                 <el-table-column prop="numbing" label="订单号"></el-table-column>
-                <el-table-column prop="images" label="问题描述"></el-table-column>
-                <el-table-column prop="description" label="原因"></el-table-column>
-                <el-table-column prop="reason" label="解决方法"></el-table-column>
-                <el-table-column prop="solution" label="如何预防"></el-table-column>
+                <el-table-column prop="description" label="问题描述"></el-table-column>
+                <el-table-column prop="reason" label="原因"></el-table-column>
+                <el-table-column prop="solution" label="解决方法"></el-table-column>
+                <el-table-column prop="prevent" label="如何预防"></el-table-column>
               </el-table>
             </template>
           </el-table-column>

@@ -369,7 +369,16 @@ export default {
         this.form.name = this.row.name;
         this.form.material_number = this.row.material.material_number;
         this.form.material_id = this.row.material.id;
-        this.arr = this.row.sop_step;
+        this.arr = this.row.sop_step.map(e => {
+          e.images_arr = e.images.map(e => {
+            return {
+              name: e.name,
+              url: e.url,
+              uid: e.id
+            }
+          }) 
+          return e;
+        })
       } else this.clearForm();
       
     })

@@ -104,11 +104,12 @@ export default {
             },
             events: {
               "click .plan": function(e, value, row, index) {
-                if (confirm('确定要生产生产计划和生产领料吗？'))
+                if (confirm('确定要生成生产计划吗？'))
                   that
                     .$get(`schedule/product/schedule/${value}`)
                     .then(response => {
                       if (response.status != 200) return false;
+                      that.$message({ message: "生成生产计划成功", type: 'success' });
                     })
                     .catch(e => console.error(e));
               }

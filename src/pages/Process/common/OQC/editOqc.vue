@@ -46,17 +46,7 @@ export default {
   methods: {
     ...mapMutations([""]),
     imgUpload(file) {
-      switch (file.type) {
-        case "image/jpeg":
-        case "image/png":
-        case "image/svg+xml":
-        case "image/x-icon":
-          this.upload(file, 0);
-          break;
-        default:
-          this.$message({ message: "上传图片格式错误", type: "error" });
-          break;
-      }
+      this.upload(file, 0);
     },
     upload(file, type) {
       let that = this,

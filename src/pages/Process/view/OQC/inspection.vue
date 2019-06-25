@@ -390,7 +390,7 @@ export default {
                 <td>1</td>
                 <td>${row.member_user ? row.member_user.last_name : '无'}</td>
                 <td>${row.quality_time}</td>
-                <td>${row.is_pass}</td>
+                <td>${row.is_pass ? '是' : '否' }</td>
                 <td>`;
                   for (let e of row.report_url)
                     content += `<p><a href="${e.url}" target="__blank">${e.url.split('/').pop()}</a></p>`;

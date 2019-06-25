@@ -30,7 +30,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-button size="mini" style="width: 100%;" icon="el-icon-plus" @click="form.data.push({})"></el-button>
+            <el-button v-if="!form.data.length" size="mini" style="width: 100%;" icon="el-icon-plus" @click="form.data.push({})"></el-button>
           </div>
           <div class="modal-footer">
             <el-button size="mini" data-dismiss="modal">取消</el-button>
@@ -56,7 +56,13 @@
             <el-table-column prop="material_specification" label="料品规格"></el-table-column>
             <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
             <el-table-column prop="item_unit" label="主单位"></el-table-column>
-            <el-table-column prop="image" label="图片"></el-table-column>
+            <el-table-column prop="image" label="图片">
+              <template slot-scope="{ row }">
+                <p v-for="(e, k) in row.image" :key="k">
+                  <a target="_blank" :href="e">{{ e.split('/').pop() }}</a>
+                </p>
+              </template>
+            </el-table-column>
             <el-table-column prop="drawing_pdf" label="工程图号">
               <template slot-scope="{ row }">
                 <a
