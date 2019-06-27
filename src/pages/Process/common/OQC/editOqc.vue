@@ -13,7 +13,7 @@
             <!-- <el-form-item label="描述">
               <el-input v-model="row.description" placeholder></el-input>
             </el-form-item> -->
-            <el-form-item label="产品图片">
+            <el-form-item label="报告文件">
               <el-upload
                 action="a"
                 :before-upload="imgUpload"

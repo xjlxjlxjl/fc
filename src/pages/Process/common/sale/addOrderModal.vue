@@ -880,7 +880,7 @@ export default {
       }
 
       if (sum != 100) {
-        this.$messgae({ message: '百分比总和为 100', type: 'error' });
+        this.$message({ message: '百分比总和为 100', type: 'error' });
         return false;
       }
 
@@ -1276,10 +1276,10 @@ export default {
           if (e.name == that.form.consignee) that.form.consignee_s = k;
         });
         that.form.address = that.row.address;
-        that.form.invoice_type_id = that.row.invoice_type_id;
+        that.form.invoice_type_id = that.row.invoice_type_id || "";
         that.form.terms_of_payment_arr = [that.row.terms_of_payment];
         that.form.terms_of_payment = JSON.stringify(that.row.terms_of_payment);
-        that.form.payment_type_id = that.row.payment_type_id;
+        that.form.payment_type_id = that.row.payment_type_id || "";
         that.form.delivery_period = that.row.delivery_period || that.dateParse(new Date);
         that.form.remark = that.row.remark;
         that.form.packing_method = that.row.packing_method;

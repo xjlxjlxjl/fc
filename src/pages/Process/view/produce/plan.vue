@@ -121,7 +121,7 @@ export default {
                   })
                   .then(response => {
                     if (response.status != 200) return false;
-                    this.$message({ message: '生成生产计划成功', type: 'success' });
+                    that.$message({ message: '生成生产计划成功', type: 'success' });
                   })
                   .catch(e => console.error(e));
               },

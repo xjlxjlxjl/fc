@@ -1,6 +1,8 @@
 <template>
   <div id="carManage">
     <addCar :row="active" @refresh="refreshed"></addCar>
+    <materialJoin :id="cid" :arr="list" @refresh="refreshed"></materialJoin>
+    <transfer :id="cid" :arr="arr" :data="list" @refresh="refreshed"></transfer>
     <div id="toolbar">
       <el-button size="mini" @click="addCarModal = !addCarModal">新建物料车</el-button>
     </div>
@@ -10,17 +12,24 @@
 <script>
 import QRCode from "qrcode";
 import addCar from '@/pages/Process/common/store/addCar';
+import materialJoin from '@/pages/Process/common/store/materialJoin';
+import transfer from '@/pages/Process/common/store/transfer';
 
 export default {
   name: "carManage",
   data() {
     return {
       addCarModal: false,
-      active: {}
+      active: {},
+      cid: 0,
+      list: [],
+      arr: []
     };
   },
   components: {
-    addCar: addCar
+    addCar: addCar,
+    materialJoin: materialJoin,
+    transfer: transfer
   },
   methods: {
     tableAjaxData(params) {
@@ -37,7 +46,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         code: params.search
       };
@@ -96,10 +105,11 @@ export default {
             title: "操作",
             formatter: function(value, row, index) {
               let
+                add = `<button class="btn btn-sm btn-primary add" style="margin-left: 5px;">添加物料</button>`,
                 del = `<button class="btn btn-sm btn-danger del" style="margin-left: 5px;">删除</button>`,
                 edit = `<button class="btn btn-sm btn-success edit">编辑</button>`,
                 clear = `<button class="btn btn-sm btn-warning clear" style="margin-left: 5px;">释放</button>`;
-              return edit + del + clear;
+              return `<div style="display: flex;">${edit + del + add}</div>`;
             },
             events: {
               "click .edit": function(e, value, row, index) {
@@ -114,6 +124,11 @@ export default {
                     that.delTable($("#carManage #table"), 'id', [value]);
                   })
                   .catch(e => console.error(e));
+              },
+              "click .add"(e, value, row, index) {
+                that.cid = value;
+                that.list = that.getAllData($("#carManage #table"));
+                $("#carManage #materialJoin").modal("show");
               },
               "click .clear"(e, value, row, index) {
                 that
@@ -148,10 +163,42 @@ export default {
           exportTypes: ["csv", "txt", "sql", "doc", "excel", "xlsx", "pdf"],
           classes: "table",
           pageList: [10, 25, 50, 100, "All"],
-          // detailView: true,
+          detailView: true,
           columns: columns,
-          // detailFormatter(field, mrow, oldValue, $el) {},
-          onEditableSave(field, mrow, oldValue, $el) {}
+          detailFormatter(field, mrow, oldValue, $el) {
+            let content = `
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td>序号</td>
+                    <td>料品编码</td>
+                    <td>料品规格</td>
+                    <td>料品名称</td>
+                    <td>数量</td>
+                    <td>长度</td>
+                    <td>单位</td>
+                    <td>料品类别</td>
+                    <td>操作</td>
+                  </tr>
+            `;
+            mrow.material.forEach((e, k) => {
+              content += `
+                <tr>
+                  <td>${ k + 1 }</td>
+                  <td>${e.material_number}</td>
+                  <td>${e.material_specification}</td>
+                  <td>${e.name}</td>
+                  <td>${e.quantity}</td>
+                  <td>${e.length}</td>
+                  <td>${e.item_unit}</td>
+                  <td>${e.category_name || ''}</td>
+                  <td><button class="btn btn-info btn-sm transfer" cid="${ mrow.id }" key="${ field }" index="${ k }">转车</button></td>
+                </tr>
+              `;
+            })
+            content += `</tbody></table>`;
+            return content;
+          }
         };
       $("#carManage #table").bootstrapTable(data);
     },
@@ -166,6 +213,32 @@ export default {
   },
   mounted() {
     this.init();
+    let that = this;
+    $(document).on("click", "#carManage .transfer", function() {
+      let self = $(this),
+        data = that.getAllData($("#carManage #table")),
+        m = data[self.attr('key')].material[self.attr('index')];
+      that.cid = parseInt(self.attr('cid'));
+      that.list = data;
+      that.arr = [
+        {
+          material: {
+            material_id: m.id,
+            material_number: m.material_number,
+            material_specification: m.material_specification,
+            name: m.name,
+            quantity: m.quantity,
+            length: m.length,
+            item_unit: m.item_unit,
+            category_name: m.category_name
+          },
+          to_car_id: '',
+          car_name: '',
+          join_num: ''
+        }
+      ];
+      $("#carManage #transfer").modal("show")
+    });
   }
 };
 </script>
