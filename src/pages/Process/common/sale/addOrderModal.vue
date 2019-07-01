@@ -280,25 +280,25 @@
           <el-table-column prop="attributes" label="BOM单位"></el-table-column>
           <el-table-column prop="date" label="料品类别" width="400px">
             <template slot-scope="{ row }">
-                <div class="materialsType">
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(1, 'id')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 采购件
-                  </div>
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(2, 'id')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 自制件
-                  </div>
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(3, 'id')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 委外件
-                  </div>
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(4, 'id')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 销售件
-                  </div>
+              <div class="materialsType">
+                <div>
+                  <input type="checkbox" v-if="row.attributes.includes('1')" checked="checked" disabled>
+                  <input type="checkbox" v-else disabled> 采购件
                 </div>
-              </template>
+                <div>
+                  <input type="checkbox" v-if="row.attributes.includes('2')" checked="checked" disabled>
+                  <input type="checkbox" v-else disabled> 自制件
+                </div>
+                <div>
+                  <input type="checkbox" v-if="row.attributes.includes('3')" checked="checked" disabled>
+                  <input type="checkbox" v-else disabled> 委外件
+                </div>
+                <div>
+                  <input type="checkbox" v-if="row.attributes.includes('4')" checked="checked" disabled>
+                  <input type="checkbox" v-else disabled> 销售件
+                </div>
+              </div>
+            </template>
           </el-table-column>
           <el-table-column prop="attributes" label="料品属性"></el-table-column>
           <el-table-column prop="date" label="损耗率"></el-table-column>

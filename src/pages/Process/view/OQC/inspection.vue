@@ -389,16 +389,15 @@ export default {
               <tr>
                 <td>1</td>
                 <td>${row.member_user ? row.member_user.last_name : '无'}</td>
-                <td>${row.quality_time}</td>
+                <td>${row.operate_at}</td>
                 <td>${row.is_pass ? '是' : '否' }</td>
                 <td>`;
-                  for (let e of row.report_url)
+                  for (let e of row.images_url)
                     content += `<p><a href="${e.url}" target="__blank">${e.url.split('/').pop()}</a></p>`;
             
             content += `</td></tr></tbody></table>`;
             return content;
-          },
-          onEditableSave(field, mrow, oldValue, $el) {}
+          }
         };
       $("#inspection #table").bootstrapTable(data);
     },

@@ -422,15 +422,52 @@ export default {
             sortable: true
           },
           {
+            field: "material_category.name",
+            title: "料品类别",
+            formatter: function(value, row, index) {
+              const checkbox = `
+                <div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('1') ? 'checked="checked"' : ''} disabled />采购件</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('2') ? 'checked="checked"' : ''} disabled />自制件</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('3') ? 'checked="checked"' : ''} disabled />委外件</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('4') ? 'checked="checked"' : ''} disabled />销售件</label>
+                  </div>
+                </div>
+              `;
+              return checkbox;
+            },
+            events: {
+              "change input": function(e, value, row, index) {}
+            }
+          },
+          {
             field: "attributes",
             title: "料品属性",
-            sortable: true,
-            formatter: (value, row, index, $el) => {
-              let html = [];
-              value.forEach(e =>
-                html.push(`<p class="clear-margin">${e.remark || e.name}</p>`)
-              );
-              return html.join("");
+            formatter: function(value, row, index) {
+              const checkbox = `
+                <div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('1') ? 'checked="checked"' : ''} disabled />原材料</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('2') ? 'checked="checked"' : ''} disabled />半成品</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('3') ? 'checked="checked"' : ''} disabled />成品</label>
+                  </div>
+                </div>
+              `;
+              return checkbox;
+            },
+            events: {
+              "change input": function(e, value, row, index) {}
             }
           },
           {

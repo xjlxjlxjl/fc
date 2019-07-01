@@ -33,7 +33,7 @@ export default {
         .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
+      params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
       return params;
     },

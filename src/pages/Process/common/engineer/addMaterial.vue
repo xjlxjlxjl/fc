@@ -191,7 +191,11 @@
             <el-table-column prop="material_specification" label="料品规格"></el-table-column>
             <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
             <el-table-column prop="item_unit" label="主单位"></el-table-column>
-            <el-table-column prop="image" label="图片"></el-table-column>
+            <el-table-column prop="image" label="图片" width="400px">
+              <template slot-scope="{ row }">
+                <p style="white-space: nowrap;" v-for="(e, k) in row.image" :key="k"><a :href="e" target="_blank"> {{ e.split('/').pop() }} </a></p>
+              </template>
+            </el-table-column>
             <el-table-column prop="drawing_pdf" label="工程图号">
               <template slot-scope="{ row }">
                 <a
@@ -410,7 +414,7 @@ export default {
           this.hourList = response.data.list.map(e => {
             return {
               id: e.id,
-              name: `${e.name}, 发货, 拆分, 委外备料, 质检, 组装, 成品质检, 打包, 入库, 发货`
+              name: `${e.name}, 发单：${e.billing}H, 拆分：${e.split}H, 委外备料：${e.outside_preparation}H, 质检：${e.incoming_quality_inspection}H, 组装：${e.assembly}H, 成品质检：${e.finished_product_quality_inspection}H, 打包：${e.packaging}H, 入库：${e.storage}H, 发货：${e.shipping}H`
             }
           })
         })
@@ -486,8 +490,8 @@ export default {
         this.$post(`respositories/materials/create`, {
           ...this.form,
           parent_id: this.form.parent_id.join(','),
-          attributes: this.form.attributes.join(','),
-          material_category: this.form.material_category.join(',')
+          attribute: this.form.attributes.join(','),
+          category: this.form.material_category.join(',')
         })
           .then(response => {
             if (response.status != 200) return false;

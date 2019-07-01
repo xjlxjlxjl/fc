@@ -181,19 +181,19 @@
               <template slot-scope="{ row }">
                 <div class="materialsType">
                   <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(1, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-if="row.attributes.includes('1')" checked="checked" disabled>
                     <input type="checkbox" v-else disabled> 采购件
                   </div>
                   <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(2, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-if="row.attributes.includes('2')" checked="checked" disabled>
                     <input type="checkbox" v-else disabled> 自制件
                   </div>
                   <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(3, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-if="row.attributes.includes('3')" checked="checked" disabled>
                     <input type="checkbox" v-else disabled> 委外件
                   </div>
                   <div>
-                    <input type="checkbox" v-if="row.attributes.onArray(4, 'id')" checked="checked" disabled>
+                    <input type="checkbox" v-if="row.attributes.includes('4')" checked="checked" disabled>
                     <input type="checkbox" v-else disabled> 销售件
                   </div>
                 </div>

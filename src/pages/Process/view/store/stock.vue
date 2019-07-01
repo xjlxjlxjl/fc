@@ -43,7 +43,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         name: params.search
       };
@@ -113,25 +113,23 @@ export default {
               const checkbox = `
                 <div>
                   <div>
-                    <label><input type="checkbox" />采购件</label>
+                    <label><input type="checkbox" ${row.attributes.includes('1') ? 'checked="checked"' : ''} disabled />采购件</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />自制件</label>
+                    <label><input type="checkbox" ${row.attributes.includes('2') ? 'checked="checked"' : ''} disabled />自制件</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />委外件</label>
+                    <label><input type="checkbox" ${row.attributes.includes('3') ? 'checked="checked"' : ''} disabled />委外件</label>
                   </div>
                   <div>
-                    <label><input type="checkbox" />销售件</label>
+                    <label><input type="checkbox" ${row.attributes.includes('4') ? 'checked="checked"' : ''} disabled />销售件</label>
                   </div>
                 </div>
               `;
               return checkbox;
             },
             events: {
-              "change input": function(e, value, row, index) {
-                console.log(123);
-              }
+              "change input": function(e, value, row, index) {}
             }
           },
           {
@@ -140,17 +138,21 @@ export default {
             formatter: function(value, row, index) {
               const checkbox = `
                 <div>
-                  <div><input type="checkbox" />原材料</div>
-                  <div><input type="checkbox" />半成品</div>
-                  <div><input type="checkbox" />成品</div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('1') ? 'checked="checked"' : ''} disabled />原材料</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('2') ? 'checked="checked"' : ''} disabled />半成品</label>
+                  </div>
+                  <div>
+                    <label><input type="checkbox" ${row.attributes.includes('3') ? 'checked="checked"' : ''} disabled />成品</label>
+                  </div>
                 </div>
               `;
               return checkbox;
             },
             events: {
-              "change input": function(e, value, row, index) {
-                console.log(321);
-              }
+              "change input": function(e, value, row, index) {}
             }
           },
           {
