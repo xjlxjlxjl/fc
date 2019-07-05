@@ -38,7 +38,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         grade: 0
       };
@@ -54,29 +54,15 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/icm_qty_ctrl/quality/detal/${row.id}`,
-                    (err, string) =>
-                      (document.getElementById(
-                        `unhealthy${row.id}`
-                      ).innerHTML = string)
-                  ),
-                500
-              );
-              return `<div id="unhealthy${
-                row.id
-              }" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`unhealthy${row.id}`).innerHTML = string)), 500);
+              return `<div id="unhealthy${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                that.url = `https://www.factoryun.com/service/report/detail/${
-                  row.id
-                }`;
+                that.url = value;
                 $("#unhealthy .qrCode").modal("show");
               }
             }

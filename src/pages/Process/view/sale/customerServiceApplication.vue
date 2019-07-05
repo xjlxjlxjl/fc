@@ -95,13 +95,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(() => QRCode.toString(
-                `https://www.factoryun.com/Sale/print/${ row.service_number }`,
-                (err, string) => (document.getElementById( `saleApplication${row.id}` ).innerHTML = string)
-              ), 500)
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById( `saleApplication${row.id}` ).innerHTML = string)), 500)
               return `<svg id="saleApplication${row.id}" style="max-width: 50px;max-height: 50px;"></svg>`;
             }
           },

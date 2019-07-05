@@ -41,7 +41,11 @@ export default {
         .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        search: params.search || undefined
+      };;
     },
     init() {
       const that = this,
@@ -54,22 +58,15 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/respositories/detail/${row.slug}`,
-                    (err, string) =>
-                      (document.getElementById(`offer${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`offer${row.id}`).innerHTML = string)), 500);
               return `<div id="offer${row.id}" class="img" style="margin: auto;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                that.url = 'aaaaaaaaaaaa';
+                that.url = value;
                 $("#offer .qrCode").modal("show");
               }
             }

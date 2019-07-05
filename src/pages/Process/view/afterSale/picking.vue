@@ -39,7 +39,7 @@ export default {
     tableAjaxParams(params) {
       return {
         search: params.search,
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit
       };
     },
@@ -49,27 +49,20 @@ export default {
           {
             field: "index",
             title: "序号",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${index + 1}`;
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/service/report/detail/${row.id}`,
-                    (err, string) =>
-                      (document.getElementById(`picking${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`picking${row.id}`).innerHTML = string)), 500);
               return `<div id="picking${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                that.url = `https://www.factoryun.com/service/report/detail/${row.id}`;
+                that.url = value;
                 $("#picking .qrCode").modal("show");
               }
             }
@@ -77,63 +70,63 @@ export default {
           {
             field: "number",
             title: "客服领料单号",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "creator.last_name",
             title: "创建人",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "created_at",
             title: "创建日期",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "service_number",
             title: "客服申请单号",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "customer_company_name",
             title: "客户公司名",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "customer_linkman",
             title: "客户联系人",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "phone",
             title: "联系电话",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value}`;
             }
           },
           {
             field: "check.check_status",
             title: "审核状态",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return `${value ? '审核中' : '已审核' }`;
             }
           },
           {
             field: "id",
             title: "操作",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               let edit = `<button class="edit btn btn-success btn-sm">编辑</button>`,
                 del = `<button class="del btn btn-danger btn-sm">删除</button>`;
               return edit + del;

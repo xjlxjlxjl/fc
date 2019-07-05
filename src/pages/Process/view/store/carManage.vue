@@ -59,18 +59,10 @@ export default {
             title: "物料车编码"
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/procurement/out_picking_material/${row.outsourcing_number}`,
-                    (err, string) =>
-                      (document.getElementById(`carManage${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`carManage${row.id}`).innerHTML = string)), 500);
               return `<div id="carManage${row.id}" class="img" style="max-width: 80px;max-height: 80px;margin: auto;"></div>`;
             },
           },

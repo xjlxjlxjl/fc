@@ -50,17 +50,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter(value, row) {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/procurement/bale/${row.bale_number}`,
-                    (err, string) => (document.getElementById(`bale${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`bale${row.id}`).innerHTML = string)), 500);
               return `<div id="bale${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             }
           },

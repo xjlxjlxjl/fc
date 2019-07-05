@@ -106,13 +106,16 @@ export default {
             events: {
               "click .pick"($el, value, row, index) {
                 let m = [];
-                for (const e of row.plan_item)
-                  m.push({
-                    material_id: e.material.id,
-                    cancel_count: 0,
-                    wait_count: e.quantity,
-                    spare_count: 0 // 备料开始才有数量
-                  })
+                for (const e of row.plan_item) {
+                  for (const v of e.bom_item) {
+                    m.push({
+                      material_id: v.material_id,
+                      cancel_count: 0,
+                      wait_count: v.quantity,
+                      spare_count: 0 // 备料开始才有数量
+                    })
+                  }
+                }
                 that
                   .$post(`repositories/material/receive/create`, {
                     production_plan_id: value,
@@ -198,7 +201,7 @@ export default {
                   <td>${ e.material.material_number || '' }</td>
                   <td>${ e.material.name || '' }</td>
                   <td>${ e.material.material_specification || '' }</td>
-                  <td>${ e.item_unit || '' }</td>
+                  <td>${ e.material.item_unit || '' }</td>
                   <td>${ e.quantity || '' }</td>
                   <td>${ e.delivery_period_at || '' }</td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs btn-link BOM">BOM</button></td>
@@ -248,7 +251,18 @@ export default {
         key = $(this).attr("key"),
         index = $(this).attr("index"),
         data = that.getAllData($("#plan #table"));
-      that.arr = data[key].plan_item[index].bom_item;
+      that.arr = data[key].plan_item[index].bom_item.map(e => {
+        return {
+          material_number: e.material_number,
+          material_specification: e.material_specification,
+          material_name: e.material_name,
+          quantity: e.quantity,
+          length: e.length,
+          unit: e.unit,
+          material_category: e.material_category,
+          bom_attributes_name: e.material_attributes
+        }
+      });
       $("#plan #getBOM").modal("show");
     });
     $("#plan").on("click", ".drawing", function() {
@@ -256,6 +270,7 @@ export default {
         key = $(this).attr("key"),
         index = $(this).attr("index"),
         data = that.getAllData($("#plan #table"));
+
       that.pic = {
         drawing_working: data[key].plan_item[index].material.drawing_working || [],
         assembly_drawing: data[key].plan_item[index].material.assembly_drawing || [],

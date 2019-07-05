@@ -335,10 +335,11 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.per_page = params.limit;
-      params.checks = this.params.status;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        checks: this.params.status
+      };
     },
     init() {
       let that = this,
@@ -346,31 +347,16 @@ export default {
           {
             field: "id",
             title: "序号",
-            sortable: true,
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               return index + 1;
             }
           },
           {
-            field: "img",
+            field: "qr_code_text",
             title: "二维码",
-            formatter: (value, row, index) => {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/procurement/outsourcing/${
-                      row.number
-                    }`,
-                    (err, string) =>
-                      (document.getElementById(
-                        `purchasEntrustQrcode${row.id}`
-                      ).innerHTML = string)
-                  ),
-                500
-              );
-              return `<div id="purchasEntrustQrcode${
-                row.id
-              }" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+            formatter(value, row, index) {
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`purchasEntrustQrcode${row.id}`).innerHTML = string)), 500);
+              return `<div id="purchasEntrustQrcode${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
@@ -438,7 +424,7 @@ export default {
           {
             field: "slug",
             title: "操作",
-            formatter: (value, row, index) => {
+            formatter(value, row, index) {
               let get = `<button class="get btn btn-primary btn-sm">委外领料</button>`,
                 del = `<button class="del btn btn-danger btn-sm">删除</button>`,
                 print = `<button class="print btn btn-success btn-sm">打印</button>`,

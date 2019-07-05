@@ -226,8 +226,8 @@ export default {
             quantity: e.quantity,
             length: e.length,
             unit: e.unit,
-            material_category: e.category,
-            bom_attributes_name: e.property,
+            material_category: e.material_category,
+            bom_attributes_name: e.material_attributes,
             children_code: e.children_code
           }
         });

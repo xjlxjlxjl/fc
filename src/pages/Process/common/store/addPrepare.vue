@@ -180,7 +180,7 @@ export default {
         .$get(`repositories/car/all`)
         .then(response => {
           if (response.status != 200) return false;
-          this.car = response.data;
+          this.car = response.data.list;
         })
         .catch(e => console.error(e));
     },

@@ -624,23 +624,69 @@ export default {
     },
     addPayment() {
       let text = '',
-        self = this.payMenTerms;
-      if (self.deposit.pay_rate) text += `合同签订后，付 ${self.deposit.pay_rate} %订单总额;`;
-      if (self.shipment_before.pay_rate) text += `出货前，付 ${self.shipment_before.pay_rate} %订单总额;`;
-      if (self.shipment_after.length) 
+        self = this.payMenTerms,
+        sum = 0;
+
+      if (
+        !self.deposit.pay_rate && 
+        !self.shipment_before.pay_rate &&
+        !self.shipment_after[0].day &&
+        !self.shipment_after[0].pay_rate &&
+        !self.accept_after[0].day &&
+        !self.accept_after[0].pay_rate &&
+        !self.accept_after_balance.pay_rate &&
+        !self.billing_after[0].day &&
+        !self.billing_after[0].pay_rate &&
+        !self.billing_after_balance.pay_rate
+      ) {
+        this.$message({ message: '请填写付款方式后保存', type: 'error' });
+        return false;
+      }
+
+      if (self.deposit.pay_rate) {
+        text += `合同签订后，付 ${self.deposit.pay_rate} %订单总额;`;
+        sum += parseInt(self.deposit.pay_rate);
+      }
+      if (self.shipment_before.pay_rate) {
+        text += `出货前，付 ${self.shipment_before.pay_rate} %订单总额;`;
+        sum += parseInt(self.shipment_before.pay_rate);
+      }
+      if (self.shipment_after.length) {
         self.shipment_after.forEach(e => {
-          if (e.pay_rate) text += `出货后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+          if (e.pay_rate) {
+            text += `出货后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+            sum += parseInt(e.pay_rate || 0);
+          }
         })
+
+      }
       if (self.accept_after.length)
         self.accept_after.forEach(e => {
-          if (e.pay_rate) text += `验收后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+          if (e.pay_rate) {
+            text += `验收后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+            sum += parseInt(e.pay_rate || 0);
+          }
         })
-      if (self.accept_after_balance.pay_rate) text += `验收后 ${self.accept_after_balance.day} 天，付清订单余款 ${self.accept_after_balance.pay_rate} %`;
+      if (self.accept_after_balance.pay_rate) {
+        text += `验收后 ${self.accept_after_balance.day} 天，付清订单余款 ${self.accept_after_balance.pay_rate} %`;
+        sum += parseInt(self.accept_after_balance.pay_rate || 0);
+      }
       if (self.billing_after.length)
         self.billing_after.forEach(e => {
-          if (e.pay_rate) text += `票到后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+          if (e.pay_rate) {
+            text += `票到后 ${e.day} 天，付 ${e.pay_rate} %订单总额;`;
+            sum += parseInt(e.pay_rate || 0);
+          }
         })
-      if (self.billing_after_balance.pay_rate) text += `票到后 ${self.billing_after_balance.day} 天，付清订单余款 ${self.billing_after_balance.pay_rate}%;`;
+      if (self.billing_after_balance.pay_rate) {
+        text += `票到后 ${self.billing_after_balance.day} 天，付清订单余款 ${self.billing_after_balance.pay_rate}%;`;
+        sum += parseInt(self.billing_after_balance.pay_rate || 0);
+      }
+
+      if (sum != 100) {
+        this.$message({ message: '百分比总和为 100', type: 'error' });
+        return false;
+      }
 
       if (this.key == 0 || this.key)
         this.form.payment_terms[this.key] = {

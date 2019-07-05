@@ -104,9 +104,9 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
-        supplier_name: params.search
+        supplier_name: params.search || undefined
       };
     },
     init() {
@@ -120,37 +120,17 @@ export default {
             }
           },
           {
-            field: "img",
+            field: "qr_code_text",
             title: "二维码",
-            formatter: (value, row, index) => {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/procurement/request/${
-                      row.number
-                    }`,
-                    (err, string) =>
-                      (document.getElementById(
-                        `temporary${row.id}`
-                      ).innerHTML = string)
-                  ),
-                500
-              );
-              return `<div id="temporary${
-                row.id
-              }" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
+            formatter(value, row, index) {
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`temporary${row.id}`).innerHTML = string)), 500);
+              return `<div id="temporary${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
                 that.modalData = row;
                 that.modalData.company = that.user.user.current_company;
-                QRCode.toString(
-                  `https://www.factoryun.com/procurement/request/${row.number}`,
-                  (err, string) =>
-                    (document.getElementById(
-                      "temporaryPrintImg"
-                    ).innerHTML = string)
-                );
+                QRCode.toString(value, (err, string) => (document.getElementById("temporaryPrintImg").innerHTML = string));
                 $(".temporaryPrintModal").modal("show");
               }
             }

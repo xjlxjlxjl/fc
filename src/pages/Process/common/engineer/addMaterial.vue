@@ -14,8 +14,8 @@
               <el-form-item label="单位" prop="unit">
                 <el-input v-model="form.unit" placeholder="单位"></el-input>
               </el-form-item>
-              <el-form-item label="材质" prop="texture">
-                <el-input v-model="form.texture" placeholder="材质"></el-input>
+              <el-form-item label="材质" prop="material_quality">
+                <el-input v-model="form.material_quality" placeholder="材质"></el-input>
               </el-form-item>
               <el-form-item label="长度" prop="length">
                 <el-input v-model="form.length" placeholder="长度"></el-input>
@@ -52,8 +52,8 @@
               <el-form-item label="拼音码" prop="pinyin_code">
                 <el-input v-model="form.pinyin_code" placeholder="拼音码"></el-input>
               </el-form-item>
-              <el-form-item label="图档号" prop="image_number">
-                <el-input v-model="form.image_number" placeholder="图档号"></el-input>
+              <el-form-item label="图档号" prop="picture_number">
+                <el-input v-model="form.picture_number" placeholder="图档号"></el-input>
               </el-form-item>
               <el-form-item label="生产厂家" prop="producer">
                 <el-input v-model="form.producer" placeholder="生产厂家"></el-input>

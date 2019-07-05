@@ -103,22 +103,15 @@ export default {
             }
           },
           {
-            field: "qrcode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/respositories/detail/${row.slug}`,
-                    (err, string) =>
-                      (document.getElementById(`application${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`application${row.id}`).innerHTML = string)), 500);
               return `<div id="application${row.id}" class="img" style="margin: auto;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                that.url = 'aaaaaaaaaaaa';
+                that.url = value;
                 $("#application .qrCode").modal("show");
               }
             }

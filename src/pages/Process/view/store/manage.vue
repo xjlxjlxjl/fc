@@ -118,28 +118,17 @@ export default {
             title: "仓库编号"
           },
           {
-            field: "img",
+            field: "qr_code_text",
             title: "二维码",
-            formatter: (value, row, index) => {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/respositories/detail/${row.slug}`,
-                    (err, string) =>
-                      (document.getElementById(`manage${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+            formatter(value, row, index) {
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`manage${row.id}`).innerHTML = string)), 500);
               return `<div id="manage${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
             events: {
               "click .img": function(e, value, row, index) {
                 that.modalData = row;
                 that.modalData.company = that.user.user.current_company;
-                QRCode.toString(
-                  `https://www.factoryun.com/respositories/detail/${row.slug}`,
-                  (err, string) =>
-                    (document.getElementById("managePrintImg").innerHTML = string)
-                );
+                QRCode.toString(value, (err, string) => (document.getElementById("managePrintImg").innerHTML = string));
                 $(".managePrintModal").modal("show");
               }
             }

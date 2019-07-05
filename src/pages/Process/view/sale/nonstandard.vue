@@ -46,7 +46,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         product: params.search
       };
@@ -62,16 +62,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: (value, row, index) => {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com//orders/inquiry-price/detail/${row.id}`,
-                    (err, string) => (document.getElementById(`nonstandard${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => value, (err, string) => (document.getElementById(`nonstandard${row.id}`).innerHTML = string), 500);
               return `<div id="nonstandard${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
           },

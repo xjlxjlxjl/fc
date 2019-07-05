@@ -55,16 +55,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter(value, row, index) {
-              setTimeout(
-                () =>
-                QRCode.toString(
-                  `https://www.factoryun.com/repositories/combination_order/detail/${ row.id }`,
-                  (err, string) => (document.getElementById(`combinationQrcode${row.id}`).innerHTML = string)
-                ), 500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`combinationQrcode${row.id}`).innerHTML = string)), 500);
               return `<div id="combinationQrcode${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
           },

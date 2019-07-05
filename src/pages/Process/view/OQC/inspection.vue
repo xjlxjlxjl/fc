@@ -214,17 +214,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter(value, row) {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/procurement/inspection/${row.number}`,
-                    (err, string) => (document.getElementById(`inspection${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() =>QRCode.toString(value, (err, string) => (document.getElementById(`inspection${row.id}`).innerHTML = string)), 500);
               return `<div id="inspection${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             }
           },
@@ -388,7 +381,7 @@ export default {
             content += `
               <tr>
                 <td>1</td>
-                <td>${row.member_user ? row.member_user.last_name : '无'}</td>
+                <td>${row.supervisor.map(e => e.last_name).join(',')}</td>
                 <td>${row.operate_at}</td>
                 <td>${row.is_pass ? '是' : '否' }</td>
                 <td>`;

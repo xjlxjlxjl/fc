@@ -35,7 +35,10 @@ export default {
     tableAjaxParams(params) {
       params.page = params.offset / params.limit + 1;
       params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit
+      };
     },
     init() {
       const that = this,
@@ -48,16 +51,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
-            formatter: (value, row, index) => {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/procurement/request/${row.numbering}`,
-                    (err, string) => (document.getElementById(`applyMateriel${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+            formatter(value, row, index) {
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`applyMateriel${row.id}`).innerHTML = string)), 500);
               return `<div id="applyMateriel${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             }
           },

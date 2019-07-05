@@ -33,9 +33,10 @@ export default {
       });
     },
     tableAjaxParams(params) {
-      params.page = params.offset / 10 + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit
+      };
     },
     init() {
       let that = this,
@@ -48,29 +49,15 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/service/report/detail/${row.id}`,
-                    (err, string) =>
-                      (document.getElementById(
-                        `picking${row.id}`
-                      ).innerHTML = string)
-                  ),
-                500
-              );
-              return `<div id="picking${
-                row.id
-              }" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`picking${row.id}`).innerHTML = string)), 500);
+              return `<div id="picking${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                that.url = `https://www.factoryun.com/service/report/detail/${
-                  row.id
-                }`;
+                that.url = value;
                 $("#picking .qrCode").modal("show");
               }
             }

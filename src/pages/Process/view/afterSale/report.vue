@@ -72,22 +72,15 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/service/report/detail/${row.id}`,
-                    (err, string) =>
-                      (document.getElementById(`report${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`report${row.id}`).innerHTML = string)), 500);
               return `<div id="report${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                that.url = `https://www.factoryun.com/service/report/detail/${row.id}`;
+                that.url = value;
                 $("#report .qrCode").modal("show");
               }
             }

@@ -58,13 +58,7 @@ export default {
             field: "qrCode",
             title: "二维码",
             formatter(value, row, index) {
-              setTimeout(
-                () =>
-                QRCode.toString(
-                  `https://www.factoryun.com/repositories/split_order/detail/${ row.id }`,
-                  (err, string) => (document.getElementById(`splitQrcode${row.id}`).innerHTML = string)
-                ), 500
-              );
+              setTimeout(() => QRCode.toString(qr_code_text, (err, string) => (document.getElementById(`splitQrcode${row.id}`).innerHTML = string)), 500);
               return `<div id="splitQrcode${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             },
           },

@@ -156,9 +156,11 @@ export default {
         .catch(err => {});
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        number: params.search || undefined
+      };
     },
     addOrder() {
       addOrderModal.methods.close.call(this);
@@ -207,18 +209,10 @@ export default {
             }
           },
           {
-            field: "img",
+            field: "qr_code_text",
             title: "二维码",
             formatter(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(
-                    `https://www.factoryun.com/orders/orders/${row.numbering}`,
-                    (err, string) =>
-                      (document.getElementById(`saleOrder${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`saleOrder${row.id}`).innerHTML = string) ), 500);
               return `<div id="saleOrder${row.id}" class="img" style="max-width: 85px;max-height: 85px;margin: auto;"></div>`;
             },
             events: {
@@ -251,18 +245,18 @@ export default {
             title: "订单总金额",
             sortable: true
           },
-          {
-            field: "currency",
-            title: "币别",
-            sortable: true
-          },
+          // {
+          //   field: "currency",
+          //   title: "币别",
+          //   sortable: true
+          // },
           {
             field: "consignee",
             title: "收货人",
             sortable: true
           },
           {
-            field: "contract_mobile",
+            field: "mobile",
             title: "收货人手机",
             sortable: true
           },
@@ -441,6 +435,11 @@ export default {
               "change .upload": function(event, value, row, index) {
                 for (let k in $(this)[0].files) {
                   if(isNaN(parseInt(k))) return false;
+                  if ($(this)[0].files[k].type != 'application/pdf') {
+                    that.$message({ message: "上传合同为pdf格式", type: "error" });
+                    return false;
+                  }
+
                   let form = new FormData();
                   form.append("upload", $(this)[0].files[k]);
                   form.append("slug", "order_module");

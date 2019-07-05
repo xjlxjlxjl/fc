@@ -6,7 +6,13 @@
     <seTurn :arr.sync="turn" :member="members_data" @refresh="refreshed"></seTurn>
     <badProduce :id="id" :arr.sync="arr"></badProduce>
     <designate type="self_check_manage" @user="user"></designate>
-    <div id="toolbar"></div>
+    <div id="toolbar">
+      <el-select v-model="status" size="mini" @change="refreshed">
+        <el-option label="生产中" :value="0"></el-option>
+        <el-option label="生产结束" :value="1"></el-option>
+        <el-option label="全部" :value="undefined"></el-option>
+      </el-select>
+    </div>
     <table id="table"></table>
   </div>
 </template>
@@ -35,6 +41,7 @@ export default {
         drawing_3d: [],
         drawing_pdf: []
       },
+      status: 0
     };
   },
   components: {
@@ -63,7 +70,8 @@ export default {
       return {
         page: params.offset / params.limit + 1,
         per_page: params.limit,
-        order_number: params.search
+        order_number: params.search || undefined,
+        status: this.status
       };
     },
     init() {
@@ -120,7 +128,19 @@ export default {
             },
             events: {
               "click .btn"($el, value, row, index) {
-                that.arr = row.bom_item || [];
+                console.log(row.bom_item)
+                that.arr = row.bom_item.map(e => {
+                  return {
+                    material_number: e.material_number,
+                    material_specification: e.material_specification,
+                    material_name: e.material_name,
+                    quantity: e.quantity,
+                    length: e.length,
+                    unit: e.unit,
+                    material_category: e.material_category,
+                    bom_attributes_name: e.material_attributes
+                  }
+                });
                 $("#product #getBOM").modal("show");
               }
             }

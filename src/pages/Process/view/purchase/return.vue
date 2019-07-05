@@ -26,7 +26,7 @@ export default {
     },
     tableAjaxParams(params) {
       return {
-        page: params.offset / 10 + 1,
+        page: params.offset / params.limit + 1,
         per_page: params.limit,
         type: 2
       };
@@ -42,25 +42,22 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter: function(value, row, index) {
-              setTimeout(() =>QRCode.toString(`https://www.factoryun.com/procurement/emptor/detail/${row.id}`,
-                (err, string) => (document.getElementById(`barter${row.id}`).innerHTML = string)),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`barter${row.id}`).innerHTML = string)), 500);
               return `<div id="barter${row.id}" class="img" style="margin: auto;max-width: 50px;max-height: 50px;"></div>`;
             },
             events: {
               "click .img": function($el, value, row, index) {
-                // that.url = `https://www.factoryun.com/service/report/detail/${row.id}`;
+                // that.url = value;
                 // $("#barter .qrCode").modal("show");
               }
             }
           },
           {
             field: "number",
-            title: "采购换货单号",
+            title: "采购退货单号",
             sortable: true
           },
           {

@@ -56,8 +56,7 @@ export default {
           },
           {
             field: "material_number",
-            title: "料品编码",
-            sortable: true
+            title: "料品编码"
           },
           {
             field: "name",
@@ -73,13 +72,11 @@ export default {
           },
           {
             field: "material_specification",
-            title: "料品规格",
-            sortable: true
+            title: "料品规格"
           },
           {
             field: "item_unit",
-            title: "单位",
-            sortable: true
+            title: "单位"
           },
           {
             field: "barcode",
@@ -161,88 +158,71 @@ export default {
           },
           {
             field: "respository.name",
-            title: "仓库",
-            sortable: true
+            title: "仓库"
           },
           {
             field: "length",
-            title: "长度",
-            sortable: true
+            title: "长度"
           },
           {
             field: "width",
-            title: "宽度",
-            sortable: true
+            title: "宽度"
           },
           {
             field: "height",
-            title: "高度",
-            sortable: true
+            title: "高度"
           },
           {
             field: "weight",
-            title: "重量",
-            sortable: true
+            title: "重量"
           },
           {
             field: "purchase_unit",
-            title: "采购单位",
-            sortable: true
+            title: "采购单位"
           },
           {
             field: "sales_unit",
-            title: "销售单位",
-            sortable: true
+            title: "销售单位"
           },
           {
             field: "bom_unit",
-            title: "Bom单位",
-            sortable: true
+            title: "Bom单位"
           },
           {
             field: "children",
-            title: "关联子料编码",
-            sortable: true
+            title: "关联子料编码"
           },
           {
             field: "pinyin_code",
-            title: "拼音码",
-            sortable: true
+            title: "拼音码"
           },
           {
             field: "material_quality",
-            title: "材质",
-            sortable: true
+            title: "材质"
           },
           {
             field: "picture_number",
-            title: "图档号",
-            sortable: true
+            title: "图档号"
           },
           {
             field: "manufacturer",
-            title: "生产厂家",
-            sortable: true
+            title: "生产厂家"
           },
           {
             field: "mold_number",
-            title: "模具号",
-            sortable: true
+            title: "模具号"
           },
           {
             field: "standard_model",
-            title: "标准型号",
-            sortable: true
+            title: "标准型号"
           },
           {
             field: "material_level",
-            title: "料品等级",
-            sortable: true
+            title: "料品等级"
           },
           {
             field: "brand_name.name",
-            title: "品牌",
-            sortable: true
+            title: "品牌"
           },
           {
             field: "check",
@@ -253,28 +233,23 @@ export default {
           },
           {
             field: "min_inventory",
-            title: "最小库存量",
-            sortable: true
+            title: "最小库存量"
           },
           {
             field: "max_inventory",
-            title: "最大库存量",
-            sortable: true
+            title: "最大库存量"
           },
           {
             field: "safety_stock",
-            title: "安全库存量",
-            sortable: true
+            title: "安全库存量"
           },
           {
             field: "stocking_volume",
-            title: "备货量",
-            sortable: true
+            title: "备货量"
           },
           {
             field: "purchase_cycle",
-            title: "采购周期",
-            sortable: true
+            title: "采购周期"
           },
           {
             field: "image",
@@ -352,98 +327,82 @@ export default {
           },
           {
             field: "begin_price",
-            title: "期初单价",
-            sortable: true
+            title: "期初单价"
           },
           {
             field: "enter_warehouse_price",
-            title: "入库单价",
-            sortable: true
+            title: "入库单价"
           },
           {
             field: "out_warehouse_price",
-            title: "出库单价",
-            sortable: true
+            title: "出库单价"
           },
           {
             field: "enter_warehouse_amount",
-            title: "入库金额",
-            sortable: true
+            title: "入库金额"
           },
           {
             field: "out_warehouse_amount",
-            title: "出库金额",
-            sortable: true
+            title: "出库金额"
           },
           {
             field: "enter_warehouse_quantity",
-            title: "入库数量",
-            sortable: true
+            title: "入库数量"
           },
           {
             field: "out_warehouse_quantity",
-            title: "出库数量",
-            sortable: true
+            title: "出库数量"
           },
           {
             field: "end_period_quantity",
-            title: "期末数量",
-            sortable: true
+            title: "期末数量"
           },
           {
             field: "end_period_amount",
-            title: "期末金额",
-            sortable: true
+            title: "期末金额"
           },
           {
             field: "revise_quantity",
-            title: "调整数量",
-            sortable: true
+            title: "调整数量"
           },
           {
             field: "revise_amount",
-            title: "调整金额",
-            sortable: true
+            title: "调整金额"
           },
           {
             field: "tax",
-            title: "税额",
-            sortable: true
+            title: "税额"
           },
           {
             field: "real_inventory",
-            title: "库存可用数量",
-            sortable: true
+            title: "库存可用数量"
           },
           {
             field: "way_quantity",
             title: "在途数量",
-            sortable: true
+            formatter(value) {
+              return value || 0;
+            }
           },
           {
             field: "take_up",
-            title: "占用数量",
-            sortable: true
+            title: "占用数量"
           },
           {
             field: "member",
-            title: "创建人",
-            sortable: true
+            title: "创建人"
           },
           {
             field: "created_at",
-            title: "创建日期",
-            sortable: true
+            title: "创建日期"
           },
           {
             field: "audit.check_last_name",
-            title: "审核人",
-            sortable: true
+            title: "审核人"
           },
           {
             field: "audit.check_at",
-            title: "审核日期",
-            sortable: true
+            title: "审核日期"
           },
           {
             field: "audit.check_status",
@@ -454,13 +413,11 @@ export default {
           },
           {
             field: "editor.last_name",
-            title: "修改人",
-            sortable: true
+            title: "修改人"
           },
           {
             field: "updated_at",
-            title: "修改日期",
-            sortable: true
+            title: "修改日期"
           },
           {
             field: "getRecord",

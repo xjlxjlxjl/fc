@@ -14,46 +14,34 @@
             </tr>
             <tr>
               <td>
-                <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :file-list="pic.drawing_working"
-                  list-type="picture">
-                </el-upload>
+                <div style="white-space: nowrap;" v-for="e in pic.drawing_working">
+                  <a :href="e" target="_blank">{{ e.split('/').pop() }}</a>
+                </div>
               </td>
               <td>
-                <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :file-list="pic.assembly_drawing"
-                  list-type="picture">
-                </el-upload>
+                <div style="white-space: nowrap;" v-for="e in pic.assembly_drawing">
+                  <a :href="e" target="_blank">{{ e.split('/').pop() }}</a>
+                </div>
               </td>
               <td>
-                <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :file-list="pic.drawing_approve"
-                  list-type="picture">
-                </el-upload>
+                <div style="white-space: nowrap;" v-for="e in pic.drawing_approve">
+                  <a :href="e" target="_blank">{{ e.split('/').pop() }}</a>
+                </div>
               </td>
               <td>
-                <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :file-list="pic.drawing_2d"
-                  list-type="picture">
-                </el-upload>
+                <div style="white-space: nowrap;" v-for="e in pic.drawing_2d">
+                  <a :href="e" target="_blank">{{ e.split('/').pop() }}</a>
+                </div>
               </td>
               <td>
-                <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :file-list="pic.drawing_3d"
-                  list-type="picture">
-                </el-upload>
+                <div style="white-space: nowrap;" v-for="e in pic.drawing_3d">
+                  <a :href="e" target="_blank">{{ e.split('/').pop() }}</a>
+                </div>
               </td>
               <td>
-                <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :file-list="pic.drawing_pdf"
-                  list-type="picture">
-                </el-upload>
+                <div style="white-space: nowrap;" v-for="e in pic.drawing_pdf">
+                  <a :href="e" target="_blank">{{ e.split('/').pop() }}</a>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -73,9 +61,11 @@ export default {
     pic: Object
   },
   methods: {
-    handlePreview(file) {
-      console.log(file);
-    }
+  },
+  mounted() {
+    $('#getMaterialPic').on('shown.bs.modal', () => {
+      console.log(this.pic)
+    })
   }
 }
 </script>

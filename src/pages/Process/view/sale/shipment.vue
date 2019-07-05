@@ -1,9 +1,9 @@
 <template>
   <div id="shipment">
-    <addShipment :shipment="shipment" @refresh="refreshed"></addShipment>
     <div id="toolbar">
       <el-button size="mini" @click="addSale">创建出货单</el-button>
     </div>
+    <addShipment :shipment="shipment" @refresh="refreshed"></addShipment>
     <table id="table"></table>
   </div>
 </template>
@@ -53,16 +53,10 @@ export default {
             }
           },
           {
-            field: "qrCode",
+            field: "qr_code_text",
             title: "二维码",
             formatter(value, row, index) {
-              setTimeout(
-                () =>
-                  QRCode.toString(`https://www.factoryun.com/procurement/request/${row.number}`,
-                    (err, string) => (document.getElementById(`saleShipment${row.id}`).innerHTML = string)
-                  ),
-                500
-              );
+              setTimeout(() => QRCode.toString(value, (err, string) => (document.getElementById(`saleShipment${row.id}`).innerHTML = string)), 500);
               return `<div id="saleShipment${row.id}" class="img" style="width: 50px;height: 50px;margin: auto;"></div>`;
             }
           },
