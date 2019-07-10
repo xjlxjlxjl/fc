@@ -296,7 +296,7 @@ export default new Vuex.Store({
         },
         {
           name: "生产看版",
-          url: "/Sale/product"
+          url: "/Produce/product"
         },
         {
           name: '审核表',
@@ -327,6 +327,10 @@ export default new Vuex.Store({
           url: "/Sale/shipment"
         },
         {
+          name: "退货申请表",
+          url: "/Sale/returnOrder"
+        },
+        {
           name: "客服申请表",
           url: "/Sale/customerServiceApplication"
         },
@@ -338,26 +342,14 @@ export default new Vuex.Store({
           name: "客服领料申请表",
           url: "/Sale/customerServiceMaterial"
         },
-        {
-          name: "应收账单",
-          url: "/Sale/accountsReceivable"
-        },
-        {
-          name: "退货单",
-          url: "/Sale/returnOrder"
-        },
-        {
-          name: "入库申请单",
-          url: "/Sale/warehouseApplication"
-        },
-        {
-          name: "历史出货汇总表",
-          url: "/Sale/historyShipment"
-        },
-        {
-          name: "历史汇款汇总表",
-          url: "/Sale/historyRemittance"
-        }
+        // {
+        //   name: "应收账单",
+        //   url: "/Sale/accountsReceivable"
+        // },
+        // {
+        //   name: "入库申请单",
+        //   url: "/Sale/warehouseApplication"
+        // }
       ],
       matters: [
         {
@@ -519,6 +511,10 @@ export default new Vuex.Store({
           url: "/store/product"
         },
         {
+          name: '审核表',
+          url: '/approval'
+        },
+        {
           name: "领料申请",
           url: "/store/applyMateriel"
         },
@@ -570,7 +566,7 @@ export default new Vuex.Store({
         },
         {
           name: "生产看板",
-          url: "/OQC/product"
+          url: "/Produce/product"
         },
         {
           name: "生产送检表",
@@ -614,7 +610,7 @@ export default new Vuex.Store({
         },
         {
           name: '生产看板',
-          url: '/Purchase/product'
+          url: '/Produce/product'
         },
         {
           name: '供应商管理',
@@ -663,22 +659,6 @@ export default new Vuex.Store({
         {
           name: '每日可用工时管理',
           url: '/Purchase/dailyHours'
-        },
-        {
-          name: '调整入库单价',
-          url: '/Purchase/trimPrice'
-        },
-        {
-          name: '历史订单查询',
-          url: '/Purchase/history'
-        },
-        {
-          name: '物料价格调整分析',
-          url: '/Purchase/priceAnalysis'
-        },
-        {
-          name: '应付账单汇总分析',
-          url: '/Purchase/billAnalysis'
         }
       ],
       finance: [
@@ -810,7 +790,7 @@ export default new Vuex.Store({
         },
         {
           name: "生产看板",
-          url: "/Engineer/product"
+          url: "/Produce/product"
         },
         {
           name: "审核表",
@@ -835,10 +815,6 @@ export default new Vuex.Store({
         {
           name: "加工图",
           url: "/Engineer/machine"
-        },
-        {
-          name: "标准产品图库",
-          url: "/Engineer/gallery"
         }
       ],
       iqc: [

@@ -21,7 +21,7 @@
       </div>
       <div style="margin-top: 15px;font-size: 10px;line-height: 2;">
         <p style="display: flex;justify-content: space-between;">
-          <span style="width: 50%;">采购申请单号：{{ data.number }}</span>
+          <span style="width: 50%;">采购计划单号：{{ data.number }}</span>
           <span style="width: 50%;">创建日期：{{ data.created_at.split(' ')[0] }}</span>
         </p>
         <p style="display: flex;justify-content: space-between;">
@@ -41,7 +41,7 @@
             <td style="border-right: 1px solid rgb(215, 215, 215)">需求日期</td>
             <td>备注</td>
           </tr>
-          <tr v-for="(item,index) in data.item" :key="index">
+          <tr v-for="(item,index) in data.items" :key="index">
             <td
               style="border-right: 1px solid rgb(215, 215, 215);border-top: 1px solid rgb(215, 215, 215);"
             >{{ index + 1 }}</td>

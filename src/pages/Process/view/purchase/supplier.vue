@@ -82,9 +82,11 @@ export default {
         .catch(err => loading.close());
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.per_page = params.limit;
-      return params;
+      return {
+        page: params.offset / params.limit + 1,
+        per_page: params.limit,
+        name: params.search || undefined
+      };
     },
     init() {
       let that = this,

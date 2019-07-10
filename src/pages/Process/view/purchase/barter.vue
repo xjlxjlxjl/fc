@@ -1,15 +1,23 @@
 <template>
   <div id="barter">
+    <Qrmodel :url="url" :modalData="modalData"></Qrmodel>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
 </template>
 <script>
 import QRCode from "qrcode";
+import Qrmodel from "@/pages/Process/common/afterSale/qrCode";
 export default {
   name: "barter",
   data() {
-    return {};
+    return {
+      url: "",
+      modalData: {}
+    };
+  },
+  components: {
+    Qrmodel: Qrmodel
   },
   methods: {
     tableAjaxData(params) {
@@ -49,8 +57,14 @@ export default {
             },
             events: {
               "click .img": function($el, value, row, index) {
-                // that.url = value;
-                // $("#barter .qrCode").modal("show");
+                that.url = value;
+                that.modalData = {
+                  company: JSON.parse(localStorage.getItem('user')).user.current_company,
+                  number: row.number,
+                  created_at: row.created_at,
+                  created_by: row.created_by
+                }
+                $("#barter .qrCode").modal("show");
               }
             }
           },

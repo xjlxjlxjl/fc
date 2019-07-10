@@ -63,7 +63,7 @@
                   <el-table-column prop="code" label="料品编码" width="200px">
                     <template slot-scope="{$index, row}">
                       <el-input v-model="row.code" placeholder="料品编码" @blur="editItem(row)">
-                        <el-button slot="append" icon="el-icon-arrow-down" @click="getMater(true);index = $index"></el-button>
+                        <el-button slot="append" icon="el-icon-arrow-down" @click="materialModal = !materialModal;index = $index"></el-button>
                       </el-input>
                     </template>
                   </el-table-column>
@@ -231,204 +231,9 @@
       </div>
     </div>
     <!-- 销售订单列表 -->
-    <div class="modal fade orderList" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <el-table
-            :data="order.data"
-            border
-            style="width: 100%"
-            height="500"
-            @selection-change="orderChange"
-          >
-            <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="numbering" label="订单号"></el-table-column>
-            <!-- <el-table-column prop="name" label="订单ID"></el-table-column> -->
-            <!-- <el-table-column prop="consignee_code" label="客户编码"></el-table-column> -->
-            <el-table-column prop="consignee" label="客户名称"></el-table-column>
-            <el-table-column prop="created_at" label="创建日期"></el-table-column>
-            <el-table-column prop="name" label="料品名称"></el-table-column>
-            <el-table-column prop="material_specification" label="料品规格"></el-table-column>
-            <el-table-column prop="type" label="料品类别"></el-table-column>
-            <el-table-column prop="unit" label="单位"></el-table-column>
-            <el-table-column prop="quantity" label="订单数量"></el-table-column>
-            <!-- <el-table-column prop="address" label="订单备品"></el-table-column>
-            <el-table-column prop="address" label="订单总数"></el-table-column>-->
-            <el-table-column prop="address" label="客户要求交期"></el-table-column>
-            <el-table-column prop="address" label="确认交期"></el-table-column>
-            <!-- <el-table-column prop="address" label="主计划数量"></el-table-column>
-            <el-table-column prop="address" label="主计划尚缺数"></el-table-column>
-            <el-table-column prop="address" label="制造单数"></el-table-column>
-            <el-table-column prop="address" label="制造单尚缺数"></el-table-column>
-            <el-table-column prop="address" label="通知备品"></el-table-column>
-            <el-table-column prop="address" label="通知尚欠数"></el-table-column>
-            <el-table-column prop="address" label="通知尚备品"></el-table-column>-->
-            <el-table-column prop="address" label="折扣"></el-table-column>
-            <el-table-column prop="address" label="含税"></el-table-column>
-            <!-- <el-table-column prop="address" label="币别"></el-table-column> -->
-            <el-table-column prop="address" label="发票类型"></el-table-column>
-            <el-table-column prop="address" label="仓库"></el-table-column>
-            <el-table-column prop="address" label="件数"></el-table-column>
-            <el-table-column prop="address" label="尾数"></el-table-column>
-            <el-table-column prop="address" label="总体积"></el-table-column>
-            <el-table-column prop="address" label="材料入库数量"></el-table-column>
-            <el-table-column prop="address" label="材料尚欠数量"></el-table-column>
-            <el-table-column prop="address" label="生产入库数量"></el-table-column>
-            <el-table-column prop="address" label="生产尚欠数量"></el-table-column>
-            <el-table-column prop="address" label="出货尚欠数量"></el-table-column>
-            <el-table-column prop="address" label="客户订单号"></el-table-column>
-            <el-table-column prop="address" label="客户料号"></el-table-column>
-            <el-table-column prop="address" label="客户料品名称"></el-table-column>
-            <el-table-column prop="address" label="产品说明"></el-table-column>
-            <el-table-column prop="address" label="维度"></el-table-column>
-            <el-table-column prop="address" label="维度描述"></el-table-column>
-            <el-table-column prop="address" label="采购数量"></el-table-column>
-            <el-table-column prop="address" label="采购备品"></el-table-column>
-          </el-table>
-          <div class="condition">
-            <div>
-              <span>查找关键字</span>
-              <el-input size="mini" v-model="order.search" @blur="getSaleOrder(true)"></el-input>
-            </div>
-            <div>
-              <span>申请日期</span>
-              <el-date-picker
-                size="mini"
-                v-model="order.date"
-                @change="getSaleOrder(true)"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                align="right"
-              ></el-date-picker>
-            </div>
-            <div>
-              <button class="btn btn-primary btn-sm" @click="addOrder">确定</button>
-              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <orderList @add="addOrder"></orderList>
     <!-- 料品列表 -->
-    <div class="modal fade materList" role="dialog">
-      <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
-        <div class="modal-content">
-          <el-table
-            :data="mater.data"
-            border
-            style="width: 100%"
-            height="500"
-            highlight-current-row
-            @current-change="materChange"
-          >
-            <!-- <el-table-column type="selection"></el-table-column> -->
-            <el-table-column prop="material_number" label="物料编码"></el-table-column>
-            <el-table-column prop="name" label="物料名称"></el-table-column>
-            <el-table-column prop="material_specification" label="料品规格"></el-table-column>
-            <el-table-column prop="material_category.name" label="料品类别"></el-table-column>
-            <el-table-column prop="item_unit" label="主单位"></el-table-column>
-            <el-table-column prop="image" label="图片"></el-table-column>
-            <el-table-column prop="drawing_pdf" label="工程图号">
-              <template slot-scope="{ row }">
-                <a
-                  v-for="item in row.drawing_pdf"
-                  :key="item"
-                  :href="item"
-                  :download="item.split('/').pop()"
-                  target="_blank"
-                >{{ item.split('/').pop() }}</a>
-              </template>
-            </el-table-column>
-            <el-table-column prop="barcode" label="条码"></el-table-column>
-            <el-table-column prop="date" label="颜色"></el-table-column>
-            <el-table-column prop="date" label="有效期"></el-table-column>
-            <el-table-column prop="max_inventory" label="最大库存"></el-table-column>
-            <el-table-column prop="min_inventory" label="最小库存"></el-table-column>
-            <el-table-column prop="manufacturer" label="生产厂家"></el-table-column>
-            <el-table-column prop="respository.name" label="仓库"></el-table-column>
-            <el-table-column prop="attributes" label="BOM单位"></el-table-column>
-            <el-table-column prop="date" label="料品类别" width="400px">
-              <template slot-scope="{ row }">
-                <div class="materialsType">
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.includes('1')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 采购件
-                  </div>
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.includes('2')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 自制件
-                  </div>
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.includes('3')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 委外件
-                  </div>
-                  <div>
-                    <input type="checkbox" v-if="row.attributes.includes('4')" checked="checked" disabled>
-                    <input type="checkbox" v-else disabled> 销售件
-                  </div>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column prop="attributes" label="料品属性"></el-table-column>
-            <el-table-column prop="date" label="损耗率"></el-table-column>
-            <el-table-column prop="weight" label="净重"></el-table-column>
-            <el-table-column prop="total_weight" label="毛重"></el-table-column>
-            <el-table-column prop="dimension" label="材积"></el-table-column>
-            <el-table-column prop="remark" label="备注"></el-table-column>
-            <el-table-column prop="density" label="密度"></el-table-column>
-            <el-table-column prop="standard_model" label="模具号"></el-table-column>
-            <el-table-column prop="material_level" label="料品等级"></el-table-column>
-            <el-table-column prop="date" label="材质"></el-table-column>
-            <el-table-column prop="standard_cost_price" label="进价"></el-table-column>
-            <el-table-column prop="standard_uniform_price" label="售价"></el-table-column>
-            <el-table-column prop="standard_single_price" label="标准价"></el-table-column>
-            <el-table-column prop="date" label="英文名称"></el-table-column>
-            <el-table-column prop="minimum_purchase_quantity" label="最小采购量"></el-table-column>
-            <el-table-column prop="date" label="最小批量"></el-table-column>
-            <el-table-column prop="date" label="采购提前期"></el-table-column>
-            <el-table-column prop="date" label="出货免检"></el-table-column>
-            <el-table-column prop="date" label="主供应商"></el-table-column>
-            <el-table-column prop="date" label="供应商简称"></el-table-column>
-            <el-table-column prop="created_at" label="生效"></el-table-column>
-            <el-table-column prop="pinyin_code" label="拼音码"></el-table-column>
-            <el-table-column prop="length" label="料品长"></el-table-column>
-            <el-table-column prop="width" label="料品宽"></el-table-column>
-            <el-table-column prop="height" label="料品高"></el-table-column>
-            <el-table-column prop="state" label="状态"></el-table-column>
-            <el-table-column prop="member" label="管理者"></el-table-column>
-            <el-table-column prop="update_at" label="修改日期"></el-table-column>
-            <el-table-column prop="update_by" label="修改用户"></el-table-column>
-          </el-table>
-          <div class="condition">
-            <div>
-              <span>查找关键字</span>
-              <el-input size="mini" v-model="mater.search" @blur="getMater(true)"></el-input>
-            </div>
-            <div>
-              <span>申请日期</span>
-              <el-date-picker
-                size="mini"
-                v-model="mater.date"
-                @change="getMater(true)"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                align="right"
-              ></el-date-picker>
-            </div>
-            <div>
-              <button class="btn btn-primary btn-sm" @click="addMater">确定</button>
-              <button class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <materList @add="addMater"></materList>
     <!-- 供应商 -->
     <div class="modal fade supplier" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
@@ -501,6 +306,8 @@
   </div>
 </template>
 <script>
+import orderList from '@/pages/Process/common/sale/orderList';
+import materList from '@/pages/Process/common/materList';
 export default {
   name: "addPlan",
   data() {
@@ -551,26 +358,6 @@ export default {
         selection: [],
         data: []
       },
-      order: {
-        search: "",
-        pagination: {
-          current_page: 0,
-          per_page: 10
-        },
-        date: ["", ""],
-        selection: [],
-        data: []
-      },
-      mater: {
-        data: [],
-        pagination: {
-          current_page: 0,
-          per_page: 10
-        },
-        search: "",
-        date: ["", ""],
-        selection: []
-      },
       supplier: {
         list: [],
         pagination: {
@@ -579,18 +366,20 @@ export default {
         },
         date: "",
         search: ""
-      }
+      },
+      materialModal: false
     };
   },
   props: {
     row: Object
   },
+  components: {
+    orderList: orderList,
+    materList: materList,
+  },
   methods: {
     applyChange(val) {
       this.apply.selection = val;
-    },
-    orderChange(val) {
-      this.order.selection = val;
     },
     getPurchaseApply(search) {
       let that = this,
@@ -629,41 +418,6 @@ export default {
         })
         .catch(err => loading.close());
     },
-    getSaleOrder(search) {
-      let that = this,
-        loading = this.$loading({ lock: true });
-      that
-        .$get(`orders/company`, {
-          per_page: that.order.pagination.per_page,
-          page: search ? 1 : ++that.order.pagination.current_page,
-          search: that.order.search,
-          start_time: that.order.date[0],
-          end_time: that.order.date[1]
-        })
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          if (search) that.order.data = [];
-          response.data.list.forEach(e =>
-            e.products.forEach(v =>
-              that.order.data.push({
-                id: e.id,
-                numbering: e.numbering,
-                consignee: e.consignee,
-                created_at: e.created_at,
-                name: v.product_name,
-                type: v.product_type,
-                unit: v.product_unit,
-                quantity: v.quantity,
-                material_specification: v.product_model
-              })
-            )
-          );
-          that.order.pagination = response.data.pagination;
-          $("#purchasePlan .orderList").modal("show");
-        })
-        .catch(err => loading.close());
-    },
     addApply() {
       let that = this;
       if (this.apply.selection.length > 1 && !that.request_id) {
@@ -693,10 +447,10 @@ export default {
           .catch(err => console.error(err));
       } else this.addItem("apply", $("#purchasePlan .applyList"));
     },
-    addOrder() {
+    addOrder(v) {
       let that = this;
-      if (this.order.selection.length > 1 && !that.request_id) {
-        let param = this.order.selection.shift(),
+      if (v.length > 1 && !that.request_id) {
+        let param = v.shift(),
           params = {
             request_item_id: param.request_item_id || undefined,
             saleOrder: param.numbering,
@@ -722,39 +476,12 @@ export default {
           .catch(err => console.error(err));
       } else this.addItem("order", $("#purchasePlan .orderList"));
     },
-    getMater(search) {
-      let that = this,
-        loading = this.$loading({ lock: true });
-      that
-        .$get(`respositories/materials/list`, {
-          per_page: that.mater.pagination.per_page,
-          page: search ? 1 : ++that.mater.pagination.current_page,
-          search: that.mater.search,
-          start_time: that.mater.date[0],
-          end_time: that.mater.date[1]
-        })
-        .then(response => {
-          loading.close();
-          if (response.status != 200) return false;
-          if (search) that.mater.data = response.data.list;
-          else
-            for (let item of response.data.list) {
-              that.mater.data.push(item);
-            }
-          that.mater.pagination = response.data.pagination;
-          $("#purchasePlan .materList").modal("show");
-        })
-        .catch(err => loading.close());
-    },
-    materChange(val) {
-      this.mater.selection = val;
-    },
-    addMater() {
-      this.form.items[this.index].code = this.mater.selection.material_number;
-      this.form.items[this.index].material_id = this.mater.selection.id;
-      this.form.items[this.index].name = this.mater.selection.name;
-      this.form.items[this.index].specification = this.mater.selection.material_specification;
-      this.form.items[this.index].unit = this.mater.selection.item_unit;
+    addMater(v) {
+      this.form.items[this.index].code = v.material_number;
+      this.form.items[this.index].material_id = v.id;
+      this.form.items[this.index].name = v.name;
+      this.form.items[this.index].specification = v.material_specification;
+      this.form.items[this.index].unit = v.item_unit;
       this.form.items.push({});
       this.form.items.pop();
       $("#purchasePlan .materList").modal("hide");
@@ -956,6 +683,9 @@ export default {
         }
       },
       deep: true
+    },
+    materialModal() {
+      $("#purchasePlan .materList").modal('toggle');
     }
   },
   mounted() {
@@ -966,7 +696,7 @@ export default {
         that.form.items[k].material_id = e.material_id || "",
         that.form.items[k].saleOrder =  e.saleOrder || "",
         that.form.items[k].name =  e.name || "",
-        that.form.items[k].code =  e.code || "",
+        that.form.items[k].code =  e.code || e.material_code,
         that.form.items[k].specification =  e.specification || "",
         that.form.items[k].unit =  e.unit || "",
         that.form.items[k].quantity =  e.quantity || "",
@@ -977,7 +707,7 @@ export default {
         that.form.items[k].supplier_contract_id =  e.supplier_contract_id || 0,
         that.form.items[k].contracts =  e.contracts || [],
         that.form.items[k].price =  e.price || 0,
-        that.form.items[k].category =  e.category || 1,
+        that.form.items[k].category =  e.category || '1',
         that.form.items[k].date_of_order =  e.date_of_order || that.row.created_at
       });
 
@@ -989,24 +719,6 @@ export default {
       });
       that.branch = arr;
       that.userBranch = member;
-    });
-
-    $("#purchasePlan .materList .el-table__body-wrapper").scroll(function(e) {
-      if (
-        $(this)[0].scrollTop ===
-          $(this)[0].scrollHeight - $(this)[0].clientHeight &&
-        that.mater.data.length >= that.mater.pagination.per_page
-      )
-        that.getMater();
-    });
-
-    $("#purchasePlan .orderList .el-table__body-wrapper").scroll(function(e) {
-      if (
-        $(this)[0].scrollTop ===
-          $(this)[0].scrollHeight - $(this)[0].clientHeight &&
-        that.order.data.length >= that.order.pagination.per_page
-      )
-        that.getSaleOrder();
     });
 
     $("#purchasePlan .applyList .el-table__body-wrapper").scroll(function(e) {

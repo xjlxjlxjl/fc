@@ -400,11 +400,11 @@ export default {
             }
           },
           {
-            field: "supplier",
+            field: "supplier_name",
             title: "供应商"
           },
           {
-            field: "phone",
+            field: "supplier_contract_mobile",
             title: "联系电话"
           },
           {

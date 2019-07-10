@@ -286,6 +286,7 @@ export default {
         key = $(this).attr("key"),
         index = $(this).attr("index"),
         data = that.getAllData($("#plan #table"));
+        console.log(data)
       that.row = [{}];
       $("#plan #smartOccupy").modal("show");
     });

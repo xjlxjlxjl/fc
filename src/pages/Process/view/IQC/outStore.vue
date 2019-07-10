@@ -13,13 +13,8 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      params.success({
-        rows: [{ id: 1 }],
-        total: 1
-      });
-      return false
       this
-        .$get(``, params.data)
+        .$get(`icm_qty_ctrl/stock_out_filing`, params.data)
         .then(response => {
           if (response.status != 200) return false;
           params.success({
@@ -127,13 +122,14 @@ export default {
             },
             events: {
               "click .print": function(e, value, row, index) {
-                window.open(`/print.html#/purchasReceive/${row.id}`);
+                window.open(`/print.html#/IQCchange/${row.id}`);
               },
               "click .outStore": function(e, value, row, index) {
                 that
-                  .$get(`icm_qty_ctrl/quality/delete/${value}`)
+                  .$get(`icm_qty_ctrl/stock_out_filing/checkout/${value}`)
                   .then(response => {
                     if (response.status != 200) return false;
+                    that.refreshed();
                   })
                   .catch(e => console.error(e));
               }

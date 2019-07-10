@@ -2,8 +2,7 @@
   <div id="task">
     <dateTimePick title="选择任务完成时间" @refresh="refreshed" :activeId="activeId"></dateTimePick>
     <div id="toolbar">
-      <!-- <span class="lead">未完成任务</span> -->
-      <el-select v-model="tasksStatus" size="mini" placeholder="任务状态">
+      <el-select v-model="tasksStatus" @change="refreshed" size="mini" placeholder="任务状态">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -54,17 +53,11 @@ export default {
   },
   methods: {
     tableAjaxData(params) {
-      let that = this,
-        loading = this.$loading({
-          lock: true,
-          background: "rgba(0, 0, 0, 0.7)"
-        });
-      that
+      this
         .$get("job/list", params.data)
         .then(response => {
-          loading.close();
           if (response.status != 200) return false;
-          that.$store.commit("changeTasks", {
+          this.$store.commit("changeTasks", {
             name: "/tasks",
             num: response.data.total
           });
@@ -73,7 +66,7 @@ export default {
             rows: response.data.list
           });
         })
-        .catch(err => loading.close());
+        .catch(err => console.error(err));
     },
     tableAjaxParams(params) {
       let p = {};
@@ -358,8 +351,7 @@ export default {
       gantt.config.lightbox.sections = [
         { name: "together", height: 38, map_to: "together", type: "textarea" },
         { name: "text", height: 38, map_to: "text", type: "textarea" },
-        { name: "strat_at", height: 38, map_to: "auto", type: "time" },
-        // { name: "progress", height: 38, map_to: "progress", type: "textarea" }
+        { name: "strat_at", height: 38, map_to: "auto", type: "time" }
       ];
 
       gantt.attachEvent("onAfterTaskAdd", (id, item) => this.editGantt(id, item));
@@ -367,16 +359,17 @@ export default {
       gantt.attachEvent("onAfterTaskDelete", (id, item) => this.editGantt(id, item));
     },
     editGantt(id, item) {
-      let that = this;
       this.jsonGantt.data = [];
       for (let item in gantt.getDatastore("task").pull)
         this.jsonGantt.data.push(gantt.getDatastore("task").pull[item]);
-      that
-        .$post(`job/edit_gantt/${that.rowId}`, {
-          id: that.rowId,
+        
+      this
+        .$post(`job/edit_gantt/${this.rowId}`, {
+          id: this.rowId,
           gantt: JSON.stringify(this.jsonGantt)
         }).then(response => {
           if (response.status != 200) return false;
+          this.$message({ message: '任务保存成功，请刷新后查看', type: 'success' });
         })
         .catch(err => console.error(err));
     },
@@ -433,12 +426,6 @@ export default {
           break;
       }
     });
-
-    setInterval(() => {
-      $($('.gantt_cal_lsection > label')[0]).text('协同人');
-      $($('.gantt_cal_lsection > label')[1]).text('工作内容规划');
-      $($('.gantt_cal_lsection > label')[2]).text('预计开始时间 - 实际完成时间');
-    }, 1000)
 
     $(document).on("click", ".turn", function(e) {
       let

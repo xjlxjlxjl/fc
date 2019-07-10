@@ -12,6 +12,7 @@ import saleOrder from '@/pages/Print/view/saleOrder';
 import IQCtemporary from '@/pages/Print/view/IQCtemporary';
 import IQCunhealthy from '@/pages/Print/view/IQCunhealthy';
 import IQCstore from '@/pages/Print/view/IQCstore';
+import IQCchange from '@/pages/Print/view/IQCchange';
 import saleNonstandard from '@/pages/Print/view/saleNonstandard';
 import storeSplit from '@/pages/Print/view/storeSplit';
 import storeCombination from '@/pages/Print/view/storeCombination';
@@ -65,6 +66,10 @@ export default new Router({
       path: "/IQCstore/:id",
       name: "IQCstore",
       component: IQCstore
+    }, {
+      path: "/IQCchange/:id",
+      name: "IQCchange",
+      component: IQCchange
     }, {
       path: "/saleNonstandard/:id",
       name: "saleNonstandard",

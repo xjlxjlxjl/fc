@@ -135,10 +135,19 @@ export default {
             sortable: true
           },
           {
-            field: "aaa",
+            field: "checks_status",
             title: "质检入库",
             formatter(value) {
-              return value ? '已申请' : '未申请';
+              switch(value) {
+                case 1:
+                case "1":
+                  return '申请通过';
+                case 2:
+                case "2":
+                  return '已申请'
+                default:
+                  return '未申请'
+              }
             }
           },
           {
@@ -150,7 +159,15 @@ export default {
               return join + del;
             },
             events: {
-              "click .join": function(e, value, row, index) {},
+              "click .join": function(e, value, row, index) {
+                that
+                  .$post(`icm_qty_ctrl/quality/store/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(e => console.error(e));
+              },
               "click .del": function(e, value, row, index) {
                 that
                   .$get(`icm_qty_ctrl/quality/delete/${value}`)

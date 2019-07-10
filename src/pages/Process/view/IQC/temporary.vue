@@ -1,6 +1,6 @@
 <template>
   <div id="temporary">
-    <Qrmodel :url="url"></Qrmodel>
+    <Qrmodel :url="url" :modalData="modalData"></Qrmodel>
     <addInspectionBill :arr="arr"></addInspectionBill>
     <div id="toolbar"></div>
     <table id="table"></table>
@@ -21,7 +21,8 @@ export default {
       user: user,
       url: "",
       status: 0,
-      arr: {}
+      arr: {},
+      modalData: {}
     };
   },
   components: {
@@ -69,6 +70,12 @@ export default {
             events: {
               "click .img": function($el, value, row, index) {
                 that.url = value;
+                that.modalData = {
+                  company: that.user.user.current_company,
+                  number: row.receipt_no,
+                  created_at: row.created_at,
+                  created_by: row.receipt_user.last_name
+                }
                 $("#temporary .qrCode").modal("show");
               }
             }

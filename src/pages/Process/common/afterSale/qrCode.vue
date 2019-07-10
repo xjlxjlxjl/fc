@@ -23,7 +23,7 @@
               >创建日期</div>
               <div
                 style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
-              ></div>
+              >创建人</div>
               <div
                 style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
               ></div>
@@ -45,7 +45,7 @@
               >{{ modalData.created_at }}</div>
               <div
                 style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
-              ></div>
+              >{{ modalData.created_by }}</div>
               <div
                 style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
               ></div>
@@ -69,12 +69,13 @@ import QRCode from "qrcode";
 export default {
   name: "qrCode",
   data() {
-    return {
-      modalData: {}
-    };
+    return {};
   },
   props: {
-    url: String
+    url: String,
+    modalData: {
+      type: Object
+    }
   },
   methods: {
     printing() {
@@ -85,6 +86,15 @@ export default {
   mounted() {
     const that = this;
     $('#offer .qrCode').on('shown.bs.modal', function () {
+      QRCode.toString(that.url, (err, string) => (document.getElementById("qrCodePrintImg").innerHTML = string));
+    })
+    $('#temporary .qrCode').on('shown.bs.modal', function () {
+      QRCode.toString(that.url, (err, string) => (document.getElementById("qrCodePrintImg").innerHTML = string));
+    })
+    $('#return .qrCode').on('shown.bs.modal', function () {
+      QRCode.toString(that.url, (err, string) => (document.getElementById("qrCodePrintImg").innerHTML = string));
+    })
+    $('#barter .qrCode').on('shown.bs.modal', function () {
       QRCode.toString(that.url, (err, string) => (document.getElementById("qrCodePrintImg").innerHTML = string));
     })
   }

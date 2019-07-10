@@ -26,7 +26,6 @@
         <saleOrder v-else-if="activeTabs == '/Sale/order'"></saleOrder>
         <saleCustomerServiceApplication v-else-if="activeTabs == '/Sale/customerServiceApplication'"></saleCustomerServiceApplication>
         <saleCustomerServiceQuotation v-else-if="activeTabs == '/Sale/customerServiceQuotation'"></saleCustomerServiceQuotation>
-        <saleCustomerProduct v-else-if="activeTabs == '/Sale/product'"></saleCustomerProduct>
         <saleCustomer v-else-if="activeTabs == '/Sale/customer'"></saleCustomer>
         <saleNonstandard v-else-if="activeTabs == '/Sale/nonstandard'"></saleNonstandard>
         <saleNonstandardModal v-else-if="activeTabs == '/Sale/nonstandardModal'"></saleNonstandardModal>
@@ -49,7 +48,6 @@
         <purchaseOrder v-else-if="activeTabs == '/Purchase/order'"></purchaseOrder>
         <purchasePlan v-else-if="activeTabs == '/Purchase/plan'"></purchasePlan>
         <purchasePriceAnalysis v-else-if="activeTabs == '/Purchase/priceAnalysis'"></purchasePriceAnalysis>
-        <purchaseProduct v-else-if="activeTabs == '/Purchase/product'"></purchaseProduct>
         <purchaseSupplier v-else-if="activeTabs == '/Purchase/supplier'"></purchaseSupplier>
         <purchaseTrimPrice v-else-if="activeTabs == '/Purchase/trimPrice'"></purchaseTrimPrice>
         <purchaseUnhealthy v-else-if="activeTabs == '/Purchase/unhealthy'"></purchaseUnhealthy>
@@ -89,7 +87,6 @@
         <produceTurn v-else-if="activeTabs == '/Produce/turn'"></produceTurn>
         <produceBale v-else-if="activeTabs == '/Produce/bale'"></produceBale>
         <!-- OQC -->
-        <OQCProduct v-else-if="activeTabs == '/OQC/product'"></OQCProduct>
         <OQCInspection v-else-if="activeTabs == '/OQC/inspection'"></OQCInspection>
         <OQCRules v-else-if="activeTabs == '/OQC/rules'"></OQCRules>
         <OQCTime v-else-if="activeTabs == '/OQC/time'"></OQCTime>
@@ -117,7 +114,6 @@ import approval from "@/pages/Process/control/approval";
 import saleOrder from "@/pages/Process/view/sale/order";
 import saleCustomerServiceApplication from "@/pages/Process/view/sale/customerServiceApplication";
 import saleCustomerServiceQuotation from "@/pages/Process/view/sale/customerServiceQuotation";
-import saleCustomerProduct from "@/pages/Process/view/sale/product";
 import saleCustomer from "@/pages/Process/view/sale/customer";
 import saleNonstandard from "@/pages/Process/view/sale/nonstandard";
 import saleNonstandardModal from "@/pages/Process/view/sale/nonstandardModal";
@@ -142,7 +138,6 @@ import purchaseHistory from "@/pages/Process/view/purchase/history";
 import purchaseOrder from "@/pages/Process/view/purchase/order";
 import purchasePlan from "@/pages/Process/view/purchase/plan";
 import purchasePriceAnalysis from "@/pages/Process/view/purchase/priceAnalysis";
-import purchaseProduct from "@/pages/Process/view/purchase/product";
 import purchaseSupplier from "@/pages/Process/view/purchase/supplier";
 import purchaseTrimPrice from "@/pages/Process/view/purchase/trimPrice"
 import purchaseUnhealthy from "@/pages/Process/view/purchase/unhealthy";
@@ -191,7 +186,6 @@ import produceTurn from "@/pages/Process/view/produce/turn";
 import produceBale from "@/pages/Process/view/produce/bale";
 
 // OQC
-import OQCProduct from "@/pages/Process/view/OQC/product";
 import OQCInspection from "@/pages/Process/view/OQC/inspection";
 import OQCRules from "@/pages/Process/view/OQC/rules";
 import OQCTime from "@/pages/Process/view/OQC/time";
@@ -228,7 +222,6 @@ export default {
     saleOrder: saleOrder,
     saleCustomerServiceApplication: saleCustomerServiceApplication,
     saleCustomerServiceQuotation: saleCustomerServiceQuotation,
-    saleCustomerProduct: saleCustomerProduct,
     saleCustomer: saleCustomer,
     saleNonstandard: saleNonstandard,
     saleNonstandardModal: saleNonstandardModal,
@@ -251,7 +244,6 @@ export default {
     purchaseOrder: purchaseOrder,
     purchasePlan: purchasePlan,
     purchasePriceAnalysis: purchasePriceAnalysis,
-    purchaseProduct: purchaseProduct,
     purchaseSupplier: purchaseSupplier,
     purchaseTrimPrice: purchaseTrimPrice,
     purchaseUnhealthy: purchaseUnhealthy,
@@ -291,7 +283,6 @@ export default {
     produceTurn: produceTurn,
     produceBale: produceBale,
 
-    OQCProduct: OQCProduct,
     OQCInspection: OQCInspection,
     OQCRules: OQCRules,
     OQCTime: OQCTime,

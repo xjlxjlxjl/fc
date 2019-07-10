@@ -191,7 +191,9 @@
             <div class="material-toolbar">
               <el-form :model="params" size="mini" label-position="left" label-width="100px">
                 <el-form-item label="仓库">
-                  <el-select v-model="params.respository_id" @change="getMaterial"></el-select>
+                  <el-select v-model="params.respository_id" @change="getMaterial(false)">
+                    <el-option v-for="e in categoryList" :key="e.id" :label="e.title" :value="e.id"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="查找关键字">
                   <el-input v-model="params.name" @blur="getMaterial"></el-input>
@@ -244,6 +246,7 @@ export default {
       params: {
         date: []
       },
+      categoryList: [],
       orderModal: false
     };
   },
@@ -267,7 +270,7 @@ export default {
       this.orderModal = !this.orderModal;
     },
     getMaterial(key) {
-      this.key = key;
+      if (key !== false) this.key = key;
       this.refresh($("#Bom .material-table"));
       $("#Bom .material").modal("show");
     },
@@ -279,30 +282,29 @@ export default {
         this.form.material_specification = data.material_specification;
         this.form.name = data.name;
       } else {
-        this.form.bom_items[this.key].material_code = data.material_number;
-        this.form.bom_items[this.key].material_id = data.id;
-        this.form.bom_items[this.key].material_specification =
+        this.form.bom_items[this.key || 0].material_code = data.material_number;
+        this.form.bom_items[this.key || 0].material_id = data.id;
+        this.form.bom_items[this.key || 0].material_specification =
           data.material_specification;
-        this.form.bom_items[this.key].name = data.name;
-        this.form.bom_items[this.key].quantity = this.form.bom_items[this.key].quantity || 1;
-        this.form.bom_items[this.key].valid = this.form.bom_items[this.key].valid || 1;
-        this.form.bom_items[this.key].unit = data.item_unit;
-        this.form.bom_items[this.key].bom_item_attributes = this.form.bom_items[this.key].bom_item_attributes || "stroke";
-        this.form.bom_items[this.key].operation_method = this.form.bom_items[this.key].operation_method || 1;
-        this.form.bom_items[this.key].material_category_id = data.classification.id;
-        this.form.bom_items[this.key].material_category_name = data.classification.name;
+        this.form.bom_items[this.key || 0].name = data.name;
+        this.form.bom_items[this.key || 0].quantity = this.form.bom_items[this.key || 0].quantity || 1;
+        this.form.bom_items[this.key || 0].valid = this.form.bom_items[this.key || 0].valid || 1;
+        this.form.bom_items[this.key || 0].unit = data.item_unit;
+        this.form.bom_items[this.key || 0].bom_item_attributes = this.form.bom_items[this.key || 0].bom_item_attributes || "stroke";
+        this.form.bom_items[this.key || 0].operation_method = this.form.bom_items[this.key || 0].operation_method || 1;
+        this.form.bom_items[this.key || 0].material_category_id = data.classification.id;
+        this.form.bom_items[this.key || 0].material_category_name = data.classification.name;
 
-        this.form.bom_items[this.key].assembly_drawing = data.assembly_drawing;
-        this.form.bom_items[this.key].drawing_2d = data.drawing_2d;
-        this.form.bom_items[this.key].drawing_3d = data.drawing_3d;
-        this.form.bom_items[this.key].drawing_approve = data.drawing_approve;
-        this.form.bom_items[this.key].drawing_pdf = data.drawing_pdf;
-        this.form.bom_items[this.key].drawing_working = data.drawing_working;
+        this.form.bom_items[this.key || 0].assembly_drawing = data.assembly_drawing;
+        this.form.bom_items[this.key || 0].drawing_2d = data.drawing_2d;
+        this.form.bom_items[this.key || 0].drawing_3d = data.drawing_3d;
+        this.form.bom_items[this.key || 0].drawing_approve = data.drawing_approve;
+        this.form.bom_items[this.key || 0].drawing_pdf = data.drawing_pdf;
+        this.form.bom_items[this.key || 0].drawing_working = data.drawing_working;
 
         this.form.bom_items.push({});
         this.form.bom_items.pop();
       }
-
       $("#Bom .material").modal("hide");
     },
     orderInit() {
@@ -738,6 +740,15 @@ export default {
         };
       $("#Bom .material-table").bootstrapTable(data);
     },
+    getStore() {
+      this
+        .$get(`respositories/category`)
+        .then(response => {
+          if (response.status != 200) return false;
+          this.categoryList = response.data;
+        })
+        .catch(e => console.error(e));
+    },
     onSubmit() {
       this.$refs["form"].validate(v => {
         if (!v) return false;
@@ -795,6 +806,7 @@ export default {
     }
   },
   mounted() {
+    this.getStore();
     this.orderInit();
     this.materialInit();
     let that = this;

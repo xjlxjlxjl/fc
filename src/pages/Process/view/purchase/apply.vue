@@ -198,8 +198,11 @@ export default {
             }
           },
           {
-            field: "check_status",
-            title: "审核状态"
+            field: "checks_status",
+            title: "审核状态",
+            formatter(value, row, index) {
+              return value ? '已审核' : '未审核';
+            }
           },
           {
             field: "slug",

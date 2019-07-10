@@ -44,7 +44,7 @@ export default {
       return {
         page: params.offset / params.limit + 1,
         per_page: params.limit,
-        search: params.search,
+        name: params.search,
       };
     },
     init() {

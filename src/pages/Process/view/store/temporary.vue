@@ -40,13 +40,13 @@
                 >{{ modalData.company }}</div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
-                >{{ modalData.number }}</div>
+                >{{ modalData.receipt_no }}</div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
                 >{{ modalData.created_at }}</div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
-                >{{ modalData.created_by }}</div>
+                >{{ modalData.receipt_user.last_name }}</div>
                 <div
                   style="width: 100%;height: 40px;font-size: 13px;line-height: 40px;text-align: center;border-top: 1px solid;"
                 ></div>
@@ -83,7 +83,9 @@ export default {
     return {
       user: user,
       active: {},
-      modalData: {}
+      modalData: {
+        receipt_user: {}
+      }
     };
   },
   components: {
@@ -288,10 +290,10 @@ export default {
                   <td>${ item.material.item_unit }</td>
                   <td>${ item.order_item ? item.order_item.delivery_period : '' }</td>
                   <td>${ item.order_item ? item.order_item.quantity : '' }</td>
-                  <td>${ item.cancel_quantity }</td>
-                  <td>${ item.wait_quantity }</td>
+                  <td>${ item.cancel_quantity || '' }</td>
+                  <td>${ item.wait_quantity || '' }</td>
                   <td>${ item.is_inspection ? '是' : '否' }</td>
-                  <td>${ item.remark }</td>
+                  <td>${ item.remark || '' }</td>
                   <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>
               `;

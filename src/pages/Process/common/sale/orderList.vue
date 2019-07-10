@@ -2,8 +2,8 @@
   <div class="modal fade" id="orderList" role="dialog">
     <div class="modal-dialog" role="document" style="width: 1280px;max-width: 100%;">
       <div class="modal-content">
-        <div id="toolbar"></div>
-        <table id="table"></table>
+        <div id="orderbar"></div>
+        <table id="order"></table>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
           <button type="button" class="btn btn-primary" @click="onSubmit">确定</button>
@@ -132,7 +132,7 @@ export default {
           }
         ],
         data = {
-          toolbar: "#orderList #toolbar",
+          toolbar: "#orderList #orderbar",
           ajax: this.tableAjaxData,
           queryParams: this.tableAjaxParams,
           search: true,
@@ -169,10 +169,10 @@ export default {
             return content.join("");
           }
         };
-      $("#orderList #table").bootstrapTable(data);
+      $("#orderList #order").bootstrapTable(data);
     },
     onSubmit() {
-      this.$emit('add', this.getData($("#orderList #table")).pop());
+      this.$emit('add', this.getData($("#orderList #order")).pop());
     }
   },
   mounted() {

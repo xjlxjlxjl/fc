@@ -161,7 +161,11 @@ export default {
       }).catch(e => console.error(e));
     },
     cusId(val) {
+      let contact = this.customers.onArray(val, 'id', 'contact').pop();
       this.form.customer_id = val;
+      this.form.linkman = contact.name;
+      this.form.mobile = contact.mobile;
+      this.form.position = contact.position;
     },
     onSubmit() {
       this.$refs["form"].validate(v => {
