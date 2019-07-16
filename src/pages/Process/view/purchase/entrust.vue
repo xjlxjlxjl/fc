@@ -529,7 +529,7 @@ export default {
                     <td>${e.quantity || ""}</td>
                     <td>${e.remark || ""}</td>
                     <td>${e.price || ""}</td>
-                    <td>${e.delivery_date || ""}</td>
+                    <td>${e.delivery_period || ""}</td>
                     <td><input type="checkbox" aid="${
                       row.id
                     }" class="closeCase" index="${row.id}" value="${e.id}" ${

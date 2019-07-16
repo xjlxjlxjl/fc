@@ -31,6 +31,7 @@
         <saleNonstandardModal v-else-if="activeTabs == '/Sale/nonstandardModal'"></saleNonstandardModal>
         <saleOffer v-else-if="activeTabs == '/Sale/offer'"></saleOffer>
         <saleShipment v-else-if="activeTabs == '/Sale/shipment'"></saleShipment>
+        <saleReturn v-else-if="activeTabs == '/Sale/return'"></saleReturn>
         <saleCustomerServiceMaterial v-else-if="activeTabs == '/Sale/customerServiceMaterial'"></saleCustomerServiceMaterial>
         <!-- 售后 -->
         <afterSaleApplication v-else-if="activeTabs == '/AfterSale/application'"></afterSaleApplication>
@@ -119,6 +120,7 @@ import saleNonstandard from "@/pages/Process/view/sale/nonstandard";
 import saleNonstandardModal from "@/pages/Process/view/sale/nonstandardModal";
 import saleOffer from "@/pages/Process/view/sale/offer";
 import saleShipment from "@/pages/Process/view/sale/shipment";
+import saleReturn from "@/pages/Process/view/sale/return";
 import saleCustomerServiceMaterial from "@/pages/Process/view/sale/customerServiceMaterial";
 
 // 售后
@@ -227,6 +229,7 @@ export default {
     saleNonstandardModal: saleNonstandardModal,
     saleOffer: saleOffer,
     saleShipment: saleShipment,
+    saleReturn: saleReturn,
     saleCustomerServiceMaterial: saleCustomerServiceMaterial,
 
     afterSaleApplication: afterSaleApplication,

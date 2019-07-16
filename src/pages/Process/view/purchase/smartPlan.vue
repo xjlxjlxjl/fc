@@ -253,7 +253,7 @@ export default {
         key = $(this).attr("key"),
         index = $(this).attr("index"),
         data = that.getAllData($("#smartPlan #table"));
-      that.row = [{}];
+      that.row = data[key].items[index].occupancy;
       $("#smartPlan #smartOccupy").modal("show");
     });
     $("#smartPlan").on("click", ".material", function() {

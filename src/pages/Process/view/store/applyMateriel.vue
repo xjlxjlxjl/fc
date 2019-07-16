@@ -33,8 +33,6 @@ export default {
         .catch(e => console.error(e));
     },
     tableAjaxParams(params) {
-      params.page = params.offset / params.limit + 1;
-      params.per_page = params.limit;
       return {
         page: params.offset / params.limit + 1,
         per_page: params.limit
@@ -148,30 +146,40 @@ export default {
                   <td>结案</td>
                 </tr>`;
             mrow.items.forEach((e, k) => 
-              (content += `<tr>
+              {
+                content += `<tr>
                   <td>${k + 1}</td>
-                  <td>${e.material_info.material_number}</td>
-                  <td>${e.material_info.material_specification}</td>
-                  <td>${e.material_info.name}</td>
-                  <td>${e.material_info.quantity}</td>
-                  <td>${e.material_info.len}</td>
-                  <td>关联子料</td>
-                  <td>${e.material_info.unit}</td>
-                  <td>料品类别</td>
-                  <td>料品属性</td>
-                  <td>智能占用</td>
-                  <td>智能备料日期</td>
-                  <td>可用数量</td>
-                  <td>占用数量</td>
-                  <td>采购在途数</td>
-                  <td>期末数量</td>
-                  <td>${e.cancel_count}</td>
-                  <td>${e.wait_count}</td>
-                  <td>物料车编号</td>
-                  <td>${e.spare_count}</td>
+                  <td>${e.material_info.material_number || ''}</td>
+                  <td>${e.material_info.material_specification || ''}</td>
+                  <td>${e.material_info.name || ''}</td>
+                  <td>${e.material_info.quantity || ''}</td>
+                  <td>${e.material_info.len || ''}</td>
+                  <td>`;
+                  if(e.material_info.children)
+                    e.material_info.children.forEach(e => (content += e.material_number));
+                  content += `</td>
+                  <td>${e.material_info.unit || ''}</td>
+                  <td>
+                    <div><input type="checkbox" ${ e.material_info.attributes ? e.material_info.attributes.includes('1') ? "checked='checked'" : '' : ''} disabled="true" /> 采购件</div>
+                    <div><input type="checkbox" ${ e.material_info.attributes ? e.material_info.attributes.includes('2') ? "checked='checked'" : '' : ''} disabled="true" /> 自制件</div>
+                    <div><input type="checkbox" ${ e.material_info.attributes ? e.material_info.attributes.includes('3') ? "checked='checked'" : '' : ''} disabled="true" /> 委外件</div>
+                    <div><input type="checkbox" ${ e.material_info.attributes ? e.material_info.attributes.includes('4') ? "checked='checked'" : '' : ''} disabled="true" /> 销售件</div>
+                  </td>
+                  <td>${e.material_info.classification || ''}</td>
+                  <td>${e.material_info.occupancy || ''}</td>
+                  <td>${e.material_info.prepare_date || ''}</td>
+                  <td>${e.material_info.available_quantity || '0'}</td>
+                  <td>${e.material_info.take_up || '0'}</td>
+                  <td>${e.material_info.way_quantity || '0'}</td>
+                  <td>${e.material_info.end_period_quantity || '0'}</td>
+                  <td>${e.cancel_count || "0"}</td>
+                  <td>${e.wait_count || "0"}</td>
+                  <td>${e.material_info.car_code || ""}</td>
+                  <td>${e.spare_count || "0"}</td>
                   <td><button index="${field}" key="${k}" class="btn btn-sm prepare">备料</button></td>
                   <td>结案</td>
-                </tr>`)
+                </tr>`
+              }
             );
             content += `</tbody></table>`;
             return content;

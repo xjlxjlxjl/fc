@@ -140,9 +140,6 @@ export default {
     init() {
       let that = this,
         columns = [
-          // {
-          //   checkbox: true
-          // },
           {
             field: "id",
             title: "序号",
@@ -178,18 +175,10 @@ export default {
             field: "created_at",
             title: "创建日期"
           },
-          // {
-          //   field: "demand_at",
-          //   title: "需求日期"
-          // },
-          // {
-          //   field: "number",
-          //   title: "关联采购申请单号"
-          // },
-          // {
-          //   field: "order_number",
-          //   title: "关联销售单号"
-          // },
+          {
+            field: "applicant_name",
+            title: "申请人"
+          },
           {
             field: "remark",
             title: "备注",
@@ -218,7 +207,7 @@ export default {
                 print = `<button class="print btn btn-success btn-sm" style="margin-left: 5px;">打印</button>`,
                 create = `<button class="create btn btn-primary btn-sm" style="margin-left: 5px;">生成订单</button>`,
                 edit = `<button class="edit btn btn-info btn-sm" style="margin-left: 5px;">编辑</button>`;
-              return del + closeCase + print + create + edit;
+              return `<div style="display: flex;">${del + closeCase + print + create + edit}</div>`;
             },
             events: {
               "click .del": function(e, value, row, index) {
@@ -231,19 +220,18 @@ export default {
                   .catch(err => console.error(err));
               },
               "click .closeCase": function(e, value, row, index) {
-                that
-                  .$post(`approvals/checks`, {
-                    ids: "",
-                    check_status: "",
-                    check_remark: "",
-                    is_end_status: "",
-                    end_remark: "",
-                    remark: ""
-                  })
-                  .then(response => {
-                    if (response.status != 200) return false;
-                  })
-                  .catch(err => console.error(err));
+                for (let e of row.items) {
+                  that
+                    .$post(`procurement/schedule/item/edit/${e.id}`, {
+                      ...e,
+                      is_closed: 1
+                    })
+                    .then(response => {
+                      if (response.status != 200) return false;
+                      e.is_closed = 1;
+                    })
+                    .catch(e => console.error(e));
+                }
               },
               "click .print": function(e, value, row, index) {
                 window.open(`/print.html#/purchasePlan/${row.id}`);

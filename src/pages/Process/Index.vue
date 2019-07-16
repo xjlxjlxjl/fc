@@ -77,7 +77,7 @@ export default {
 }
 .homeContainer {
   background-color: #f2f2f2;
-  height: 86%;
+  height: 1%;
   #aside {
     #companyAside {
       height: 87%;

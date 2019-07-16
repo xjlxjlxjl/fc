@@ -104,6 +104,9 @@
           <tr>
             <td colspan="10" style="border-top: 1px solid rgb(215, 215, 215);" align="right">合计：{{ data.total }}</td>
           </tr>
+          <tr>
+            <td colspan="10" style="border-top: 1px solid rgb(215, 215, 215);" align="right">大写：{{ data.capital_total || '暂无' }}</td>
+          </tr>
         </table>
         <div
           style="line-height: 1.4;position: absolute;left: 0;bottom: 0;width: 100%;padding: 30px;box-sizing:border-box;"

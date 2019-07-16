@@ -192,7 +192,7 @@
               <el-form :model="params" size="mini" label-position="left" label-width="100px">
                 <el-form-item label="仓库">
                   <el-select v-model="params.respository_id" @change="getMaterial(false)">
-                    <el-option v-for="e in categoryList" :key="e.id" :label="e.title" :value="e.id"></el-option>
+                    <el-option v-for="e in categoryList" :key="e.id" :label="e.name" :value="e.id"></el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item label="查找关键字">
@@ -742,10 +742,10 @@ export default {
     },
     getStore() {
       this
-        .$get(`respositories/category`)
+        .$get(`respositories/list`)
         .then(response => {
           if (response.status != 200) return false;
-          this.categoryList = response.data;
+          this.categoryList = response.data.list;
         })
         .catch(e => console.error(e));
     },

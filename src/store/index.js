@@ -328,7 +328,7 @@ export default new Vuex.Store({
         },
         {
           name: "退货申请表",
-          url: "/Sale/returnOrder"
+          url: "/Sale/return"
         },
         {
           name: "客服申请表",

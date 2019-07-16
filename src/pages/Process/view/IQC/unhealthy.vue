@@ -1,6 +1,6 @@
 <template>
   <div id="unhealthy">
-    <Qrmodel :url="url"></Qrmodel>
+    <Qrmodel :url="url" :modalData="modalData"></Qrmodel>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -17,7 +17,8 @@ export default {
     );
     return {
       user: user,
-      url: ""
+      url: "",
+      modalData: {}
     };
   },
   components: {
@@ -151,7 +152,15 @@ export default {
               return join + print + del;
             },
             events: {
-              "click .join": function(e, value, row, index) {},
+              "click .join": function(e, value, row, index) {
+                that
+                  .$post(`icm_qty_ctrl/quality/store/${value}`)
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(e => console.error(e));
+              },
               "click .print": function(e, value, row, index) {
                 window.open(`/print.html#/IQCunhealthy/${row.id}`);
               },

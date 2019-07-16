@@ -87,7 +87,7 @@ export default {
           this.$message({ message: '此次检数 = 合格 + 不合格', type: 'error' });
           return false;
         }
-        if (!e.bad_cause) {
+        if (!e.grade && !e.bad_cause) {
           this.$message({ message: '不良原因为必填', type: 'error' });
           return false;
         }

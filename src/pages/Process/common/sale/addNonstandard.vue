@@ -1,22 +1,14 @@
 <template>
+<div>
   <div id="addNonstandard" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document" style="width: 900px;max-width: 100%;">
       <div class="modal-content">
         <div class="modal-body">
           <el-form :model="form" ref="form" :rules="rule" size="mini" label-width="100px">
             <el-form-item class="widthFull" label="选择模板">
-              <el-select 
-                v-model="choice"
-                filterable remote 
-                :filter-method="search"
-                @change="changModal">
-                <el-option
-                  v-for="item in options"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item"
-                ></el-option>
-              </el-select>
+              <el-input v-model="choice" size="mini" style="width: 200px;">
+                <el-button slot="suffix" size="mini" icon="el-icon-arrow-down" @click="cm = !cm"></el-button>
+              </el-input>
             </el-form-item>
             <el-form-item label="客户公司名">
               <el-select v-model="form.customer_id" @change="cusId">
@@ -24,13 +16,20 @@
               </el-select>
             </el-form-item>
             <el-form-item label="联系人">
-              <el-input v-model="form.linkman"></el-input>
+              <el-select v-model="form.linkman" @change="cusUser">
+                <el-option v-for="(item, k) in options"
+                  :key="k"
+                  :label="item.name"
+                  :value="k">
+                </el-option>
+              </el-select>
+              <el-button type="primary" @click="addLinkmanModal = !addLinkmanModal">新建</el-button>
             </el-form-item>
             <el-form-item label="联系电话">
-              <el-input v-model="form.mobile"></el-input>
+              <el-input v-model="form.mobile" disabled=""></el-input>
             </el-form-item>
             <el-form-item label="职位">
-              <el-input v-model="form.position"></el-input>
+              <el-input v-model="form.position" disabled=""></el-input>
             </el-form-item>
             <el-form-item label="询价描述">
               <el-input v-model="form.demand"></el-input>
@@ -76,13 +75,20 @@
       </div>
     </div>
   </div>
+  <changeModal @changModal="changModal"></changeModal>
+  <addLinkman :slug="slug" :contact.sync="options" @change="cusId"></addLinkman>
+</div>
+  
 </template>
 <script>
+import changeModal from '@/pages/Process/common/sale/changeModal';
+import addLinkman from '@/pages/Process/common/sale/addLinkman';
 export default {
   name: "addNonstandard",
   data() {
     return {
-      choice: {},
+      choice: '',
+      slug: '',
       form: {
         customer_id: "",
         linkman: "",
@@ -95,11 +101,17 @@ export default {
       },
       rule: {},
       options: [],
-      customers: []
+      customers: [],
+      cm: false,
+      addLinkmanModal: false
     };
   },
   props: {
     row: Object
+  },
+  components: {
+    changeModal: changeModal,
+    addLinkman: addLinkman
   },
   methods: {
     upload(file) {
@@ -137,19 +149,10 @@ export default {
     },
     remove(val) {
     },
-    search(val) {
-      this
-        .$get(`orders/inquiry-template`, {
-          name: val
-        })
-        .then(response => {
-          if (response.status != 200) return false;
-          this.options = response.data.list;
-        })
-        .catch(e => console.error(e));
-    },
     changModal(val) {
-      this.form.param = val.data;
+      this.choice = val[0].name;
+      this.form.param = val[0].data;
+      this.cm = !this.cm;
     },
     cbgc(index, val) {
       if (typeof this.form.param[index].enter != 'object') this.form.param[index].enter = [val];
@@ -161,11 +164,18 @@ export default {
       }).catch(e => console.error(e));
     },
     cusId(val) {
-      let contact = this.customers.onArray(val, 'id', 'contact').pop();
-      this.form.customer_id = val;
-      this.form.linkman = contact.name;
-      this.form.mobile = contact.mobile;
-      this.form.position = contact.position;
+      if (val) {
+        this.options = this.customers.onArray(val, 'id', 'contact');
+        this.slug = this.customers.onArray(val, 'id', 'slug');
+        this.form.customer_id = val;
+      }
+      this.form.linkman = this.options[0].name;
+      this.form.mobile = this.options[0].mobile;
+      this.form.position = this.options[0].position;
+    },
+    cusUser(k) {
+      this.form.mobile = this.options[k].mobile;
+      this.form.position = this.options[k].position;
     },
     onSubmit() {
       this.$refs["form"].validate(v => {
@@ -191,7 +201,7 @@ export default {
       });
     },
     clearForm() {
-      this.choice = {},
+      this.choice = '',
       this.form = {
         customer_id: "",
         linkman: "",
@@ -202,6 +212,17 @@ export default {
         fileUrl: [],
         param: []
       }
+    }
+  },
+  watch: {
+    cm(v) {
+      $("#nonstandard #changeModal").modal("toggle");
+    },
+    addLinkmanModal(v) {
+      if (this.slug)
+        $("#nonstandard #addLinkman").modal("toggle");
+      else
+        this.$message({ message: '请先选择公司', type: 'error' });
     }
   },
   mounted() {

@@ -1,6 +1,6 @@
 <template>
   <div id="test">
-    <Qrmodel :url="url"></Qrmodel>
+    <Qrmodel :url="url" :modalData="modalData"></Qrmodel>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -18,6 +18,7 @@ export default {
     return {
       user: user,
       url: "",
+      modalData: {}
     };
   },
   components: {

@@ -75,7 +75,7 @@ export default {
       p.status = this.tasksStatus;
       if (this.date.length) {
         p.end_time = this.dateParse(this.date[1]);
-        p.star_time = this.dateParse(this.date[0]);
+        p.start_time = this.dateParse(this.date[0]);
       }
       if (params.search.length > 8) p.work_no = params.search;
       else p.username = params.search || undefined;

@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="modal fade" id="addOrderModal" role="dialog">
+  <div class="modal fade" id="addOrderModal">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-body">
@@ -200,7 +200,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade customer" role="dialog">
+  <div class="modal fade customer">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <table id="table"></table>
@@ -211,7 +211,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade addConsignee" role="dialog">
+  <div class="modal fade addConsignee">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
@@ -237,7 +237,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade material" role="dialog">
+  <div class="modal fade material">
     <div class="modal-dialog modal-lg" role="document" style="width: 100%;max-width: 1280px;">
       <div class="modal-content">
         <el-table
@@ -357,7 +357,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade payMentModal" role="dialog">
+  <div class="modal fade payMentModal">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-body">
@@ -436,7 +436,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade shipment" role="dialog">
+  <div class="modal fade shipment">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <el-table :data="form.items[index].shipping_schedule_s" size="mini" border stripe>
@@ -470,7 +470,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade addContract" role="dialog">
+  <div class="modal fade addContract">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-body">
@@ -480,7 +480,7 @@
       </div>
     </div>
   </div>
-  <div class="modal fade contactModal" role="dialog">
+  <div class="modal fade contactModal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <el-table :data="contact" border style="width: 100%">
@@ -730,7 +730,7 @@ export default {
 
       this.editor.setData(customer.contract_terms);
 
-      this.customerModal = false;
+      this.customerModal = !this.customerModal;
     },
     addConsignee() {
       if (this.form.customer_id)
@@ -1232,26 +1232,29 @@ export default {
           columns: columns,
         };
       $("#order .customer #table").bootstrapTable(data);
+    },
+    modalOpen() {
+      $('body').addClass('modal-open');
     }
   },
   computed: mapState(["invoiceType", "paymenType"]),
   watch: {
-    customerModal() {
+    customerModal(v) {
       $('#order .customer').modal("toggle");
     },
-    materialModal() {
+    materialModal(v) {
       $('#order .material').modal("toggle");
     },
-    addConsigneeModal() {
+    addConsigneeModal(v) {
       $('#order .addConsignee').modal("toggle");
     },
-    payMentModal() {
+    payMentModal(v) {
       $('#order .payMentModal').modal("toggle");
     },
-    shipmentModal() {
+    shipmentModal(v) {
       $('#order .shipment').modal("toggle");
     },
-    contractModal() {
+    contractModal(v) {
       $('#order .addContract').modal("toggle");
     }
   },
@@ -1341,6 +1344,12 @@ export default {
           ]
         }
     });
+    $('#order .customer').on('hidden.bs.modal', () => this.modalOpen());
+    $('#order .material').on('hidden.bs.modal', () => this.modalOpen());
+    $('#order .addConsignee').on('hidden.bs.modal', () => this.modalOpen());
+    $('#order .payMentModal').on('hidden.bs.modal', () => this.modalOpen());
+    $('#order .shipment').on('hidden.bs.modal', () => this.modalOpen());
+    $('#order .addContract').on('hidden.bs.modal', () => this.modalOpen());
   },
   created() {
     this.getInvoice();
