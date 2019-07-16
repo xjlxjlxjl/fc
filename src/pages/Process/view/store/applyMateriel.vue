@@ -1,6 +1,6 @@
 <template>
   <div id="applyMateriel">
-    <addPrepare :receive_id="receive_id" @refresh="refreshed"></addPrepare>
+    <addPrepare :receive_id.sync="receive_id" @refresh="refreshed"></addPrepare>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -13,7 +13,7 @@ export default {
   name: "applyMateriel",
   data() {
     return {
-      receive_id: 0
+      receive_id: []
     };
   },
   components: {
@@ -196,8 +196,13 @@ export default {
     let that = this;
     $("#applyMateriel").on("click", ".prepare", function(e) {
       const self = $(this),
-        data = that.getAllData($("#applyMateriel #table"));
-      that.receive_id = data[self.attr('index')].items[self.attr('key')].receive_id;
+        data = that.getAllData($("#applyMateriel #table")),
+        active = new Map([
+          ['SU', () => data[self.attr('index')].items[self.attr('key')].material_info.respository_name = '领料仓'],
+          ['WL', () => data[self.attr('index')].items[self.attr('key')].material_info.respository_name = '生产仓'],
+        ]);
+      active.get(data[self.attr('index')].numbering.removeNumber() || 'default').call(this);
+      that.receive_id = [data[self.attr('index')].items[self.attr('key')]];
       $("#applyMateriel #addPrepare").modal("show");
     })
   }

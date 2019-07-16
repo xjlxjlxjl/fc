@@ -1,5 +1,5 @@
 String.prototype.removeNumber = function () {
-  return this.replace(/\d+[a-zA-Z&\|\\\*^%$#@\-]\d+/g, "");
+  return this.replace(/\d+[a-zA-Z0-9&\|\\\*^%$#@\-]\d+/g, "");
 };
 
 Array.prototype.inArray = function (n) {
