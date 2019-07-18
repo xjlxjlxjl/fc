@@ -195,7 +195,11 @@ export default {
             field: "checks_status",
             title: "审核状态",
             formatter(value, row, index) {
-              return value ? '已审核' : '未审核';
+              switch(value) {
+                case 0: return '未申请';
+                case 1: return '未审核';
+                case 2: return '已审核';
+              }
             }
           },
           {

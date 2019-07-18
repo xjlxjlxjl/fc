@@ -77,7 +77,6 @@ export default {
   },
   mounted() {
     this.getCar();
-    $("#applyMateriel #addPrepare").on("shown.bs.modal", () => console.log(this.receive_id));
   }
 }
 </script>
