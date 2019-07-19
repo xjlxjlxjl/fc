@@ -208,18 +208,6 @@ export default {
             field: "created_at",
             title: "创建日期"
           },
-          // {
-          //   field: "demand_at",
-          //   title: "需求日期"
-          // },
-          // {
-          //   field: "status",
-          //   title: "关联采购申请单号"
-          // },
-          // {
-          //   field: "status",
-          //   title: "关联销售单号"
-          // },
           {
             field: "remark",
             title: "备注",
@@ -233,11 +221,11 @@ export default {
             }
           },
           {
-            field: "status",
+            field: "supplier_contract_name",
             title: "供应商"
           },
           {
-            field: "address",
+            field: "supplier_contract_mobile",
             title: "联系电话"
           },
           {
@@ -352,7 +340,7 @@ export default {
                     <td>${e.quantity || ""}</td>
                     <td>${e.remark || ""}</td>
                     <td>${e.price || ""}</td>
-                    <td>${e.delivery_date || ""}</td>
+                    <td>${e.delivery_period || ""}</td>
                     <td><input type="checkbox" aid="${
                       row.id
                     }" class="closeCase" index="${row.id}" value="${e.id}" ${
