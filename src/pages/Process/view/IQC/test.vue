@@ -64,7 +64,7 @@ export default {
             events: {
               "click .img": function($el, value, row, index) {
                 that.url = value;
-                $("#test .qrCode").modal("show");
+                // $("#test .qrCode").modal("show");
               }
             }
           },
@@ -220,12 +220,7 @@ export default {
                     <th>是否需检</th>
                     <th>备注</th>
                     <th>此次检数</th>
-                    <th>合格</th>
-                    <th>合格数</th>
-                    <th>不良数</th>
-                    <th>需退数</th>
-                    <th>实退数</th>
-                    <th>不良原因</th>
+                    <th>质检结果</th>
                     <th>智能占用</th>
                   </tr>
             `;
@@ -243,12 +238,20 @@ export default {
                   <td>${ e.material.check ? '是' : '否' }</td>
                   <td>${ e.procurement_item.remark }</td>
                   <td>${ e.quantity }</td>
-                  <td>${ e.grade }</td>
-                  <td>${ e.qualification }</td>
-                  <td>${ e.bad }</td>
-                  <td>${ e.refund }</td>
-                  <td>${ e.actual_refund }</td>
-                  <td>${ e.bad_cause }</td>
+                  <td style="padding: 0;">
+                    <table class="table table-bordered">
+                      <tr>
+                        <td>合格数</td>
+                        <td colspan="3">${ e.qualification }</td>
+                      </tr>
+                      <tr>
+                        <td>不良数</td>
+                        <td>${ e.bad }</td>
+                        <td>不良原因</td>
+                        <td>${ e.bad_cause }</td>
+                      </tr>
+                    </table>
+                  </td>
                   <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>
               `;

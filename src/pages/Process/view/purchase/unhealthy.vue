@@ -57,33 +57,27 @@ export default {
           },
           {
             field: "number",
-            title: "质检不良单号",
-            sortable: true
+            title: "质检不良单号"
           },
           {
             field: "created_at",
-            title: "质检日期",
-            sortable: true
+            title: "质检日期"
           },
           {
             field: "created_by",
-            title: "质检员",
-            sortable: true
+            title: "质检员"
           },
           {
             field: "temp_storage.number",
-            title: "关联质检单号",
-            sortable: true
+            title: "关联质检单号"
           },
           {
             field: "temp_storage.source",
-            title: "暂收来源",
-            sortable: true
+            title: "暂收来源"
           },
           {
             field: "procurement.number",
-            title: "关联单号",
-            sortable: true
+            title: "关联单号"
           },
           {
             field: "temp_storage.is_return",
@@ -94,23 +88,19 @@ export default {
           },
           {
             field: "procurement.supplier.name",
-            title: "供应商/委外商",
-            sortable: true
+            title: "供应商/委外商"
           },
           {
             field: "procurement.supplier_contract.name",
-            title: "联系人",
-            sortable: true
+            title: "联系人"
           },
           {
             field: "procurement.supplier_contract.mobile",
-            title: "联系电话",
-            sortable: true
+            title: "联系电话"
           },
           {
             field: "procurement.created_by",
-            title: "采购员",
-            sortable: true
+            title: "采购员"
           },
           {
             field: "id",
@@ -185,11 +175,7 @@ export default {
                     <th>是否需检</th>
                     <th>备注</th>
                     <th>此次检数</th>
-                    <th>合格</th>
-                    <th>合格数</th>
                     <th>不良数</th>
-                    <th>需退数</th>
-                    <th>实退数</th>
                     <th>不良原因</th>
                     <th>智能占用</th>
                   </tr>
@@ -208,11 +194,7 @@ export default {
                   <td>${ e.material.check ? '是' : '否' }</td>
                   <td>${ e.procurement_item.remark }</td>
                   <td>${ e.quantity }</td>
-                  <td>${ e.grade }</td>
-                  <td>${ e.qualification }</td>
                   <td>${ e.bad }</td>
-                  <td>${ e.refund }</td>
-                  <td>${ e.actual_refund }</td>
                   <td>${ e.bad_cause }</td>
                   <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>

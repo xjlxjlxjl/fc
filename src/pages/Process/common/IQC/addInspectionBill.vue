@@ -18,37 +18,20 @@
                 <el-input v-model="row.quantity" size="mini" placeholder="请输入"></el-input>
               </template>
             </el-table-column>
-            <el-table-column label="质检结果" width="160">
+            <el-table-column label="质检结果" width="450">
               <template slot-scope="{ row }">
-                <el-radio-group v-model="row.grade">
-                  <el-radio :label="1">合格</el-radio>
-                  <el-radio :label="0">不良</el-radio>
-                </el-radio-group>
-              </template>
-            </el-table-column>
-            <el-table-column label="合格数" width="150">
-              <template slot-scope="{ row }">
-                <el-input v-model="row.qualification" size="mini" placeholder="请输入"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column label="不良数" width="150">
-              <template slot-scope="{ row }">
-                <el-input v-model="row.bad" size="mini" placeholder="请输入"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column label="需退数" width="150">
-              <template slot-scope="{ row }">
-                <el-input v-model="row.refund" size="mini" placeholder="请输入"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column label="实退数" width="150">
-              <template slot-scope="{ row }">
-                <el-input v-model="row.actual_refund" size="mini" placeholder="请输入"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column label="不良原因" width="150">
-              <template slot-scope="{ row }">
-                <el-input v-model="row.bad_cause" size="mini" placeholder="请输入"></el-input>
+                <table>
+                  <tr>
+                    <td>合格数量</td>
+                    <td colspan="3"><el-input v-model="row.qualification" size="mini" placeholder="请输入"></el-input></td>
+                  </tr>
+                  <tr>
+                    <td>不良数量</td>
+                    <td><el-input v-model="row.bad" size="mini" placeholder="请输入"></el-input></td>
+                    <td>不良原因</td>
+                    <td><el-input v-model="row.bad_cause" size="mini" placeholder="请输入"></el-input></td>
+                  </tr>
+                </table>
               </template>
             </el-table-column>
           </el-table>
@@ -83,14 +66,18 @@ export default {
        * 不良原因必填
        */
       for (let e of this.form.items) {
-        if (parseInt(e.quantity) != parseInt(e.qualification) + parseInt(e.bad)) {
+        if (parseInt(e.quantity) != parseInt(e.qualification) + parseInt(e.bad || 0)) {
           this.$message({ message: '此次检数 = 合格 + 不合格', type: 'error' });
           return false;
         }
-        if (!e.grade && !e.bad_cause) {
-          this.$message({ message: '不良原因为必填', type: 'error' });
-          return false;
-        }
+        if (parseInt(e.bad || 0)) {
+          e.bad = e.bad || 0;
+          e.grade = 0;
+          if (!e.bad_cause) {
+            this.$message({ message: '不良原因为必填', type: 'error' });
+            return false;
+          }
+        } else e.grade = 1;
       }
       this
         .$post(`icm_qty_ctrl/quality/create`, this.form)
@@ -113,12 +100,14 @@ export default {
           name: e.material.name,
           specification: e.material.material_specification,
           unit: e.material.item_unit,
-          delivery_period: e.order_item ? e.order_item.delivery_period : '',
-          num: e.order_item ? e.order_item.quantity : '',
+          delivery_period: e.delivery_period.date || '',
+          num: e.purchase_quantity || '0',
           cancel_quantity: e.cancel_quantity,
           is_inspection: e.is_inspection ? '是' : '否',
           remark: e.remark,
-          grade: 1
+          quantity: e.cancel_quantity,
+          bad: e.bad_count || 0,
+          bad_cause: e.bad_reason || ''
         })
     });
   }
@@ -135,6 +124,18 @@ export default {
                 .el-input {
                   input {
                     border: none;
+                  }
+                }
+              }
+              &:last-child {
+                padding: 0;
+                .cell {
+                  padding: 0;
+                  table {
+                    white-space: nowrap;
+                    td:nth-child(2n - 1) {
+                      padding: 5px 10px;
+                    }
                   }
                 }
               }

@@ -191,6 +191,8 @@ export default {
                     <th>尚缺数量</th>
                     <th>是否需检</th>
                     <th>备注</th>
+                    <th>已检数</th>
+                    <th>待检数</th>
                     <th>料品智能占用</th>
                   </tr>
             `;
@@ -202,11 +204,13 @@ export default {
                   <td>${ item.material.name || '' }</td>
                   <td>${ item.material.material_specification || '' }</td>
                   <td>${ item.material.item_unit || '' }</td>
-                  <td>${ item.order_item ? item.order_item.delivery_period : '' }</td>
-                  <td>${ item.order_item ? item.order_item.quantity : '' }</td>
+                  <td>${ item.delivery_period.date || '' }</td>
+                  <td>${ item.purchase_quantity || '' }</td>
                   <td>${ item.cancel_quantity || '' }</td>
                   <td>${ item.wait_quantity || '' }</td>
                   <td>${ item.is_inspection ? '是' : '否' }</td>
+                  <td>${ item.remark || '' }</td>
+                  <td>${ item.remark || '' }</td>
                   <td>${ item.remark || '' }</td>
                   <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>
