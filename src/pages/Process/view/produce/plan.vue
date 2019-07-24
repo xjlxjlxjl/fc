@@ -94,6 +94,54 @@ export default {
             title: "销售订单号"
           },
           {
+            field: "smart_occupation",
+            title: "智能占用表",
+             formatter(value, row, index) {
+              let get = `<button class="btn btn-sm get">查看</button>`;
+              return get;
+            },
+            events: {
+              "click .get": function(e, value, row, index) {
+                that.row = value
+                $("#plan #smartOccupy").modal("show");
+              }
+            }
+          },
+          {
+            field: "sop_manage",
+            title: "SOP",
+             formatter(value, row, index) {
+              let process = `<button class="btn btn-xs process">关联</button>`;
+              return `<span>${ value.name || '没有关联sop' }</span> ${process}`;
+            },
+            events: {
+              "click .process": function(e, value, row, index) {
+                that.activeId = row.id;
+                $("#plan #getSOP").modal("show");
+              }
+            },
+            cellStyle:{
+              css: { "white-space": "nowrap" }
+            }
+          },
+          {
+            field: "procedure",
+            title: "生产工序",
+             formatter(value, row, index) {
+              let turn = `<button class="btn btn-xs turn">关联</button>`;
+              return `${ value.name || '没有关联工序'} ${turn}`;
+            },
+            events: {
+              "click .turn": function(e, value, row, index) {
+                that.activeId = row.id;
+                $("#plan #getTurn").modal("show");
+              }
+            },
+            cellStyle:{
+              css: { "white-space": "nowrap" }
+            }
+          },
+          {
             field: "id",
             title: "操作",
             formatter(value, row, index) {
@@ -142,6 +190,9 @@ export default {
                 that.active = row;
                 $("#plan #editPriority").modal("show");
               }
+            },
+            cellStyle:{
+              css: { "display": "flex" }
             }
           }
         ],
@@ -184,11 +235,8 @@ export default {
                     <th>出货计划交期</th>
                     <th>关联BOM</th>
                     <th>图纸</th>
-                    <th>智能占用表</th>
                     <th>智能提示生产日期</th>
                     <th>生产领料单号</th>
-                    <th>SOP</th>
-                    <th>生产工序</th>
                     <th>生产组员</th>
                   </tr>
             `;
@@ -206,16 +254,13 @@ export default {
                   <td>${ e.delivery_period_at || '' }</td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs btn-link BOM">BOM</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
-                  <td><button key="${field}" index="${k}" class="btn btn-xs occupy">查看占用</button></td>
                   <td>${ e.prompt_at || '' }</td>
                   <td>${ e.leadership.numbering || '' }</td>
-                  <td>${ e.sop_manage.name || '没有关联sop'} <button key="${field}" index="${k}" class="btn btn-xs process">关联</button></td>
-                  <td>${ e.procedure.name || '没有关联工序'} <button key="${field}" index="${k}" class="btn btn-xs turn">关联</button></td>
                   <td>`;
                   if (e.members.length)
                     for (const v of e.members)
                        html += `${v.last_name}　`;
-                  else html += `未指派`;
+                  else html += `未指派 `;
                   html += `<button key="${field}" index="${k}" class="btn btn-xs assign">指派</button></td>
                 </tr>
               `;
@@ -229,7 +274,7 @@ export default {
     user(arr) {
       this
         .$post(`produces/plan/edit`,{
-          id: this.activeId,
+          item_id: this.activeId,
           members: arr.join(',')
         })
         .then(response => {
@@ -280,30 +325,6 @@ export default {
         drawing_pdf: data[key].plan_item[index].material.drawing_pdf || []
       };
       $("#plan #getMaterialPic").modal("show");
-    });
-    $("#plan").on("click", ".occupy", function() {
-      const
-        key = $(this).attr("key"),
-        index = $(this).attr("index"),
-        data = that.getAllData($("#plan #table"));
-      that.row = data[key].plan_item[index].smart_occupation;
-      $("#plan #smartOccupy").modal("show");
-    });
-    $("#plan").on("click", ".process", function() {
-      const
-        key = $(this).attr("key"),
-        index = $(this).attr("index"),
-        data = that.getAllData($("#plan #table"));
-      that.activeId = data[key].plan_item[index].id;
-      $("#plan #getSOP").modal("show");
-    });
-    $("#plan").on("click", ".turn", function() {
-      const
-        key = $(this).attr("key"),
-        index = $(this).attr("index"),
-        data = that.getAllData($("#plan #table"));
-      that.activeId = data[key].plan_item[index].id;
-      $("#plan #getTurn").modal("show");
     });
     $("#plan").on("click", ".assign", function() {
       const

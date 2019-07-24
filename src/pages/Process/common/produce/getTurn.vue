@@ -46,7 +46,7 @@ export default {
     add() {
       this
         .$post(`produces/plan/edit`, {
-          id: this.id,
+          plan_id: this.id,
           procedure_id: this.trun.id
         })
         .then(response => {

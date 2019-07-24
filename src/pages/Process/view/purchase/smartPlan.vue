@@ -87,6 +87,20 @@ export default {
             title: "客户要求交期"
           },
           {
+            field: "occupancy",
+            title: "智能占用表",
+            formatter(value, row, index) {
+              let get = `<button class="btn btn-sm get">查看</button>`;
+              return get;
+            },
+            events: {
+              "click .get": function(e, value, row, index) {
+                that.row = value
+                $("#smartPlan #smartOccupy").modal("show");
+              }
+            }
+          },
+          {
             field: "customer_delivery_at",
             title: "生产计划",
             formatter(value, row, index) {
@@ -154,7 +168,6 @@ export default {
                     <th>出货计划交期</th>
                     <th>关联BOM</th>
                     <th>图纸</th>
-                    <th>智能占用表</th>
                     <th>尚缺物料</th>
                     <th>总工时</th>
                     <th>发单</th>
@@ -183,7 +196,6 @@ export default {
                   <td>${ mrow.customer_delivery_at }</td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs bom">查看bom</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
-                  <td><button key="${field}" index="${k}" class="btn btn-xs occupy">查看占用</button></td>
                   <td><button key="${field}" index="${k}" class="btn btn-xs material">查看缺少物料</button></td>
                   <td>${ (e.billing ? e.billing.hour : 0) + (e.split ? e.split.hour : 0) + (e.outside_preparation ? e.outside_preparation.hour : 0) + (e.incoming_quality_inspection ? e.incoming_quality_inspection.hour : 0) + (e.preparation ? e.preparation.hour : 0) + (e.assembly ? e.assembly.hour : 0) +(e.finished_product_quality_inspection ? e.finished_product_quality_inspection.hour : 0) + (e.packaging ? e.packaging.hour : 0) + (e.storage ? e.storage.hour : 0) + (e.shipping ? e.shipping.hour : 0) }</td>
                   <td>${ e.billing ? e.billing.hour : '' }</td>
@@ -247,14 +259,6 @@ export default {
         drawing_pdf: data[key].items[index].material.drawing_pdf || []
       };
       $("#smartPlan #getMaterialPic").modal("show");
-    });
-    $("#smartPlan").on("click", ".occupy", function() {
-      const
-        key = $(this).attr("key"),
-        index = $(this).attr("index"),
-        data = that.getAllData($("#smartPlan #table"));
-      that.row = data[key].items[index].occupancy;
-      $("#smartPlan #smartOccupy").modal("show");
     });
     $("#smartPlan").on("click", ".material", function() {
       const

@@ -23,19 +23,19 @@
               <template slot-scope="{ row }">
               <div class="materialsType">
                 <div>
-                  <input type="checkbox" v-if="row.material_attributes.includes('1')" checked="checked" disabled>
+                  <input type="checkbox" v-if="typeof row.occupancy_material.material_attributes == 'object' && row.occupancy_material.material_attributes.includes('1')" checked="checked" disabled>
                   <input type="checkbox" v-else disabled> 采购件
                 </div>
                 <div>
-                  <input type="checkbox" v-if="row.material_attributes.includes('2')" checked="checked" disabled>
+                  <input type="checkbox" v-if="typeof row.occupancy_material.material_attributes == 'object' && row.occupancy_material.material_attributes.includes('2')" checked="checked" disabled>
                   <input type="checkbox" v-else disabled> 自制件
                 </div>
                 <div>
-                  <input type="checkbox" v-if="row.material_attributes.includes('3')" checked="checked" disabled>
+                  <input type="checkbox" v-if="typeof row.occupancy_material.material_attributes == 'object' && row.occupancy_material.material_attributes.includes('3')" checked="checked" disabled>
                   <input type="checkbox" v-else disabled> 委外件
                 </div>
                 <div>
-                  <input type="checkbox" v-if="row.material_attributes.includes('4')" checked="checked" disabled>
+                  <input type="checkbox" v-if="typeof row.occupancy_material.material_attributes == 'object' && row.occupancy_material.material_attributes.includes('4')" checked="checked" disabled>
                   <input type="checkbox" v-else disabled> 销售件
                 </div>
               </div>
