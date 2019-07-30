@@ -9,6 +9,7 @@ import purchasReceive from '@/pages/Print/view/purchasReceive';
 import purchasBarter from '@/pages/Print/view/purchasBarter';
 import purchasReturn from '@/pages/Print/view/purchasReturn';
 import saleOrder from '@/pages/Print/view/saleOrder';
+import saleOffer from '@/pages/Print/view/saleOffer';
 import IQCtemporary from '@/pages/Print/view/IQCtemporary';
 import IQCunhealthy from '@/pages/Print/view/IQCunhealthy';
 import IQCstore from '@/pages/Print/view/IQCstore';
@@ -54,6 +55,10 @@ export default new Router({
       path: "/saleOrder/:id",
       name: "saleOrder",
       component: saleOrder
+    }, {
+      path: "/saleOffer/:id",
+      name: "saleOffer",
+      component: saleOffer
     }, {
       path: "/IQCtemporary/:id",
       name: "IQCtemporary",

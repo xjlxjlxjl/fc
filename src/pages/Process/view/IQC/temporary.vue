@@ -2,6 +2,7 @@
   <div id="temporary">
     <Qrmodel :url="url" :modalData="modalData"></Qrmodel>
     <addInspectionBill :arr="arr"></addInspectionBill>
+    <smartOccupy :arr="row"></smartOccupy>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -10,6 +11,7 @@
 import QRCode from "qrcode";
 import Qrmodel from "@/pages/Process/common/afterSale/qrCode";
 import addInspectionBill from "@/pages/Process/common/IQC/addInspectionBill";
+import smartOccupy from '@/pages/Process/common/purchase/smartOccupy';
 
 export default {
   name: "temporary",
@@ -22,12 +24,15 @@ export default {
       url: "",
       status: 0,
       arr: {},
-      modalData: {}
+      row: [],
+      modalData: {},
+      occupyModal: false
     };
   },
   components: {
     Qrmodel: Qrmodel,
-    addInspectionBill: addInspectionBill
+    addInspectionBill: addInspectionBill,
+    smartOccupy: smartOccupy
   },
   methods: {
     tableAjaxData(params) {
@@ -210,8 +215,8 @@ export default {
                   <td>${ item.wait_quantity || '' }</td>
                   <td>${ item.is_inspection ? '是' : '否' }</td>
                   <td>${ item.remark || '' }</td>
-                  <td>${ item.remark || '' }</td>
-                  <td>${ item.remark || '' }</td>
+                  <td>${ item.checked_quantity || "" }</td>
+                  <td>${ item.wait_checked_quantity || "" }</td>
                   <td><button class="btn btn-default btn-sm">查看占用</button></td>
                 </tr>
               `;
@@ -224,6 +229,11 @@ export default {
     },
     refreshed() {
       this.refresh($("#temporary #table"));
+    }
+  },
+  watch: {
+    occupyModal(v) {
+      $("#temporary #smartOccupy").modal("toggle");
     }
   },
   mounted() {

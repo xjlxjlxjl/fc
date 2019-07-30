@@ -8,8 +8,13 @@
     <designate type="self_check_manage" @user="user"></designate>
     <div id="toolbar">
       <el-select v-model="status" size="mini" @change="refreshed">
-        <el-option label="生产中" :value="0"></el-option>
+        <el-option label="等待生产" :value="0"></el-option>
         <el-option label="生产结束" :value="1"></el-option>
+        <el-option label="正在生产" :value="2"></el-option>
+        <el-option label="生产送检" :value="3"></el-option>
+        <el-option label="等待打包" :value="4"></el-option>
+        <el-option label="等待入库" :value="5"></el-option>
+        <el-option label="生产不良" :value="6"></el-option>
         <el-option label="全部" :value="undefined"></el-option>
       </el-select>
     </div>
@@ -77,9 +82,6 @@ export default {
     init() {
       let that = this,
         columns = [
-          {
-            checkbox: true
-          },
           {
             field: "priority",
             title: "排单顺序",
@@ -170,7 +172,29 @@ export default {
             field: "status",
             title: "生产状态",
             formatter(value) {
-              return value ? '生产结束' : '生产中';
+              switch(value) {
+                case 0:
+                case "0":
+                  return "等待生产";
+                case 1:
+                case "1":
+                  return "生产结束";
+                case 2:
+                case "2":
+                  return "正在生产";
+                case 3:
+                case "3":
+                  return "生产送检";
+                case 4:
+                case "4":
+                  return "等待打包";
+                case 5:
+                case "5":
+                  return "等待入库";
+                case 6:
+                case "6":
+                  return "生产不良";
+              }
             }
           },
           {
@@ -215,12 +239,49 @@ export default {
             field: "id",
             title: "操作",
             formatter(value, row, index) {
-              let check = `<button class="btn btn-primary btn-sm check">生产送检</button>`,
+              let 
+                start = `<button class="btn btn-info btn-sm start">开始生产</button>`,
+                keepGoing = `<button class="btn btn-info btn-sm keepGoing">继续生产</button>`,
+                check = `<button class="btn btn-primary btn-sm check">生产送检</button>`,
                 process = `<button class="btn btn-info btn-sm process">生产工序</button>`,
                 unhealthy = `<button class="btn btn-danger btn-sm unhealthy">生产不良</button>`;
-                return check + unhealthy;
+
+                switch (row.status) {
+                  case 0:
+                  case "0":
+                    return `<div style="display: flex;">${start + check + unhealthy}</div>`;
+                  case 6:
+                  case "6":
+                    return `<div style="display: flex;">${keepGoing + check + unhealthy}</div>`;
+                  default:
+                    return `<div style="display: flex;">${check + unhealthy}</div>`;
+                }
             },
             events: {
+              "click .start"($el, value, row, index) {
+                that
+                  .$post(`produces/show/edit`, {
+                    show_id: value,
+                    status: 2
+                  })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(e => console.error(e));
+              },
+              "click .keepGoing"($el, value, row, index) {
+                that
+                  .$post(`produces/show/edit`, {
+                    show_id: value,
+                    status: 2
+                  })
+                  .then(response => {
+                    if (response.status != 200) return false;
+                    that.refreshed();
+                  })
+                  .catch(e => console.error(e));
+              },
               "click .process"($el, value, row, index) {},
               "click .check"($el, value, row, index) {
                 that.id = value;

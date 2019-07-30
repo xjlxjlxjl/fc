@@ -72,6 +72,7 @@
         <storeApplyMateriel v-else-if="activeTabs == '/store/applyMateriel'"></storeApplyMateriel>
         <storeCarManage v-else-if="activeTabs == '/store/carManage'"></storeCarManage>
         <storeManage v-else-if="activeTabs == '/store/manage'"></storeManage>
+        <storeRecall v-else-if="activeTabs == '/store/recall'"></storeRecall>
         <storeStock v-else-if="activeTabs == '/store/stock'"></storeStock>
         <storeTemporary v-else-if="activeTabs == '/store/temporary'"></storeTemporary>
         <storeCombination v-else-if="activeTabs == '/store/combination'"></storeCombination>
@@ -81,6 +82,8 @@
         <produceProduct v-else-if="activeTabs == '/Produce/product'"></produceProduct>
         <producePlan v-else-if="activeTabs == '/Produce/plan'"></producePlan>
         <producePicking v-else-if="activeTabs == '/Produce/picking'"></producePicking>
+        <produceStorage v-else-if="activeTabs == '/Produce/storage'"></produceStorage>
+        <producExtract v-else-if="activeTabs == '/Produce/extract'"></producExtract>
         <produceSOP v-else-if="activeTabs == '/Produce/SOP'"></produceSOP>
         <produceStore v-else-if="activeTabs == '/Produce/store'"></produceStore>
         <produceUnhealthy v-else-if="activeTabs == '/Produce/unhealthy'"></produceUnhealthy>
@@ -167,7 +170,7 @@ import storeManage from "@/pages/Process/view/store/manage";
 import storeStock from "@/pages/Process/view/store/Stock";
 import storeApplyMateriel from "@/pages/Process/view/store/applyMateriel";
 import storeProduct from "@/pages/Process/view/store/product";
-import storeMaterial from "@/pages/Process/view/store/material";
+import storeRecall from "@/pages/Process/view/store/recall";
 import storeShipment from "@/pages/Process/view/store/shipment";
 import storehousing from "@/pages/Process/view/store/warehousing";
 import storeTemporary from "@/pages/Process/view/store/temporary";
@@ -180,6 +183,8 @@ import storeSparePart from "@/pages/Process/view/store/spareParts";
 import produceProduct from "@/pages/Process/view/produce/product";
 import producePlan from "@/pages/Process/view/produce/plan";
 import producePicking from "@/pages/Process/view/produce/picking";
+import produceStorage from "@/pages/Process/view/produce/storage";
+import producExtract from "@/pages/Process/view/produce/extract";
 import produceSOP from "@/pages/Process/view/produce/SOP";
 import produceStore from "@/pages/Process/view/produce/store";
 import produceUnhealthy from "@/pages/Process/view/produce/unhealthy";
@@ -270,6 +275,7 @@ export default {
     storeApplyMateriel: storeApplyMateriel,
     storeCarManage: storeCarManage,
     storeManage: storeManage,
+    storeRecall: storeRecall,
     storeStock: storeStock,
     storeTemporary: storeTemporary,
     storeCombination: storeCombination,
@@ -279,6 +285,8 @@ export default {
     produceProduct: produceProduct,
     producePlan: producePlan,
     producePicking: producePicking,
+    produceStorage: produceStorage,
+    producExtract: producExtract,
     produceSOP: produceSOP,
     produceStore: produceStore,
     produceUnhealthy: produceUnhealthy,

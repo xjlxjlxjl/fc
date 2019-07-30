@@ -128,11 +128,11 @@ export default {
             field: "procedure",
             title: "生产工序",
              formatter(value, row, index) {
-              let turn = `<button class="btn btn-xs turn">关联</button>`;
-              return `${ value.name || '没有关联工序'} ${turn}`;
+              let association = `<button class="btn btn-xs association">关联</button>`;
+              return `${ value.name || '没有关联工序'} ${association}`;
             },
             events: {
-              "click .turn": function(e, value, row, index) {
+              "click .association": function(e, value, row, index) {
                 that.activeId = row.id;
                 $("#plan #getTurn").modal("show");
               }
@@ -222,7 +222,7 @@ export default {
           detailFormatter(field, mrow, oldValue, $el) {
             let html = `
               <table class="table table-bordered" style="white-space: nowrap;">
-                <tbody>
+                <tbody id="tbody-${field}">
                   <tr>
                     <th>　　</th>
                     <th>序号</th>
@@ -239,33 +239,42 @@ export default {
                     <th>生产领料单号</th>
                     <th>生产组员</th>
                   </tr>
+                </tbody>
+              </table>
             `;
-            mrow.plan_item.forEach((e, k) => {
-              html += `
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>${ k + 1 }</td>
-                  <td>${ e.sn_code || '' }</td>
-                  <td>${ e.material.material_number || '' }</td>
-                  <td>${ e.material.name || '' }</td>
-                  <td>${ e.material.material_specification || '' }</td>
-                  <td>${ e.material.item_unit || '' }</td>
-                  <td>${ e.quantity || '' }</td>
-                  <td>${ e.delivery_period_at || '' }</td>
-                  <td><button key="${field}" index="${k}" class="btn btn-xs btn-link BOM">BOM</button></td>
-                  <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
-                  <td>${ e.prompt_at || '' }</td>
-                  <td>${ e.leadership.numbering || '' }</td>
-                  <td>`;
-                  if (e.members.length)
-                    for (const v of e.members)
-                       html += `${v.last_name}　`;
-                  else html += `未指派 `;
-                  html += `<button key="${field}" index="${k}" class="btn btn-xs assign">指派</button></td>
-                </tr>
-              `;
-            })
-            html += `</tbody></table>`;
+            that
+              .$get(`produces/plan/details`, { id: mrow.id })
+              .then(response => {
+                if (response.status != 200) return false;
+                mrow.plan_item = response.data.plan_item;
+                response.data.plan_item.forEach((e, k) => {
+                  let content = `
+                    <tr>
+                      <td><input type="checkbox"></td>
+                      <td>${ k + 1 }</td>
+                      <td>${ e.sn_code || '' }</td>
+                      <td>${ e.material.material_number || '' }</td>
+                      <td>${ e.material.name || '' }</td>
+                      <td>${ e.material.material_specification || '' }</td>
+                      <td>${ e.material.item_unit || '' }</td>
+                      <td>${ e.quantity || '' }</td>
+                      <td>${ e.delivery_period_at || '' }</td>
+                      <td><button key="${field}" index="${k}" class="btn btn-xs btn-link BOM">BOM</button></td>
+                      <td><button key="${field}" index="${k}" class="btn btn-xs drawing">查看图纸</button></td>
+                      <td>${ e.prompt_at || '' }</td>
+                      <td>${ e.leadership.numbering || '' }</td>
+                      <td>`;
+                      if (e.members.length)
+                        for (const v of e.members)
+                          content += `${v.last_name}　`;
+                      else content += `未指派 `;
+                      content += `<button key="${field}" index="${k}" class="btn btn-xs assign">指派</button></td>
+                    </tr>
+                  `;
+                  $(`#tbody-${field}`).append(content);
+                })
+              })
+              .catch(e => console.error(e));
             return html;
           }
         };

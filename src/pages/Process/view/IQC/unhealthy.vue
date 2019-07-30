@@ -1,6 +1,7 @@
 <template>
   <div id="unhealthy">
     <Qrmodel :url="url" :modalData="modalData"></Qrmodel>
+    <smartOccupy :arr="row"></smartOccupy>
     <div id="toolbar"></div>
     <table id="table"></table>
   </div>
@@ -8,6 +9,7 @@
 <script>
 import QRCode from "qrcode";
 import Qrmodel from "@/pages/Process/common/afterSale/qrCode";
+import smartOccupy from '@/pages/Process/common/purchase/smartOccupy';
 
 export default {
   name: "unhealthy",
@@ -18,11 +20,14 @@ export default {
     return {
       user: user,
       url: "",
-      modalData: {}
+      modalData: {},
+      row: [],
+      occupyModal: false
     };
   },
   components: {
-    Qrmodel: Qrmodel
+    Qrmodel: Qrmodel,
+    smartOccupy: smartOccupy
   },
   methods: {
     tableAjaxData(params) {
@@ -236,6 +241,11 @@ export default {
     },
     refreshed() {
       this.refresh($("#unhealthy #table"));
+    }
+  },
+  watch: {
+    occupyModal(v) {
+      $("#test #smartOccupy").modal("toggle");
     }
   },
   mounted() {

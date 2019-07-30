@@ -469,6 +469,14 @@ export default new Vuex.Store({
           url: '/approval'
         },
         {
+          name: '生产入库',
+          url: '/Produce/storage'
+        },
+        {
+          name: '生产出库',
+          url: '/Produce/extract'
+        },
+        {
           name: '生产计划',
           url: '/Produce/plan'
         },
@@ -555,8 +563,8 @@ export default new Vuex.Store({
           url: "/store/shipment"
         },
         {
-          name: "原材料库存",
-          url: "/store/material"
+          name: "退货申请单",
+          url: "/store/recall"
         }
       ],
       oqc: [

@@ -73,7 +73,7 @@ export default {
             title: "关联销售订单号",
           },
           {
-            field: "aaa",
+            field: "plan_number",
             title: "关联生产计划单",
           },
           {
@@ -85,11 +85,38 @@ export default {
             },
             events: {
               "click .notify"($el, value, row, index) {
+                let
+                  active = new Map([
+                    ['WI', () => 1],
+                    ['PZ', () => 2],
+                    ['TIL', () => 3],
+                    ['WN', () => 4],
+                    ['RT', () => 5],
+                    ['ST', () => 6],
+                    ['WL', () => 7],
+                    ['SU', () => 8],
+                    ['TL', () => 9]
+                  ]),
+                  materials = row.items.filter(e => e.spare_count).map(v => {
+                    return {
+                      material_id: v.material_id,
+                      quantity: v.spare_count
+                    }
+                  });
                 that
-                  .$post(`/repositories/material/receive/notice/${value}`)
-                  .then(response => {
-                    if (response.status != 200) return false;
-                    that.$message({ message: '通知领料成功', type: 'success' });
+                  .$post(`repositories/storage_apply/create`, {
+                    order_id: value,
+                    from: active.get(row.numbering.removeNumber())(),
+                    materials: materials
+                  }).then(result => {
+                    if (result.status != 200) return false;
+                    that
+                      .$post(`repositories/material/receive/notice/${value}`)
+                      .then(response => {
+                        if (response.status != 200) return false;
+                        that.$message({ message: '通知领料成功', type: 'success' });
+                      })
+                      .catch(e => console.error(e));
                   })
                   .catch(e => console.error(e));
               }
@@ -153,7 +180,7 @@ export default {
                   <td>${e.material_info.material_specification || ''}</td>
                   <td>${e.material_info.name || ''}</td>
                   <td>${e.material_info.quantity || ''}</td>
-                  <td>${e.material_info.len || ''}</td>
+                  <td>${e.material_info.length || ''}</td>
                   <td>`;
                   if(e.material_info.children)
                     e.material_info.children.forEach(e => (content += e.material_number));

@@ -229,36 +229,52 @@ export default {
       const
         key = $(this).attr("key"),
         index = $(this).attr("index"),
-        data = that.getAllData($("#smartPlan #table"));
-        that.bom = data[key].items[index].material.bom_items.map(e => {
-          return {
-            material_number: e.code,
-            material_specification: e.specification,
-            material_name: e.name,
-            quantity: e.quantity,
-            length: e.length,
-            unit: e.unit,
-            material_category: e.material_category,
-            bom_attributes_name: e.material_attributes,
-            children_code: e.children_code
-          }
-        });
+        data = that.getAllData($("#smartPlan #table")),
+        bom_id = data[key].items[index].material.bom_id;
+
+        that
+          .$get(`project/bom/details/${bom_id}`)
+          .then(response => {
+            if (response.status != 200) return false;
+            that.bom = response.data.bom_items.map(e => {
+              return {
+                material_number: e.material.material_number,
+                material_specification: e.material.material_specification,
+                material_name: e.material.name,
+                quantity: e.quantity,
+                length: e.material.length,
+                unit: e.material.item_unit,
+                material_category: e.material.material_category,
+                bom_attributes_name: e.material.material_attributes,
+                children_code: e.material.children_code
+              }
+            });
+          })
+          .catch(e => console.error(e));
       $("#smartPlan #getBOM").modal("show");
     });
     $("#smartPlan").on("click", ".drawing", function() {
       const
         key = $(this).attr("key"),
         index = $(this).attr("index"),
-        data = that.getAllData($("#smartPlan #table"));
-      that.pic = {
-        drawing_working: data[key].items[index].material.drawing_working || [],
-        assembly_drawing: data[key].items[index].material.assembly_drawing || [],
-        drawing_approve: data[key].items[index].material.drawing_approve || [],
-        drawing_2d: data[key].items[index].material.drawing_2d || [],
-        drawing_3d: data[key].items[index].material.drawing_3d || [],
-        drawing_pdf: data[key].items[index].material.drawing_pdf || []
-      };
-      $("#smartPlan #getMaterialPic").modal("show");
+        data = that.getAllData($("#smartPlan #table")),
+        slug = data[key].items[index].material.slug;
+      that
+        .$get(`respositories/materials/detail/${slug}`)
+        .then(response => {
+          if (response.status != 200) return false;
+          that.pic = {
+            drawing_working: response.data.drawing_working || [],
+            assembly_drawing: response.data.assembly_drawing || [],
+            drawing_approve: response.data.drawing_approve || [],
+            drawing_2d: response.data.drawing_2d || [],
+            drawing_3d: response.data.drawing_3d || [],
+            drawing_pdf: response.data.drawing_pdf || []
+          };
+          $("#smartPlan #getMaterialPic").modal("show");
+        })
+        .catch(e => console.error(e));
+      
     });
     $("#smartPlan").on("click", ".material", function() {
       const

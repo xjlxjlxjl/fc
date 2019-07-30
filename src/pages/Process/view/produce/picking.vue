@@ -157,7 +157,7 @@ export default {
                   <td>${e.material_info.material_specification || ''}</td>
                   <td>${e.material_info.name || ''}</td>
                   <td>${e.material_info.quantity || '0'}</td>
-                  <td>${e.material_info.len || ''}</td>
+                  <td>${e.material_info.length || ''}</td>
                   <td>${e.material_info.children || ''}</td>
                   <td>${e.material_info.unit || ''}</td>
                   <td>${e.material_info.category || ''}</td>
@@ -166,7 +166,7 @@ export default {
                   <td>${e.material_info.prepare_date || ''}</td>
                   <td>${e.cancel_count || ''}</td>
                   <td>${e.wait_count || ''}</td>
-                  <td>${e.cat_no || ''}</td>
+                  <td>${e.material_info.car_code || ''}</td>
                   <td>${e.spare_count || ''}</td>
                 </tr>
               `
